@@ -7,7 +7,7 @@ import { Link, Outlet } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AboutAbilities from "./AboutAbilities";
-import Aboutmyprogres from "./Aboutmyprogres";
+import Aboutmyprogres from "./Aboutmyprogres"
 
 function About() {
   const [typeEffect] = useTypewriter({
@@ -57,9 +57,9 @@ function About() {
   };
   return (
     <div className="About">
-      <div className=" Aboutborder">
-        <div className="text-zinc-800 Aboutme -mt-3">ABOUT ME</div>
-        <div className="text-base -mt-3">Main informations about me</div>
+      <div className="Aboutborder">
+        <div className="text-zinc-800 Aboutme">ABOUT ME</div>
+        <div className="text-base">Main informations about me</div>
       </div>
       <div className="mainsection">
         <div className="AboutImage">
@@ -79,13 +79,13 @@ function About() {
           <div className="buttonsection mt-4">
             <button
               onClick={handleDownload}
-              className="w-44 px-2 py-3 skew-y-2 rounded-sm shadow-lg shadow-blue-950"
+              className="w-44 px-2 py-3  rounded-sm shadow-lg shadow-black"
             >
               Download cv
             </button>
             <ToastContainer position="top-right" theme="dark" />
             <Link to="/Contact">
-              <button className="w-44 px-2 py-3 skew-y-2 rounded-sm shadow-lg shadow-blue-950">
+              <button className="w-44 px-2 py-3  rounded-sm shadow-lg shadow-black">
                 Hire me
               </button>
             </Link>
@@ -101,7 +101,7 @@ function About() {
           />
         </div>
         <div className="aboutcharts">
-          <div className="Aboutsomeglassy">
+          <div className="Aboutchartsglassy">
             <Aboutmyprogres />
           </div>
         </div>

@@ -2,6 +2,7 @@ import React from "react";
 import Logo from "./Logo";
 import "../Components/Sidebar/Bar";
 import "./Nav.css";
+import { Link } from "react-router-dom";
 
 function Nav({ show, children, sections, scrollToSection }) {
   return (
@@ -25,16 +26,17 @@ function Nav({ show, children, sections, scrollToSection }) {
       </div>
 
       <nav className="flex flex-col gap-2 overflow-hidden">
-        <div className="flex flex-col gap-7 pt-10 pl-10 text-lg font-extralight">
-          <div>
+        <div className="flex flex-col gap-7 p-10  text-lg font-extralight">
+          <div className="">
             {sections.map((section) => (
-              <button
+              <Link
+                to={section.id}
                 key={section.id}
                 onClick={() => scrollToSection(section.id)}
-                className={`LinkHover space-y-16 ${section.id}Hover`}
+                className={`LinkHover  ${section.id}Hover`}
               >
                 {section.title}
-              </button>
+              </Link>
             ))}
           </div>
         </div>

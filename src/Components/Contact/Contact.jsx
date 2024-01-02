@@ -1,9 +1,10 @@
 import React from "react";
+import './Contact.css'
 
 function Contact() {
   return (
-    <div>
-      oljlklkj
+    <div className="Contact">
+      Contact
     </div>
   );
 }

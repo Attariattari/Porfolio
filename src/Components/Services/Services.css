@@ -1,0 +1,142 @@
+.Services {
+    width: 100%;
+    /* background-color: #e3882d1c; */
+}
+
+.Servicesabout {
+    padding-top: 29px;
+}
+
+.Servicesborder {
+    border-left: 0.4em #E3872D solid;
+    margin-top: 3em;
+    margin-left: 3em;
+    padding-left: 1em;
+    height: 5.5em;
+}
+
+.Servicestext {
+    font-size: 40px;
+    font-weight: 600;
+    padding: 0%;
+    margin: 0%;
+}
+
+.Servicessection {
+    margin-top: 5em;
+    padding: 40px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    flex-wrap: wrap;
+    max-width: 100%;
+    height: 45em;
+    gap: 35px;
+}
+
+
+@media only screen and (max-width: 1023px) {
+    .Servicessection {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        height: 50em;
+    }
+}
+
+@media only screen and (max-width: 979px) {
+    .Servicessection {
+        grid-template-columns: repeat(1, 1fr);
+        gap: 20px;
+        height: 100em;
+        padding: 1em 6em 2em 6em;
+    }
+    .Servicesabout {
+       
+        padding: 0em 0em 0em 6em;
+    }
+
+}
+@media only screen and (max-width: 768px) {
+    .Servicessection {
+        margin-top: 5em;
+        padding: 05px;
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        flex-wrap: wrap;
+        height: 100em;
+       margin-bottom: 2em;
+        gap: 35px;
+    }
+    .Servicestext {
+        font-size: 30px;
+        font-weight: 600;
+        padding: 0%;
+        margin: 0%;
+    }
+    .Servicesborder {
+        border-left: 0.4em #E3872D solid;
+        margin-top: 3em;
+        margin-left: 1em;
+        padding-left: 1em;
+        height: 4.5em;
+    }
+}
+@media only screen and (max-width: 500px) {
+    .Servicessection {
+        margin-top: 5em;
+        padding: 05px;
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        flex-wrap: wrap;
+        height: 100em;
+       margin-bottom: 2em;
+        gap: 35px;
+    }
+    .Servicestext {
+        font-size: 30px;
+        font-weight: 600;
+        padding: 0%;
+        margin: 0%;
+    }
+    .Servicesborder {
+        border-left: 0.4em #E3872D solid;
+        margin-top: 3em;
+        margin-left: 1em;
+        padding-left: 1em;
+        height: 4.5em;
+    }
+}
+.ServiceBox {
+    display: flex;
+    justify-content: start;
+    align-items: start;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    -ms-border-radius: 3px;
+    -o-border-radius: 3px;
+}
+
+.Servicesdetails {
+    display: flex;
+    justify-content: space-around;
+    align-items: start;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+.Servicesicons {
+    font-size: 40px;
+    color: #E3872D;
+}
+
+.Serviceslabel {
+    font-size: 25px;
+}
+
+.Servicesinfo {
+    font-size: 17px;
+    color: #222222;
+}

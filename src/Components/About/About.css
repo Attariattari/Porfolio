@@ -1,25 +1,15 @@
-@screen-sm: 480px;
-@screen-md: 768px;
-@screen-lg: 1024px;
-@screen-xl: 1200px;
-@screen-xxl: 1400px;
-
 .About {
     background-color: rgb(255, 255, 255);
     font-family: "Montserrat";
     width: 100%;
-    height: 100%;
 }
 
 .Aboutborder {
     border-left: 0.4em #E3872D solid;
-    margin-top: 6em;
+    margin-top: 3em;
     margin-left: 3em;
     padding-left: 1em;
     height: 4em;
-
-
-
 }
 
 @media only screen and (max-width: 1366px) and (max-width: 1450px) {
@@ -58,6 +48,64 @@
         color: #2e2e2f;
     }
 
+    .aboutmyAbilities {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+    }
+
+    .Aboutsome {
+        width: 45%;
+        height: 100%;
+        display: flex;
+        justify-content: flex-start;
+        align-items: start;
+        flex-direction: column;
+        padding: 1em 1em 2em 1em;
+        background-color: transparent;
+    }
+
+    .aboutcharts {
+        width: 55%;
+        height: 100%;
+        display: flex;
+        justify-content: flex-start;
+        align-items: start;
+        flex-direction: column;
+        padding: 1em 1em 2em 1em;
+        background-color: transparent;
+    }
+
+    .Aboutsomeglassy {
+        width: 100%;
+        height: 20em;
+        padding: 1em;
+        
+        backdrop-filter: blur(100em);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .Aboutchartsglassy {
+        width: 100%;
+        height: 20em;
+        padding: 1em;
+        
+        backdrop-filter: blur(100em);
+        box-shadow: 0 0 10px rgba(2, 2, 2, 0.3);
+    }
+
+    .firstchild {
+        font-size: 25px;
+        font-weight: 600;
+        color: #010101c9;
+    }
+
+    .secondchild {
+        font-size: 16px;
+        color: #010101c9;
+    }
 }
 
 @media only screen and (max-width: 1350px) {
@@ -85,8 +133,8 @@
     }
 
     .ImageSet {
-        width: 14em;
-        height: 18em;
+        width: 17em;
+        height: 19em;
         background-color: #2e2e2f;
     }
 
@@ -97,19 +145,89 @@
     }
 
     .AboutDetailsme {
-        font-size: 2em;
+        font-size: 1.6em;
         font-weight: bold;
     }
 }
 
-@media only screen and (max-width: 1200px) {}
+@media only screen and (max-width: 1200px) {
 
-@media only screen and (max-width: 1100px) {
-
-    .Aboutborder {
-        border-left: #E3872D 0.4em solid;
+    .AboutDetailsme {
+        font-size: 1.3em;
+        font-weight: bold;
     }
 
+    .aboutinfo {
+        width: 60%;
+        height: 55em;
+
+    }
+
+    .ImageSet {
+        width: 15em;
+        height: 17em;
+        background-color: #2e2e2f;
+    }
+
+    .Aboutsomeglassy {
+        width: 100%;
+        height: 23em;
+        padding: 1em;
+        
+        backdrop-filter: blur(100em);
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    }
+
+    .Aboutchartsglassy {
+        width: 100%;
+        height: 23em;
+        padding: 1em;
+        
+        backdrop-filter: blur(100em);
+        box-shadow: 0 0 10px rgba(2, 2, 2, 0.3);
+    }
+
+    .firstchild {
+        font-size: 20px;
+        font-weight: 600;
+        color: #010101c9;
+    }
+
+    .secondchild {
+        font-size: 16px;
+        color: #010101c9;
+    }
+}
+
+@media only screen and (max-width: 1150px) {
+    .Aboutsomeglassy {
+        width: 100%;
+        height: 25em;
+        padding: 1em;
+        
+        backdrop-filter: blur(100em);
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    }
+
+    .Aboutchartsglassy {
+        width: 100%;
+        height: 25em;
+        padding: 1em;
+        
+        backdrop-filter: blur(100em);
+        box-shadow: 0 0 10px rgba(2, 2, 2, 0.3);
+    }
+
+    .firstchild {
+        font-size: 20px;
+        font-weight: 600;
+        color: #010101c9;
+    }
+
+    .secondchild {
+        font-size: 16px;
+        color: #010101c9;
+    }
 }
 
 @media only screen and (max-width: 1023px) {
@@ -133,7 +251,7 @@
 
     .aboutinfo {
         width: 65%;
-        height: 44em;
+        height: 54em;
         padding-right: 0em;
     }
 
@@ -141,9 +259,36 @@
         font-size: 1.4em;
         font-weight: bold;
     }
+
+    .Aboutsomeglassy {
+        width: 100%;
+        height: 20em;
+        padding: 1em;
+        
+        backdrop-filter: blur(100em);
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    }
+
+    .Aboutchartsglassy {
+        width: 100%;
+        height: 20em;
+        padding: 1em;
+        
+        backdrop-filter: blur(100em);
+        box-shadow: 0 0 10px rgba(2, 2, 2, 0.3);
+    }
+
+    .firstchild {
+        font-size: 20px;
+        font-weight: 600;
+        color: #010101c9;
+    }
+
+    .secondchild {
+        font-size: 16px;
+        color: #010101c9;
+    }
 }
-
-
 
 @media only screen and (max-width: 969px) {
     .Aboutborder {
@@ -157,7 +302,7 @@
         flex-wrap: wrap;
         justify-content: space-between;
         align-items: center;
-        margin-top: 6em;
+        margin-top: 7em;
         flex-direction: column;
     }
 
@@ -177,9 +322,10 @@
 
     .aboutinfo {
         width: 80%;
-        height: 60em;
-        margin-bottom: 3em;
+        height: 49em;
+        margin-bottom: 1em;
         overflow-y: hidden;
+        margin-top: 2em;
     }
 
     .AboutDetailsme {
@@ -196,16 +342,170 @@
     }
 
     .Aboutpersonal {
-
         display: none;
+    }
+
+    .aboutmyAbilities {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
 
 
     }
+
+    .Aboutsome {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: flex-start;
+        align-items: start;
+        flex-direction: column;
+        padding: 1em 6em 2em 6em;
+    }
+
+    .Aboutsomeglassy {
+        width: 100%;
+        height: 16em;
+        padding: 1em;
+        
+        backdrop-filter: blur(100em);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .Aboutchartsglassy {
+        width: 100%;
+        height: 16em;
+        padding: 1em;
+        
+        backdrop-filter: blur(100em);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    }
+
+
+    .aboutcharts {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: flex-start;
+        align-items: start;
+        flex-direction: column;
+        padding: 1em 6em 2em 6em;
+        background-color: transparent;
+    }
+
+    .firstchild {
+        font-size: 20px;
+        font-weight: 600;
+        color: #010101c9;
+    }
+
+    .secondchild {
+        font-size: 16px;
+        color: #010101c9;
+    }
 }
 
-@media only screen and (max-width: 768px) {}
+@media only screen and (max-width: 768px) {
+    .aboutinfo {
+        width: 80%;
+        height: 52em;
+        margin-bottom: 3em;
+        overflow-y: hidden;
+    }
+}
 
-@media only screen and (max-width: 600px) {}
+@media only screen and (max-width: 600px) {
+    .AboutImage {
+        width: 100%;
+        height: 30em;
+        display: flex;
+        justify-content: center;
+        margin-left: -1em;
+    }
+
+    .ImageSet {
+        width: 91%;
+        height: 25em;
+    }
+
+    .aboutinfo {
+        width: 100%;
+        height: 54em;
+        padding: 5px;
+        margin-bottom: 3em;
+        overflow-y: hidden;
+
+    }
+    .AboutDetailsme {
+        font-size: 1.2em;
+        font-weight: bold;
+    }
+    .Aboutsome {
+        padding: 5px;
+    }
+
+    .aboutcharts {
+        padding: 5px;
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    .AboutImage {
+        width: 100%;
+        height: 30em;
+        display: flex;
+        justify-content: center;
+        margin-left: -1em;
+    }
+
+    .ImageSet {
+        width: 91%;
+        height: 25em;
+    }
+
+
+
+    .aboutinfo {
+        width: 100%;
+        height: 89em;
+        padding: 5px;
+        margin-bottom: 1em;
+        overflow-y: hidden;
+    }
+
+    .AboutDetailsme {
+        font-size: 1.6em;
+        font-weight: bold;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .aboutwork {
+        font-size: 1.8em;
+        height: 30em;
+    }
+
+    .Aboutsomeglassy {
+        width: 100%;
+        height: 24em;
+        padding: 1em;
+        
+        backdrop-filter: blur(100em);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .Aboutsome {
+        padding: 5px;
+    }
+
+    .aboutcharts {
+        padding: 5px;
+    }
+}
 
 ;
 
@@ -242,8 +542,6 @@
     box-shadow: 11px 9px 30px #000000bc;
 }
 
-
-
 .Aboutme {
     font-size: 1.9rem;
     font-weight: 500;
@@ -251,7 +549,7 @@
 }
 
 .aboutwork {
-    font-size: 1em;
+    font-size: 1.1em;
     font-weight: 500;
     color: #2e2e2f;
     height: auto;
@@ -267,10 +565,8 @@
     padding: 8px;
     border: 1px solid #ddd;
     white-space: nowrap;
-    /* Prevent text wrapping */
     overflow: hidden;
     text-overflow: ellipsis;
-    /* Show ellipsis (...) for overflowed text */
 }
 
 @media (max-width: 768px) {
@@ -279,7 +575,6 @@
         display: inline-block;
         box-sizing: border-box;
         white-space: normal;
-        /* Allow text to wrap on smaller screens */
         overflow: visible;
         text-overflow: inherit;
     }
@@ -290,29 +585,38 @@
     }
 }
 
-/* .table-fixed {
-    border-collapse: collapse;
-}
-
-.table-fixed td {
-    width: 25%;
-    padding: 8px;
-    border: 1px solid #ddd;
-}
-
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
     .table-fixed td {
         width: 50%;
         display: inline-block;
         box-sizing: border-box;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: inherit;
     }
 
     .table-fixed tr {
         display: block;
         margin-bottom: 10px;
     }
-} */
 
+}
+
+@media (max-width: 500px) {
+    .table-fixed td {
+        width: 100%;
+        display: inline-block;
+        box-sizing: border-box;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: inherit;
+    }
+
+    .table-fixed td {
+        display: block;
+        margin-bottom: 10px;
+    }
+}
 
 .Whatsapp {
     font-weight: bold;
@@ -325,8 +629,6 @@
     text-decoration: underline;
 }
 
-
-
 .buttonsection {
     display: flex;
     justify-content: space-evenly;
@@ -334,7 +636,6 @@
     height: 3.3em;
 
 }
-
 
 .buttonsection button {
     text-decoration: none !important;
@@ -371,55 +672,4 @@
     width: 150%;
     left: -20%;
 
-}
-
-.aboutmyAbilities {
-    width: 100%;
-    height: 20em;
-
-    background-color: #041230;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.Aboutsome {
-    width: 45%;
-    height: 100%;
-    display: flex;
-    justify-content: flex-start;
-    align-items: start;
-    flex-direction: column;
-    padding: 1em 0em 2em 1em;
-    background-color: transparent;
-}
-
-.Aboutsomeglassy {
-    width: 100%;
-    padding: 1em;
-    border-radius: 2%;
-    background-color: #04303071;
-    backdrop-filter: blur(100em);
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-}
-
-.firstchild {
-    font-size: 1.4em;
-    color: #E3872D;
-}
-
-.secondchild {
-    font-size: auto;
-    color: #bababa;
-}
-
-.aboutcharts {
-    width: 55%;
-    height: 100%;
-    display: flex;
-    justify-content: flex-start;
-    align-items: start;
-    flex-direction: column;
-    padding: 1em 1em 2em 1em;
-    background-color: transparent;
 }

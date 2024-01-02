@@ -10,7 +10,7 @@
     max-width: 180px;
     display: flex;
     flex-direction: column;
-    width: 8em;
+    width: 100%;
     margin-bottom: 1.5em;
   }
   
@@ -22,15 +22,15 @@
     right: 10%;
     width: 0;
     height: 1%;
-    transition: all 0.3s linear;
+    transition: all 0.2s linear;
     background: rgb(227 135 45);
     z-index: -1;
     color: #ffffff;
     max-width: 180px;
-    -webkit-transition: all 0.3s linear;
-    -moz-transition: all 0.3s linear;
-    -ms-transition: all 0.3s linear;
-    -o-transition: all 0.3s linear;
+    -webkit-transition: all 0.2s linear;
+    -moz-transition: all 0.2s linear;
+    -ms-transition: all 0.2s linear;
+    -o-transition: all 0.2s linear;
 }
   
   .LinkHover:hover::before {
@@ -40,7 +40,6 @@
   }
   
   .LinkHover:hover {
-    transform: scale(1.1);
     padding: 3px;
     max-width: 180px;
   }

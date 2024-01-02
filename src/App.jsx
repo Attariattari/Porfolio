@@ -1,19 +1,19 @@
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Sidebar from "./Components/SIdebar/Bar";
+import Sidebar from "./Components/Sidebar/Bar";
 import Home from "./Components/Home/Home";
 import About from "./Components/About/About";
-import Services from "./Pages/Services";
-import Portfolio from "./Pages/Portfolio";
-import News from "./Pages/News";
-import Contact from "./Pages/Contact";
+import Services from "./Components/Services/Services";
+import Portfolio from "./Components/Portfolio/Portfolio";
+import News from "./Components/News/News";
+import Contact from "./Components/Contact/Contact";
 const sections = [
-  { id: "home", title: "Home", component: <Home /> },
-  { id: "about", title: "About", component: <About /> },
-  { id: "services", title: "Services", component: <Services /> },
-  { id: "portfolio", title: "Portfolio", component: <Portfolio /> },
-  { id: "contact", title: "Contact", component: <Contact /> },
-  { id: "news", title: "News", component: <News /> },
+  { id: "Home", title: "Home", component: <Home /> },
+  { id: "About", title: "About", component: <About /> },
+  { id: "Services", title: "Services", component: <Services /> },
+  { id: "Portfolio", title: "Portfolio", component: <Portfolio /> },
+  { id: "Contact", title: "Contact", component: <Contact /> },
+  { id: "News", title: "News", component: <News /> },
 ];
 
 const App = () => {

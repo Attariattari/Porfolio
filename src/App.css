@@ -13,6 +13,9 @@ body {
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
   }
+.sidebar{
+  z-index: 999;
+}
   
   .app {
     display: flex;

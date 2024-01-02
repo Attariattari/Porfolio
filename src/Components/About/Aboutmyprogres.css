@@ -1,6 +1,8 @@
 .progress {
     gap: 10px;
-    margin-top: 0.93em;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
 }
 
 .progress-bar-container {
@@ -12,7 +14,7 @@
 }
 
 .progress-bar {
-    background-color: #E3872D;
+    background-color: #181717;
     height: 3px;
     border-radius: 20px;
     color: #fff;

@@ -6,7 +6,7 @@ import "./Sidebar.css";
 
 export default function Sidebar({ sections }) {
   const scrollToSection = (id) => {
-    document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+    document.getElementById(id).scrollIntoView({ behavior: "smooth" });
   };
   const [showNav, setShowNav] = useState(false);
 
@@ -29,13 +29,8 @@ export default function Sidebar({ sections }) {
   }, [useLocation()]);
 
   return (
-    <div
-      className="Sidebar"
-      
-    >
-      <div
-        className="xl:hidden flex items-center justify-between p-4 absolute z-10 w-full text-white font-bold "
-      >
+    <div className="Sidebar">
+      <div className="xl:hidden flex items-center justify-between p-4 absolute z-10 w-full text-white font-bold ">
         <div className="left-0 ">Muhyo Tech</div>
 
         <button onClick={() => setShowNav(true)} className="right-0">
@@ -43,7 +38,11 @@ export default function Sidebar({ sections }) {
         </button>
       </div>
       <div className="flex">
-        <Nav show={showNav} scrollToSection={scrollToSection} sections={sections}>
+        <Nav
+          show={showNav}
+          scrollToSection={scrollToSection}
+          sections={sections}
+        >
           <button
             onClick={() => setShowNav(false)}
             className="absolute right-0 top-0 md:hidden"
@@ -51,7 +50,6 @@ export default function Sidebar({ sections }) {
             Close
           </button>
         </Nav>
-       
       </div>
     </div>
   );

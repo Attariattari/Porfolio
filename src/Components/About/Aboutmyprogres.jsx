@@ -4,16 +4,16 @@ import "./Aboutmyprogres.css";
 function ProgressBar({ label, experience, progress }) {
   return (
     <div className="progress">
-      <div className="flex justify-between items-center pb-2">
+      <div className="flex justify-between items-center ">
         <div
-          className="text-white"
+          className="text-black"
           style={{
             fontSize: "1em",
           }}
         >
           {label} - <span className="text-sm">{experience}</span>
         </div>
-        <div className="text-white">{progress}%</div>
+        <div className="text-black">{progress}%</div>
       </div>
 
       <div className="progress-bar-container">
@@ -54,43 +54,3 @@ function Aboutmyprogres() {
 }
 
 export default Aboutmyprogres;
-
-// import React, { useEffect, useState } from "react";
-// import "./Aboutmyprogres.css";
-
-// function Aboutmyprogres() {
-//   const [progress, setProgress] = useState(0);
-
-//   useEffect(() => {
-//     // Simulate progress updates (you can replace this with your actual logic)
-//     const interval = setInterval(() => {
-//       setProgress((prevProgress) =>
-//         prevProgress < 70 ? prevProgress + 1 : 70
-//       );
-//     }, 10);
-
-//     return () => clearInterval(interval);
-//   }, []);
-//   return (
-//     <div className="progress">
-//       <div className="flex justify-between items-center pb-2">
-//         <div
-//           className="text-white"
-//           style={{
-//             fontSize: "1em",
-//           }}
-//         >
-//           Full Stack Developer -{" "}
-//           <span className="text-sm+">2 Years Experiance</span>
-//         </div>
-//         <div className="text-white">{progress}%</div>
-//       </div>
-
-//       <div className="progress-bar-container">
-//         <div className="progress-bar" style={{ width: `${progress}%` }}></div>
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default Aboutmyprogres;
