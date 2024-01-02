@@ -1,10 +1,34 @@
 import React from "react";
 import "./Services.css";
 import { FaChrome } from "react-icons/fa6";
-import { Webdeveloper } from "../../DummyData/DummyData";
+import {
+  Webdeveloper,
+  Uxuidesigner,
+  Backenddeveloper,
+  Branding,
+  SocialMedia,
+  Marketing,
+} from "../../DummyData/DummyData";
 
+const servicesData = [
+  Webdeveloper,
+  Uxuidesigner,
+  Backenddeveloper,
+  Branding,
+  SocialMedia,
+  Marketing,
+];
 
-function Services({icon, title, details }) {
+// Helper function to truncate text to a specified number of words
+const truncateText = (text, numWords) => {
+  const words = text.split(" ");
+  if (words.length > numWords) {
+    return words.slice(0, numWords).join(" ") + " ...";
+  }
+  return text;
+};
+
+function Services() {
   return (
     <div className="Services">
       <div className="Servicesabout">
@@ -14,78 +38,17 @@ function Services({icon, title, details }) {
         </div>
       </div>
       <div className="Servicessection">
-        <div className="ServiceBox">
-          <div className="Servicesdetails">
-            <div className="Servicesicons">
-              <FaChrome />
-            </div>
-            <div className="Serviceslabel">Photography</div>
-            <div className="Servicesinfo">
-              Web design is a similar process of creation, with the intention of
-              presenting the content on electronic pages ...
-            </div>
-          </div>
-        </div>
-        <div className="ServiceBox">
-          <div className="Servicesdetails">
-            <div className="Servicesicons">
-              <FaChrome />
-            </div>
-            <div className="Serviceslabel">Photography</div>
-            <div className="Servicesinfo">
-              Web design is a similar process of creation, with the intention of
-              presenting the content on electronic pages ...
+        {servicesData.slice(0, 6).map((service, index) => (
+          <div className="ServiceBox" key={index}>
+            <div className="Servicesdetails">
+              <div className="Servicesicons">{service.icon}</div>
+              <div className="Serviceslabel">{service.title}</div>
+              <div className="Servicesinfo">
+                {truncateText(service.details, 25)}
+              </div>
             </div>
           </div>
-        </div>
-        <div className="ServiceBox">
-          <div className="Servicesdetails">
-            <div className="Servicesicons">
-              <FaChrome />
-            </div>
-            <div className="Serviceslabel">Photography</div>
-            <div className="Servicesinfo">
-              Web design is a similar process of creation, with the intention of
-              presenting the content on electronic pages ...
-            </div>
-          </div>
-        </div>
-        <div className="ServiceBox">
-          <div className="Servicesdetails">
-            <div className="Servicesicons">
-              <FaChrome />
-            </div>
-            <div className="Serviceslabel">Photography</div>
-            <div className="Servicesinfo">
-              Web design is a similar process of creation, with the intention of
-              presenting the content on electronic pages ...
-            </div>
-          </div>
-        </div>
-        <div className="ServiceBox">
-          <div className="Servicesdetails">
-            <div className="Servicesicons">
-              <FaChrome />
-            </div>
-            <div className="Serviceslabel">Photography</div>
-            <div className="Servicesinfo">
-              Web design is a similar process of creation, with the intention of
-              presenting the content on electronic pages ...
-            </div>
-          </div>
-        </div>
-        <div className="ServiceBox">
-          <div className="Servicesdetails">
-            <div className="Servicesicons">
-              <FaChrome />
-            </div>
-            <div className="Serviceslabel">Photography</div>
-            <div className="Servicesinfo">
-              Web design is a similar process of creation, with the intention of
-              presenting the content on electronic pages ...
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );
