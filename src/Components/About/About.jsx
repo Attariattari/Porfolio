@@ -7,7 +7,7 @@ import { Link, Outlet } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AboutAbilities from "./AboutAbilities";
-import Aboutmyprogres from "./Aboutmyprogres"
+import Aboutmyprogres from "./Aboutmyprogres";
 
 function About() {
   const [typeEffect] = useTypewriter({
@@ -57,9 +57,11 @@ function About() {
   };
   return (
     <div className="About">
-      <div className="Aboutborder">
-        <div className="text-zinc-800 Aboutme">ABOUT ME</div>
-        <div className="text-base">Main informations about me</div>
+      <div className="mainborder">
+        <div className="Aboutborder">
+          <div className="text-zinc-800 Aboutme">ABOUT ME</div>
+          <div className="text-base">Main informations about me</div>
+        </div>
       </div>
       <div className="mainsection">
         <div className="AboutImage">

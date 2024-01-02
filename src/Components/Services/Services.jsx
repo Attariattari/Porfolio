@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Services.css";
-import { FaChrome } from "react-icons/fa6";
 import {
   Webdeveloper,
   Uxuidesigner,
@@ -9,6 +8,7 @@ import {
   SocialMedia,
   Marketing,
 } from "../../DummyData/DummyData";
+import Servicepopup from "./Servicepopup";
 
 const servicesData = [
   Webdeveloper,
@@ -29,6 +29,16 @@ const truncateText = (text, numWords) => {
 };
 
 function Services() {
+  const [selectedService, setSelectedService] = useState(null);
+
+  const handleButtonClick = (service) => {
+    setSelectedService(service);
+  };
+
+  const closePopup = () => {
+    setSelectedService(null); // Update to set the selectedService to null
+  };
+
   return (
     <div className="Services">
       <div className="Servicesabout">
@@ -41,15 +51,22 @@ function Services() {
         {servicesData.slice(0, 6).map((service, index) => (
           <div className="ServiceBox" key={index}>
             <div className="Servicesdetails">
-              <div className="Servicesicons">{service.icon}</div>
+              <div className="Servicesicons shadow-lg ">{service.icon}</div>
               <div className="Serviceslabel">{service.title}</div>
               <div className="Servicesinfo">
-                {truncateText(service.details, 25)}
+                {truncateText(service.details, 22)}
               </div>
             </div>
+            <button
+              onClick={() => handleButtonClick(service)}
+              className="Button mt-3"
+            >
+              More info
+            </button>
           </div>
         ))}
       </div>
+      <Servicepopup info={selectedService} closePopup={closePopup} />
     </div>
   );
 }
