@@ -1,5 +1,33 @@
-.Portfolio{
+.Portfolio {
     width: 100%;
     height: 100%;
-    
+}
+
+.ProtfolioSection {
+    width: 100%;
+    margin-top: 6em;
+    padding-left: 3em;
+    padding-right: 3em;
+}
+
+.Protfolioworks {
+    width: 100%;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+}
+
+.ProtfolioButtons button {
+    padding-right: 3em;
+}
+.Buttonfor:hover{
+    color: #E3872D;
+}
+.ProtfolioButtons {
+    width: 70%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    font-size: 17px;
+    font-weight: bold;
 }
