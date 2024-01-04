@@ -85,7 +85,7 @@
         height: 20em;
         padding: 1em;
         
-        backdrop-filter: blur(100em);
+        
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     }
 
@@ -94,7 +94,7 @@
         height: 20em;
         padding: 1em;
         
-        backdrop-filter: blur(100em);
+        
         box-shadow: 0 0 10px rgba(2, 2, 2, 0.3);
     }
 
@@ -173,7 +173,7 @@
         height: 23em;
         padding: 1em;
         
-        backdrop-filter: blur(100em);
+        
         box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
     }
 
@@ -182,7 +182,7 @@
         height: 23em;
         padding: 1em;
         
-        backdrop-filter: blur(100em);
+        
         box-shadow: 0 0 10px rgba(2, 2, 2, 0.3);
     }
 
@@ -204,7 +204,7 @@
         height: 25em;
         padding: 1em;
         
-        backdrop-filter: blur(100em);
+        
         box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
     }
 
@@ -213,7 +213,7 @@
         height: 25em;
         padding: 1em;
         
-        backdrop-filter: blur(100em);
+        
         box-shadow: 0 0 10px rgba(2, 2, 2, 0.3);
     }
 
@@ -262,7 +262,7 @@
         height: 20em;
         padding: 1em;
         
-        backdrop-filter: blur(100em);
+        
         box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
     }
 
@@ -271,7 +271,7 @@
         height: 20em;
         padding: 1em;
         
-        backdrop-filter: blur(100em);
+        
         box-shadow: 0 0 10px rgba(2, 2, 2, 0.3);
     }
 
@@ -367,7 +367,7 @@
         height: 16em;
         padding: 1em;
         
-        backdrop-filter: blur(100em);
+        
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     }
 
@@ -376,7 +376,7 @@
         height: 16em;
         padding: 1em;
         
-        backdrop-filter: blur(100em);
+        
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     }
 
@@ -494,7 +494,7 @@
         height: 24em;
         padding: 1em;
         
-        backdrop-filter: blur(100em);
+        
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     }
 
