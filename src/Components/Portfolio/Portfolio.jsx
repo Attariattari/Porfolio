@@ -1,19 +1,38 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Portfolio.css";
+import Mernstack from "./Myportfolios/Mernstack";
+import Designing from "./Myportfolios/Designing";
+import BackendProjects from "./Myportfolios/BackendProjects";
+import OtherCMS from "./Myportfolios/OtherCMS";
+import UXUIDesigner from "./Myportfolios/UXUIDesigner";
 
 function Portfolio() {
-  const [activeButton, setActiveButton] = useState("All"); // Initialize with "All" as the default active button
+  // Retrieve the active button value from localStorage or use "All Show" as default
+  const [activeButton, setActiveButton] = useState(
+    localStorage.getItem("activeButton") || "All Show"
+  );
 
-  // Sample data for demonstration
   const portfolioData = [
-    { category: "All Show", content: "All Show content" },
-    { category: "Mern Stack", content: "Mern Stack content" },
-    { category: "UX / UI Designing", content: "UX / UI Designing content" },
-    { category: "Backend Projects", content: "Backend Projects content" },
+    { category: "Mern Stack", content: <Mernstack /> },
+    { category: "UX / UI Designing", content: <UXUIDesigner /> },
+    { category: "Backend Projects", content: <BackendProjects /> },
+    { category: "Others CMS", content: <OtherCMS /> },
+    { category: "Designing", content: <Designing /> },
   ];
 
-  // Function to filter data based on the active button
-  const filteredData = activeButton === "All" ? portfolioData : portfolioData.filter(item => item.category === activeButton);
+  const handleButtonClick = (buttonText) => {
+    setActiveButton(buttonText);
+  };
+
+  // Update localStorage whenever activeButton changes
+  useEffect(() => {
+    localStorage.setItem("activeButton", activeButton);
+  }, [activeButton]);
+
+  const filteredData =
+    activeButton === "All Show"
+      ? portfolioData
+      : portfolioData.filter((item) => item.category === activeButton);
 
   return (
     <div className="Portfolio">
@@ -24,20 +43,58 @@ function Portfolio() {
         </div>
       </div>
       <div className="ProtfolioSection">
-        <div className="ProtfolioButtons">
-          {["All Show", "Mern Stack", "UX / UI Designing", "Backend Projects"].map((buttonText) => (
-            <button
-              key={buttonText}
-              className={`Buttonfor ${activeButton === buttonText ? "activeButton" : ""}`}
-              onClick={() => setActiveButton(buttonText)}
-            >
-              {buttonText}
-            </button>
-          ))}
+        <div className="ProtfolioButtons space-x-8">
+          <button
+            className={`Buttonfor ${
+              activeButton === "All Show" ? "activeButton" : ""
+            }`}
+            onClick={() => handleButtonClick("All Show")}
+          >
+            All Show
+          </button>
+          <button
+            className={`Buttonfor ${
+              activeButton === "Mern Stack" ? "activeButton" : ""
+            }`}
+            onClick={() => handleButtonClick("Mern Stack")}
+          >
+            Mern Stack
+          </button>
+          <button
+            className={`Buttonfor ${
+              activeButton === "UX / UI Designing" ? "activeButton" : ""
+            }`}
+            onClick={() => handleButtonClick("UX / UI Designing")}
+          >
+            UX / UI Designing
+          </button>
+          <button
+            className={`Buttonfor ${
+              activeButton === "Backend Projects" ? "activeButton" : ""
+            }`}
+            onClick={() => handleButtonClick("Backend Projects")}
+          >
+            Backend Projects
+          </button>
+          <button
+            className={`Buttonfor ${
+              activeButton === "Others CMS" ? "activeButton" : ""
+            }`}
+            onClick={() => handleButtonClick("Others CMS")}
+          >
+            Others CMS
+          </button>
+          <button
+            className={`Buttonfor ${
+              activeButton === "Designing" ? "activeButton" : ""
+            }`}
+            onClick={() => handleButtonClick("Designing")}
+          >
+            Designing
+          </button>
         </div>
       </div>
 
-      {/* Display filtered data */}
       <div className="PortfolioContent">
         {filteredData.map((item, index) => (
           <div key={index} className="PortfolioItem">

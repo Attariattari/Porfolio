@@ -17,17 +17,31 @@
     align-items: center;
 }
 
-.ProtfolioButtons button {
-    padding-right: 3em;
-}
-.Buttonfor:hover{
+.Buttonfor:hover {
     color: #E3872D;
 }
+
 .ProtfolioButtons {
-    width: 70%;
+    width: 100%;
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     align-items: center;
-    font-size: 17px;
+    font-size: 15px;
     font-weight: bold;
+}
+
+.activeButton {
+    color: #E3872D;
+    transform:scale(1.1) ;
+    border-bottom: 1px solid #050505;
+    padding: 5px;
+    border-top: 1px solid #000000;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+.PortfolioContent{
+    width: 100%;
+    margin-top: 3em;
+    padding-left: 3em;
+    padding-right: 3em;
 }

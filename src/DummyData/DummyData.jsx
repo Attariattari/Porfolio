@@ -4,7 +4,7 @@ import { SiBrandfolder } from "react-icons/si";
 import { SiWebpack } from "react-icons/si";
 
 export const Webdeveloper = {
-  img: "https://wallpapercave.com/dwp1x/wp2465915.png",
+  img: "https://e1.pxfuel.com/desktop-wallpaper/243/6/desktop-wallpaper-mern-stack-bloggerboy-mern-stack-thumbnail.jpg",
   icon: <FaLaptopCode />,
   title: "MERN stack Developer",
   details:
