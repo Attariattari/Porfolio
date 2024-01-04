@@ -11,7 +11,7 @@
     margin-top: 3em;
     margin-left: 3em;
     padding-left: 1em;
-    height: 4em;
+    height: 5em;
 }
 
 @media only screen and (max-width: 1366px) and (max-width: 1450px) {
@@ -510,8 +510,10 @@
 ;
 
 .Aboutme {
-    font-size: 3em;
-    font-weight: bold;
+   font-size: 40px;
+    font-weight: 600;
+    padding: 0%;
+    margin: 0%;
 }
 
 .ImageShow {
@@ -543,9 +545,10 @@
 }
 
 .Aboutme {
-    font-size: 1.9rem;
-    font-weight: 500;
-    font-weight: bold;
+  font-size: 40px;
+   font-weight: 600;
+   padding: 0%;
+   margin: 0%;
 }
 
 .aboutwork {

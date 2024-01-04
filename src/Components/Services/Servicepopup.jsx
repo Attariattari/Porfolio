@@ -43,7 +43,7 @@ function Servicepopup({ info, closePopup }) {
               <img src={info.img} alt="" />
             </div>
 
-            <div className="p-3">{truncateText(info.details, 30)}</div>
+            <div className="p-3">{truncateText(info.details, 40)}</div>
             <div className="p-3 FullDetails">
               <button className="Fulldetails">Full Details</button>
             </div>
