@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./Servicepopup.css";
+import { IoIosCloseCircleOutline } from "react-icons/io";
 
 function Servicepopup({ info, closePopup }) {
   const [scrollDisabled, setScrollDisabled] = useState(false);
@@ -20,22 +21,35 @@ function Servicepopup({ info, closePopup }) {
       document.body.style.overflow = "auto";
     };
   }, [info]);
-
+  const truncateText = (text, numWords) => {
+    const words = text.split(" ");
+    if (words.length > numWords) {
+      return words.slice(0, numWords).join(" ") + " ...";
+    }
+    return text;
+  };
   return (
-  
-      <div className={`Serviceall ${scrollDisabled ? "scroll-disabled" : ""}`}>
-        {info && (
-          <div className="Servicepopup">
-            <div className="Servicepopupchild">
+    <div className={`Serviceall ${scrollDisabled ? "scroll-disabled" : ""}`}>
+      {info && (
+        <div className="Servicepopup">
+          <div className="Servicepopupchild">
+            <div className="Header text-white">
               <div>{info.title}</div>
-              <div>{info.details}</div>
               <button className="Close" onClick={closePopup}>
-                X
+                <IoIosCloseCircleOutline className="text-3xl Closeicon" />
               </button>
             </div>
+            <div className="ImagePopup">
+              <img src={info.img} alt="" />
+            </div>
+
+            <div className="p-3">{truncateText(info.details, 30)}</div>
+            <div className="p-3 FullDetails">
+              <button className="Fulldetails">Full Details</button>
+            </div>
           </div>
-        )}
-    
+        </div>
+      )}
     </div>
   );
 }
