@@ -1,14 +1,42 @@
 import React, { useState } from "react";
 import "./Projects.css";
 import ProtfolioPopup from "./ProtfolioPopup";
-import { Mernstackfirst, Mernstackfive, Mernstackfour, Mernstacksecond, Mernstacksix, Mernstackthered } from "../../../DummyData/DummyData";
+import {
+  Mernstackfirst,
+  Mernstackfive,
+  Mernstackfour,
+  Mernstacksecond,
+  Mernstacksix,
+  Mernstackthered,
+  Mernstackseven,
+  Mernstackeight,
+  Mernstacknine,
+  Mernstackten,
+  Mernstackeleven,
+  Mernstacktwelve,
+} from "../../../DummyData/DummyData";
 
-const mernstack = [Mernstackfirst, Mernstacksecond, Mernstackthered, Mernstackfour, Mernstackfive, Mernstacksix];
+const mernstack = [
+  Mernstackfirst,
+  Mernstacksecond,
+  Mernstackthered,
+  Mernstackfour,
+  Mernstackfive,
+  Mernstacksix,
+  Mernstackseven,
+  Mernstackeight,
+  Mernstacknine,
+  Mernstackten,
+  Mernstackeleven,
+  Mernstacktwelve,
+];
 
 function Mernstack() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [image, setimage] = useState(null);
   const [alldata, setalldata] = useState(null);
+  const [showAllItems, setShowAllItems] = useState(false);
+  const [showLess, setShowLess] = useState(false);
 
   const handleimageClick = (image) => {
     setimage(image);
@@ -34,29 +62,82 @@ function Mernstack() {
   const close = () => {
     setimage(null);
     setalldata(null);
+    setShowAllItems(false);
+    setShowLess(false);
   };
 
   return (
-    <div className="Mernstack flex justify-center items-center flex-wrap">
+    <div
+      className={`Mernstack flex justify-center items-center flex-wrap ${
+        showLess ? "showLess" : ""
+      }`}
+    >
       <div className="Mernimagesection">
-        {mernstack.slice(0, 6).map((Merns, index) => (
-          <div key={index} className="flex justify-center items-center Imagecontainer">
-            <img src={Merns.img} alt="" />
-            <div className="imagehovertext ">
-              <div className="iconsweb">
-                <button onClick={() => handleimageClick(Merns.img)} className="detailsicons">
-                  {Merns.iconfirst}
-                </button>
-                <button onClick={() => handleallClick(index)} className="detailsicons">
-                  {Merns.iconSecond}
-                </button>
+        {showAllItems
+          ? mernstack.map((Merns, index) => (
+              <div
+                key={index}
+                className="flex justify-center items-center Imagecontainer"
+              >
+                <img src={Merns.img} alt="" />
+                <div className="imagehovertext ">
+                  <div className="iconsweb">
+                    <button
+                      onClick={() => handleimageClick(Merns.img)}
+                      className="detailsicons"
+                    >
+                      {Merns.iconfirst}
+                    </button>
+                    <button
+                      onClick={() => handleallClick(index)}
+                      className="detailsicons"
+                    >
+                      {Merns.iconSecond}
+                    </button>
+                  </div>
+                  <div className="merntext">{Merns.title}</div>
+                </div>
               </div>
-              <div className="merntext">{Merns.title}</div>
-            </div>
-          </div>
-        ))}
+            ))
+          : mernstack.slice(0, 6).map((Merns, index) => (
+              <div
+                key={index}
+                className="flex justify-center items-center Imagecontainer"
+              >
+                <img src={Merns.img} alt="" />
+                <div className="imagehovertext ">
+                  <div className="iconsweb">
+                    <button
+                      onClick={() => handleimageClick(Merns.img)}
+                      className="detailsicons"
+                    >
+                      {Merns.iconfirst}
+                    </button>
+                    <button
+                      onClick={() => handleallClick(index)}
+                      className="detailsicons"
+                    >
+                      {Merns.iconSecond}
+                    </button>
+                  </div>
+                  <div className="merntext">{Merns.title}</div>
+                </div>
+              </div>
+            ))}
+        {!showAllItems && mernstack.length > 6 && (
+          <button onClick={() => setShowAllItems(true)}>Show All</button>
+        )}
+        {showAllItems && mernstack.length > 6 && (
+          <button onClick={() => setShowLess(true)}>Show Less</button>
+        )}
       </div>
-      <ProtfolioPopup image={image} close={close} alldata={alldata} showPreview={showPreview} showNext={showNext} />
+      <ProtfolioPopup
+        image={image}
+        close={close}
+        alldata={alldata}
+        showPreview={showPreview}
+        showNext={showNext}
+      />
     </div>
   );
 }

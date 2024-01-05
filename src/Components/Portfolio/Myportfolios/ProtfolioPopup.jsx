@@ -70,8 +70,8 @@ function ProtfolioPopup({ image, close, alldata, showPreview, showNext }) {
             </div>
             <div className="p-3 FullProtfolioDetails flex justify-between items-center">
               <div className="font-bold">Visit Website :</div>
-              <a href="https://www.meltwater.com/en" target="_blank" rel="noopener noreferrer">
-                <button className="Fulldetails">Visit Website</button>
+              <a href={alldata.Link} target="_blank" rel="noopener noreferrer">
+                <button className="Fulldetails">Visit {alldata.Visit}</button>
               </a>
             </div>
             <div>
