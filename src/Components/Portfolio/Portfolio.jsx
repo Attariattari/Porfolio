@@ -7,7 +7,6 @@ import OtherCMS from "./Myportfolios/OtherCMS";
 import UXUIDesigner from "./Myportfolios/UXUIDesigner";
 
 function Portfolio() {
-  // Retrieve the active button value from localStorage or use "All Show" as default
   const [activeButton, setActiveButton] = useState(
     localStorage.getItem("activeButton") || "All Show"
   );
