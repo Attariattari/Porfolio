@@ -124,12 +124,14 @@ function Mernstack() {
                 </div>
               </div>
             ))}
-        {!showAllItems && mernstack.length > 6 && (
-          <button onClick={() => setShowAllItems(true)}>Show All</button>
-        )}
-        {showAllItems && mernstack.length > 6 && (
-          <button onClick={() => setShowLess(true)}>Show Less</button>
-        )}
+        {/* <div className="showallandlees">
+          {!showAllItems && mernstack.length > 6 && (
+            <button onClick={() => setShowAllItems(true)}>Show All</button>
+          )}
+          {showAllItems && (
+            <button onClick={() => setShowLess(true)}>Show Less</button>
+          )}
+        </div> */}
       </div>
       <ProtfolioPopup
         image={image}

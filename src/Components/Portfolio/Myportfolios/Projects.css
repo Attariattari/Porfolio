@@ -111,7 +111,15 @@
     -ms-border-radius: 50%;
     -o-border-radius: 50%;
 }
-
+.showallandlees{
+    width: 50%;
+    padding: 10px;
+    background-color: #E3872D;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 3em;
+}
 @media only screen and (max-width: 1366px) and (max-width: 1450px) {
     /* .Mernimagesection {
         display: grid;
@@ -180,17 +188,5 @@
         gap: 30px;
     }
 }
-/* Add these styles to your CSS file */
-.Mernstack.showLess {
-    max-height: 370px; /* Adjust the max height based on your needs */
-    overflow: hidden;
-    transition: max-height 0.5s ease-in-out; /* Adjust the transition duration as needed */
-  }
-  
-  .Mernstack .Mernimagesection {
-    transition: opacity 0.5s ease-in-out; /* Smooth opacity transition */
-  }
-  
-  /* Other existing styles... */
-  
+
 /* ===========================================================================Mern Css====================================================================== */
