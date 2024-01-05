@@ -2,6 +2,8 @@ import { FaChartLine, FaLaptopCode, FaNodeJs } from "react-icons/fa6";
 import { IoShareSocial } from "react-icons/io5";
 import { SiBrandfolder } from "react-icons/si";
 import { SiWebpack } from "react-icons/si";
+import { LuSearchCode } from "react-icons/lu";
+import { FaPlus } from "react-icons/fa6";
 
 export const Webdeveloper = {
   img: "https://e1.pxfuel.com/desktop-wallpaper/243/6/desktop-wallpaper-mern-stack-bloggerboy-mern-stack-thumbnail.jpg",
@@ -9,12 +11,6 @@ export const Webdeveloper = {
   title: "MERN stack Developer",
   details:
     "Versatile MERN stack developer with expertise in MongoDB, Express.js, React.js, and Node.js. Proven track record of delivering robust and scalable web solutions. Committed to optimizing performance and user experience through innovative development practices.",
-  fulldetails: `Hello! I'm [Your Full Name], a seasoned web developer with a passion for crafting robust and visually appealing digital experiences. With a solid background in the MERN stack (MongoDB, Express.js, React.js, Node.js), I bring over 3 years of hands-on expertise in transforming creative concepts into fully functional and responsive websites, dynamic dashboards, and engaging portfolios.
-My journey in web development has equipped me with a comprehensive understanding of frontend and backend technologies, enabling me to deliver end-to-end solutions that not only meet but exceed client expectations. From designing user interfaces with React.js to architecting scalable server-side applications using Node.js, I thrive on turning ideas into reality.
-Over the course of my career, I have successfully completed numerous projects, ranging from e-commerce platforms to data-driven dashboards and personal portfolios. I am well-versed in leveraging the latest industry trends and best practices to create seamless user experiences, all while ensuring the highest standards of performance, security, and maintainability.
-My expertise extends beyond mere code; I am committed to staying ahead of the curve in terms of emerging technologies, tools, and methodologies. This dedication allows me to deliver cutting-edge solutions that not only meet current requirements but are also positioned for future scalability.
-Collaborative by nature, I excel in cross-functional teams, working closely with designers, product managers, and other stakeholders to bring projects from conception to fruition. My communication skills, coupled with a proactive attitude, make me an effective team player and a reliable contributor to project success.
-Ready to take on new challenges and contribute to innovative projects, I am excited about the opportunity to bring my skills and experience to the table. Let's connect and discuss how I can add value to your team or project!`,
 };
 
 export const Uxuidesigner = {
@@ -51,4 +47,72 @@ export const Marketing = {
   title: "Marketing",
   details:
     "Experienced digital marketer skilled in crafting impactful online campaigns. Proficient in SEO, content creation, and data-driven strategies for successful digital presence. Dedicated to driving brand growth through effective and targeted marketing initiatives.",
+};
+
+// ================================Mern Stack Data=================================
+export const Mernstackfirst = {
+  img: "https://images.pexels.com/photos/35537/child-children-girl-happy.jpg?cs=srgb&dl=pexels-bess-hamiti-35537.jpg&fm=jpg",
+  iconfirst: <LuSearchCode />,
+  iconSecond: <FaPlus />,
+  title: "Muhyo Tech",
+  createit: "November 12,2020",
+  thanks: "Thanks a lot Meltwater for choosing us.",
+  plateform: " Platform : Nextjs/reactjs , Mongodb, Nodejs, express",
+  details:
+    "Melt water is a company which provides solution which helps customers make more informed decisions.",
+};
+export const Mernstacksecond = {
+  img: "https://images.pexels.com/photos/35537/child-children-girl-happy.jpg?cs=srgb&dl=pexels-bess-hamiti-35537.jpg&fm=jpg",
+  iconfirst: <LuSearchCode />,
+  iconSecond: <FaPlus />,
+  title: "Muhyo",
+  createit: "November 12,2020",
+  thanks: "Thanks a lot Meltwater for choosing us.",
+  plateform: " Platform : Nextjs/reactjs , Mongodb, Nodejs, express",
+  details:
+    "Melt water is a company which provides solution which helps customers make more informed decisions.",
+};
+export const Mernstackthered = {
+  img: "https://images.pexels.com/photos/35537/child-children-girl-happy.jpg?cs=srgb&dl=pexels-bess-hamiti-35537.jpg&fm=jpg",
+  iconfirst: <LuSearchCode />,
+  iconSecond: <FaPlus />,
+  title: "Muhyo Moon",
+  createit: "November 12,2020",
+  thanks: "Thanks a lot Meltwater for choosing us.",
+  plateform: " Platform : Nextjs/reactjs , Mongodb, Nodejs, express",
+  details:
+    "Melt water is a company which provides solution which helps customers make more informed decisions.",
+};
+export const Mernstackfour = {
+  img: "https://images.pexels.com/photos/35537/child-children-girl-happy.jpg?cs=srgb&dl=pexels-bess-hamiti-35537.jpg&fm=jpg",
+  iconfirst: <LuSearchCode />,
+  iconSecond: <FaPlus />,
+  title: "Muhyo Muhyo",
+  createit: "November 12,2020",
+  thanks: "Thanks a lot Meltwater for choosing us.",
+  plateform: " Platform : Nextjs/reactjs , Mongodb, Nodejs, express",
+  details:
+    "Melt water is a company which provides solution which helps customers make more informed decisions.",
+};
+export const Mernstackfive = {
+  img: "https://images.pexels.com/photos/35537/child-children-girl-happy.jpg?cs=srgb&dl=pexels-bess-hamiti-35537.jpg&fm=jpg",
+  iconfirst: <LuSearchCode />,
+  iconSecond: <FaPlus />,
+  title: "Muhyo Attari",
+  createit: "November 12,2020",
+  thanks: "Thanks a lot Meltwater for choosing us.",
+  plateform: " Platform : Nextjs/reactjs , Mongodb, Nodejs, express",
+  details:
+    "Melt water is a company which provides solution which helps customers make more informed decisions.",
+};
+export const Mernstacksix = {
+  img: "https://images.pexels.com/photos/35537/child-children-girl-happy.jpg?cs=srgb&dl=pexels-bess-hamiti-35537.jpg&fm=jpg",
+  iconfirst: <LuSearchCode />,
+  iconSecond: <FaPlus />,
+  title: "Muhyo Muhammad",
+  createit: "November 12,2020",
+  thanks: "Thanks a lot Meltwater for choosing us.",
+  plateform: " Platform : Nextjs/reactjs , Mongodb, Nodejs, express",
+  details:
+    "Melt water is a company which provides solution which helps customers make more informed decisions.",
 };

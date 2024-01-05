@@ -1,4 +1,194 @@
-.Mernimagesection{
-    display: grid;
-    grid-template-columns: repeat(3 , 1fr);
+/* ===========================================================================Mern Css====================================================================== */
+
+.Mernimagesection div {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
+
+.Mernimagesection img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease-in-out;
+}
+
+.Imagecontainer:hover img {
+    transform: scale(1.1);
+    position: absolute;
+}
+
+.Mernimagesection .Imagecontainer::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #041230a4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.Mernimagesection .Imagecontainer:hover::after {
+    opacity: 1;
+}
+
+.imagehovertext {
+    color: white;
+    font-size: 1.5em;
+    text-align: center;
+    z-index: 599;
+    transition: opacity 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    position: absolute;
+    opacity: 0;
+    /* Initially hidden */
+}
+
+.detailsicons:hover {
+    border: 1px solid #E3872D;
+    cursor: pointer;
+    background-color: #ffffff;
+    color: #E3872D;
+}
+
+.detailsicons {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.Mernimagesection .Imagecontainer:hover .imagehovertext {
+    opacity: 1;
+}
+
+.ProtfolioPopup {
+    width: 100%;
+    height: 25em;
+    object-fit: contain;
+    position: relative;
+}
+
+.ProtfolioPopup {
+    margin: auto;
+    width: 2rem;
+    top: 0.5rem;
+    right: 0.6rem;
+    cursor: pointer;
+    color: #E3872D;
+}
+
+.ProtfolioPopup :hover {
+    color: #ffffff;
+    transform: scale(1.2) rotate(360deg);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    transition: transform 0.4s ease-out, box-shadow 0.4s ease-out;
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -ms-border-radius: 50%;
+    -o-border-radius: 50%;
+}
+
+@media only screen and (max-width: 1366px) and (max-width: 1450px) {
+    .Mernimagesection {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+        height: 45em;
+        padding-left: 3em;
+        padding-right: 3em;
+        margin-top: 3em;
+    }
+
+}
+
+@media only screen and (max-width: 1350px) {
+    .Mernimagesection {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+        height: 40em;
+    }
+}
+
+@media only screen and (max-width: 1200px) {
+    .Mernimagesection {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+        height: 60em;
+    }
+}
+
+@media only screen and (max-width: 1150px) {
+    .Mernimagesection {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+        height: 60em;
+    }
+}
+
+@media only screen and (max-width: 1023px) {
+    .Mernimagesection {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+        height: 60em;
+    }
+}
+
+@media only screen and (max-width: 969px) {
+    .Mernimagesection {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+        height: 60em;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .Mernimagesection {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+        height: 60em;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .Mernimagesection {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 30px;
+        height: 150em;
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    .Mernimagesection {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 10px;
+        height: 150em;
+        width: 100%;
+        padding: 0%;
+    }
+
+}
+
+/* ===========================================================================Mern Css====================================================================== */

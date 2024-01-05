@@ -113,8 +113,6 @@
 .Fulldetails {
     width: 100%;
     padding: 15px;
-
-
 }
 
 .Close {
@@ -127,7 +125,7 @@
 }
 
 .Close :hover {
-    color: #041230;
+    
     transform: scale(1.2) rotate(360deg);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     transition: transform 0.4s ease-out, box-shadow 0.4s ease-out;
