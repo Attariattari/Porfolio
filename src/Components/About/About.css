@@ -640,7 +640,7 @@
 
 }
 
-.buttonsection button {
+.buttonsection .Aboutdownhirebtn {
     text-decoration: none !important;
     color: #fff !important;
     background-color: #E3872D !important;
@@ -658,7 +658,7 @@
     z-index: 100;
 }
 
-.buttonsection button::before {
+.buttonsection .Aboutdownhirebtn::before {
     position: absolute;
     content: "";
     top: 0px;
@@ -671,7 +671,7 @@
     z-index: -100;
 }
 
-.buttonsection button:hover::before {
+.buttonsection .Aboutdownhirebtn:hover::before {
     width: 150%;
     left: -20%;
 

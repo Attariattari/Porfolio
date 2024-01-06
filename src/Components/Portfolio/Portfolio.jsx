@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import "./Portfolio.css";
 import Mernstack from "./Myportfolios/Mernstack";
 import Designing from "./Myportfolios/Designing";
-import BackendProjects from "./Myportfolios/BackendProjects";
 import OtherCMS from "./Myportfolios/OtherCMS";
 import UXUIDesigner from "./Myportfolios/UXUIDesigner";
 
@@ -14,7 +13,6 @@ function Portfolio() {
   const portfolioData = [
     { category: "Mern Stack", content: <Mernstack /> },
     { category: "UX / UI Designing", content: <UXUIDesigner /> },
-    { category: "Backend Projects", content: <BackendProjects /> },
     { category: "Others CMS", content: <OtherCMS /> },
     { category: "Designing", content: <Designing /> },
   ];
@@ -66,14 +64,6 @@ function Portfolio() {
             onClick={() => handleButtonClick("UX / UI Designing")}
           >
             UX / UI Designing
-          </button>
-          <button
-            className={`Buttonfor ${
-              activeButton === "Backend Projects" ? "activeButton" : ""
-            }`}
-            onClick={() => handleButtonClick("Backend Projects")}
-          >
-            Backend Projects
           </button>
           <button
             className={`Buttonfor ${
