@@ -32,17 +32,21 @@ h1, h2, h3 {
 }
 /* Adjust the width of the scrollbar */
 ::-webkit-scrollbar {
-    width: 0.5rem;
+    width: 0rem;
 }
 /* Style the track of the scrollbar */
 ::-webkit-scrollbar-track {
-    background-color: #000000 transparent;
+    background-color: #00000000 transparent;
 }
 /* Style the thumb of the scrollbar */
 ::-webkit-scrollbar-thumb {
-    background-color: #E3872D;
-    width: 0.5em;
-    border-radius: 9px;
+    background-color: #e3882d00;
+    width: 0em;
+    border-radius: 1px;
     background-clip: content-box;
     min-height: 20px;
+    -webkit-border-radius: 1px;
+    -moz-border-radius: 1px;
+    -ms-border-radius: 1px;
+    -o-border-radius: 1px;
 }
