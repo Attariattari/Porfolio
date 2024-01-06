@@ -38,7 +38,7 @@ function Designing() {
   return (
     <div className="Mernstack flex justify-center items-center flex-wrap">
       <div className="Mernimagesection ">
-        {mernstack.slice(0, 6).map((Merns, index) => (
+        {mernstack.slice(0, 5).map((Merns, index) => (
           <div
             key={index}
             className="flex justify-center items-center Imagecontainer"

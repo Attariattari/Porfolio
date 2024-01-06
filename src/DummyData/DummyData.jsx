@@ -206,3 +206,30 @@ export const Mernstacktwelve = {
   details:
     "VELUX skylights give your home new life with lots of light and fresh air. And best of all, VELUX skylights fit every home – and every room.",
 };
+// ================================UX / UI Designing=================================
+export const UXUIDesigningone = {
+  imgone: "https://images.pexels.com/photos/35537/child-children-girl-happy.jpg?cs=srgb&dl=pexels-bess-hamiti-35537.jpg&fm=jpg",
+  imgtwo: "https://images.pexels.com/photos/35537/child-children-girl-happy.jpg?cs=srgb&dl=pexels-bess-hamiti-35537.jpg&fm=jpg",
+  imgthree: "https://images.pexels.com/photos/35537/child-children-girl-happy.jpg?cs=srgb&dl=pexels-bess-hamiti-35537.jpg&fm=jpg",
+  iconfirst: <LuSearchCode />,
+  iconSecond: <FaPlus />,
+  title: "Banking App",
+  Link:"https://drive.google.com/file/d/1ednBH1fIE85pTxjWnmeus7_jtV6YW1Nb/view",
+  createit: "MAY 28, 2021",
+  Veiwlight:"https://drive.google.com/file/d/1MeuO8hd3WvcQJZHFxjgd1lCN3coi17wm/view",
+  VeiwDark:"https://drive.google.com/file/d/1Nf8tm9EG_0oPqLUm0pXRxOfIoF9Z6u9x/view",
+};
+// export const UXUIDesigningone = {
+//   imgone: "https://images.pexels.com/photos/35537/child-children-girl-happy.jpg?cs=srgb&dl=pexels-bess-hamiti-35537.jpg&fm=jpg",
+//   imgtwo: "https://images.pexels.com/photos/35537/child-children-girl-happy.jpg?cs=srgb&dl=pexels-bess-hamiti-35537.jpg&fm=jpg",
+//   imgthree: "https://images.pexels.com/photos/35537/child-children-girl-happy.jpg?cs=srgb&dl=pexels-bess-hamiti-35537.jpg&fm=jpg",
+//   iconfirst: <LuSearchCode />,
+//   iconSecond: <FaPlus />,
+//   type:"Mobile application",
+//   plateform:"Software - Figma + Illustrator",
+//   title: "Banking App",
+//   Link:"https://drive.google.com/file/d/1ednBH1fIE85pTxjWnmeus7_jtV6YW1Nb/view",
+//   createit: "MAY 28, 2021",
+//   Veiwlight:"https://drive.google.com/file/d/1MeuO8hd3WvcQJZHFxjgd1lCN3coi17wm/view",
+//   VeiwDark:"https://drive.google.com/file/d/1Nf8tm9EG_0oPqLUm0pXRxOfIoF9Z6u9x/view",
+// };

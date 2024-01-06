@@ -46,9 +46,9 @@ function ProtfolioPopup({ image, close, alldata, showPreview, showNext }) {
         </div>
       )}
       {alldata && (
-        <div className="Protfoliopopup">
-          <div className="Protfoliopopupchild">
-            <div className="Header text-white">
+        <div className="Protfoliopopup" style={{ overflow: 'hidden' }}>
+          <div className="Protfoliopopupchild" style={{ overflowY: 'auto', height: '100vh', scrollbarWidth: 'thin', scrollbarColor: 'transparent transparent' }}>
+            <div className="Header text-white top-0 bottom-0 sticky">
               <div>{alldata.title}</div>
               <button className="Close" onClick={close}>
                 <IoIosCloseCircleOutline className="text-3xl Closeicon" />

@@ -32,15 +32,17 @@
     background-color: #adadade2;
     backdrop-filter: blur(100px);
     position: relative;
+    
     border-radius: 5px 5px 5px 5px;
     -webkit-border-radius: 5px 5px 5px 5px;
     -moz-border-radius: 5px 5px 5px 5px;
     -ms-border-radius: 5px 5px 5px 5px;
     -o-border-radius: 5px 5px 5px 5px;
-    overflow-y: auto;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
     font-size: 16px;
-    overflow-y: auto;
+    
+    margin-top: 2em;
+    margin-bottom:2em ;
 }
 
 @media only screen and (max-width: 1023px) {
@@ -95,6 +97,11 @@
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
         font-size: 16px;
         
+    }
+}
+@media only screen and (max-width: 600px) {
+    .createit{
+        font-size: 14px;
     }
 }
 .ImagePopup {
@@ -186,50 +193,19 @@ a{
     transition-duration: .4s;
     z-index: -100;
 }
-
 .FullProtfolioDetails button:hover::before {
     width: 150%;
     left: -20%;
 
 }
-.parentprenext Button {
-    width: 8%;
-    padding: 10px;
-    text-decoration: none !important;
-    color: #fff !important;
-    background-color: #E3872D !important;
-    font-weight: 600 !important;
-    font-family: "Montserrat" !important;
-    border-radius: 3px !important;
-    display: inline-block !important;
-    position: relative !important;
-    overflow: hidden !important;
-    border: none !important;
-    font-size: 1em !important;
-    line-height: 1.8 !important;
-    letter-spacing: 0.5px !important;
-    cursor: pointer !important;
-    z-index: 100;
+.parentprenext{
+    font-size: 30px;
+}
+.prenext:hover{
+    color: #E3872D;
+    transform: scale(1.2);
+    transition: transform 0.4s ease-out, box-shadow 0.4s ease-out;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
-}
-
-.parentprenext button::before {
-    position: absolute;
-    content: "";
-    top: 0px;
-    height: 100%;
-    left: -25%;
-    width: 0%;
-    background-color: #041230;
-    transform: skew(50deg);
-    transition-duration: .4s;
-    z-index: -100;
-}
-
-.parentprenext button:hover::before {
-    width: 250%;
-    left: -100%;
-
 }
 .createit{
     width: 40%;
@@ -242,6 +218,4 @@ a{
     font-weight: bold;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
 }
-.createit:hover{
-color: #E3872D;
-}
+

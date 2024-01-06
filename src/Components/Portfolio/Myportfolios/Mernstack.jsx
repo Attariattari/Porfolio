@@ -36,7 +36,6 @@ function Mernstack() {
   const [image, setimage] = useState(null);
   const [alldata, setalldata] = useState(null);
   const [showAllItems, setShowAllItems] = useState(false);
-  const [showLess, setShowLess] = useState(false);
 
   const handleimageClick = (image) => {
     setimage(image);
@@ -62,16 +61,10 @@ function Mernstack() {
   const close = () => {
     setimage(null);
     setalldata(null);
-    setShowAllItems(false);
-    setShowLess(false);
   };
 
   return (
-    <div
-      className={`Mernstack flex justify-center items-center flex-wrap ${
-        showLess ? "showLess" : ""
-      }`}
-    >
+    <div className="Mernstack flex justify-center items-center flex-wrap">
       <div className="Mernimagesection">
         {showAllItems
           ? mernstack.map((Merns, index) => (
@@ -99,7 +92,7 @@ function Mernstack() {
                 </div>
               </div>
             ))
-          : mernstack.slice(0, 6).map((Merns, index) => (
+          : mernstack.map((Merns, index) => (
               <div
                 key={index}
                 className="flex justify-center items-center Imagecontainer"
@@ -124,14 +117,6 @@ function Mernstack() {
                 </div>
               </div>
             ))}
-        {/* <div className="showallandlees">
-          {!showAllItems && mernstack.length > 6 && (
-            <button onClick={() => setShowAllItems(true)}>Show All</button>
-          )}
-          {showAllItems && (
-            <button onClick={() => setShowLess(true)}>Show Less</button>
-          )}
-        </div> */}
       </div>
       <ProtfolioPopup
         image={image}
