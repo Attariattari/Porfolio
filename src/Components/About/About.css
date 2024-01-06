@@ -40,8 +40,10 @@
 
     .aboutinfo {
         width: 65%;
-        height: 40em;
+        height: auto;
         padding-right: 2em;
+        margin-bottom: 2em;
+        padding-bottom: 2em;
     }
 
     .AboutDetailsme {
@@ -139,8 +141,9 @@
 
     .aboutinfo {
         width: 60%;
-        height: 40em;
-
+        height: auto;
+        margin-bottom: 2em;
+        padding-bottom: 2em;
     }
 
     .AboutDetailsme {
@@ -158,8 +161,9 @@
 
     .aboutinfo {
         width: 60%;
-        height: 55em;
-
+        height: auto;
+        margin-bottom: 2em;
+        padding-bottom: 2em;
     }
 
     .ImageSet {
@@ -248,8 +252,10 @@
 
     .aboutinfo {
         width: 65%;
-        height: 54em;
+        height: auto;
         padding-right: 0em;
+        margin-bottom: 2em;
+        padding-bottom: 2em;
     }
 
     .AboutDetailsme {
@@ -319,10 +325,12 @@
 
     .aboutinfo {
         width: 80%;
-        height: 49em;
+        height: auto;
         margin-bottom: 1em;
         overflow-y: hidden;
         margin-top: 2em;
+        margin-bottom: 2em;
+        padding-bottom: 2em;
     }
 
     .AboutDetailsme {
@@ -407,9 +415,11 @@
 @media only screen and (max-width: 768px) {
     .aboutinfo {
         width: 80%;
-        height: 52em;
-        margin-bottom: 3em;
+        height: auto;
+        margin-bottom: 2em;
+        padding-bottom: 2em;
         overflow-y: hidden;
+        margin-top: 2em;
     }
 }
 
@@ -429,10 +439,12 @@
 
     .aboutinfo {
         width: 100%;
-        height: 54em;
+        height: auto;
         padding: 5px;
-        margin-bottom: 3em;
+        margin-bottom: 2em;
+        padding-bottom: 2em;
         overflow-y: hidden;
+        margin-top: 2em;
 
     }
     .AboutDetailsme {
@@ -469,10 +481,12 @@
 
     .aboutinfo {
         width: 100%;
-        height: 89em;
+        height: auto;
         padding: 5px;
-        margin-bottom: 1em;
+        margin-bottom: 2em;
+        padding-bottom: 2em;
         overflow-y: hidden;
+        margin-top: 2em;
     }
 
     .AboutDetailsme {
