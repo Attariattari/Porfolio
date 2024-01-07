@@ -66,57 +66,31 @@ function Mernstack() {
   return (
     <div className="Mernstack flex justify-center items-center flex-wrap">
       <div className="Mernimagesection">
-        {showAllItems
-          ? mernstack.map((Merns, index) => (
-              <div
-                key={index}
-                className="flex justify-center items-center Imagecontainer"
-              >
-                <img src={Merns.img} alt="" />
-                <div className="imagehovertext ">
-                  <div className="iconsweb">
-                    <button
-                      onClick={() => handleimageClick(Merns.img)}
-                      className="detailsicons"
-                    >
-                      {Merns.iconfirst}
-                    </button>
-                    <button
-                      onClick={() => handleallClick(index)}
-                      className="detailsicons"
-                    >
-                      {Merns.iconSecond}
-                    </button>
-                  </div>
-                  <div className="merntext">{Merns.title}</div>
-                </div>
+        {mernstack.map((Merns, index) => (
+          <div
+            key={index}
+            className="flex justify-center items-center Imagecontainer"
+          >
+            <img src={Merns.img} alt="" />
+            <div className="imagehovertext ">
+              <div className="iconsweb">
+                <button
+                  onClick={() => handleimageClick(Merns.img)}
+                  className="detailsicons"
+                >
+                  {Merns.iconfirst}
+                </button>
+                <button
+                  onClick={() => handleallClick(index)}
+                  className="detailsicons"
+                >
+                  {Merns.iconSecond}
+                </button>
               </div>
-            ))
-          : mernstack.map((Merns, index) => (
-              <div
-                key={index}
-                className="flex justify-center items-center Imagecontainer"
-              >
-                <img src={Merns.img} alt="" />
-                <div className="imagehovertext ">
-                  <div className="iconsweb">
-                    <button
-                      onClick={() => handleimageClick(Merns.img)}
-                      className="detailsicons"
-                    >
-                      {Merns.iconfirst}
-                    </button>
-                    <button
-                      onClick={() => handleallClick(index)}
-                      className="detailsicons"
-                    >
-                      {Merns.iconSecond}
-                    </button>
-                  </div>
-                  <div className="merntext">{Merns.title}</div>
-                </div>
-              </div>
-            ))}
+              <div className="merntext">{Merns.title}</div>
+            </div>
+          </div>
+        ))}
       </div>
       <ProtfolioPopup
         image={image}

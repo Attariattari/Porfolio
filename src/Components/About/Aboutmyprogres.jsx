@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import "./Aboutmyprogres.css";
 
+
 function ProgressBar({ label, experience, progress }) {
   return (
+    <div className="Aboutchartsglassy">
     <div className="progress">
       <div className="flex justify-between items-center ">
         <div
@@ -19,7 +21,7 @@ function ProgressBar({ label, experience, progress }) {
       <div className="progress-bar-container">
         <div className="progress-bar" style={{ width: `${progress}%` }}></div>
       </div>
-    </div>
+    </div></div>
   );
 }
 

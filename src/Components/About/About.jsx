@@ -102,11 +102,9 @@ function About() {
             typeEffect={typeEffect}
           />
         </div>
-        <div className="aboutcharts">
-          <div className="Aboutchartsglassy">
-            <Aboutmyprogres />
-          </div>
-        </div>
+        {/* <div className="aboutcharts">
+          <Aboutmyprogres />
+        </div> */}
       </div>
     </div>
   );

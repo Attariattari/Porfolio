@@ -46,8 +46,8 @@ function ProtfolioPopup({ image, close, alldata, showPreview, showNext }) {
         </div>
       )}
       {alldata && (
-        <div className="Protfoliopopup" style={{ overflow: 'hidden' }}>
-          <div className="Protfoliopopupchild" style={{ overflowY: 'auto', height: '100vh', scrollbarWidth: 'thin', scrollbarColor: 'transparent transparent' }}>
+        <div className="Protfoliopopup" style={{ overflow: "hidden" }}>
+          <div className="Protfoliopopupchild">
             <div className="Header text-white top-0 bottom-0 sticky">
               <div>{alldata.title}</div>
               <button className="Close" onClick={close}>
@@ -76,8 +76,12 @@ function ProtfolioPopup({ image, close, alldata, showPreview, showNext }) {
             </div>
             <div>
               <div className="py-4 px-4 parentprenext flex justify-between items-center">
-                <button className="prenext" onClick={showPreview}><IoMdArrowRoundBack /></button>
-                <button className="prenext" onClick={showNext}><IoMdArrowRoundForward /></button>
+                <button className="prenext" onClick={showPreview}>
+                  <IoMdArrowRoundBack />
+                </button>
+                <button className="prenext" onClick={showNext}>
+                  <IoMdArrowRoundForward />
+                </button>
               </div>
             </div>
           </div>
