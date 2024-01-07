@@ -95,7 +95,7 @@ function ProtfolioPopup({
         </div>
       )}
       {allUxdata && (
-        <div className="Protfoliopopup" style={{ overflow: "hidden" }}>
+        <div className="Protfoliopopup">
           <div className="Protfoliopopupchild">
             <div className="Header text-white top-0 bottom-0 sticky">
               <div>{allUxdata.title}</div>
@@ -106,23 +106,33 @@ function ProtfolioPopup({
             <div className="ImagePopup">
               <img src={allUxdata.img} alt="" />
             </div>
-            {/* <div className="px-3 py-3">{truncateText(allUxdata.details, 40)}</div>
-            <div className="px-3 flex justify-between items-center">
-              <div>{truncateText(allUxdata.thanks, 40)}</div>
-              <div className="createit">{allUxdata.createit}</div>
-            </div>
-            <div className="p-3">
-              <div className="p- font-bold">Website Details</div>
-              <div className="p- flex justify-start space-x-2 items-center">
-                <GoDotFill /> <div>{truncateText(allUxdata.plateform, 40)}</div>
+            <div className="BankingApptwoimages">
+              <div className="">
+                <img src={allUxdata.imgtwo} alt="" />
+              </div>
+              <div>
+                <img src={allUxdata.imgthree} alt="" />
               </div>
             </div>
-            <div className="p-3 FullProtfolioDetails flex justify-between items-center">
-              <div className="font-bold">Visit Website :</div>
-              <a href={allUxdata.Link} target="_blank" rel="noopener noreferrer">
-                <button className="Fulldetails">Visit {allUxdata.Visit}</button>
+            <div className="w-full flex justify-center items-center">
+              <div className="createit">{allUxdata.createit}</div>
+            </div>
+            <div className="p-3 FullProtfolioDetails space-x-5 flex justify-between items-center">
+              <a
+                href={allUxdata.VeiwDark}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <button className="Fulldetails">Visit Light</button>{" "}
               </a>
-            </div> */}
+              <a
+                href={allUxdata.Veiwlight}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <button className="Fulldetails">Visit Dark</button>{" "}
+              </a>
+            </div>
             <div>
               <div className="py-4 px-4 parentprenext flex justify-between items-center">
                 <button className="prenext" onClick={showPreview}>

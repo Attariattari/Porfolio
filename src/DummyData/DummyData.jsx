@@ -215,9 +215,11 @@ export const BankingApp = {
   iconfirst: <LuSearchCode />,
   iconSecond: <FaPlus />,
   createit: "05-28-2021",
-  Veiwlight:
-    "https://drive.google.com/file/d/1MeuO8hd3WvcQJZHFxjgd1lCN3coi17wm/view",
+  Visitone:"VisitLight",
+  Visittwo:"VisitDark",
   VeiwDark:
+    "https://drive.google.com/file/d/1MeuO8hd3WvcQJZHFxjgd1lCN3coi17wm/view",
+  Veiwlight:
     "https://drive.google.com/file/d/1Nf8tm9EG_0oPqLUm0pXRxOfIoF9Z6u9x/view",
 };
 export const AouponApp = {

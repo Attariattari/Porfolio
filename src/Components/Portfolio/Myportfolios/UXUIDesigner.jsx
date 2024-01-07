@@ -74,6 +74,32 @@ function Designer() {
             </div>
           </div>
         ))}
+        {Uxuidesignertwo.map((Merns, index) => (
+          <div
+            key={index}
+            className="flex justify-center items-center Imagecontainer"
+          >
+            <img src={Merns.img} alt="" />
+            <div className="imagehovertext ">
+              <div className="iconsweb">
+                <button
+                  onClick={() => handleimageClick(Merns.img)}
+                  className="detailsicons"
+                >
+                  {Merns.iconfirst}
+                </button>
+                <button
+                  onClick={() => handleallClick(Merns)}
+                  className="detailsicons"
+                >
+                  {Merns.iconSecond}
+                </button>
+              </div>
+
+              <div className="merntext">{Merns.title}</div>
+            </div>
+          </div>
+        ))}
       </div>
       <ProtfolioPopup image={imageUx} close={close} allUxdata={allUxdata} />
     </div>
