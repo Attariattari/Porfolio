@@ -8,7 +8,7 @@
     margin-top: 3em;
 }
 
-.Mernimagesection div {
+.Mernimagesection .Imagecontainer {
     position: relative;
     overflow: hidden;
     display: flex;
@@ -24,9 +24,8 @@
     transition: transform 0.3s ease-in-out;
 }
 
-.Imagecontainer:hover img {
+.Mernimagesection .Imagecontainer:hover img {
     transform: scale(1.1);
-    position: absolute;
 }
 
 .Mernimagesection .Imagecontainer::after {
@@ -60,9 +59,16 @@
     align-items: center;
     position: absolute;
     opacity: 0;
-    /* Initially hidden */
 }
 
+.Mernimagesection .Imagecontainer:hover .imagehovertext {
+    opacity: 1;
+}
+.iconsweb{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 .detailsicons:hover {
     border: 1px solid #E3872D;
     cursor: pointer;
@@ -80,9 +86,6 @@
     align-items: center;
 }
 
-.Mernimagesection .Imagecontainer:hover .imagehovertext {
-    opacity: 1;
-}
 
 .ProtfolioPopup {
     width: 100%;

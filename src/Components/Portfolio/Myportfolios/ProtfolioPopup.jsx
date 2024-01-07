@@ -6,7 +6,14 @@ import "./Projects.css";
 import "./Protfoliopopup.css";
 import { IoMdArrowRoundBack } from "react-icons/io";
 
-function ProtfolioPopup({ image, close, alldata, showPreview, showNext }) {
+function ProtfolioPopup({
+  image,
+  close,
+  alldata,
+  showPreview,
+  showNext,
+  allUxdata,
+}) {
   const [scrollDisabled, setScrollDisabled] = useState(false);
 
   useEffect(() => {
@@ -33,7 +40,7 @@ function ProtfolioPopup({ image, close, alldata, showPreview, showNext }) {
 
   return (
     <div className={`Serviceall ${scrollDisabled ? "scroll-disabled" : ""}`}>
-      {image && !alldata && (
+      {image && !alldata && !allUxdata && (
         <div className="Servicepopup">
           <div className="Servicepopupchild">
             <div className="ProtfolioPopupPopup">
@@ -74,6 +81,48 @@ function ProtfolioPopup({ image, close, alldata, showPreview, showNext }) {
                 <button className="Fulldetails">Visit {alldata.Visit}</button>
               </a>
             </div>
+            <div>
+              <div className="py-4 px-4 parentprenext flex justify-between items-center">
+                <button className="prenext" onClick={showPreview}>
+                  <IoMdArrowRoundBack />
+                </button>
+                <button className="prenext" onClick={showNext}>
+                  <IoMdArrowRoundForward />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {allUxdata && (
+        <div className="Protfoliopopup" style={{ overflow: "hidden" }}>
+          <div className="Protfoliopopupchild">
+            <div className="Header text-white top-0 bottom-0 sticky">
+              <div>{allUxdata.title}</div>
+              <button className="Close" onClick={close}>
+                <IoIosCloseCircleOutline className="text-3xl Closeicon" />
+              </button>
+            </div>
+            <div className="ImagePopup">
+              <img src={allUxdata.img} alt="" />
+            </div>
+            {/* <div className="px-3 py-3">{truncateText(allUxdata.details, 40)}</div>
+            <div className="px-3 flex justify-between items-center">
+              <div>{truncateText(allUxdata.thanks, 40)}</div>
+              <div className="createit">{allUxdata.createit}</div>
+            </div>
+            <div className="p-3">
+              <div className="p- font-bold">Website Details</div>
+              <div className="p- flex justify-start space-x-2 items-center">
+                <GoDotFill /> <div>{truncateText(allUxdata.plateform, 40)}</div>
+              </div>
+            </div>
+            <div className="p-3 FullProtfolioDetails flex justify-between items-center">
+              <div className="font-bold">Visit Website :</div>
+              <a href={allUxdata.Link} target="_blank" rel="noopener noreferrer">
+                <button className="Fulldetails">Visit {allUxdata.Visit}</button>
+              </a>
+            </div> */}
             <div>
               <div className="py-4 px-4 parentprenext flex justify-between items-center">
                 <button className="prenext" onClick={showPreview}>

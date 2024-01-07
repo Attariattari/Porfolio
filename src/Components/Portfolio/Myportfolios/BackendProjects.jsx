@@ -1,62 +1,44 @@
 import React, { useState } from "react";
 import "./Projects.css";
 import {
-  bulldogtribe,
-  amyherzogdesigns,
-  bigcommerce,
-  korbanstudio,
-  theoceancleanup,
-  toddshelton,
-  doucals,
-  frenchtoday,
-  gooddyeyoung,
-  kawaiibox,
-  porterandyork,
-  robertocoin,
-  shoprootscience,
-  vicfirthzildjian,
-  gritz,
+  Mernstackfirst,
+  Mernstackfive,
+  Mernstackfour,
+  Mernstacksecond,
+  Mernstacksix,
+  Mernstackthered,
 } from "../../../DummyData/DummyData";
 import ProtfolioPopup from "./ProtfolioPopup";
 
-const OtherCMSData = [
-  bulldogtribe,
-  amyherzogdesigns,
-  bigcommerce,
-  korbanstudio,
-  theoceancleanup,
-  toddshelton,
-  doucals,
-  frenchtoday,
-  gooddyeyoung,
-  kawaiibox,
-  porterandyork,
-  robertocoin,
-  shoprootscience,
-  vicfirthzildjian,
-  gritz,
+const mernstack = [
+  Mernstackfirst,
+  Mernstacksecond,
+  Mernstackthered,
+  Mernstackfour,
+  Mernstackfive,
+  Mernstacksix,
 ];
 
-function OtherCMS() {
-  const [imageOtherCMS, setimageOtherCMS] = useState(null);
-  const [alldataOtherCMS, setalldataOtherCMS] = useState(null);
+function BackendProjects() {
+  const [image, setimage] = useState(null);
+  const [alldata, setalldata] = useState(null);
 
   const handleimageClick = (image) => {
-    setimageOtherCMS(image);
+    setimage(image);
   };
   const handleallClick = (Mern) => {
-    setalldataOtherCMS(Mern);
+    setalldata(Mern);
   };
   const close = () => {
-    setimageOtherCMS(null);
-    setalldataOtherCMS(null);
+    setimage(null);
+    setalldata(null);
   };
-  console.log(setalldataOtherCMS);
+  console.log(alldata);
 
   return (
     <div className="Mernstack flex justify-center items-center flex-wrap">
       <div className="Mernimagesection ">
-        {OtherCMSData.slice(0, 6).map((Merns, index) => (
+        {mernstack.slice(0, 6).map((Merns, index) => (
           <div
             key={index}
             className="flex justify-center items-center Imagecontainer"
@@ -83,9 +65,9 @@ function OtherCMS() {
           </div>
         ))}
       </div>
-      <ProtfolioPopup image={imageOtherCMS} close={close} alldataOtherCMS={alldataOtherCMS} />
+      <ProtfolioPopup image={image} close={close} alldata={alldata} />
     </div>
   );
 }
 
-export default OtherCMS;
+export default BackendProjects;

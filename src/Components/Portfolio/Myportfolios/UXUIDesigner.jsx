@@ -1,44 +1,54 @@
 import React, { useState } from "react";
 import "./Projects.css";
 import {
-  Mernstackfirst,
-  Mernstackfive,
-  Mernstackfour,
-  Mernstacksecond,
-  Mernstacksix,
-  Mernstackthered,
+  BankingApp,
+  AouponApp,
+  fooddeliverwebandmobileapp,
+  Wireframeandflowchart,
+  weblandingpage,
+  multiplescreens,
 } from "../../../DummyData/DummyData";
 import ProtfolioPopup from "./ProtfolioPopup";
 
-const mernstack = [
-  Mernstackfirst,
-  Mernstacksecond,
-  Mernstackthered,
-  Mernstackfour,
-  Mernstackfive,
-  Mernstacksix,
+const Uxuidesignerone = [
+  BankingApp,
+];
+const Uxuidesignertwo = [
+  AouponApp,
+];
+const Uxuidesignerthree = [
+  fooddeliverwebandmobileapp,
+];
+const Uxuidesignerfour = [
+  Wireframeandflowchart,
+];
+const Uxuidesignerfive = [
+  weblandingpage,
+];
+const Uxuidesignersix = [
+  multiplescreens,
 ];
 
 function Designer() {
-  const [image, setimage] = useState(null);
-  const [alldata, setalldata] = useState(null);
+  const [imageUx, setimageUx] = useState(null);
+  const [allUxdata, setallUxdata] = useState(null);
 
   const handleimageClick = (image) => {
-    setimage(image);
+    setimageUx(image);
   };
   const handleallClick = (Mern) => {
-    setalldata(Mern);
+    setallUxdata(Mern);
   };
   const close = () => {
-    setimage(null);
-    setalldata(null);
+    setimageUx(null);
+    setallUxdata(null);
   };
-  console.log(alldata);
+  console.log(allUxdata);
 
   return (
     <div className="Mernstack flex justify-center items-center flex-wrap">
       <div className="Mernimagesection ">
-        {mernstack.slice(0, 6).map((Merns, index) => (
+        {Uxuidesignerone.map((Merns, index) => (
           <div
             key={index}
             className="flex justify-center items-center Imagecontainer"
@@ -65,7 +75,7 @@ function Designer() {
           </div>
         ))}
       </div>
-      <ProtfolioPopup image={image} close={close} alldata={alldata} />
+      <ProtfolioPopup image={imageUx} close={close} allUxdata={allUxdata} />
     </div>
   );
 }

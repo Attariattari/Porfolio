@@ -12,7 +12,6 @@ export const Webdeveloper = {
   details:
     "Versatile MERN stack developer with expertise in MongoDB, Express.js, React.js, and Node.js. Proven track record of delivering robust and scalable web solutions. Committed to optimizing performance and user experience through in11ative development practices.",
 };
-
 export const Uxuidesigner = {
   img: "https://media.istockphoto.com/id/1341415561/vector/web-ui-ux-design-web-development-3d-concept.jpg?s=612x612&w=0&k=20&c=fuQZC3NmQDViKiWOte0e7a54LMmk3st3m2v-sVIS1Ks=",
   icon: <SiWebpack />,
@@ -48,7 +47,6 @@ export const Marketing = {
   details:
     "Experienced digital marketer skilled in crafting impactful online campaigns. Proficient in SEO, content creation, and data-driven strategies for successful digital presence. Dedicated to driving brand growth through effective and targeted marketing initiatives.",
 };
-
 // ================================Mern Stack Data=================================
 export const Mernstackfirst = {
   img: "https://images.pexels.com/photos/35537/child-children-girl-happy.jpg?cs=srgb&dl=pexels-bess-hamiti-35537.jpg&fm=jpg",
@@ -207,7 +205,8 @@ export const Mernstacktwelve = {
 };
 // ================================UX / UI Designing=================================
 export const BankingApp = {
-  imgone:
+  title: "Banking App",
+  img:
     "https://images.unsplash.com/photo-1700700736073-03e5b3c16bfc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDEwOHxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
   imgtwo:
     "https://plus.unsplash.com/premium_photo-1692194321820-4009414174aa?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDEwMHxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
@@ -215,7 +214,6 @@ export const BankingApp = {
     "https://images.unsplash.com/photo-1701004182316-836562692e96?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDE1OXxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
   iconfirst: <LuSearchCode />,
   iconSecond: <FaPlus />,
-  title: "Banking App",
   createit: "05-28-2021",
   Veiwlight:
     "https://drive.google.com/file/d/1MeuO8hd3WvcQJZHFxjgd1lCN3coi17wm/view",
@@ -223,7 +221,7 @@ export const BankingApp = {
     "https://drive.google.com/file/d/1Nf8tm9EG_0oPqLUm0pXRxOfIoF9Z6u9x/view",
 };
 export const AouponApp = {
-  img: "https://images.unsplash.com/photo-1665207877698-26b9dcaf681c?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDE1OHxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
+  img: "https://images.unsplash.com/photo-1696595861034-0ac6a17d7912?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDQ0M3xDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
   iconfirst: <LuSearchCode />,
   iconSecond: <FaPlus />,
   type: "Mobile application",
@@ -244,7 +242,7 @@ export const fooddeliverwebandmobileapp = {
   createit: "05-28-2021",
 };
 export const Wireframeandflowchart = {
-  imgone:
+  img:
     "https://plus.unsplash.com/premium_photo-1686199460521-23c5951c8c80?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDE2N3xDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
   imgtwo:
     "https://images.unsplash.com/photo-1698847626251-efac0f7517cc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDE2OXxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
@@ -268,7 +266,7 @@ export const Wireframeandflowchart = {
 export const weblandingpage = {
   title: "Web landing page",
   createit: "05-29-2021",
-  imgone:
+  img:
     "https://images.unsplash.com/photo-1698296725423-9ede5de2d624?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDIxN3xDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
   imgtwo:
     "https://images.unsplash.com/photo-1618303085702-e2f951c2ee55?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDIxOHxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
@@ -283,7 +281,7 @@ export const weblandingpage = {
 export const multiplescreens = {
   title: "Multiple screens",
   createit: "06-03-2021",
-  imgone:
+  img:
     "https://images.unsplash.com/photo-1671017614105-d3273404f9ab?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDIyOHxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
   imgtwo:
     "https://images.unsplash.com/photo-1698948948505-dd31a7cbe691?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDIzN3xDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
@@ -306,21 +304,7 @@ export const multiplescreens = {
     "https://drive.google.com/file/d/1WPo9ANgzushScvOjs0NbChblwh0Reqbn/view",
   Visit: "Software",
 };
-export const websiteandmobileappdesign = {
-  img: "https://images.unsplash.com/photo-1699555670199-b41524ec8b96?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDI3M3xDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  iconfirst: <LuSearchCode />,
-  iconSecond: <FaPlus />,
-  title: "Website and mobile app design",
-  createit: "06-03-2021",
-  thanks:
-    "Website and mobile application UI/UX design + Development in Reactjs.",
-  Linkone:
-    "https://drive.google.com/file/d/13AggO3hAXtnoZcnwjqdRGnF_-iqjEMhh/view",
-  Linktwo:
-    "https://drive.google.com/file/d/1h-j5ygUPifusUgWlbduM4hW7QJ7OEN42/view",
-  Visitone: "Website",
-  Visittwo: "Mobile",
-};
+
 // ================================Others CMS=================================
 export const bulldogtribe = {
   img: "https://images.unsplash.com/photo-1653407497540-26207a2408d7?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDI3OXxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
