@@ -97,8 +97,11 @@ function Contact() {
               <input
                 type="text"
                 name="name"
+                style={{
+                  borderBottom:"1px solid black"
+                }}
                 placeholder={!focusedFields.name ? "Name" : ""}
-                className={`w-full outline-none borderform mt-2 p-5${
+                className={`w-full outline-none mt-2 p-5${
                   errors.name ? "border-red-500" : "border-gray-300"
                 }  p-4`}
                 value={formData.name}
@@ -118,8 +121,11 @@ function Contact() {
               <input
                 type="email"
                 name="email"
+                style={{
+                  borderBottom:"1px solid black"
+                }}
                 placeholder={!focusedFields.email ? "Email" : ""}
-                className={`outline-none borderform mt-2 p-3 w-full ${
+                className={`outline-none mt-2 p-3 w-full ${
                   errors.email ? "border-red-500" : "border-gray-300"
                 }  p-2`}
                 value={formData.email}
@@ -139,8 +145,11 @@ function Contact() {
               <input
                 type="text"
                 name="subject"
+                style={{
+                  borderBottom:"1px solid black"
+                }}
                 placeholder={!focusedFields.subject ? "Subject" : ""}
-                className={`outline-none borderform mt-2 p-3 w-full ${
+                className={`outline-none mt-2 p-3 w-full ${
                   errors.subject ? "border-red-500" : "border-gray-300"
                 }  p-2`}
                 value={formData.subject}
@@ -159,8 +168,11 @@ function Contact() {
               </label>
               <textarea
                 name="message"
+                style={{
+                  borderBottom:"1px solid black"
+                }}
                 placeholder={!focusedFields.message ? "Message" : ""}
-                className={`outline-none borderform mt-2 p-3 w-full h-32 resize-none ${
+                className={`outline-none mt-2 p-3 w-full h-32 resize-none ${
                   errors.message ? "border-red-500" : "border-gray-300"
                 } p-2`}
                 rows={maxRows}
