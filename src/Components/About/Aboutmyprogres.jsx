@@ -1,27 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "./Aboutmyprogres.css";
-import "./About.css";
 
 function ProgressBar({ label, experience, progress }) {
   return (
-    
-      <div className="progress">
-        <div className="flex justify-between items-center ">
-          <div
-            className="text-black"
-            style={{
-              fontSize: "1em",
-            }}
-          >
-            {label} - <span className="text-sm">{experience}</span>
-          </div>
-          <div className="text-black">{progress}%</div>
+    <div className="progress">
+      <div className="flex justify-between items-center ">
+        <div
+          className="text-black"
+          style={{
+            fontSize: "1em",
+          }}
+        >
+          {label} - <span className="text-sm">{experience}</span>
         </div>
-
-        <div className="progress-bar-container">
-          <div className="progress-bar" style={{ width: `${progress}%` }}></div>
-        </div>
+        <div className="text-black">{progress}%</div>
       </div>
+
+      <div className="progress-bar-container">
+        <div className="progress-bar" style={{ width: `${progress}%` }}></div>
+      </div>
+    </div>
   );
 }
 
@@ -32,7 +30,29 @@ function Aboutmyprogres() {
   const [progress4, setProgress4] = useState(0);
   const [progress5, setProgress5] = useState(0);
 
+  const observerRef = useRef(null);
+
   useEffect(() => {
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            startProgressAnimation();
+            observerRef.current.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, []);
+
+  const startProgressAnimation = () => {
     const intervals = [
       setInterval(
         () => setProgress1((prev) => (prev < 70 ? prev + 1 : 70)),
@@ -56,11 +76,21 @@ function Aboutmyprogres() {
       ),
     ];
 
-    return () => intervals.forEach(clearInterval);
+    intervals.forEach((interval) => {
+      setTimeout(() => clearInterval(interval), 2000); // Clear intervals after 2 seconds
+    });
+  };
+
+  useEffect(() => {
+    if (observerRef.current) {
+      observerRef.current.observe(
+        document.getElementById("progress-container")
+      );
+    }
   }, []);
 
   return (
-    <div>
+    <div id="progress-container">
       <ProgressBar
         label="Full Stack Developer"
         experience="2 Years"
