@@ -37,7 +37,44 @@
 border-bottom: 1px solid black;
 }
 }
+.submitform .buttonsub {
+  width: 50%;
+  padding: 10px;
+  text-decoration: none !important;
+  color: #fff !important;
+  background-color: #E3872D !important;
+  font-weight: 600 !important;
+  font-family: "Montserrat" !important;
+  border-radius: 3px !important;
+  display: inline-block !important;
+  position: relative !important;
+  overflow: hidden !important;
+  border: none !important;
+  font-size: 1em !important;
+  line-height: 1.8 !important;
+  letter-spacing: 0.5px !important;
+  cursor: pointer !important;
+  z-index: 100;
+}
 
+.submitform .buttonsub::before {
+  position: absolute;
+  content: "";
+  top: 0px;
+  height: 100%;
+  left: -25%;
+  width: 0%;
+  background-color: #041230;
+  transform: skew(50deg);
+  transition-duration: .4s;
+  z-index: -100;
+}
+
+.submitform .buttonsub:hover::before {
+  width: 150%;
+  left: -20%;
+
+}
 @media only screen and (max-width: 1023px) {
   .formarea {
     width: 100%;
@@ -46,7 +83,7 @@ border-bottom: 1px solid black;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    margin-bottom: 4em;
+    margin-bottom: 5em;
     margin-top: 6em;
 }
 .contectinfo {

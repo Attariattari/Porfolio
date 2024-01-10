@@ -15,7 +15,8 @@ function Contact() {
     email: false,
     subject: false,
     message: false,
-  });const [errors, setErrors] = useState({});
+  });
+  const [errors, setErrors] = useState({});
   const [maxRows, setMaxRows] = useState(5);
   const handleChange = (e) => {
     setErrors({ ...errors, [e.target.name]: "" });
@@ -84,7 +85,7 @@ function Contact() {
         <div className="form flex flex-col">
           <form
             onSubmit={handleSubmit}
-            className="flex flex-col items-center w-full"
+            className="flex flex-col items-center w-full submitform"
           >
             <div className="mb-6 relative w-full ">
               <label
@@ -98,7 +99,7 @@ function Contact() {
                 type="text"
                 name="name"
                 style={{
-                  borderBottom:"1px solid black"
+                  borderBottom: "1px solid black",
                 }}
                 placeholder={!focusedFields.name ? "Name" : ""}
                 className={`w-full outline-none mt-2 p-5${
@@ -122,7 +123,7 @@ function Contact() {
                 type="email"
                 name="email"
                 style={{
-                  borderBottom:"1px solid black"
+                  borderBottom: "1px solid black",
                 }}
                 placeholder={!focusedFields.email ? "Email" : ""}
                 className={`outline-none mt-2 p-3 w-full ${
@@ -146,7 +147,7 @@ function Contact() {
                 type="text"
                 name="subject"
                 style={{
-                  borderBottom:"1px solid black"
+                  borderBottom: "1px solid black",
                 }}
                 placeholder={!focusedFields.subject ? "Subject" : ""}
                 className={`outline-none mt-2 p-3 w-full ${
@@ -169,7 +170,7 @@ function Contact() {
               <textarea
                 name="message"
                 style={{
-                  borderBottom:"1px solid black"
+                  borderBottom: "1px solid black",
                 }}
                 placeholder={!focusedFields.message ? "Message" : ""}
                 className={`outline-none mt-2 p-3 w-full h-32 resize-none ${
@@ -181,12 +182,14 @@ function Contact() {
                 onFocus={() => handleFocus("message")}
                 onBlur={() => handleBlur("message", formData.message)}
               />
-              {errors.message && <div className="text-red-500">{errors.message}</div>}
+              {errors.message && (
+                <div className="text-red-500">{errors.message}</div>
+              )}
             </div>
             <ToastContainer position="top-right" theme="dark" />
             <button
               type="submit"
-              className="bg-blue-500 text-white p-2 rounded"
+              className="buttonsub p-2 rounded"
             >
               Submit
             </button>
