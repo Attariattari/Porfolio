@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./About.css";
 import { useTypewriter, Cursor } from "react-simple-typewriter";
 import Aboutinfo from "./Aboutinfo";
@@ -8,7 +8,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AboutAbilities from "./AboutAbilities";
 import Aboutmyprogres from "./Aboutmyprogres";
-
+import AOS from 'aos';
+import 'aos/dist/aos.css'; 
 
 function About() {
   const [typeEffect] = useTypewriter({
@@ -56,6 +57,13 @@ function About() {
       }
     );
   };
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      easing: 'ease-in-out',
+      once: true,
+    });
+  }, []);
   return (
     <div className="About">
       <div className="mainborder">
@@ -65,7 +73,7 @@ function About() {
         </div>
       </div>
       <div className="mainsection">
-        <div className="AboutImage">
+        <div data-aos="fade-up" className="AboutImage">
           <div className="ImageSet">
             <div className="ImageShow">
               <img
