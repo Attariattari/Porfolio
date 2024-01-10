@@ -14,7 +14,7 @@ export default function Logo({ show }) {
       }
     >
       <div className="logo">
-        <Avatar src="../../public/Tech..png" width style={{
+        <Avatar src="https://i.postimg.cc/FzrBBSqP/Tech.png" width style={{
           
         }} />
       </div>
