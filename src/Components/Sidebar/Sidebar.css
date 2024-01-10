@@ -4,4 +4,6 @@
   font-family: 'Open Sans', sans-serif;
 height: 100vh;
   }
-  
+  .Sidebar.scrolled-bg {
+    background-color: #e3872d;
+  }

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import "./Projects.css";
-import ProtfolioPopup from "./ProtfolioPopup";
 import {
   Mernstackfirst,
   Mernstackfive,
@@ -32,73 +31,27 @@ const mernstack = [
 ];
 
 function Mernstack() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [image, setimage] = useState(null);
-  const [alldata, setalldata] = useState(null);
-  const [showAllItems, setShowAllItems] = useState(false);
-
-  const handleimageClick = (image) => {
-    setimage(image);
-  };
-
-  const handleallClick = (index) => {
-    setCurrentIndex(index);
-    setalldata(mernstack[index]);
-  };
-
-  const showPreview = () => {
-    const newIndex = (currentIndex - 1 + mernstack.length) % mernstack.length;
-    setalldata(mernstack[newIndex]);
-    setCurrentIndex(newIndex);
-  };
-
-  const showNext = () => {
-    const newIndex = (currentIndex + 1) % mernstack.length;
-    setalldata(mernstack[newIndex]);
-    setCurrentIndex(newIndex);
-  };
-
-  const close = () => {
-    setimage(null);
-    setalldata(null);
-  };
-
   return (
     <div className="Mernstack flex justify-center items-center flex-wrap">
       <div className="Mernimagesection">
         {mernstack.map((Merns, index) => (
           <div
             key={index}
-            className="flex justify-center items-center Imagecontainer"
+            className="flex justify-center items-center Imagecontainer shadow-xl shadow-neutral-700"
           >
             <img src={Merns.img} alt="" />
             <div className="imagehovertext ">
-              <div className="iconsweb">
-                <button
-                  onClick={() => handleimageClick(Merns.img)}
-                  className="detailsicons"
-                >
-                  {Merns.iconfirst}
-                </button>
-                <button
-                  onClick={() => handleallClick(index)}
-                  className="detailsicons"
-                >
-                  {Merns.iconSecond}
-                </button>
-              </div>
-              <div className="merntext">{Merns.title}</div>
+              <a
+                href={mernstack.Link}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <button className="merntext">{Merns.title}</button>
+              </a>
             </div>
           </div>
         ))}
       </div>
-      <ProtfolioPopup
-        image={image}
-        close={close}
-        alldata={alldata}
-        showPreview={showPreview}
-        showNext={showNext}
-      />
     </div>
   );
 }

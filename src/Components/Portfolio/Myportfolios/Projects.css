@@ -12,20 +12,24 @@
   position: relative;
   overflow: hidden;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: flex-end;
   height: auto;
+  border-radius: 2%;
+  cursor: pointer;
 }
 
 .Mernimagesection img {
-  width: 100%;
-  height: 21.125em;
+  width: 17em;
+  height: 19.125em;
+  border-radius: 2%;
   object-fit: cover;
   transition: transform 0.3s ease-in-out;
 }
 
 .Mernimagesection .Imagecontainer:hover img {
   transform: scale(1.1);
+  
 }
 
 .Mernimagesection .Imagecontainer::after {
@@ -35,10 +39,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: #041230a4;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background-color:#04123059;
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
 }
@@ -49,14 +50,10 @@
 
 .imagehovertext {
   color: white;
-  font-size: 1.5em;
-  text-align: center;
+  font-size: 1.1em;
+  padding: 10px;
   z-index: 599;
   transition: opacity 0.3s ease-in-out;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
   position: absolute;
   opacity: 0;
 }
@@ -64,28 +61,10 @@
 .Mernimagesection .Imagecontainer:hover .imagehovertext {
   opacity: 1;
 }
-.iconsweb {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.detailsicons:hover {
-  border: 1px solid #e3872d;
-  cursor: pointer;
-  background-color: #ffffff;
+.merntext:hover{
   color: #e3872d;
+  text-decoration: underline;
 }
-
-.detailsicons {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .ProtfolioPopup {
   width: 100%;
   height: 25em;
@@ -108,11 +87,8 @@
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   transition: transform 0.4s ease-out, box-shadow 0.4s ease-out;
   border-radius: 50%;
-  -webkit-border-radius: 50%;
-  -moz-border-radius: 50%;
-  -ms-border-radius: 50%;
-  -o-border-radius: 50%;
 }
+
 .showallandlees {
   width: 50%;
   padding: 10px;
@@ -122,97 +98,47 @@
   align-items: center;
   margin-top: 3em;
 }
-/* Banking App doble photo */
-.BankingApptwoimages {
-  width: 100%;
-  height: 10em;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-  padding: 10px 0px 10px 0px;
-}
-.BankingApptwoimages div img {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  object-fit: fill;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
-}
 
-.BankingApptwoimages div {
-  width: 50%;
-  height: 100%;
-  background-color: aqua;
-  position: relative;
-}
-/* Banking App doble photo */
-@media only screen and (max-width: 1366px) and (max-width: 1450px) {
-  /* .Mernimagesection {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 30px;
-        height: 90em;
-        padding-left: 3em;
-        padding-right: 3em;
-        margin-top: 3em;
-    } */
-}
 
-@media only screen and (max-width: 1350px) {
+/* @media only screen and (max-width: 1350px) {
+  .Mernimagesection {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+  }
+} */
+
+/* @media only screen and (max-width: 1200px) {
   .Mernimagesection {
     grid-template-columns: repeat(3, 1fr);
     gap: 30px;
   }
 }
 
-@media only screen and (max-width: 1200px) {
-  .Mernimagesection {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 30px;
-  }
-}
-
-@media only screen and (max-width: 1150px) {
-  .Mernimagesection {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 30px;
-  }
-}
-
 @media only screen and (max-width: 1023px) {
   .Mernimagesection {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 30px;
   }
 }
 
 @media only screen and (max-width: 969px) {
   .Mernimagesection {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 30px;
   }
-}
+} */
 
 @media only screen and (max-width: 768px) {
+
   .Mernimagesection {
     grid-template-columns: repeat(2, 1fr);
     gap: 30px;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
   }
 }
 
-@media only screen and (max-width: 600px) {
-  .Mernimagesection {
-    grid-template-columns: repeat(1, 1fr);
-    gap: 30px;
-  }
-}
 
-@media only screen and (max-width: 500px) {
-  .Mernimagesection {
-    grid-template-columns: repeat(1, 1fr);
-    gap: 30px;
-  }
-}
+
 
 /* ===========================================================================Mern Css====================================================================== */

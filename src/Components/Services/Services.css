@@ -51,7 +51,7 @@
 
 @media only screen and (max-width: 979px) {
     .Servicessection {
-        grid-template-columns: repeat(1, 1fr);
+        grid-template-columns: repeat(2, 1fr);
         gap: 20px;
         height: auto;
         padding: 1em 6em 2em 6em;
@@ -79,6 +79,7 @@
         flex-wrap: wrap;
         height: auto;
         margin-bottom: 2em;
+        padding: 1em 6em 2em 6em;
         gap: 35px;
     }
 
@@ -98,7 +99,7 @@
     }
 }
 
-@media only screen and (max-width: 500px) {
+@media only screen and (max-width: 600px) {
     .Servicessection {
         margin-top: 5em;
         padding: 05px;

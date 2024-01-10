@@ -19,8 +19,8 @@ function Nav({ show, children, sections, scrollToSection }) {
           borderBottom: "0.1px solid rgb(157, 154, 154)",
         }}
       >
-        <div className="mb-4 mr-4 relative">
-          <Logo show={show} />
+        <div className=" relative flex justify-center w-full h-full items-center" >
+          <Logo  show={show} />
           {children}
         </div>
       </div>

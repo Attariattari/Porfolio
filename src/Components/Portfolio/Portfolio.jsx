@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import "./Portfolio.css";
+import "./Myportfolios/Projects.css";
 import Mernstack from "./Myportfolios/Mernstack";
 import Designing from "./Myportfolios/Designing";
 import OtherCMS from "./Myportfolios/OtherCMS";
 import UXUIDesigner from "./Myportfolios/UXUIDesigner";
+import { GiHadesSymbol } from "react-icons/gi";
+import Feadback from "./Feadback";
 
 function Portfolio() {
   const [activeButton, setActiveButton] = useState(
@@ -90,6 +93,59 @@ function Portfolio() {
             <p>{item.content}</p>
           </div>
         ))}
+      </div>
+      <div className="Muhyotech">
+        <div className="Muhyotechclicd">
+          <div className="webprojectsinfo">
+            <div className="Muhyotechicon">
+              <GiHadesSymbol />
+            </div>
+            <p className="Muhyotechtext">
+              “Awesome to work with Muhyo. Good organized, easy to communicate
+              with, responsive with next iterations.”
+            </p>
+
+            <div className="Muhyotechauthor">Muhyo Tech Web Developer</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="feadbackparent">
+        <div className="feadback">
+          <div className="flex justify-center items-center feadbakeone">
+            <div className="flex justify-center items-center flex-col">
+              <div className="text-3xl font-semibold flex">
+                <Feadback targetValue={100} />+
+              </div>
+              <div className="text-md">Projects Compelte</div>
+            </div>
+          </div>
+          <div className="flex justify-center items-center feadbaketwo">
+            <div className="flex justify-center items-center flex-col">
+              <div className="text-3xl font-semibold flex">
+                <Feadback targetValue={30} />
+                K+
+              </div>
+              <div className="text-md">Codes of Lines</div>
+            </div>
+          </div>
+          <div className="flex justify-center items-center feadbakethree">
+            <div className="flex justify-center items-center flex-col">
+              <div className="text-3xl font-semibold flex ">
+                <Feadback targetValue={100} />+
+              </div>
+              <div className="text-md">Happy Clients</div>
+            </div>
+          </div>
+          <div className="flex justify-center items-center feadbakefour">
+            <div className="flex justify-center items-center flex-col">
+              <div className="text-3xl font-semibold flex">
+                <Feadback targetValue={50} />+
+              </div>
+              <div className="text-md">My Awards</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

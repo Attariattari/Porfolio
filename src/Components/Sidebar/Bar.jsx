@@ -30,7 +30,7 @@ export default function Sidebar({ sections }) {
 
   return (
     <div className="Sidebar">
-      <div className="xl:hidden lg:hidden flex items-center justify-between p-4 absolute z-10 w-full text-white font-bold bg-amber-600 Nav">
+      <div className="xl:hidden lg:hidden flex items-center justify-between p-4 absolute z-10 w-full text-white font-bold Nav" style={{backgroundColor:"#e3872d"}}>
         <div className="left-0 ">Muhyo Tech</div>
 
         <button onClick={() => setShowNav(true)} className="right-0">

@@ -208,10 +208,6 @@ export const BankingApp = {
   title: "Banking App",
   img:
     "https://images.unsplash.com/photo-1700700736073-03e5b3c16bfc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDEwOHxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  imgtwo:
-    "https://plus.unsplash.com/premium_photo-1692194321820-4009414174aa?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDEwMHxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  imgthree:
-    "https://images.unsplash.com/photo-1701004182316-836562692e96?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDE1OXxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
   iconfirst: <LuSearchCode />,
   iconSecond: <FaPlus />,
   createit: "05-28-2021",
@@ -246,16 +242,6 @@ export const fooddeliverwebandmobileapp = {
 export const Wireframeandflowchart = {
   img:
     "https://plus.unsplash.com/premium_photo-1686199460521-23c5951c8c80?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDE2N3xDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  imgtwo:
-    "https://images.unsplash.com/photo-1698847626251-efac0f7517cc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDE2OXxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  imgthree:
-    "https://images.unsplash.com/photo-1690029670784-155329105e58?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDE3OXxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  imgfour:
-    "https://plus.unsplash.com/premium_photo-1673985112174-eddf559f30fe?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDE5N3xDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  imgfive:
-    "https://plus.unsplash.com/premium_photo-1701036537498-012309064fb4?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDIxMXxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  imgsix:
-    "https://images.unsplash.com/photo-1694540784497-ed3697d41952?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDIxM3xDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
   iconfirst: <LuSearchCode />,
   iconSecond: <FaPlus />,
   type: "UX/UI Designing",
@@ -270,9 +256,7 @@ export const weblandingpage = {
   createit: "05-29-2021",
   img:
     "https://images.unsplash.com/photo-1698296725423-9ede5de2d624?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDIxN3xDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  imgtwo:
-    "https://images.unsplash.com/photo-1618303085702-e2f951c2ee55?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDIxOHxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  iconfirst: <LuSearchCode />,
+   iconfirst: <LuSearchCode />,
   iconSecond: <FaPlus />,
   type: "UI/UX Designer",
   subtitle: "Website Prototype",
@@ -285,17 +269,7 @@ export const multiplescreens = {
   createit: "06-03-2021",
   img:
     "https://images.unsplash.com/photo-1671017614105-d3273404f9ab?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDIyOHxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  imgtwo:
-    "https://images.unsplash.com/photo-1698948948505-dd31a7cbe691?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDIzN3xDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  imgthree:
-    "https://plus.unsplash.com/premium_photo-1699603887737-bae94adb5a76?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDI0NHxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  imgfour:
-    "https://images.unsplash.com/photo-1692724350851-47d99b9878ef?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDI0M3xDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  imgfive:
-    "https://images.unsplash.com/photo-1670244208613-6da9cefb3ba1?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDI1NHxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  imgsix:
-    "https://images.unsplash.com/photo-1698570493404-ee2c4f1fc498?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDI0OHxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  iconfirst: <LuSearchCode />,
+   iconfirst: <LuSearchCode />,
   iconSecond: <FaPlus />,
   type: "UI/UX Designer",
   subtitle: "Website Prototype",
@@ -443,16 +417,6 @@ export const shoprootscience = {
   thanks: "Thanks a lot shop root science for choosing us.",
   Link: " https://shoprootscience.com/",
   Visit: "Shop root",
-};
-export const vicfirthzildjian = {
-  img: "https://images.unsplash.com/photo-1677512949567-0c2ccd70f489?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDM0OHxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  iconfirst: <LuSearchCode />,
-  iconSecond: <FaPlus />,
-  title: "Vicfirth zildjian",
-  createit: "11-15-2020",
-  thanks: "Thanks a lot vicfirth zildjian for choosing us.",
-  Link: " https://vicfirth.zildjian.com/",
-  Visit: "Vicfirth",
 };
 export const gritz = {
   img: "https://images.unsplash.com/photo-1698847036555-3fbd00ec6946?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDM2N3xDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",

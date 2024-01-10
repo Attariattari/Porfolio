@@ -1,48 +1,54 @@
 .Home {
-    background-image: url(https://images.unsplash.com/photo-1669023414162-8b0573b9c6b2?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D);
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-position: center;
+  background-image: url(https://images.unsplash.com/photo-1669023414162-8b0573b9c6b2?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D);
+  background-position: center;
+  padding-left: 0px;
+  margin-top: 0px;
+  margin-right: 0px;
+  margin-bottom: 0px;
+  margin-left: 0px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: 50% 50%;
 }
 
 .child {
-    background-color: #041230a4;
-    width: 100%;
-    height: 100vh;
+  background-color: #041230a4;
+  width: 100%;
+  height: 100vh;
 }
 
 .avtar {
-    width: 12rem;
-    height: 12rem;
-    backdrop-filter: blur(10px);
-    object-fit: cover;
+  width: 12rem;
+  height: 12rem;
+  backdrop-filter: blur(10px);
+  object-fit: cover;
 }
 
 .border {
-    width: 12.5rem;
-    height: 12.5rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: rgba(255, 255, 255, 0.574);
+  width: 12.5rem;
+  height: 12.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.574);
 }
 
 .glass {
-    width: 13.5rem;
-    height: 13.5rem;
+  width: 13.5rem;
+  height: 13.5rem;
 
-    backdrop-filter: blur(100px);
+  backdrop-filter: blur(100px);
 }
 
 .Info {
-    font-family: "Montserrat";
-    text-transform: uppercase;
-    color: #fff;
-    font-size: 50px;
-    font-weight: 300;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
+  font-family: "Montserrat";
+  text-transform: uppercase;
+  color: #fff;
+  font-size: 50px;
+  font-weight: 300;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
 }
