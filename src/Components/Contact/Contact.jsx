@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./Contact.css";
+import { useForm, ValidationError } from "@formspree/react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -18,16 +19,43 @@ function Contact() {
   });
   const [errors, setErrors] = useState({});
   const [maxRows, setMaxRows] = useState(5);
+  const [state, handleSubmitFormspree] = useForm("xpzvwzeq");
+
   const handleChange = (e) => {
-    setErrors({ ...errors, [e.target.name]: "" });
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleFocus = (field) => {
     setFocusedFields({ ...focusedFields, [field]: true });
   };
+
+  const handleBlur = (field) => {
+    if (formData[field].trim() === "") {
+      setFocusedFields({ ...focusedFields, [field]: false });
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (Object.values(formData).some((value) => value.trim() === "")) {
+      toast.error("Please fill in all fields!");
+      return;
+    }
+console.log(handleSubmit)
+    try {
+      await handleSubmitFormspree(e);
+
+      if (state.succeeded) {
+        toast.success("Form submitted successfully!");
+      } else {
+        toast.error("Error submitting form. Please try again.");
+      }
+    } catch (error) {
+      toast.error("Error submitting form. Please try again.");
+    }
+  };
   const handleTextareaChange = (e) => {
-    // Calculate the number of rows based on the content
     const rows = e.target.value.split("\n").length;
 
     // Set the maximum number of rows to 6
@@ -35,21 +63,6 @@ function Contact() {
 
     // Update the form data
     handleChange(e);
-  };
-
-  const handleBlur = (field, value) => {
-    if (value.trim() === "") {
-      setFocusedFields({ ...focusedFields, [field]: false });
-    }
-  };
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const newErrors = {};
-
-    if (Object.values(formData).some((value) => value.trim() === "")) {
-      toast.error("Please fill in all fields!");
-      return;
-    }
   };
   return (
     <div className="Contact">
@@ -187,10 +200,7 @@ function Contact() {
               )}
             </div>
             <ToastContainer position="top-right" theme="dark" />
-            <button
-              type="submit"
-              className="buttonsub p-2 rounded"
-            >
+            <button type="submit" className="buttonsub p-2 rounded">
               Submit
             </button>
           </form>
