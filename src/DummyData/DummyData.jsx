@@ -536,7 +536,7 @@ export const whatisSocialMedia = {
   Awwwards: "https://www.awwwards.com/",
 };
 export const whatisMarketing = {
-  img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT73sAcM17jCRfj6icXCG-SJKhIvMBAG7Vqvw&usqp=CAU",
+  img: "https://danielpuiatti.com/wp-content/uploads/2023/01/Dreamweaver-Is-It-Still-a-Viable-Web-Development-Tool-1200x686.webp",
   title: "Unveiling the Web Developer's Guide to Marketing",
   Introduction:
     "In the ever-evolving digital landscape, the symbiotic relationship between web development and marketing is undeniable. As a web developer, understanding the fundamentals of marketing can elevate your projects and contribute to their success. Showcasing the art of crafting compelling online narratives.",
