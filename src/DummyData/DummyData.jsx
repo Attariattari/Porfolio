@@ -206,13 +206,12 @@ export const Mernstacktwelve = {
 // ================================UX / UI Designing=================================
 export const BankingApp = {
   title: "Banking App",
-  img:
-    "https://images.unsplash.com/photo-1700700736073-03e5b3c16bfc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDEwOHxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
+  img: "https://images.unsplash.com/photo-1700700736073-03e5b3c16bfc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDEwOHxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
   iconfirst: <LuSearchCode />,
   iconSecond: <FaPlus />,
   createit: "05-28-2021",
-  Visitone:"VisitLight",
-  Visittwo:"VisitDark",
+  Visitone: "VisitLight",
+  Visittwo: "VisitDark",
   VeiwDark:
     "https://drive.google.com/file/d/1MeuO8hd3WvcQJZHFxjgd1lCN3coi17wm/view",
   Veiwlight:
@@ -240,8 +239,7 @@ export const fooddeliverwebandmobileapp = {
   createit: "05-28-2021",
 };
 export const Wireframeandflowchart = {
-  img:
-    "https://plus.unsplash.com/premium_photo-1686199460521-23c5951c8c80?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDE2N3xDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
+  img: "https://plus.unsplash.com/premium_photo-1686199460521-23c5951c8c80?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDE2N3xDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
   iconfirst: <LuSearchCode />,
   iconSecond: <FaPlus />,
   type: "UX/UI Designing",
@@ -254,9 +252,8 @@ export const Wireframeandflowchart = {
 export const weblandingpage = {
   title: "Web landing page",
   createit: "05-29-2021",
-  img:
-    "https://images.unsplash.com/photo-1698296725423-9ede5de2d624?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDIxN3xDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-   iconfirst: <LuSearchCode />,
+  img: "https://images.unsplash.com/photo-1698296725423-9ede5de2d624?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDIxN3xDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
+  iconfirst: <LuSearchCode />,
   iconSecond: <FaPlus />,
   type: "UI/UX Designer",
   subtitle: "Website Prototype",
@@ -267,9 +264,8 @@ export const weblandingpage = {
 export const multiplescreens = {
   title: "Multiple screens",
   createit: "06-03-2021",
-  img:
-    "https://images.unsplash.com/photo-1671017614105-d3273404f9ab?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDIyOHxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-   iconfirst: <LuSearchCode />,
+  img: "https://images.unsplash.com/photo-1671017614105-d3273404f9ab?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDIyOHxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
+  iconfirst: <LuSearchCode />,
   iconSecond: <FaPlus />,
   type: "UI/UX Designer",
   subtitle: "Website Prototype",
@@ -434,4 +430,115 @@ export const gritz = {
   details:
     "Gritz is a company which sales Drinks online and provide best product",
 };
-// ================================Others CMS=================================
+// ================================News=================================
+export const whatisreact = {
+  img: "https://a.storyblok.com/f/231922/1726x1040/77b3bc456f/tutorial-react-image.png/m/1200x630/",
+  title: "Mastering React for Modern Web Development.",
+  Introduction:
+    "In the ever-evolving landscape of web development, React has emerged as a powerhouse for creating dynamic and responsive user interfaces. Its popularity and efficiency make it an indispensable tool for developers. In this blog post, we'll dive into the fundamentals of React and explore its key concepts.",
+  UnderstandingReact:
+    "React is a JavaScript library designed for building user interfaces. At its core, React leverages JSX, a syntax extension that allows the combination of HTML with JavaScript. Components, the building blocks of React applications, encapsulate the logic and UI, making code modular and maintainable. The Virtual DOM ensures efficient rendering, making React applications fast and scalable.",
+  GettingStartedwithReact:
+    "To embark on your React journey, set up your development environment. Utilize tools like Node.js and npm to streamline the process. Once set up, create your first React app, and familiarize yourself with the basic project structure. This hands-on experience lays the foundation for the exciting world of React development.",
+  ComponentsandProps:
+    "Delve deeper into React by exploring its fundamental concepts: components and props. Components can be functional or class-based, and understanding how to create, use, and nest them is crucial. Props facilitate the flow of data between components, enabling dynamic and interactive UIs.",
+  StateandLifecycle:
+    "State plays a pivotal role in React, allowing components to manage dynamic data. Learn how to handle state and explore the lifecycle methods of components. This knowledge is essential for building applications that respond dynamically to user interactions.",
+  HandlingEventsandForms:
+    "React provides an elegant way to handle events and manage forms. Explore event handling mechanisms like onClick and onChange. Understand how to seamlessly integrate user input, creating interactive and user-friendly interfaces.",
+  ManagingStatewithHooks:
+    "With the introduction of Hooks, React functional components gained the ability to manage state and side effects. Dive into the world of useState, useEffect, and other commonly used hooks. This modern approach simplifies state management, making your code more concise and readable.",
+  RoutinginReact:
+    "In single-page applications, client-side routing is paramount. Learn about React Router, a powerful tool for handling navigation within your React application. Master the art of creating smooth transitions between different views.",
+  Conclusion:
+    "React opens up a world of possibilities for web development. The concepts covered in this blog merely scratch the surface. As you continue your journey, explore advanced topics, and contribute to the thriving React community. The versatility and efficiency of React make it a valuable skill set for any web developer.",
+  AdditionalResources:
+    "To further enhance your understanding of React, explore the official React documentation and other valuable resources:",
+  ReactOfficialDocumentation: "https://react.dev/",
+  ReactRouterDocumentation: "https://reactrouter.com/en/main",
+  ReactHooksACompleteGuide:
+    "https://legacy.reactjs.org/docs/hooks-overview.html",
+};
+export const whatisnodejs = {
+  img: "https://e1.pxfuel.com/desktop-wallpaper/556/958/desktop-wallpaper-react-js-mern-stack.jpg",
+  title: "Unleashing the Power of Node.js in Web Development",
+  Introduction:
+    "In the dynamic realm of web development, Node.js has emerged as a transformative force. This blog post serves as a comprehensive guide, unraveling the core concepts of Node.js and showcasing its prowess in crafting robust and scalable web applications.",
+  WhatisNodejs:
+    "Node.js is a JavaScript runtime built on the V8 engine, designed for executing JavaScript code server-side. Its key features include non-blocking I/O, an event-driven architecture, and npm (Node Package Manager).",
+  SettingUpYourDevelopmentEnvironment:
+    "Installing Node.js is a straightforward process. This section provides a step-by-step guide to get Node.js up and running on your machine. Additionally, an introduction to npm simplifies package management for Node.js projects.",
+  UnderstandingtheEventLoop:
+    "Node.js thrives on its event-driven architecture and the event loop. This section delves into the workings of the event loop, explaining how it facilitates asynchronous operations. Callback functions are explored in depth, showcasing their role in managing asynchronous tasks.",
+  BuildingaSimpleNodejsServer:
+    "Learn by doing. This section guides you through the creation of a basic HTTP server using Node.js. Explore how to handle incoming requests and send appropriate responses.",
+  WorkingwithModulesinNodejs:
+    "Node.js organizes code using modules. This section introduces the concept of modules and provides practical insights into creating and using custom modules in Node.js.",
+  AsynchronousProgramminginNodejs:
+    "Asynchronous programming is a cornerstone of Node.js. This section explores modern approaches such as Promises and Async/Await. Learn how to handle errors effectively in asynchronous code.",
+  ExpressjsBuildingWebApplications:
+    "Express.js, a web application framework for Node.js, takes center stage. Understand the basics of Express.js, create routes, and explore middleware to streamline the development process.",
+  DatabaseIntegrationwithMongoDB:
+    "Dive into database integration with MongoDB. Learn how to connect a Node.js application to a MongoDB database and perform basic CRUD operations.",
+  DeployingaNodejsApplication:
+    "Explore hosting platforms suitable for Node.js applications and gain practical insights into deploying a Node.js application on Heroku.",
+  Conclusion:
+    "Node.js empowers web developers with speed and scalability. The skills acquired through this blog post lay the foundation for creating dynamic and efficient web applications. As you progress in your Node.js journey, delve into additional features, frameworks, and best practices to elevate your development skills.",
+  AdditionalResources:
+    "Node.js empowers web developers with speed and scalability. The skills acquired through this blog post lay the foundation for creating dynamic and efficient web applications. As you progress in your Node.js journey, delve into additional features, frameworks, and best practices to elevate your development skills.",
+  NodejsOfficialDocumentation: "https://nodejs.org/docs/latest/api/",
+  npmDocumentation: "https://docs.npmjs.com/",
+  ExpressjsOfficialDocumentation: "https://expressjs.com/",
+  MongoDBDocumentation:
+    "https://www.mongodb.com/cloud/atlas/lp/try4?utm_source=google&utm_campaign=search_gs_pl_evergreen_atlas_general_prosp-brand_gic-null_emea-pk_ps-all_desktop_eng_lead&utm_term=mongo%20database&utm_medium=cpc_paid_search&utm_ad=p&utm_ad_campaign_id=9510384849&adgroup=95185889965&cq_cmp=9510384849&gad_source=1&gclid=Cj0KCQiAwP6sBhDAARIsAPfK_wYZ7keM4EtXs1owHBx3V7j5LpY3h_zXG3Oq032ojOKaBROYF1Oq0gUaAtLkEALw_wcB",
+  HerokuDocumentation: "https://devcenter.heroku.com/categories/reference",
+};
+export const whatisuxuidesigner = {
+  img: "https://wallpapercave.com/dwp1x/wp9775513.jpg",
+  title: "Decoding the Craft: A Dive into UX/UI Design",
+  Introduction:
+    "In the multifaceted world of web development, the harmony of User Experience (UX) and User Interface (UI) design is an art form that defines the success of digital products. This blog post is your compass into the realm of UX/UI design, unraveling its significance, principles, and the impact it has on crafting exceptional user journeys.",
+  WhatisUXUIDesign:
+    "Node.js is a JavaScript runtime built on the V8 engine, designed for executing JavaScript code server-side. Its key features include non-blocking I/O, an event-driven architecture, and npm (Node Package Manager).",
+  TheCorePrinciplesofUXDesign:
+    "User Experience (UX) design is the process of enhancing user satisfaction by improving the usability, accessibility, and overall pleasure provided in the interaction between the user and the product.",
+  TheFundamentalsofUIDesign:
+    "User Interface (UI) design focuses on creating visually appealing and user-friendly interfaces. It involves the design of graphical elements, ensuring a seamless and enjoyable interaction between the user and the product.",
+  TheUXUIDesignProcess:
+    "The UX/UI design process is a systematic approach to creating products that provide meaningful and relevant experiences to users. It involves several stages, from research and discovery to the final visual design.",
+  ToolsoftheTrade:
+    "To bring designs to life, UX/UI designers use a variety of tools. For wireframing and prototyping, popular choices include Sketch, Adobe XD, and Figma. Visual design often involves tools like Photoshop, Illustrator, or Figma.",
+  CollaborationandCommunication:
+    "Effective collaboration between designers and developers is crucial for successful product development. UX/UI designers need to communicate their ideas clearly, work closely with developers, and gather feedback throughout the process.",
+  TrendsandEvolvingPractices:
+    "The field of UX/UI design is dynamic, with trends constantly evolving. Staying updated on the latest design trends and incorporating emerging technologies such as AR/VR can set designers apart in the industry.",
+  Conclusion:
+    "UX/UI design is the heartbeat of exceptional digital experiences. As a web developer, understanding and appreciating the principles of user-centered design can elevate your projects to new heights. By incorporating these principles, tools, and collaboration strategies, you're well-equipped to create websites and applications that not only function flawlessly but also captivate and delight users.",
+  AdditionalResources:
+    "For further learning, consult the official Node.js documentation, tutorials, and other valuable resources:",
+  NielsenNormanGroup: "https://www.nngroup.com/",
+  UXDesignInstitute: "https://www.uxdesigninstitute.com/",
+  Dribbble: "https://dribbble.com/",
+  Behance: "https://www.behance.net/",
+};
+export const whatisbranding = {
+  img: "https://images.unsplash.com/photo-1518893494013-481c1d8ed3fd?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fGJyYW5kfGVufDB8fDB8fHww",
+  title: "Crafting Digital Identities: The Art of Branding in Web Development.",
+  Introduction:
+    "In the digital age, where first impressions are often made online, the concept of branding has transcended the traditional realm of business. This blog post aims to unravel the essence of branding, exploring its significance, principles, and its intersection with the world of web development.",
+  Awwwards: "https://www.awwwards.com/",
+};
+export const whatisSocialMedia = {
+  img: "https://www.vocso.com/blog/wp-content/uploads/2023/05/The-Role-Of-Website-Design-In-Building-A-Strong-Social-Media-Following.webp",
+  title: "The Role of Social Media in Web Development.",
+  Introduction:
+    "In the contemporary digital landscape, social media has become an integral part of our online experiences. As a web developer, understanding the dynamics of social media is paramount. This blog post aims to explore the symbiotic relationship between web development and social media, challenges, and the art of crafting compelling online spaces.",
+  Awwwards: "https://www.awwwards.com/",
+};
+export const whatisMarketing = {
+  img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT73sAcM17jCRfj6icXCG-SJKhIvMBAG7Vqvw&usqp=CAU",
+  title: "Unveiling the Web Developer's Guide to Marketing",
+  Introduction:
+    "In the ever-evolving digital landscape, the symbiotic relationship between web development and marketing is undeniable. As a web developer, understanding the fundamentals of marketing can elevate your projects and contribute to their success. Showcasing the art of crafting compelling online narratives.",
+  Awwwards: "https://www.awwwards.com/",
+};

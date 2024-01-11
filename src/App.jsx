@@ -1,7 +1,7 @@
 // Import necessary dependencies
 import React, { useEffect, useRef } from "react";
-import { BrowserRouter as Router } from "react-router-dom";
-
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import Showfulldetails from "./Components/Services/Showfulldetails";
 // Import your components
 import Portfolio from "./Components/Portfolio/Portfolio";
 import Services from "./Components/Services/Services";
@@ -53,7 +53,7 @@ const App = () => {
         </div>
         <div className="content">
           {sections.map((section) => (
-              <div
+            <div
               key={section.id}
               ref={section.id === "Home" ? currentSectionRef : null}
               id={section.id}
@@ -66,6 +66,9 @@ const App = () => {
           ))}
         </div>
       </div>
+      <Routes>
+        <Route path="/Fullinfo" element={<Showfulldetails />} />
+      </Routes>
     </Router>
   );
 };

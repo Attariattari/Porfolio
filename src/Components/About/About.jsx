@@ -9,7 +9,6 @@ import "react-toastify/dist/ReactToastify.css";
 import AboutAbilities from "./AboutAbilities";
 import Aboutmyprogres from "./Aboutmyprogres";
 
-
 function About() {
   const [typeEffect] = useTypewriter({
     words: ["UI / UX Designer", "Web Developer", "Web Designer", "Freelancer"],
@@ -58,7 +57,7 @@ function About() {
   };
   return (
     <div className="About">
-        <div className="Servicesabout">
+      <div className="Servicesabout">
         <div className="Servicesborder">
           <div className="text-zinc-800 Servicestext">ABOUT ME</div>
           <div className="text-lg">Main informations about me</div>
@@ -103,10 +102,11 @@ function About() {
             typeEffect={typeEffect}
           />
         </div>
-         <div className="aboutcharts">
-         <div className="Aboutchartsglassy">
-          <Aboutmyprogres /></div>
-        </div> 
+        <div className="aboutcharts">
+          <div className="Aboutchartsglassy">
+            <Aboutmyprogres />
+          </div>
+        </div>
       </div>
     </div>
   );
