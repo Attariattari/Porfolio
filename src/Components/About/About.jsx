@@ -58,10 +58,10 @@ function About() {
   };
   return (
     <div className="About">
-      <div className="mainborder">
-        <div className="Aboutborder">
-          <div className="text-zinc-800 Aboutme">ABOUT ME</div>
-          <div className="text-base">Main informations about me</div>
+        <div className="Servicesabout">
+        <div className="Servicesborder">
+          <div className="text-zinc-800 Servicestext">ABOUT ME</div>
+          <div className="text-lg">Main informations about me</div>
         </div>
       </div>
       <div className="mainsection">
