@@ -27,34 +27,49 @@ function About() {
     typeSpeed: 150,
     deleteSpeed: 70,
   });
-  const handleDownload = async () => {
-    toast.promise(
-      new Promise((resolve, reject) => {
-        const link = document.createElement("a");
-        link.href = "../../../public/Document from Ghulam Muhyo Din.pdf"; // Replace with the actual path to your CV file
-        link.download = "Document from Ghulam Muhyo Din.pdf"; // Specify the desired file name
-
-        document.body.appendChild(link);
-        console.log(resolve);
-        try {
-          link.click();
-          resolve("Download started successfully!");
-        } catch (error) {
-          reject("Error starting download. Please try again.");
-        } finally {
-          document.body.removeChild(link);
-        }
-      }),
-      {
-        pending: "Downloading...",
-        success: { render: "Download complete!", autoClose: 3000 },
-        error: {
-          render: "Download failed. Please try again.",
-          autoClose: 3000,
-        },
+//   const handleDownload = () => {
+//     const pdfUrl = "../../../public/Document from Ghulam Muhyo Din.pdf";
+//     const link = document.createElement("a");
+//     link.href = pdfUrl;
+//     link.download = "Document_from_Ghulam_Muhyo_Din.pdf"; // specify the filename
+//     document.body.appendChild(link);
+//     link.click();
+//     document.body.removeChild(link);
+//     resolve("Download started successfully!");
+// };
+const handleDownload = () => {
+  const pdfUrl = "../../../public/Document from Ghulam Muhyo Din.pdf";
+  
+  toast.promise(
+    new Promise((resolve, reject) => {
+      const link = document.createElement("a");
+      link.href = pdfUrl;
+      link.download = "Document_from_Ghulam_Muhyo_Din.pdf"; // specify the filename
+      document.body.appendChild(link);
+      
+      try {
+        link.click();
+        resolve("Download started successfully!");
+      } catch (error) {
+        reject("Error starting download. Please try again.");
+      } finally {
+        document.body.removeChild(link);
       }
-    );
-  };
+    }),
+    {
+      pending: "Downloading...",
+      success: { render: "Download complete!", autoClose: 3000 },
+      error: { render: "Download failed. Please try again.", autoClose: 3000 },
+    }
+  );
+};
+
+  const haireme = () =>{
+    const contactSection = document.getElementById("Contact");
+      if (contactSection) {
+        contactSection.scrollIntoView({ behavior: "smooth" });
+      }
+  }
   return (
     <div className="About">
       <div className="Servicesabout">
@@ -86,11 +101,11 @@ function About() {
               Download cv
             </button>
             <ToastContainer position="top-right" theme="dark" />
-            <Link to="/Contact">
-              <button className="w-44 px-2 py-3 Aboutdownhirebtn rounded-sm shadow-lg shadow-black">
+           
+              <button className="w-44 px-2 py-3 Aboutdownhirebtn rounded-sm shadow-lg shadow-black" onClick={haireme}>
                 Hire me
               </button>
-            </Link>
+           
           </div>
         </div>
       </div>
