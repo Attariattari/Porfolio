@@ -30,15 +30,36 @@ function Servicepopup({ info, closePopup }) {
       toast.warning("Data already sent. Please wait for a response.");
       return;
     }
-
+  
     if (info && info.subject && info.message) {
       setSubjectAndMessage(info.subject, info.message);
       closePopup();
       toast.success("Data sent successfully!");
+  
+      // Scroll to the Contact section
+      const contactSection = document.getElementById("Contact");
+      if (contactSection) {
+        contactSection.scrollIntoView({ behavior: "smooth" });
+      }
     } else {
       toast.error("Error sending data. Please try again.");
     }
   };
+  
+  // const HairFunction = () => {
+  //   if (subject && message) {
+  //     toast.warning("Data already sent. Please wait for a response.");
+  //     return;
+  //   }
+
+  //   if (info && info.subject && info.message) {
+  //     setSubjectAndMessage(info.subject, info.message);
+  //     closePopup();
+  //     toast.success("Data sent successfully!");
+  //   } else {
+  //     toast.error("Error sending data. Please try again.");
+  //   }
+  // };
 
   return (
     <div className={`Serviceall ${scrollDisabled ? "scroll-disabled" : ""}`}>
