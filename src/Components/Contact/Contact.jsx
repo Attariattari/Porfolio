@@ -3,13 +3,17 @@ import "./Contact.css";
 import { useForm, ValidationError } from "@formspree/react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useData } from "../../UseContaxt/Datacontaxt";
 
 function Contact() {
+  const { subject, message } = useData();
+  console.log(subject);
+  console.log(message);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    subject: "",
-    message: "",
+    subject: subject || "",
+    message: message || "",
   });
   const [focusedFields, setFocusedFields] = useState({
     name: false,
@@ -21,6 +25,14 @@ function Contact() {
   const [maxRows, setMaxRows] = useState(5);
   const [state, handleSubmitFormspree] = useForm("xpzvwzeq");
   useEffect(() => {
+    // Update formData when subject or message changes
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      subject: subject || "",
+      message: message || "",
+    }));
+  }, [subject, message]);
+  useEffect(() => {
     if (state.succeeded) {
       toast.success("Form submitted successfully!");
     } else if (state.errors && state.errors.length > 0) {
@@ -29,6 +41,7 @@ function Contact() {
   }, [state.succeeded, state.errors]);
 
   const handleChange = (e) => {
+    console.log("Changing", e.target.name, e.target.value);
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -73,7 +86,6 @@ function Contact() {
           <div className="text-lg">Get in touch with me</div>
         </div>
       </div>
-
       <div className="formarea md:mt-28">
         <div className="contectinfo ">
           <div className="text-3xl text-zinc-800 pb-16">Contact Us.</div>
@@ -163,7 +175,7 @@ function Contact() {
                 style={{
                   borderBottom: "1px solid black",
                 }}
-                placeholder={!focusedFields.subject ? "Subject" : ""}
+                placeholder={!focusedFields.subject ? "subject" : ""}
                 className={`outline-none mt-2 p-3 w-full ${
                   errors.subject ? "border-red-500" : "border-gray-300"
                 }  p-2`}
@@ -206,6 +218,9 @@ function Contact() {
             </button>
           </form>
         </div>
+      </div>
+      <div className="Footer">
+        <div>© Copyright 2024. All Rights are Reserved.</div>
       </div>
     </div>
   );

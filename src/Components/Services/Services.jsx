@@ -51,11 +51,9 @@ function Services() {
         {servicesData.slice(0, 6).map((service, index) => (
           <div className="ServiceBox" key={index}>
             <div className="Servicesdetails">
-              <div className="Servicesicons shadow-lg ">{service.icon}</div>
+              <img src={service.img} alt="" />
               <div className="Serviceslabel">{service.title}</div>
-              <div className="Servicesinfo">
-                {truncateText(service.details, 22)}
-              </div>
+              <div className="Servicesinfo">{service.details}</div>
             </div>
             <button
               onClick={() => handleButtonClick(service)}

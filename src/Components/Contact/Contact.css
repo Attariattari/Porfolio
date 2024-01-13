@@ -109,6 +109,16 @@ border-bottom: 1px solid black;
     padding-right: 0.5em;
   }
 }
+.Footer{
+  width: 100%;
+  height: 8em;
+  background-color: #041230;
+  padding: 30px;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  color: #fff;
+}
 /* .maps {
     width: 70%;
     height: 100%;

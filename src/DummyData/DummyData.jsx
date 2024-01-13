@@ -6,21 +6,44 @@ import { LuSearchCode } from "react-icons/lu";
 import { FaPlus } from "react-icons/fa6";
 
 export const Webdeveloper = {
-  img: "https://e1.pxfuel.com/desktop-wallpaper/243/6/desktop-wallpaper-mern-stack-bloggerboy-mern-stack-thumbnail.jpg",
+  img: "https://wallpaperaccess.com/full/8901670.png",
   icon: <FaLaptopCode />,
-  title: "MERN stack Developer",
+  title: "What is MERN Stack & Why is it Popular?",
   details:
-    "Versatile MERN stack developer with expertise in MongoDB, Express.js, React.js, and Node.js. Proven track record of delivering robust and scalable web solutions. Committed to optimizing performance and user experience through in11ative development practices.",
+    "MERN is a technology stack that helps users gain access to faster, more scalable, and highly advanced application development. MERN stack is a combination of JavaScript technologies; in other words, it is a JavaScript stack used to make a business more agile and enhance its performance.",
+  detailstwo:
+    "MERN stack consists of 4 main components – MongoDB, React, Express.js, and Node JS. Each of these components have their own unique set of advantages that they offer to users. They complement each other and perform different functions in a web application development project.",
+  detailsthree:
+    "MERN stack is popular amongst clients and web development specialists because it offers fast product delivery and enhanced scalability. Many users are currently using MERN for quick and great quality app development.",
+  detailsfour:
+    "So, if you too want to explore all the benefits of MERN stack development services, as well as where you can find them at competitive rates, then keep reading. With 2BTech, you can hire MERN stack developers who are the best in the IT industry.",
+  forhair:
+    "Your MERN Stack Development Services Business Partner. Hire A Dedicated MERN Stack Developer.",
+  subject: "Revolutionize Your Digital Presence with Our MERN Stack Expertise!",
+  message: `Dear [Recipient's Name],
+  
+  Hope this message finds you well! We understand the pivotal role a robust web presence plays in today's digital landscape. That's why we're excited to introduce our MERN stack development services, designed to elevate your online experience.
+  
+  Our team of seasoned experts specializes in MongoDB, Express.js, React.js, and Node.js, ensuring the development of web applications that are not just functional but also scalable and efficient. From crafting intuitive user interfaces with React.js to building a reliable backend with Node.js and Express.js, we've got your MERN stack needs covered.
+  
+  Whether you're looking to enhance your current web application or embark on a new digital venture, our tailored solutions are precisely what you need. Let us transform your ideas into a seamlessly integrated, high-performance web application that stands out in the competitive online landscape.
+  
+  Ready to take your online presence to the next level? Contact us today to discuss how our MERN stack development expertise can be customized to meet your unique requirements.
+  
+  Looking forward to the opportunity of working together!
+  
+  Best regards,
+  [Your Company Name]`,
 };
 export const Uxuidesigner = {
-  img: "https://media.istockphoto.com/id/1341415561/vector/web-ui-ux-design-web-development-3d-concept.jpg?s=612x612&w=0&k=20&c=fuQZC3NmQDViKiWOte0e7a54LMmk3st3m2v-sVIS1Ks=",
+  img: "https://wallpapercave.com/wp/wp9775559.png",
   icon: <SiWebpack />,
   title: "UX / UI Designer",
   details:
     "Seasoned UX/UI designer with a flair for crafting visually stunning and intuitive interfaces. Adept at blending creativity with user-centric design principles to deliver compelling digital experiences. Passionate about creating designs that resonate and elevate user engagement.",
 };
 export const Backenddeveloper = {
-  img: "https://e1.pxfuel.com/desktop-wallpaper/556/958/desktop-wallpaper-react-js-mern-stack.jpg",
+  img: "https://miro.medium.com/v2/resize:fit:1358/1*WDX58nzlaiClqTFT59v7RQ.jpeg",
   icon: <FaNodeJs />,
   title: "Backend Developer",
   details:
