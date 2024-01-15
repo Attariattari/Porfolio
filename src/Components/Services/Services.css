@@ -62,6 +62,17 @@
     .backgroundimage {
         width: 50%;
     }
+    .one{
+        border-right: 1px solid black;
+        border-bottom: 1px solid black;
+    }
+    .two{
+        border-bottom: 1px solid black;
+    }
+    .three{
+        border-right: 1px solid black;
+       
+    }
 }
 
 @media only screen and (max-width: 1200px) {
@@ -150,6 +161,17 @@
 
     .popbuttonstwo {
         margin-bottom: 3em;
+    }
+    .one{
+        border-right: 1px solid rgb(255, 255, 255);
+        border-bottom: 1px solid rgb(255, 255, 255);
+    }
+    .two{
+        border-bottom: 1px solid rgb(255, 255, 255);
+    }
+    .three{
+        border-right: 1px solid rgb(255, 255, 255);
+       
     }
 }
 
@@ -395,18 +417,4 @@
 .popbuttonstwo button:hover::before {
     width: 150%;
     left: -20%;
-}
-.one{
-    border-right: 1px solid black;
-    border-bottom: 1px solid black;
-}
-.two{
-    border-bottom: 1px solid black;
-}
-.three{
-    border-right: 1px solid black;
-   
-}
-.four{
-   
 }
