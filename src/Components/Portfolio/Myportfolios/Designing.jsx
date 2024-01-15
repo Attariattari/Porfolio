@@ -9,10 +9,6 @@ import {
   Mernstackthered,
   Mernstackseven,
   Mernstackeight,
-  Mernstacknine,
-  Mernstackten,
-  Mernstackeleven,
-  Mernstacktwelve,
 } from "../../../DummyData/DummyData";
 const mernstack = [
   Mernstackfirst,
@@ -23,10 +19,6 @@ const mernstack = [
   Mernstackthered,
   Mernstackseven,
   Mernstackeight,
-  Mernstacknine,
-  Mernstackten,
-  Mernstackeleven,
-  Mernstacktwelve,
 ];
 function Designing() {
 

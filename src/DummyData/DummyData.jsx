@@ -10,7 +10,7 @@ export const Webdeveloper = {
   background:
     "https://www.dreamsoft4u.com/wp-content/uploads/2023/05/MERN-Stack-image.png.webp",
   icon: <FaLaptopCode />,
-  title: "MERN Stack Mastery: Elevate Your Applications.",
+  title: "MERN Stack Development Company.",
   titletwo: "MERN Stack Development Company",
   titlethree:
     "We serve businesses in all industrial domains with MERN Stack web applications.",
@@ -46,7 +46,7 @@ Best regards,
 export const Uxuidesigner = {
   img: "https://wallpapercave.com/wp/wp9775559.png",
   icon: <SiWebpack />,
-  title: "UX/UI Brilliance: Crafting Distinctive Digital Experiences.",
+  title: "UI/UX Design Services.",
   titletwo: "UI/UX Design Services",
   background:
     "https://www.dreamsoft4u.com/wp-content/uploads/2023/05/UI-UX-Design-image.png.webp",
@@ -85,7 +85,7 @@ Best regards,
 export const Backenddeveloper = {
   img: "https://miro.medium.com/v2/resize:fit:1358/1*WDX58nzlaiClqTFT59v7RQ.jpeg",
   icon: <FaNodeJs />,
-  title: "Backend Excellence: Unlocking Digital Potential.",
+  title: "Node.JS Development Services",
   background:
     "https://www.dreamsoft4u.com/wp-content/uploads/2023/05/Node.JS-image.png.webp",
   titletwo: "Node.JS Development Services",
@@ -125,7 +125,7 @@ export const Backenddeveloper = {
 export const Branding = {
   img: "https://images.unsplash.com/photo-1633533452148-a9657d2c9a5f?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fEJyYW5kaW5nfGVufDB8fDB8fHww",
   icon: <SiBrandfolder />,
-  title: "Branding Beyond Boundaries: Craft Your Distinct Identity.",
+  title: "SparkHub: Igniting Innovation, Connecting Futures.",
   background:
     "https://www.dreamsoft4u.com/wp-content/uploads/2023/05/Staff-Augmentation-image.png.webp",
   titletwo: "SparkHub: Igniting Innovation, Connecting Futures.",
@@ -162,7 +162,7 @@ Best regards,
 export const SocialMedia = {
   img: "https://c0.wallpaperflare.com/preview/983/956/951/digital-marketing-search-engine-optimization-marketing-content.jpg",
   icon: <IoShareSocial />,
-  title: "Social Media Impact: Amplify Your Brand Presence.",
+  title: "Amplify Your Brand Presence.",
   background:
     "https://www.dreamsoft4u.com/wp-content/uploads/2023/05/Salesforce-Application-image.png.webp",
   titletwo: "ConnectHub: Igniting Conversations, Shaping Futures.",
@@ -202,7 +202,7 @@ export const SEO = {
   icon: <FaChartLine />,
   background:
     "https://www.dreamsoft4u.com/wp-content/uploads/2023/05/Healthcare-Software-image.png.webp",
-  title: "SEO Excellence: Boost Your Online Visibility.",
+  title: "Boost Your Online Visibility.",
   titletwo: "Drive Traffic and Dominate Search Rankings.",
   titlethree:
     "SEO, the digital compass guiding your website to the summit of search engine results, where visibility transforms into organic growth.",
@@ -338,58 +338,7 @@ export const Mernstackeight = {
   details:
     "VALORANT is a character-based 5v5 FPS where gunplay meets unique agent abilities. This animated site tells players all they need to know to get excited about Riot Games’ latest title.",
 };
-export const Mernstacknine = {
-  img: "https://images.unsplash.com/photo-1698041383729-38eb70ce7a08?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDQwOHxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  iconfirst: <LuSearchCode />,
-  iconSecond: <FaPlus />,
-  title: "Power house",
-  createit: "11-15-2020",
-  thanks: "Thanks a lot PowerHouse for choosing us.",
-  plateform: "Power House website was build in MERN-STACK(REACTJS) Framework",
-  Link: "https://www.powerhouse-company.com/",
-  Visit: "Power",
-  details:
-    "We helped Powerhouse Company with a complete rebranding, from brand positioning to brand identity to platform.",
-};
-export const Mernstackten = {
-  img: "https://images.unsplash.com/photo-1678978866819-306ed8608e7f?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDQyNnxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  iconfirst: <LuSearchCode />,
-  iconSecond: <FaPlus />,
-  title: "Rom boats",
-  createit: "11-15-2020",
-  thanks: "Thanks a lot ROM BOATS for Choosing us.",
-  plateform: "Rom Boats website was build in MERN-STACK(REACTJS) Framework",
-  Link: "https://www.romboats.com/en",
-  Visit: "Rom",
-  details:
-    "ROM stands for Rebuild Ocean Motivation, the only manufacturer of custom recreational motor boats on the Iberian Peninsula.",
-};
-export const Mernstackeleven = {
-  img: "https://images.unsplash.com/photo-1701338678701-c053ba5d6ee1?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDkwfENEd3V3WEpBYkV3fHxlbnwwfHx8fHw%3D",
-  iconfirst: <LuSearchCode />,
-  iconSecond: <FaPlus />,
-  title: "Silve roak",
-  createit: "11-15-2020",
-  thanks: "Thanks a lot Silve Roak for Choosing us.",
-  plateform: "Silver Roak website was build in MERN(Reactjs)-STACK Framework",
-  Link: "https://silveroak.com/",
-  Visit: "Silve",
-  details:
-    "Introducing the new Silve Roak. A digital platform that is as timeless as the iconic wine brand—celebrating rich tradition, family values, and in11ative culture.",
-};
-export const Mernstacktwelve = {
-  img: "https://images.unsplash.com/photo-1674673353737-9477adeb7e51?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDQzNnxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  iconfirst: <LuSearchCode />,
-  iconSecond: <FaPlus />,
-  title: "Velux",
-  createit: "11-15-2020",
-  thanks: "Thanks a lot VELUX for Choosing us.",
-  plateform: "VELUX website was build in MERN-STACK(REACTJS) Framework",
-  Link: "https://www.veluxovenlysvinduer.dk/",
-  Visit: "Velux",
-  details:
-    "VELUX skylights give your home new life with lots of light and fresh air. And best of all, VELUX skylights fit every home – and every room.",
-};
+
 // ================================UX / UI Designing=================================
 export const BankingApp = {
   title: "Banking App",
@@ -550,72 +499,6 @@ export const frenchtoday = {
   thanks: "Thanks a lot french today for choosing us.",
   Link: " https://frenchtoday.com/",
   Visit: "french today",
-};
-export const gooddyeyoung = {
-  img: "https://images.unsplash.com/photo-1696762484673-b1a237ded98f?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDMyNHxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  iconfirst: <LuSearchCode />,
-  iconSecond: <FaPlus />,
-  title: "Gooddye young",
-  createit: "04-11-2020",
-  thanks: "Thanks a lot gooddye young for choosing us.",
-  Link: " https://gooddyeyoung.com/",
-  Visit: "Gooddye young",
-};
-export const kawaiibox = {
-  img: "https://images.unsplash.com/photo-1634618948828-aa7b3d0724fd?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDMzMnxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  iconfirst: <LuSearchCode />,
-  iconSecond: <FaPlus />,
-  title: "Kawaii box",
-  createit: "11-15-2020",
-  thanks: "Thanks a lot kawaii box for choosing us.",
-  Link: " https://kawaiibox.com/",
-  Visit: "Kawaii box",
-};
-export const porterandyork = {
-  img: "https://images.unsplash.com/photo-1699276750162-4fae774d94d9?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDM0MnxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  iconfirst: <LuSearchCode />,
-  iconSecond: <FaPlus />,
-  title: "Porter and york",
-  createit: "11-15-2020",
-  thanks: "Thanks a lot porter and york for choosing us.",
-  Link: " https://porterandyork.com/",
-  Visit: "Porter",
-};
-export const robertocoin = {
-  img: "https://images.unsplash.com/photo-1698807390276-725f3a7e41cf?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDM0MXxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  iconfirst: <LuSearchCode />,
-  iconSecond: <FaPlus />,
-  title: "Roberto coin",
-  createit: "11-15-2020",
-  thanks: "Thanks a lot roberto coin for choosing us.",
-  Link: " https://robertocoin.com/",
-  Visit: "Roberto",
-};
-export const shoprootscience = {
-  img: "https://images.unsplash.com/photo-1698847102523-cb8643d755a4?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDM0M3xDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  iconfirst: <LuSearchCode />,
-  iconSecond: <FaPlus />,
-  title: "Shop root science",
-  createit: "11-15-2020",
-  thanks: "Thanks a lot shop root science for choosing us.",
-  Link: " https://shoprootscience.com/",
-  Visit: "Shop root",
-};
-export const gritz = {
-  img: "https://images.unsplash.com/photo-1698847036555-3fbd00ec6946?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDM2N3xDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  iconfirst: <LuSearchCode />,
-  iconSecond: <FaPlus />,
-  title: "Gritz",
-  createit: "03-27-2019",
-  thanks: "Thanks a lot gritz for choosing us.",
-  plateform: [
-    "Platform: WordPress",
-    "Main Plugins : WooCommerce,Payment integrations, Yoast SEO,Google analytics, Translation plugin etc",
-  ],
-  Link: "https://www.gritz.it/",
-  Visit: "Gritz",
-  details:
-    "Gritz is a company which sales Drinks online and provide best product",
 };
 // ================================News=================================
 export const whatisreact = {

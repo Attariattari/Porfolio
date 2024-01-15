@@ -65,6 +65,12 @@ function Contact() {
 
     try {
       await handleSubmitFormspree(e);
+      setFormData({
+        name:"",
+        email:"",
+        subject:"",
+        message:""
+      })
     } catch (error) {
       toast.error("Error submitting form. Please try again.");
     }

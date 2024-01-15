@@ -9,12 +9,6 @@ import {
   toddshelton,
   doucals,
   frenchtoday,
-  gooddyeyoung,
-  kawaiibox,
-  porterandyork,
-  robertocoin,
-  shoprootscience,
-  gritz,
 } from "../../../DummyData/DummyData";
 
 const OtherCMSData = [
@@ -26,12 +20,6 @@ const OtherCMSData = [
   toddshelton,
   doucals,
   frenchtoday,
-  gooddyeyoung,
-  kawaiibox,
-  porterandyork,
-  robertocoin,
-  shoprootscience,
-  gritz,
 ];
 
 function OtherCMS() {

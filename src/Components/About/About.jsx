@@ -27,42 +27,34 @@ function About() {
     typeSpeed: 150,
     deleteSpeed: 70,
   });
-//   const handleDownload = () => {
-//     const pdfUrl = "../../../public/Document from Ghulam Muhyo Din.pdf";
-//     const link = document.createElement("a");
-//     link.href = pdfUrl;
-//     link.download = "Document_from_Ghulam_Muhyo_Din.pdf"; // specify the filename
-//     document.body.appendChild(link);
-//     link.click();
-//     document.body.removeChild(link);
-//     resolve("Download started successfully!");
-// };
-const handleDownload = () => {
-  const pdfUrl = "../../../public/Document from Ghulam Muhyo Din.pdf";
+  const handleDownload = () => {
+    const pdfUrl = "https://orange-cristin-19.tiiny.site/";
   
-  toast.promise(
-    new Promise((resolve, reject) => {
-      const link = document.createElement("a");
-      link.href = pdfUrl;
-      link.download = "Document_from_Ghulam_Muhyo_Din.pdf"; // specify the filename
-      document.body.appendChild(link);
-      
-      try {
-        link.click();
-        resolve("Download started successfully!");
-      } catch (error) {
-        reject("Error starting download. Please try again.");
-      } finally {
-        document.body.removeChild(link);
+    toast.promise(
+      new Promise((resolve, reject) => {
+        const link = document.createElement("a");
+        link.href = pdfUrl;
+        link.download = "Document_from_Ghulam_Muhyo_Din.pdf"; // specify the filename
+        link.target = "_blank"; // open in a new tab or window
+        document.body.appendChild(link);
+  
+        try {
+          link.click();
+          resolve("Download started successfully!");
+        } catch (error) {
+          reject("Error starting download. Please try again.");
+        } finally {
+          document.body.removeChild(link);
+        }
+      }),
+      {
+        pending: "Downloading...",
+        success: { render: "Download complete!", autoClose: 3000 },
+        error: { render: "Download failed. Please try again.", autoClose: 3000 },
       }
-    }),
-    {
-      pending: "Downloading...",
-      success: { render: "Download complete!", autoClose: 3000 },
-      error: { render: "Download failed. Please try again.", autoClose: 3000 },
-    }
-  );
-};
+    );
+  };
+  
 
   const haireme = () =>{
     const contactSection = document.getElementById("Contact");
