@@ -44,6 +44,7 @@
     .detailsone {
         width: 50%;
     }
+
     .popbuttonstwo {
         width: 100%;
         height: 3em;
@@ -52,6 +53,7 @@
         align-items: center;
         gap: 30px;
     }
+
     .detailsveiw {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
@@ -62,16 +64,19 @@
     .backgroundimage {
         width: 50%;
     }
-    .one{
+
+    .one {
         border-right: 1px solid black;
         border-bottom: 1px solid black;
     }
-    .two{
+
+    .two {
         border-bottom: 1px solid black;
     }
-    .three{
+
+    .three {
         border-right: 1px solid black;
-       
+
     }
 }
 
@@ -162,16 +167,19 @@
     .popbuttonstwo {
         margin-bottom: 3em;
     }
-    .one{
-        border-right: 1px solid rgb(255, 255, 255);
-        border-bottom: 1px solid rgb(255, 255, 255);
+
+    .one {
+        border-right: none;
+        border-bottom: none;
     }
-    .two{
-        border-bottom: 1px solid rgb(255, 255, 255);
+
+    .two {
+        border-bottom: none;
     }
-    .three{
-        border-right: 1px solid rgb(255, 255, 255);
-       
+
+    .three {
+        border-right: none;
+
     }
 }
 
@@ -372,7 +380,7 @@
 
 .detailsveiw div {
     padding: 30px;
-   
+
     color: #000000;
     font-size: 17px;
 }
