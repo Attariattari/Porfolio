@@ -7,9 +7,16 @@ import { FaPlus } from "react-icons/fa6";
 
 export const Webdeveloper = {
   img: "https://wallpaperaccess.com/full/8901670.png",
+  background:
+    "https://www.dreamsoft4u.com/wp-content/uploads/2023/05/MERN-Stack-image.png.webp",
   icon: <FaLaptopCode />,
-  title:
-    "MERN Stack Mastery: Elevate Your Applications.",
+  title: "MERN Stack Mastery: Elevate Your Applications.",
+  titletwo: "MERN Stack Development Company",
+  titlethree:
+    "We serve businesses in all industrial domains with MERN Stack web applications.",
+  about:
+    "Our MERN Stack Development Services utilize MongoDB, ExpressJS, ReactJS, and NodeJS to build dynamic web applications that deliver high performance and scalability.",
+  button: "Start MERN Project!",
   details:
     "MERN is a technology stack that helps users gain access to faster, more scalable, and highly advanced application development. MERN stack is a combination of JavaScript technologies; in other words, it is a JavaScript stack used to make a business more agile and enhance its performance.",
   detailstwo:
@@ -40,6 +47,14 @@ export const Uxuidesigner = {
   img: "https://wallpapercave.com/wp/wp9775559.png",
   icon: <SiWebpack />,
   title: "UX/UI Brilliance: Crafting Distinctive Digital Experiences.",
+  titletwo: "UI/UX Design Services",
+  background:
+    "https://www.dreamsoft4u.com/wp-content/uploads/2023/05/UI-UX-Design-image.png.webp",
+  titlethree:
+    "Crafting beautiful, intuitive, and user-friendly interfaces every time.",
+  about:
+    "Combining 21+ years of experience, we provide custom design solutions that bring your brand to life and meet user needs hassle-free. We work closely with you every step of the way.",
+  button: "LET’S CREATE TOGETHER",
   details:
     "UX/UI design is a crucial aspect of creating digital interfaces that deliver exceptional user experiences. It focuses on enhancing user satisfaction by improving the usability, accessibility, and overall pleasure provided in the interaction between the user and the product.",
   detailstwo:
@@ -71,6 +86,15 @@ export const Backenddeveloper = {
   img: "https://miro.medium.com/v2/resize:fit:1358/1*WDX58nzlaiClqTFT59v7RQ.jpeg",
   icon: <FaNodeJs />,
   title: "Backend Excellence: Unlocking Digital Potential.",
+  background:
+    "https://www.dreamsoft4u.com/wp-content/uploads/2023/05/Node.JS-image.png.webp",
+  titletwo: "Node.JS Development Services",
+  titlethree:
+    "Fast, Scalable, and Secure Applications to Take Your Business Forward.",
+  about:
+    "Leverage power of Node.JS to reach a wider audience with a high-performing app. Ensure smooth user experience and handle high traffic volumes with our solutions.",
+  button: "GET YOUR APP BUILT!",
+
   details:
     "Backend development is the backbone of any robust digital platform, responsible for server-side logic, database management, and ensuring seamless communication between the database and the frontend. It is a critical component that powers the functionality and performance of web applications.",
   detailstwo:
@@ -101,8 +125,15 @@ export const Backenddeveloper = {
 export const Branding = {
   img: "https://images.unsplash.com/photo-1633533452148-a9657d2c9a5f?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fEJyYW5kaW5nfGVufDB8fDB8fHww",
   icon: <SiBrandfolder />,
-  title:
-    "Branding Beyond Boundaries: Craft Your Distinct Identity.",
+  title: "Branding Beyond Boundaries: Craft Your Distinct Identity.",
+  background:
+    "https://www.dreamsoft4u.com/wp-content/uploads/2023/05/Staff-Augmentation-image.png.webp",
+  titletwo: "SparkHub: Igniting Innovation, Connecting Futures.",
+  titlethree:
+    "Empower Your Business with Swift, Scalable, and Secure Applications for Unparalleled Growth.",
+  about:
+    "Branding is the art of imprinting a distinctive identity onto your business canvas, a symphony where authenticity and innovation create a brief, memorable masterpiece.",
+  button: "Elevate Your Presence!",
   details:
     "Branding is the art and science of creating a unique and memorable identity for your business. It involves shaping perceptions, building trust, and establishing a strong connection with your target audience. A well-crafted brand is the foundation for success in today's competitive marketplace.",
   detailstwo:
@@ -131,8 +162,15 @@ Best regards,
 export const SocialMedia = {
   img: "https://c0.wallpaperflare.com/preview/983/956/951/digital-marketing-search-engine-optimization-marketing-content.jpg",
   icon: <IoShareSocial />,
-  title:
-    "Social Media Impact: Amplify Your Brand Presence.",
+  title: "Social Media Impact: Amplify Your Brand Presence.",
+  background:
+    "https://www.dreamsoft4u.com/wp-content/uploads/2023/05/Salesforce-Application-image.png.webp",
+  titletwo: "ConnectHub: Igniting Conversations, Shaping Futures.",
+  titlethree:
+    "Empower Your Brand with Vibrant Social Media Strategies for Unmatched Online Presence.",
+  about:
+    "In the digital symphony of brand expression, social media is the crescendo where authenticity and innovation harmonize to create a lasting impression. It's not just about posting; it's about crafting experiences that resonate with your audience.",
+  button: "Amplify Your Presence!",
   details:
     "Social media has become an integral part of modern communication, offering unparalleled opportunities for businesses to connect with their audience. A strategic and engaging social media presence is crucial for brand visibility, customer engagement, and overall business success.",
   detailstwo:
@@ -159,32 +197,37 @@ Looking forward to the opportunity of working together!
 Best regards,
 [Your Company Name]`,
 };
-export const Marketing = {
+export const SEO = {
   img: "https://c0.wallpaperflare.com/preview/345/723/808/search-engine-optimization-seo-digital-marketing-laptop.jpg",
   icon: <FaChartLine />,
-
-  title:
-    "Marketing Mastery: Ignite Your Business Growth.",
+  background:
+    "https://www.dreamsoft4u.com/wp-content/uploads/2023/05/Healthcare-Software-image.png.webp",
+  title: "SEO Excellence: Boost Your Online Visibility.",
+  titletwo: "Drive Traffic and Dominate Search Rankings.",
+  titlethree:
+    "SEO, the digital compass guiding your website to the summit of search engine results, where visibility transforms into organic growth.",
+  about:
+    "In the vast online landscape, SEO is the cornerstone of digital success, sculpting your web presence for search engines and users alike. It's not just about ranking higher; it's about crafting a seamless user experience that resonates with your audience.",
+  button: "Optimize Your Website!",
   details:
-    "Marketing is the heartbeat of business growth, encompassing strategies that drive brand awareness, customer acquisition, and revenue generation. A well-crafted marketing approach is essential for businesses seeking to thrive in today's competitive landscape.",
+    "SEO is the catalyst for online success, ensuring your website not only ranks higher on search engines but also provides value to your visitors. A well-optimized site is a powerful asset, attracting organic traffic and converting leads into customers.",
   detailstwo:
-    "Our team of experienced marketing professionals specializes in developing and executing comprehensive marketing strategies. From digital campaigns to traditional channels, we are dedicated to maximizing your reach, engaging your target audience, and delivering measurable results.",
+    "Our SEO experts specialize in developing and implementing effective strategies to enhance your online visibility. From keyword research to on-page optimization, we focus on every aspect to ensure your website stands out in the competitive digital landscape.",
   detailsthree:
-    "In the ever-evolving world of marketing, staying ahead is key. Businesses recognize the impact of a strategic and dynamic marketing plan in creating a lasting impression, driving conversions, and building a loyal customer base.",
+    "In the ever-evolving realm of SEO, staying ahead is crucial. We understand the dynamic nature of search algorithms and tailor our approach to align with the latest trends, ensuring your website maintains a prominent position in search engine results.",
   detailsfour:
-    "Transform your business with our results-driven marketing services. At 2BTech, we offer a team of dedicated marketing experts ready to navigate the diverse marketing landscape and propel your brand towards sustainable growth.",
-  forhair:
-    "Your Marketing Services Partner. Hire A Dedicated Marketing Expert.",
-  subject: "Fuel Your Success with Our Expert Marketing Services!",
+    "Transform your online presence with our results-driven SEO services. At [Your Company Name], we offer a dedicated team of SEO professionals ready to navigate the complexities of search engine optimization and propel your website to new heights.",
+  forhair: "Your SEO Partner. Elevate Your Online Visibility.",
+  subject: "Enhance Your Online Presence with Our Expert SEO Services!",
   message: `Dear [Recipient's Name],
 
-I trust this message finds you well! In the realm of business growth, marketing serves as the driving force behind brand visibility, customer acquisition, and revenue generation. We understand the pivotal role of a well-crafted marketing strategy in today's dynamic and competitive landscape.
+I hope this message finds you well! In the digital landscape, achieving online success requires more than just a website; it requires strategic SEO excellence. As the driving force behind increased visibility and organic growth, SEO plays a pivotal role in ensuring your website stands out in search engine results.
 
-Our team of seasoned marketing professionals is dedicated to developing and executing comprehensive strategies tailored to your business. From digital campaigns to traditional channels, we are committed to maximizing your reach, engaging your target audience, and delivering measurable results.
+Our team of seasoned SEO professionals is dedicated to developing and implementing effective strategies tailored to your online goals. From comprehensive keyword research to meticulous on-page optimization, we focus on every detail to enhance your website's visibility and drive organic traffic.
 
-Whether you're looking to launch a new campaign or enhance your current marketing approach, our tailored marketing solutions are designed to meet your unique needs. Let us collaborate to fuel your success, drive conversions, and build a strong and loyal customer base.
+Whether you're looking to improve your current SEO strategy or embark on a new optimization journey, our tailored SEO solutions are designed to meet your unique needs. Let us collaborate to optimize your website, increase your online visibility, and drive meaningful results for your business.
 
-Ready to transform your business with strategic marketing? Reach out to us today to explore how our marketing expertise can make a significant impact on your brand.
+Ready to transform your online presence with strategic SEO? Reach out to us today to explore how our SEO expertise can make a significant impact on your website's performance.
 
 Looking forward to the opportunity of working together!
 

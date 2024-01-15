@@ -32,6 +32,37 @@
     gap: 35px;
 }
 
+@media only screen and (max-width: 2600px) {
+    .merndetails {
+        width: 100%;
+        height: auto;
+        padding-right: 3em;
+        padding-left: 3em;
+        margin-top: -5em;
+    }
+
+    .detailsone {
+        width: 50%;
+    }
+    .popbuttonstwo {
+        width: 100%;
+        height: 3em;
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        gap: 30px;
+    }
+    .detailsveiw {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        margin-top: 2em;
+
+    }
+
+    .backgroundimage {
+        width: 50%;
+    }
+}
 
 @media only screen and (max-width: 1200px) {
     .Servicessection {
@@ -58,10 +89,24 @@
     }
 
     .Servicesabout {
-
         padding: 0em 0em 0em 0em;
     }
 
+    .detailsmern {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .detailsone {
+        width: 100%;
+    }
+
+    .backgroundimage {
+        width: 100%;
+    }
 }
 
 @media only screen and (max-width: 768px) {
@@ -97,7 +142,17 @@
         padding-left: 1em;
         height: 4.5em;
     }
+
+    .detailsveiw {
+        grid-template-columns: repeat(1, 1fr);
+        margin-top: 2em;
+    }
+
+    .popbuttonstwo {
+        margin-bottom: 3em;
+    }
 }
+
 
 @media only screen and (max-width: 600px) {
     .Servicessection {
@@ -131,6 +186,12 @@
         margin-left: 1em;
         height: 4em;
     }
+
+    .merndetails {
+        padding-right: 0.5em;
+        padding-left: 0.5em;
+    }
+
 }
 
 .ServiceBox {
@@ -159,8 +220,9 @@
 .Servicesicons {
     font-size: 40px;
     color: #E3872D;
-    
+
 }
+
 .Servicesicons:hover {
     font-size: 40px;
     color: #041230;
@@ -213,4 +275,138 @@
     width: 150%;
     left: -20%;
 
+}
+
+
+
+.detailsmern {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.backgroundimage img {
+    object-fit: fill;
+}
+
+.titletwo {
+    font-size: 23px;
+    font-weight: bold;
+}
+
+.projectstartecd {
+    width: 80%;
+    height: 3em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #E3872D;
+    font-size: 17px;
+}
+
+.buttonget Button {
+    width: 70%;
+    padding: 10px;
+    text-decoration: none !important;
+    color: #fff !important;
+    background-color: #E3872D !important;
+    font-weight: 600 !important;
+    font-family: "Montserrat" !important;
+    border-radius: 3px !important;
+    display: inline-block !important;
+    position: relative !important;
+    overflow: hidden !important;
+    border: none !important;
+    font-size: 1em !important;
+    line-height: 1.8 !important;
+    letter-spacing: 0.5px !important;
+    cursor: pointer !important;
+    z-index: 100;
+    margin-top: 4em;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+}
+
+.buttonget button::before {
+    position: absolute;
+    content: "";
+    top: 0px;
+    height: 100%;
+    left: -25%;
+    width: 0%;
+    background-color: #041230;
+    transform: skew(50deg);
+    transition-duration: .4s;
+    z-index: -100;
+}
+
+.buttonget button:hover::before {
+    width: 150%;
+    left: -20%;
+
+}
+
+
+
+.detailsveiw div {
+    padding: 30px;
+   
+    color: #000000;
+    font-size: 17px;
+}
+
+
+
+.popbuttonstwo Button {
+    width: 50%;
+    padding: 10px;
+    text-decoration: none !important;
+    color: #fff !important;
+    background-color: #E3872D !important;
+    font-weight: 600 !important;
+    font-family: "Montserrat" !important;
+    border-radius: 3px !important;
+    display: inline-block !important;
+    position: relative !important;
+    overflow: hidden !important;
+    border: none !important;
+    font-size: 1em !important;
+    line-height: 1.8 !important;
+    letter-spacing: 0.5px !important;
+    cursor: pointer !important;
+    z-index: 100;
+    margin-top: 4em;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+}
+
+.popbuttonstwo button::before {
+    position: absolute;
+    content: "";
+    top: 0px;
+    height: 100%;
+    left: -25%;
+    width: 0%;
+    background-color: #041230;
+    transform: skew(50deg);
+    transition-duration: .4s;
+    z-index: -100;
+}
+
+.popbuttonstwo button:hover::before {
+    width: 150%;
+    left: -20%;
+}
+.one{
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+}
+.two{
+    border-bottom: 1px solid black;
+}
+.three{
+    border-right: 1px solid black;
+   
+}
+.four{
+   
 }
