@@ -29,7 +29,7 @@ function OtherCMS() {
         {OtherCMSData.map((Merns, index) => (
           <div
             key={index}
-            className="flex justify-center items-center Imagecontainer shadow-xl shadow-neutral-700"
+            className="flex justify-center items-center Imagecontainer shadow-md shadow-neutral-700"
           >
             <img src={Merns.img} alt="" />
             <div className="imagehovertext ">

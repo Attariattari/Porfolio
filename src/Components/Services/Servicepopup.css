@@ -29,7 +29,7 @@
 }
 
 .Servicepopupchild {
-    width: 50%;
+    width: 45%;
     height: auto;
     background-color: #adadade2;
     backdrop-filter: blur(100px);
@@ -42,6 +42,8 @@
     overflow-y: auto;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
     font-size: 16px;
+    margin-top: 2em;
+    margin-bottom: 2em;
 }
 
 @media only screen and (max-width: 1023px) {
@@ -113,6 +115,7 @@
 .Fulldetails {
     width: 100%;
     padding: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
 }
 
 .Close {

@@ -88,13 +88,13 @@ function About() {
           <div className="buttonsection mt-4">
             <button
               onClick={handleDownload}
-              className="w-44 px-2 py-3 Aboutdownhirebtn rounded-sm shadow-lg shadow-black"
+              className="w-44 px-2 py-3 Aboutdownhirebtn rounded-sm"
             >
               Download cv
             </button>
             <ToastContainer position="top-right" theme="dark" />
            
-              <button className="w-44 px-2 py-3 Aboutdownhirebtn rounded-sm shadow-lg shadow-black" onClick={haireme}>
+              <button className="w-44 px-2 py-3 Aboutdownhirebtn rounded-sm" onClick={haireme}>
                 Hire me
               </button>
            

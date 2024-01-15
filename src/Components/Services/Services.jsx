@@ -126,15 +126,6 @@ const servicesData = [
   SEO,
 ];
 
-// Helper function to truncate text to a specified number of words
-const truncateText = (text, numWords) => {
-  const words = text.split(" ");
-  if (words.length > numWords) {
-    return words.slice(0, numWords).join(" ") + " ...";
-  }
-  return text;
-};
-
 function Services() {
   const [selectedService, setSelectedService] = useState(null);
 
@@ -164,7 +155,7 @@ function Services() {
             </div>
             <button
               onClick={() => handleButtonClick(service)}
-              className="Button mt-3"
+              className=" mt-3"
             >
               More info
             </button>

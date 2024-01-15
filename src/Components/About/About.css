@@ -66,6 +66,7 @@
   padding: 1em 1em 2em 1em;
   background-color: transparent;
 }
+
 .Aboutsomeglassy {
   width: 100%;
   height: auto;
@@ -336,7 +337,7 @@
     height: auto;
     padding: 1em;
 
-   
+
   }
 
   .Aboutchartsglassy {
@@ -344,7 +345,7 @@
     height: auto;
     padding: 1em;
 
-   
+
   }
 
   .aboutcharts {
@@ -404,10 +405,12 @@
     overflow-y: hidden;
     margin-top: 2em;
   }
+
   .AboutDetailsme {
     font-size: 1.2em;
     font-weight: bold;
   }
+
   .Aboutsome {
     padding: 5px;
   }
@@ -421,6 +424,7 @@
   .mainborder {
     margin: 0em 0em 0em -1.5em;
   }
+
   .AboutImage {
     width: 100%;
     height: 30em;
@@ -601,7 +605,7 @@
   justify-content: space-evenly;
   align-items: start;
   height: 3.3em;
- 
+
 }
 
 .buttonsection .Aboutdownhirebtn {
@@ -620,6 +624,7 @@
   letter-spacing: 0.5px !important;
   cursor: pointer !important;
   z-index: 100;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
 }
 
 .buttonsection .Aboutdownhirebtn::before {
