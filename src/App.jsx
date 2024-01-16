@@ -55,6 +55,7 @@ const App = () => {
             </div>
           ))}
         </div>
+        <GoToTop/>
       </div>
     </Router>
   );

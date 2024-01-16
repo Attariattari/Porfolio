@@ -92,10 +92,17 @@ function Servicepopup({ info, closePopup,selectedNews }) {
               <img src={selectedNews.img} alt="" />
             </div>
 
-            <div className="p-3">{selectedNews.details}</div>
-            <div className="p-3">{selectedNews.detailstwo}</div>
-            <div className="p-3">{selectedNews.detailsthree}</div>
-            <div className="p-3">{selectedNews.detailsfour}</div>
+            <div className="p-3">{selectedNews.one}</div>
+            <div className="p-3">{selectedNews.two}</div>
+            <div className="p-3">{selectedNews.three}</div>
+            <div className="p-3">{selectedNews.four}</div>
+            <div className="p-3">{selectedNews.five}</div>
+            <div className="p-3">{selectedNews.sex}</div>
+            <div className="p-3">{selectedNews.seven}</div>
+            <div className="p-3">{selectedNews.eight}</div>
+            <div className="p-3">{selectedNews.nine}</div>
+            <div className="p-3">{selectedNews.ten}</div>
+            <div className="p-3">{selectedNews.eleven}</div>
             <div className="p-3 FullDetails">
             </div>
           </div>

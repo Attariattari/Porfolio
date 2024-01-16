@@ -388,12 +388,12 @@
     height: 30em;
     display: flex;
     justify-content: center;
-    margin-left: -1em;
   }
 
   .ImageSet {
     width: 91%;
     height: 25em;
+    margin-left: 20px;
   }
 
   .aboutinfo {
