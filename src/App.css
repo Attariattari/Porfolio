@@ -20,9 +20,6 @@
   -webkit-animation: mover 1s infinite alternate;
 }
 
-.gototop:hover {
-  background-color: #2980b9;
-}
 @keyframes mover {
   0% {
     transform: translatey(0);
