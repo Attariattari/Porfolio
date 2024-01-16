@@ -20,14 +20,14 @@ const whatisreacta = [
 ];
 
 function News() {
-  const [selectedService, setSelectedService] = useState(null);
+  const [selectedNews, setSelectedNews] = useState(null);
 
-  const handleButtonClick = (service) => {
-    setSelectedService(service);
+  const handleButtonClick = (News) => {
+    setSelectedNews(News);
   };
 
   const closePopup = () => {
-    setSelectedService(null);
+    setSelectedNews(null);
   };
 
   return (
@@ -39,17 +39,17 @@ function News() {
         </div>
       </div>
       <div className="Servicessection">
-        {whatisreacta.map((service, index) => (
+        {whatisreacta.map((News, index) => (
           <div className="ServiceBox" key={index}>
             <div className="Servicesdetails">
               <div className="Servicesicons shadow-lg ">
-                <img src={service.img} alt="" />
+                <img src={News.img} alt="" />
               </div>
-              <div className="text-md font-bold py-2">{service.title}</div>
-              <div className="Servicesinfo">{service.Introduction}</div>
+              <div className="text-md font-bold py-2">{News.title}</div>
+              <div className="Servicesinfo">{News.Introduction}</div>
             </div>
             <button
-              // onClick={() => handleButtonClick(service)}
+              onClick={() => handleButtonClick(News)}
               className="Button mt-3"
             >
               More info
@@ -57,7 +57,7 @@ function News() {
           </div>
         ))}
       </div>
-      <Servicepopup info={selectedService} closePopup={closePopup} />
+      <Servicepopup selectedNews={selectedNews} closePopup={closePopup} />
     </div>
   );
 }

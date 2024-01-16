@@ -18,6 +18,17 @@
     align-items: center;
 }
 .Icons{
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -ms-border-radius: 50%;
+    -o-border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;   
+}
+.Icons img{
+    object-fit: fill;
     width: 3em;
     height: 3em;
     border-radius: 50%;

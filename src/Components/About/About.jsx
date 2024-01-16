@@ -1,14 +1,13 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import "./About.css";
 import { useTypewriter, Cursor } from "react-simple-typewriter";
 import Aboutinfo from "./Aboutinfo";
 import Aboutsocial from "./Aboutsocial";
-import { Link, Outlet } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AboutAbilities from "./AboutAbilities";
 import Aboutmyprogres from "./Aboutmyprogres";
-
+import { Tilt } from "react-tilt";
 function About() {
   const [typeEffect] = useTypewriter({
     words: ["UI / UX Designer", "Web Developer", "Web Designer", "Freelancer"],
@@ -29,7 +28,7 @@ function About() {
   });
   const handleDownload = () => {
     const pdfUrl = "https://orange-cristin-19.tiiny.site/";
-  
+
     toast.promise(
       new Promise((resolve, reject) => {
         const link = document.createElement("a");
@@ -37,7 +36,7 @@ function About() {
         link.download = "Document_from_Ghulam_Muhyo_Din.pdf"; // specify the filename
         link.target = "_blank"; // open in a new tab or window
         document.body.appendChild(link);
-  
+
         try {
           link.click();
           resolve("Download started successfully!");
@@ -50,18 +49,32 @@ function About() {
       {
         pending: "Downloading...",
         success: { render: "Download complete!", autoClose: 3000 },
-        error: { render: "Download failed. Please try again.", autoClose: 3000 },
+        error: {
+          render: "Download failed. Please try again.",
+          autoClose: 3000,
+        },
       }
     );
   };
-  
+  const defaultOptions = {
+    reverse: false, // reverse the tilt direction
+    max: 35, // max tilt rotation (degrees)
+    perspective: 1000, // Transform perspective, the lower the more extreme the tilt gets.
+    scale: 1, // 2 = 200%, 1.5 = 150%, etc..
+    speed: 1000, // Speed of the enter/exit transition
+    transition: true, // Set a transition on enter/exit.
+    axis: null, // What axis should be disabled. Can be X or Y.
+    reset: true, // If the tilt effect has to be reset on exit.
+    easing: "cubic-bezier(.03,.98,.52,.99)", // Easing on enter/exit.
+  };
 
-  const haireme = () =>{
+  const haireme = () => {
     const contactSection = document.getElementById("Contact");
-      if (contactSection) {
-        contactSection.scrollIntoView({ behavior: "smooth" });
-      }
-  }
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <div className="About">
       <div className="Servicesabout">
@@ -72,16 +85,20 @@ function About() {
       </div>
       <div className="mainsection">
         <div className="AboutImage">
-          <div className="ImageSet">
-            <div className="ImageShow">
-              <img
-                className=""
-                src="https://images.pexels.com/photos/35537/child-children-girl-happy.jpg?cs=srgb&dl=pexels-bess-hamiti-35537.jpg&fm=jpg"
-                alt=""
-              />
-            </div>
-          </div>
+          <div>
+          <Tilt className="Tilt" options={defaultOptions}>
+            <div className="ImageSet">
+              <div className="ImageShow">
+                <img
+                  className=""
+                  src="https://images.pexels.com/photos/35537/child-children-girl-happy.jpg?cs=srgb&dl=pexels-bess-hamiti-35537.jpg&fm=jpg"
+                  alt=""
+                />
+              </div>
+            </div>{" "}
+          </Tilt></div>
         </div>
+
         <div className="aboutinfo">
           <Aboutinfo typeEffect={typeEffect} Cursor={Cursor} />
           <Aboutsocial />
@@ -93,11 +110,13 @@ function About() {
               Download cv
             </button>
             <ToastContainer position="top-right" theme="dark" />
-           
-              <button className="w-44 px-2 py-3 Aboutdownhirebtn rounded-sm" onClick={haireme}>
-                Hire me
-              </button>
-           
+
+            <button
+              className="w-44 px-2 py-3 Aboutdownhirebtn rounded-sm"
+              onClick={haireme}
+            >
+              Hire me
+            </button>
           </div>
         </div>
       </div>

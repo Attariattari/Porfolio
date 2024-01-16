@@ -5,7 +5,7 @@ import Contact from "../Contact/Contact";
 import { ToastContainer, toast } from "react-toastify";
 import { useData } from "../../UseContaxt/Datacontaxt";
 
-function Servicepopup({ info, closePopup }) {
+function Servicepopup({ info, closePopup,selectedNews }) {
   const { setSubjectAndMessage, subject, message } = useData();
   const [scrollDisabled, setScrollDisabled] = useState(false);
 
@@ -75,6 +75,28 @@ function Servicepopup({ info, closePopup }) {
                 Hair Me
               </button>
               <ToastContainer position="top-right" theme="dark" />
+            </div>
+          </div>
+        </div>
+      )}
+      {selectedNews && (
+        <div className="Servicepopup">
+          <div className="Servicepopupchild">
+            <div className="Header text-white sticky top-0">
+              <div>{selectedNews.title}</div>
+              <button className="Close" onClick={closePopup}>
+                <IoIosCloseCircleOutline className="text-3xl Closeicon" />
+              </button>
+            </div>
+            <div className="ImagePopup">
+              <img src={selectedNews.img} alt="" />
+            </div>
+
+            <div className="p-3">{selectedNews.details}</div>
+            <div className="p-3">{selectedNews.detailstwo}</div>
+            <div className="p-3">{selectedNews.detailsthree}</div>
+            <div className="p-3">{selectedNews.detailsfour}</div>
+            <div className="p-3 FullDetails">
             </div>
           </div>
         </div>

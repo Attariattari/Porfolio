@@ -3,12 +3,13 @@ import "./About.css";
 import { Link } from "react-router-dom";
 import { FaLinkedinIn } from "react-icons/fa";
 import "./social.css";
+import { FaFacebook } from "react-icons/fa";
 function Aboutsocial() {
   return (
     <div>
       <div className="social px-5">
         <Link
-          className="Icons Linkdin shadow-lg shadow-blue-950"
+          className="Icons rounded Linkdin"
           target="_blank"
           to="https://www.linkedin.com/in/ghulam-muhyo-din-web-designer/"
         >
@@ -17,18 +18,14 @@ function Aboutsocial() {
           </div>
         </Link>
         <Link
-          className="Icons shadow-lg shadow-blue-950"
+          className="Icons rounded"
           target="_blank"
           to="https://www.facebook.com/muhyotech"
         >
-          <img
-            className="rounded-full Facebook object-fill"
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQPRVOlMmtv6-rBZQIjjG7PQ6a-oZQBLI20VA&usqp=CAU"
-            alt=""
-          />
+          <FaFacebook className="text-5xl text-blue-800"/>
         </Link>
         <Link
-          className="Icons shadow-lg shadow-blue-950"
+          className="Icons rounded"
           target="_blank"
           to="mailto:attariattari549@gmail.com"
         >
@@ -39,7 +36,7 @@ function Aboutsocial() {
           />
         </Link>
         <Link
-          className="Icons shadow-lg shadow-blue-950"
+          className="Icons rounded"
           target="_blank"
           to="https://wa.link/p944ry"
         >
@@ -50,7 +47,7 @@ function Aboutsocial() {
           />
         </Link>
         <Link
-          className="Icons shadow-lg shadow-blue-950"
+          className="Icons rounded"
           target="_blank"
           to="https://twitter.com/GhulamMuhyo"
         >
@@ -61,7 +58,7 @@ function Aboutsocial() {
           />
         </Link>
         <Link
-          className="Icons shadow-lg shadow-blue-950"
+          className="Icons rounded"
           target="_blank"
           to="https://www.instagram.com/muhyotech/"
         >

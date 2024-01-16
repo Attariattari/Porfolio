@@ -105,7 +105,7 @@
 
 // export default Services;
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Services.css";
 import {
   Webdeveloper,
@@ -116,7 +116,8 @@ import {
   SEO,
 } from "../../DummyData/DummyData";
 import Servicepopup from "./Servicepopup";
-
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 const servicesData = [
   Webdeveloper,
   Uxuidesigner,
@@ -136,7 +137,13 @@ function Services() {
   const closePopup = () => {
     setSelectedService(null); // Update to set the selectedService to null
   };
-
+ useEffect(() => {
+  AOS.init({
+    duration: 1000, // Animation duration in milliseconds
+    offset: 200,    // Offset (in pixels) from the top of the screen
+    // other configuration options...
+  });
+}, []);
   return (
     <div className="Services">
       <div className="Servicesabout">
