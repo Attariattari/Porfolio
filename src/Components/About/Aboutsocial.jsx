@@ -14,43 +14,70 @@ function Aboutsocial() {
   return (
     <div className="social">
       <ul className="flex justify-between w-full h-full items-center">
-        <a
-          href="https://www.linkedin.com/in/ghulam-muhyo-din-web-designer/"
-          target="_blank"
-        >
-          <li className="Linkdin">
+        <div className="social-icon">
+          <a
+            href="https://www.linkedin.com/in/ghulam-muhyo-din-web-designer/"
+            target="_blank"
+            data-tip="LinkedIn"
+            className="linkedin"
+          >
             <FaLinkedinIn />
-          </li>
-        </a>
-        <a href="https://www.facebook.com/muhyotech" target="_blank">
-          <li className="facebook">
+          </a>
+        </div>
+        <div className="social-icon">
+          <a
+            href="https://www.facebook.com/muhyotech"
+            target="_blank"
+            data-tip="Facebook"
+            className="facebook"
+          >
             <FaFacebookF />
-          </li>
-        </a>
+          </a>
+        </div>
 
-        <a href="mailto:attariattari549@gmail.com" target="_blank">
-          <li className="gmail">
+        <div className="social-icon">
+          <a
+            href="mailto:attariattari549@gmail.com"
+            target="_blank"
+            data-tip="Gmail"
+            className="gmail"
+          >
             <SiGmail />
-          </li>
-        </a>
+          </a>
+        </div>
 
-        <a href="https://wa.link/p944ry" target="_blank">
-          <li className="whatsapp">
+        <div className="social-icon">
+          <a
+            href="https://wa.link/p944ry"
+            target="_blank"
+            data-tip="WhatsApp"
+            className="whatsapp"
+          >
             <FaWhatsapp />
-          </li>
-        </a>
+          </a>
+        </div>
 
-        <a href="https://twitter.com/GhulamMuhyo" target="_blank">
-          <li className="twitter">
+        <div className="social-icon">
+          <a
+            href="https://twitter.com/GhulamMuhyo"
+            target="_blank"
+            data-tip="Twitter"
+            className="twitter"
+          >
             <FaXTwitter />
-          </li>
-        </a>
+          </a>
+        </div>
 
-        <a href="https://www.instagram.com/muhyotech/" target="_blank">
-          <li className="instagram">
+        <div className="social-icon">
+          <a
+            href="https://www.instagram.com/muhyotech/"
+            target="_blank"
+            data-tip="Instagram"
+            className="instagram"
+          >
             <FaInstagram />
-          </li>
-        </a>
+          </a>
+        </div>
       </ul>
     </div>
   );
