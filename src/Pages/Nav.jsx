@@ -5,6 +5,7 @@ import "./Nav.css";
 import { Link } from "react-router-dom";
 
 function Nav({ show, children, sections, scrollToSection }) {
+  
   return (
     <div
       className={
@@ -19,8 +20,8 @@ function Nav({ show, children, sections, scrollToSection }) {
           borderBottom: "0.1px solid rgb(157, 154, 154)",
         }}
       >
-        <div className=" relative flex justify-center w-full h-full items-center" >
-          <Logo  show={show} />
+        <div className=" relative flex justify-center w-full h-full items-center">
+          <Logo show={show} />
           {children}
         </div>
       </div>

@@ -1,9 +1,13 @@
-
 .Sidebar {
-    /* Your existing styles for Sidebar */
+  transition: background-color 0.3s ease;
   font-family: 'Open Sans', sans-serif;
-height: 100vh;
-  }
-  .Sidebar.scrolled-bg {
-    background-color: #e3872d;
-  }
+  height: 100vh;
+}
+
+.Sidebar.scrolled {
+  background-color: #e3872d;
+}
+
+.Sidebar.scrolled-bg {
+  background-color: #e3872d;
+}
