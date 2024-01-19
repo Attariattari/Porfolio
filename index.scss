@@ -61,33 +61,33 @@ $box-wrapper-margin: calc((100% - #{$box-wrapper-height}) / 2)
       visibility: hidden;
 
       &.one {
-        animation: moveGradient 1s infinite, oneMove .5s infinite;
-        -webkit-animation: moveGradient 1s infinite, oneMove .5s infinite;
+        animation: moveGradient 3s infinite, oneMove 2.5s infinite;
+        -webkit-animation: moveGradient 3s infinite, oneMove 2.5s infinite;
 }
 
       &.two {
-        animation: moveGradient 1s infinite, twoMove .5s 0.15s infinite;
-        -webkit-animation: moveGradient 1s infinite, twoMove .5s 0.15s infinite;
+        animation: moveGradient 3s infinite, twoMove 2.5s 0.15s infinite;
+        -webkit-animation: moveGradient 3s infinite, twoMove 2.5s 0.15s infinite;
 }
 
       &.three {
-        animation: moveGradient 1s infinite, threeMove .5s 0.3s infinite;
-        -webkit-animation: moveGradient 1s infinite, threeMove .5s 0.3s infinite;
+        animation: moveGradient 3s infinite, threeMove 2.5s 0.3s infinite;
+        -webkit-animation: moveGradient 3s infinite, threeMove 2.5s 0.3s infinite;
 }
 
       &.four {
-        animation: moveGradient 1s infinite, fourMove .5s 0.575s infinite;
-        -webkit-animation: moveGradient 1s infinite, fourMove .5s 0.575s infinite;
+        animation: moveGradient 3s infinite, fourMove 2.5s 0.575s infinite;
+        -webkit-animation: moveGradient 3s infinite, fourMove 2.5s 0.575s infinite;
 }
 
       &.five {
-        animation: moveGradient 1s infinite, fiveMove .5s 0.725s infinite;
-        -webkit-animation: moveGradient 1s infinite, fiveMove .5s 0.725s infinite;
+        animation: moveGradient 3s infinite, fiveMove 2.5s 0.725s infinite;
+        -webkit-animation: moveGradient 3s infinite, fiveMove 2.5s 0.725s infinite;
 }
 
       &.six {
-        animation: moveGradient 1s infinite, sixMove .5s 0.875s infinite;
-        -webkit-animation: moveGradient 1s infinite, sixMove .5s 0.875s infinite;
+        animation: moveGradient 3s infinite, sixMove 2.5s 0.875s infinite;
+        -webkit-animation: moveGradient 3s infinite, sixMove 2.5s 0.875s infinite;
 }
     }
   }
