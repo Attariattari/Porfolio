@@ -77,12 +77,29 @@
   align-items: center;
 }
 .webprojectsinfo {
-  width: 727px;
-  height: 340px;
+  width: 100%;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
+}
+.muhyotext{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+.muhyotextin{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 80%;
+  height: 100%;
+  gap: 30px;
 }
 .Muhyotechtext {
   color: #fff;
@@ -90,6 +107,7 @@
   font-family: "Montserrat";
   font-weight: 600;
   clear: both;
+  width: 100%;
 }
 .Muhyotechicon {
   font-size: 3em;
@@ -145,5 +163,14 @@
   }
   .feadbakefour {
     border-right: #ffffff 1px solid;
+  }
+  .muhyotextin{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    gap: 30px;
   }
 }

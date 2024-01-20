@@ -154,7 +154,14 @@
     -ms-border-radius: 5px 5px 0px 0px;
     -o-border-radius: 5px 5px 0px 0px;
 }
-
+.Header div{
+    width: 90%;
+}
+.Header button{
+    width: 10%;
+    display: flex;
+    justify-content: flex-end;
+}
 .FullDetails Button {
     width: 100%;
     padding: 10px;

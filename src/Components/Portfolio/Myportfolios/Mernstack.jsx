@@ -9,6 +9,7 @@ import {
   Mernstackthered,
   Mernstackseven,
   Mernstackeight,
+  Mernstacknine
 } from "../../../DummyData/DummyData";
 
 const mernstack = [
@@ -20,6 +21,7 @@ const mernstack = [
   Mernstacksix,
   Mernstackseven,
   Mernstackeight,
+  Mernstacknine
 ];
 
 function Mernstack() {

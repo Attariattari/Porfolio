@@ -9,6 +9,7 @@ import {
   Mernstackthered,
   Mernstackseven,
   Mernstackeight,
+  Mernstacknine
 } from "../../../DummyData/DummyData";
 const mernstack = [
   Mernstackfirst,
@@ -19,16 +20,16 @@ const mernstack = [
   Mernstackthered,
   Mernstackseven,
   Mernstackeight,
+  Mernstacknine
 ];
 function Designing() {
-
   return (
     <div className="Mernstack flex justify-center items-center flex-wrap">
       <div className="Mernimagesection ">
         {mernstack.map((Merns, index) => (
           <div
             key={index}
-            className="flex justify-center items-center Imagecontainer shadow-md shadow-neutral-700"
+            className="flex justify-center items-center Imagecontainer"
           >
             <img src={Merns.img} alt="" />
             <div className="imagehovertext ">

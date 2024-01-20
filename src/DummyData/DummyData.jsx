@@ -338,6 +338,19 @@ export const Mernstackeight = {
   details:
     "VALORANT is a character-based 5v5 FPS where gunplay meets unique agent abilities. This animated site tells players all they need to know to get excited about Riot Games’ latest title.",
 };
+export const Mernstacknine = {
+  img: "https://images.unsplash.com/photo-1689699544570-812a5e3f805c?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDMwfENEd3V3WEpBYkV3fHxlbnwwfHx8fHw%3D",
+  iconfirst: <LuSearchCode />,
+  iconSecond: <FaPlus />,
+  title: "Play valorant",
+  createit: "11-15-2020",
+  thanks: "Thanks a lot VALORANT for Choosing us.",
+  plateform: "Valorant website was build in MERN-STACK(REACTJS) Framework",
+  Link: "https://playvalorant.com/",
+  Visit: "Play",
+  details:
+    "VALORANT is a character-based 5v5 FPS where gunplay meets unique agent abilities. This animated site tells players all they need to know to get excited about Riot Games’ latest title.",
+};
 
 // ================================UX / UI Designing=================================
 export const BankingApp = {
@@ -506,24 +519,18 @@ export const whatisreact = {
   title: "Mastering React for Modern Web Development.",
   Introduction:
     "In the ever-evolving landscape of web development, React has emerged as a powerhouse for creating dynamic and responsive user interfaces. Its popularity and efficiency make it an indispensable tool for developers. In this blog post, we'll dive into the fundamentals of React and explore its key concepts.",
-  one:
-    "React is a JavaScript library designed for building user interfaces. At its core, React leverages JSX, a syntax extension that allows the combination of HTML with JavaScript. Components, the building blocks of React applications, encapsulate the logic and UI, making code modular and maintainable. The Virtual DOM ensures efficient rendering, making React applications fast and scalable.",
-  two:
-    "To embark on your React journey, set up your development environment. Utilize tools like Node.js and npm to streamline the process. Once set up, create your first React app, and familiarize yourself with the basic project structure. This hands-on experience lays the foundation for the exciting world of React development.",
+  one: "React is a JavaScript library designed for building user interfaces. At its core, React leverages JSX, a syntax extension that allows the combination of HTML with JavaScript. Components, the building blocks of React applications, encapsulate the logic and UI, making code modular and maintainable. The Virtual DOM ensures efficient rendering, making React applications fast and scalable.",
+  two: "To embark on your React journey, set up your development environment. Utilize tools like Node.js and npm to streamline the process. Once set up, create your first React app, and familiarize yourself with the basic project structure. This hands-on experience lays the foundation for the exciting world of React development.",
   three:
     "Delve deeper into React by exploring its fundamental concepts: components and props. Components can be functional or class-based, and understanding how to create, use, and nest them is crucial. Props facilitate the flow of data between components, enabling dynamic and interactive UIs.",
-  four:
-    "State plays a pivotal role in React, allowing components to manage dynamic data. Learn how to handle state and explore the lifecycle methods of components. This knowledge is essential for building applications that respond dynamically to user interactions.",
-  five:
-    "React provides an elegant way to handle events and manage forms. Explore event handling mechanisms like onClick and onChange. Understand how to seamlessly integrate user input, creating interactive and user-friendly interfaces.",
-  sex:
-    "With the introduction of Hooks, React functional components gained the ability to manage state and side effects. Dive into the world of useState, useEffect, and other commonly used hooks. This modern approach simplifies state management, making your code more concise and readable.",
+  four: "State plays a pivotal role in React, allowing components to manage dynamic data. Learn how to handle state and explore the lifecycle methods of components. This knowledge is essential for building applications that respond dynamically to user interactions.",
+  five: "React provides an elegant way to handle events and manage forms. Explore event handling mechanisms like onClick and onChange. Understand how to seamlessly integrate user input, creating interactive and user-friendly interfaces.",
+  sex: "With the introduction of Hooks, React functional components gained the ability to manage state and side effects. Dive into the world of useState, useEffect, and other commonly used hooks. This modern approach simplifies state management, making your code more concise and readable.",
   seven:
     "In single-page applications, client-side routing is paramount. Learn about React Router, a powerful tool for handling navigation within your React application. Master the art of creating smooth transitions between different views.",
   eight:
     "React opens up a world of possibilities for web development. The concepts covered in this blog merely scratch the surface. As you continue your journey, explore advanced topics, and contribute to the thriving React community. The versatility and efficiency of React make it a valuable skill set for any web developer.",
-  nine:
-    "To further enhance your understanding of React, explore the official React documentation and other valuable resources:",
+  nine: "To further enhance your understanding of React, explore the official React documentation and other valuable resources:",
   ReactOfficialDocumentation: "https://react.dev/",
   ReactRouterDocumentation: "https://reactrouter.com/en/main",
   ReactHooksACompleteGuide:
@@ -534,26 +541,19 @@ export const whatisnodejs = {
   title: "Unleashing the Power of Node.js in Web Development",
   Introduction:
     "In the dynamic realm of web development, Node.js has emerged as a transformative force. This blog post serves as a comprehensive guide, unraveling the core concepts of Node.js and showcasing its prowess in crafting robust and scalable web applications.",
-  one:
-    "Node.js is a JavaScript runtime built on the V8 engine, designed for executing JavaScript code server-side. Its key features include non-blocking I/O, an event-driven architecture, and npm (Node Package Manager).",
-  two:
-    "Installing Node.js is a straightforward process. This section provides a step-by-step guide to get Node.js up and running on your machine. Additionally, an introduction to npm simplifies package management for Node.js projects.",
+  one: "Node.js is a JavaScript runtime built on the V8 engine, designed for executing JavaScript code server-side. Its key features include non-blocking I/O, an event-driven architecture, and npm (Node Package Manager).",
+  two: "Installing Node.js is a straightforward process. This section provides a step-by-step guide to get Node.js up and running on your machine. Additionally, an introduction to npm simplifies package management for Node.js projects.",
   three:
     "Node.js thrives on its event-driven architecture and the event loop. This section delves into the workings of the event loop, explaining how it facilitates asynchronous operations. Callback functions are explored in depth, showcasing their role in managing asynchronous tasks.",
-  four:
-    "Learn by doing. This section guides you through the creation of a basic HTTP server using Node.js. Explore how to handle incoming requests and send appropriate responses.",
-  five:
-    "Node.js organizes code using modules. This section introduces the concept of modules and provides practical insights into creating and using custom modules in Node.js.",
-  sex:
-    "Asynchronous programming is a cornerstone of Node.js. This section explores modern approaches such as Promises and Async/Await. Learn how to handle errors effectively in asynchronous code.",
+  four: "Learn by doing. This section guides you through the creation of a basic HTTP server using Node.js. Explore how to handle incoming requests and send appropriate responses.",
+  five: "Node.js organizes code using modules. This section introduces the concept of modules and provides practical insights into creating and using custom modules in Node.js.",
+  sex: "Asynchronous programming is a cornerstone of Node.js. This section explores modern approaches such as Promises and Async/Await. Learn how to handle errors effectively in asynchronous code.",
   seven:
     "Express.js, a web application framework for Node.js, takes center stage. Understand the basics of Express.js, create routes, and explore middleware to streamline the development process.",
   eight:
     "Dive into database integration with MongoDB. Learn how to connect a Node.js application to a MongoDB database and perform basic CRUD operations.",
-  nine:
-    "Explore hosting platforms suitable for Node.js applications and gain practical insights into deploying a Node.js application on Heroku.",
-  ten:
-    "Node.js empowers web developers with speed and scalability. The skills acquired through this blog post lay the foundation for creating dynamic and efficient web applications. As you progress in your Node.js journey, delve into additional features, frameworks, and best practices to elevate your development skills.",
+  nine: "Explore hosting platforms suitable for Node.js applications and gain practical insights into deploying a Node.js application on Heroku.",
+  ten: "Node.js empowers web developers with speed and scalability. The skills acquired through this blog post lay the foundation for creating dynamic and efficient web applications. As you progress in your Node.js journey, delve into additional features, frameworks, and best practices to elevate your development skills.",
   eleven:
     "Node.js empowers web developers with speed and scalability. The skills acquired through this blog post lay the foundation for creating dynamic and efficient web applications. As you progress in your Node.js journey, delve into additional features, frameworks, and best practices to elevate your development skills.",
   NodejsOfficialDocumentation: "https://nodejs.org/docs/latest/api/",

@@ -97,19 +97,117 @@ function Portfolio() {
       <div className="Muhyotech">
         <div className="Muhyotechclicd">
           <div className="webprojectsinfo">
-            <div className="Muhyotechicon">
-              <GiHadesSymbol />
-            </div>
-            <p className="Muhyotechtext">
-              “Awesome to work with Muhyo. Good organized, easy to communicate
-              with, responsive with next iterations.”
-            </p>
+            <div id="gallery" className="relative w-full" data-carousel="slide">
+              <div className="relative h-96 overflow-hidden rounded-lg md:h-96">
+                <div
+                  className="hidden duration-700 ease-in-out"
+                  data-carousel-item
+                >
+                  <div className="muhyotext">
+                    <div className="muhyotextin">
+                      <div className="Muhyotechicon">
+                        <GiHadesSymbol />
+                      </div>
+                      <p className="Muhyotechtext">
+                        “Awesome to work with Muhyo. Good organized, easy to
+                        communicate with, responsive with next iterations.”
+                      </p>
 
-            <div className="Muhyotechauthor">Muhyo Tech Web Developer</div>
+                      <div className="Muhyotechauthor">
+                        Muhyo Tech Web Developer
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  className="hidden duration-700 ease-in-out"
+                  data-carousel-item="active"
+                >
+                  <div className="muhyotext">
+                    <div className="muhyotextin">
+                      <div className="Muhyotechicon">
+                        <GiHadesSymbol />
+                      </div>
+                      <p className="Muhyotechtext">
+                        “Muhyo collaboration: Organized, responsive,
+                        effective—effortless iterations, ensuring successful
+                        outcomes.”
+                      </p>
+
+                      <div className="Muhyotechauthor">
+                        Muhyo Tech Web Developer
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  className="hidden duration-700 ease-in-out"
+                  data-carousel-item
+                >
+                  <div className="muhyotext">
+                    <div className="muhyotextin">
+                      <div className="Muhyotechicon">
+                        <GiHadesSymbol />
+                      </div>
+                      <p className="Muhyotechtext">
+                        “Partnering with Muhyo: Efficient, communicative, smooth
+                        iterations—ensuring productive, successful
+                        collaboration.”
+                      </p>
+
+                      <div className="Muhyotechauthor">
+                        Muhyo Tech Web Developer
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  className="hidden duration-700 ease-in-out"
+                  data-carousel-item
+                >
+                  <div className="muhyotext">
+                    <div className="muhyotextin">
+                      <div className="Muhyotechicon">
+                        <GiHadesSymbol />
+                      </div>
+                      <p className="Muhyotechtext">
+                        “Muhyo teamwork: Organized, responsive,
+                        communicative—successful outcomes, streamlined
+                        iterations, effective collaboration.”
+                      </p>
+
+                      <div className="Muhyotechauthor">
+                        Muhyo Tech Web Developer
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  className="hidden duration-700 ease-in-out"
+                  data-carousel-item
+                >
+                  <div className="muhyotext">
+                    <div className="muhyotextin">
+                      <div className="Muhyotechicon">
+                        <GiHadesSymbol />
+                      </div>
+                      <p className="Muhyotechtext">
+                        “Collaborating with Muhyo: Organized, responsive,
+                        effective—smooth iterations, ensuring successful
+                        collaboration and outcomes.”
+                      </p>
+
+                      <div className="Muhyotechauthor">
+                        Muhyo Tech Web Developer
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-
       <div className="feadbackparent">
         <div className="feadback">
           <div className="flex justify-center items-center feadbakeone">
@@ -152,3 +250,6 @@ function Portfolio() {
 }
 
 export default Portfolio;
+{
+  /*  */
+}
