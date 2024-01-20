@@ -1,8 +1,4 @@
-.active {
-    color: rgb(23, 218, 130);
 
-
-}
 .gototop {
   position: fixed;
   bottom: 20px;
@@ -41,6 +37,7 @@ body {
     scroll-behavior: smooth;
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
+    
   }
 .sidebar{
   z-index: 999;

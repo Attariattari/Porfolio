@@ -157,7 +157,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                   key={index}
                   className="flex justify-center items-center flex-col"
                 >
-                  <div className="font-serif text-2xl">{chapter.title}.</div>
+                  <div className="font-serif text-2xl pb-2">{chapter.title}.</div>
                   <div className="introtwo">{chapter.details}</div>
                 </div>
               ))}
@@ -169,7 +169,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                   key={index}
                   className="flex justify-center items-center flex-col"
                 >
-                  <div className="font-serif text-2xl">{chapter.title}.</div>
+                  <div className="font-serif text-2xl pb-2">{chapter.title}.</div>
                   <div className="introtwo">{chapter.details}</div>
                 </div>
               ))}
@@ -181,7 +181,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                   key={index}
                   className="flex justify-center items-center flex-col"
                 >
-                  <div className="font-serif text-2xl">{chapter.title}.</div>
+                  <div className="font-serif text-2xl pb-2">{chapter.title}.</div>
                   <div className="introtwo">{chapter.details}</div>
                 </div>
               ))}
@@ -193,7 +193,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                   key={index}
                   className="flex justify-center items-center flex-col"
                 >
-                  <div className="font-serif text-2xl">{chapter.title}.</div>
+                  <div className="font-serif text-2xl pb-2">{chapter.title}.</div>
                   <div className="introtwo">{chapter.details}</div>
                 </div>
               ))}
@@ -205,7 +205,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                   key={index}
                   className="flex justify-center items-center flex-col"
                 >
-                  <div className="font-serif text-2xl">{chapter.title}.</div>
+                  <div className="font-serif text-2xl pb-2">{chapter.title}.</div>
                   <div className="introtwo">{chapter.details}</div>
                 </div>
               ))}
@@ -217,7 +217,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                   key={index}
                   className="flex justify-center items-center flex-col"
                 >
-                  <div className="font-serif text-2xl">{chapter.title}.</div>
+                  <div className="font-serif text-2xl pb-2">{chapter.title}.</div>
                   <div className="introtwo">{chapter.details}</div>
                 </div>
               ))}
@@ -229,7 +229,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                   key={index}
                   className="flex justify-center items-center flex-col"
                 >
-                  <div className="font-serif text-2xl">{chapter.title}.</div>
+                  <div className="font-serif text-2xl pb-2">{chapter.title}.</div>
                   <div className="introtwo">{chapter.details}</div>
                 </div>
               ))}
@@ -241,7 +241,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                   key={index}
                   className="flex justify-center items-center flex-col"
                 >
-                  <div className="font-serif text-2xl">{chapter.title}.</div>
+                  <div className="font-serif text-2xl pb-2">{chapter.title}.</div>
                   <div className="introtwo">{chapter.details}</div>
                 </div>
               ))}
@@ -253,7 +253,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                   key={index}
                   className="flex justify-center items-center flex-col"
                 >
-                  <div className="font-serif text-2xl">{chapter.title}.</div>
+                  <div className="font-serif text-2xl pb-2">{chapter.title}.</div>
                   <div className="introtwo">{chapter.details}</div>
                 </div>
               ))}
@@ -265,7 +265,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                   key={index}
                   className="flex justify-center items-center flex-col"
                 >
-                  <div className="font-serif text-2xl">{chapter.title}.</div>
+                  <div className="font-serif text-2xl pb-2">{chapter.title}.</div>
                   <div className="introtwo">{chapter.details}</div>
                 </div>
               ))}

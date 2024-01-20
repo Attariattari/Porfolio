@@ -11,3 +11,7 @@
 .Sidebar.scrolled-bg {
   background-color: #e3872d;
 }
+.Nav{
+  background-color: #e3882ddb;
+  box-shadow: 0 0 24px 0 #2c2c2cdb;
+}
