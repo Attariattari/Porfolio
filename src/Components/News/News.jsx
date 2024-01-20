@@ -1,54 +1,69 @@
 import React, { useState } from "react";
-import "./News.css";
-import Designing from "./../Portfolio/Myportfolios/Designing";
+import "../Services/Services.css";
+import {
+  whatisreact,
+  whatisnodejs,
+  whatisuxuidesigner,
+  whatisbranding,
+  whatisSocialMedia,
+  whatisMarketing
+} from "../../DummyData/DummyData";
+import Servicepopup from "../Services//Servicepopup";
+
+const whatisreacta = [
+  whatisreact,
+  whatisnodejs,
+  whatisuxuidesigner,
+  whatisbranding,
+  whatisSocialMedia,
+  whatisMarketing
+];
 
 function News() {
+  const [selectedNews, setselectedNews] = useState(null);
+
+  const handleButtonClick = (service) => {
+    setselectedNews(service);
+  };
+
+  const closePopup = () => {
+    setselectedNews(null);
+  };
+
   return (
     <div className="News">
       <div className="Servicesabout">
         <div className="Servicesborder">
-          <div className="text-zinc-800 Servicestext">My Strength</div>
-          <div className="text-lg">Check my work strength</div>
+          <div className="text-zinc-800 Servicestext">LATEST NEWS</div>
+          <div className="text-lg">Check out our latest News</div>
         </div>
       </div>
-      <div className="strength">
-        <div className="firstcard flex justify-center items-center flex-col space-y-5">
-          <img
-            src="https://cdn3d.iconscout.com/3d/premium/thumb/web-development-5617617-4674328.png"
-            alt=""
-            style={{
-              width: "70px",
-              height: "70px",
-            }}
-          />
-          <div className="strenthtext">
-            <p className="strenthtitle text-3xl">Web Designing</p>
+      <div className="Servicessection">
+        {whatisreacta.map((service, index) => (
+          <div className="ServiceBox" key={index}>
+            <div className="Servicesdetails">
+              <div className="Servicesicons shadow-lg ">
+                <img src={service.img} alt="" />
+              </div>
+              <div className="text-md font-bold py-2">{service.title}</div>
+              <div className="Servicesinfo">{service.Introduction}</div>
+            </div>
+            <button
+              onClick={() => handleButtonClick(service)}
+              className="Button mt-3"
+            >
+              More info
+            </button>
           </div>
-        </div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
+        ))}
       </div>
+      <Servicepopup selectedNews={selectedNews} closePopup={closePopup} />
     </div>
   );
 }
 
 export default News;
+
 // {
-//   whatisreacta.map((News, index) => (
-//     <div className="ServiceBox" key={index}>
-//       <div className="Servicesdetails">
-//         <div className="Servicesicons shadow-lg ">
-//           <img src={News.img} alt="" />
-//         </div>
-//         <div className="text-md font-bold py-2">{News.title}</div>
-//         <div className="Servicesinfo">{News.Introduction}</div>
-//       </div>
-//       <button onClick={() => handleButtonClick(News)} className="Button mt-3">
-//         More info
-//       </button>
-//     </div>
-//   ));
+//  
 // }

@@ -15,7 +15,7 @@ const sections = [
   { id: "About", title: "About", component: <About /> },
   { id: "Services", title: "Services", component: <Services /> },
   { id: "Portfolio", title: "Portfolio", component: <Portfolio /> },
-  { id: "News", title: "Strength", component: <News /> },
+  { id: "News", title: "News", component: <News /> },
   { id: "Contact", title: "Contact", component: <Contact /> },
 ];
 

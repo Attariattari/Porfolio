@@ -27,6 +27,23 @@
     z-index: 999;
 
 }
+.Newspopup {
+    width: 100%;
+    height: auto;
+    position: absolute;
+    top: 0px;
+    left: -0.1px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+    color: rgb(1, 1, 1);
+    overflow: hidden;
+    z-index: 999;
+
+}
 
 .Servicepopupchild {
     width: 40%;
@@ -45,12 +62,23 @@
     margin-top: 2em;
     margin-bottom: 2em;
 }
+.Newspopupchild {
+    width: 100%;
+    height: 100%;
+    background-color: #ffffffe2;
+    backdrop-filter: blur(100px);
+    position: relative;
+    overflow-y: auto;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+    font-size: 16px;
+    padding: 20px;
+}
 
 @media only screen and (max-width: 1023px) {
     .Servicepopupchild {
         width: 50%;
         height: auto;
-        background-color: #adadade2;
+        background-color: #ffffffe2;
         backdrop-filter: blur(100px);
         position: relative;
         border-radius: 5px 5px 5px 5px;
@@ -99,19 +127,40 @@
         font-size: 16px;
         
     }
-}
-.ImagePopup {
-    width: 100%;
-    height: 15em;
-    object-fit: contain;
+    .introtwo{
+        width: 100%;
+        padding: 0px 0.5em 0px 0.5em;
+    }
 }
 
-.ImagePopup img {
-    width: 100%;
+.allsliderarea{
+    width: 100%; display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.slidernews{
+   width: 100%;
     height: 100%;
-    object-fit: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
+.mainintro{
+    width: 100%;
+    height: auto;
+    margin-top: 3em;
+    display: flex;
+    justify-content: center;
+    align-items: center;flex-direction: column;
+    gap: 20px;
+}
+
+@media (min-width: 780px) {
+    .introtwo {
+      width: 80%;
+    }
+  }
 .Fulldetails {
     width: 100%;
     padding: 15px;
@@ -202,4 +251,48 @@
 }
 .send_data{
     display: none;
+}
+.goback{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 3em;
+}
+.goback Button {
+    width: 30%;
+    padding: 10px;
+    text-decoration: none !important;
+    color: #fff !important;
+    background-color: #E3872D !important;
+    font-weight: 600 !important;
+    font-family: "Montserrat" !important;
+    border-radius: 3px !important;
+    display: inline-block !important;
+    position: relative !important;
+    overflow: hidden !important;
+    border: none !important;
+    font-size: 1em !important;
+    line-height: 1.8 !important;
+    letter-spacing: 0.5px !important;
+    cursor: pointer !important;
+    z-index: 100;
+}
+
+.goback button::before {
+    position: absolute;
+    content: "";
+    top: 0px;
+    height: 100%;
+    left: -25%;
+    width: 0%;
+    background-color: #041230;
+    transform: skew(50deg);
+    transition-duration: .4s;
+    z-index: -100;
+}
+
+.goback button:hover::before {
+    width: 150%;
+    left: -20%;
+
 }

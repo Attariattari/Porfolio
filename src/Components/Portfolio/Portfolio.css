@@ -108,6 +108,7 @@
   font-weight: 600;
   clear: both;
   width: 100%;
+  font-optical-sizing: auto;
 }
 .Muhyotechicon {
   font-size: 3em;
