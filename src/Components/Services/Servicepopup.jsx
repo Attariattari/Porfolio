@@ -5,7 +5,7 @@ import Contact from "../Contact/Contact";
 import { ToastContainer, toast } from "react-toastify";
 import { useData } from "../../UseContaxt/Datacontaxt";
 import SliderComponent from "./SliderComponent";
-
+import { CgCloseR } from "react-icons/cg";
 function Servicepopup({ info, closePopup, selectedNews }) {
   const { setSubjectAndMessage, subject, message } = useData();
   const [scrollDisabled, setScrollDisabled] = useState(false);
@@ -72,16 +72,12 @@ function Servicepopup({ info, closePopup, selectedNews }) {
       {info && (
         <div className="Servicepopup">
           <div className="Servicepopupchild">
-            <div className="Header text-white sticky top-0">
-              <div>{info.title}</div>
-              <button className="Close" onClick={closePopup}>
-                <IoIosCloseCircleOutline className="text-3xl Closeicon" />
-              </button>
-            </div>
             <div className="ImagePopup">
               <img src={info.img} alt="" />
             </div>
-
+            <div className="flex justify-center items-center py-2 font-serif text-xl">
+              <div>{info.title}</div>
+            </div>
             <div className="p-3">{info.details}</div>
             <div className="p-3">{info.detailstwo}</div>
             <div className="p-3">{info.detailsthree}</div>
@@ -94,8 +90,12 @@ function Servicepopup({ info, closePopup, selectedNews }) {
               >
                 Hair Me
               </button>
+
               <ToastContainer position="top-right" theme="dark" />
             </div>
+            <button className="Closeone" onClick={closePopup}>              
+              <CgCloseR  className="text-3xl" />
+            </button>
           </div>
         </div>
       )}
@@ -103,11 +103,14 @@ function Servicepopup({ info, closePopup, selectedNews }) {
         <div className="Newspopup font-serif">
           <div className="Newspopupchild">
             <div className="allsliderarea">
-              <div className="text-3xl"
-              style={{
-                borderBottom:"3px solid #E3872D"
-              }}
-              >{selectedNews.NewsSection}.</div>
+              <div
+                className="text-3xl"
+                style={{
+                  borderBottom: "3px solid #E3872D",
+                }}
+              >
+                {selectedNews.NewsSection}.
+              </div>
               <div className="slidernews">
                 <SliderComponent />
               </div>

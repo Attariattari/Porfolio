@@ -27,6 +27,7 @@
     z-index: 999;
 
 }
+
 .Newspopup {
     width: 100%;
     height: auto;
@@ -62,6 +63,7 @@
     margin-top: 2em;
     margin-bottom: 2em;
 }
+
 .Newspopupchild {
     width: 100%;
     height: 100%;
@@ -107,9 +109,10 @@
         overflow-y: auto;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
         font-size: 16px;
-        
+
     }
 }
+
 @media only screen and (max-width: 768px) {
     .Servicepopupchild {
         width: 90%;
@@ -125,47 +128,85 @@
         overflow-y: auto;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
         font-size: 16px;
-        
+
     }
-    .introtwo{
+
+    .introtwo {
         width: 100%;
         padding: 0px 0.5em 0px 0.5em;
     }
 }
 
-.allsliderarea{
-    width: 100%; display: flex;
+.allsliderarea {
+    width: 100%;
+    display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
 }
-.slidernews{
-   width: 100%;
+
+.slidernews {
+    width: 100%;
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.mainintro{
+.mainintro {
     width: 100%;
     height: auto;
     margin-top: 3em;
     display: flex;
     justify-content: center;
-    align-items: center;flex-direction: column;
+    align-items: center;
+    flex-direction: column;
     gap: 20px;
 }
 
 @media (min-width: 780px) {
     .introtwo {
-      width: 80%;
+        width: 80%;
     }
-  }
+}
+
 .Fulldetails {
     width: 100%;
     padding: 15px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+}
+
+.Closeone {
+    position: absolute;
+    margin: auto;
+    width: 2.3rem;
+    height:2.3rem;
+    top: 0.5rem;
+    right: 0.6rem;
+    cursor: pointer;
+    color: #ffffff;
+    justify-content: center;
+    align-items: center;
+    background-color: #000000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5%;
+    box-shadow: 0 0 24px 0 rgb(3, 3, 3);
+    -webkit-border-radius: 5%;
+    -moz-border-radius: 5%;
+    -ms-border-radius: 5%;
+    -o-border-radius: 5%;
+}
+
+.Closeone:hover {
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 0 24px 0 rgb(39, 39, 39);
+    transition: transform 0.4s ease-out, box-shadow 0.4s ease-out;
+    -webkit-transform: scale(1.1) rotate(360deg);
+    -moz-transform: scale(1.1) rotate(360deg);
+    -ms-transform: scale(1.1) rotate(360deg);
+    -o-transform: scale(1.1) rotate(360deg);
 }
 
 .Close {
@@ -178,7 +219,7 @@
 }
 
 .Close :hover {
-    
+
     transform: scale(1.2) rotate(360deg);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     transition: transform 0.4s ease-out, box-shadow 0.4s ease-out;
@@ -204,14 +245,17 @@
     -ms-border-radius: 5px 5px 0px 0px;
     -o-border-radius: 5px 5px 0px 0px;
 }
-.Header div{
+
+.Header div {
     width: 90%;
 }
-.Header button{
+
+.Header button {
     width: 10%;
     display: flex;
     justify-content: flex-end;
 }
+
 .FullDetails Button {
     width: 100%;
     padding: 10px;
@@ -250,15 +294,18 @@
     left: -20%;
 
 }
-.send_data{
+
+.send_data {
     display: none;
 }
-.goback{
+
+.goback {
     display: flex;
     justify-content: center;
     align-items: center;
     margin-top: 3em;
 }
+
 .goback Button {
     width: 30%;
     padding: 10px;
