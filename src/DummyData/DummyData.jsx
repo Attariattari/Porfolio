@@ -517,6 +517,7 @@ export const frenchtoday = {
 export const whatisreact = {
   img: "https://a.storyblok.com/f/231922/1726x1040/77b3bc456f/tutorial-react-image.png/m/1200x630/",
   title: "Mastering React for Modern Web Development.",
+  NewsSection:"React",
   Introduction:
     "In the ever-evolving landscape of web development, React has emerged as a powerhouse for creating dynamic and responsive user interfaces. Its popularity and efficiency make it an indispensable tool for developers. In this blog post, we'll dive into the fundamentals of React and explore its key concepts.",
   IntroductionTwo:
@@ -597,6 +598,7 @@ export const whatisreact = {
 export const whatisnodejs = {
   img: "https://e1.pxfuel.com/desktop-wallpaper/556/958/desktop-wallpaper-react-js-mern-stack.jpg",
   title: "Unleashing the Power of Node.js in Web Development",
+  NewsSection:"Node.js",
   Introduction:
     "In the dynamic realm of web development, Node.js has emerged as a transformative force. This blog post serves as a comprehensive guide, unraveling the core concepts of Node.js and showcasing its prowess in crafting robust and scalable web applications.",
   IntroductionTwo:
@@ -676,6 +678,7 @@ export const whatisnodejs = {
 export const whatisuxuidesigner = {
   img: "https://wallpapercave.com/dwp1x/wp9775513.jpg",
   title: "Decoding the Craft: A Dive into UX/UI Design",
+  NewsSection:"UX/XI Designer",
   Introduction:
     "In the multifaceted world of web development, the harmony of User Experience (UX) and User Interface (UI) design is an art form that defines the success of digital products. This blog post is your compass into the realm of UX/UI design, unraveling its significance, principles, and the impact it has on crafting exceptional user journeys.",
   IntroductionTwo:
@@ -755,6 +758,7 @@ export const whatisuxuidesigner = {
 export const whatisbranding = {
   img: "https://images.unsplash.com/photo-1518893494013-481c1d8ed3fd?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fGJyYW5kfGVufDB8fDB8fHww",
   title: "The Art of Branding in Web Development.",
+  NewsSection:"Branding",
   Introduction:
     "In the digital age, where first impressions are often made online, the concept of branding has transcended the traditional realm of business. This blog post aims to unravel the essence of branding, exploring its significance, principles, and its intersection with the world of web development.",
   IntroductionTwo:
@@ -834,6 +838,7 @@ export const whatisbranding = {
 export const whatisSocialMedia = {
   img: "https://www.vocso.com/blog/wp-content/uploads/2023/05/The-Role-Of-Website-Design-In-Building-A-Strong-Social-Media-Following.webp",
   title: "The Role of Social Media in Web Development.",
+  NewsSection:"Social Media",
   Introduction:
     "In the contemporary digital landscape, social media has become an integral part of our online experiences. As a web developer, understanding the dynamics of social media is paramount. This blog post aims to explore the symbiotic relationship between web development and social media, challenges, and the art of crafting compelling online spaces.",
   IntroductionTwo:
@@ -913,6 +918,7 @@ export const whatisSocialMedia = {
 export const whatisMarketing = {
   img: "https://danielpuiatti.com/wp-content/uploads/2023/01/Dreamweaver-Is-It-Still-a-Viable-Web-Development-Tool-1200x686.webp",
   title: "Unveiling the Web Developer's Guide to Marketing",
+  NewsSection:"Marketing",
   Introduction:
     "In the ever-evolving digital landscape, the symbiotic relationship between web development and marketing is undeniable. As a web developer, understanding the fundamentals of marketing can elevate your projects and contribute to their success. Showcasing the art of crafting compelling online narratives.",
   IntroductionTwo:
