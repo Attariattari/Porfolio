@@ -4,6 +4,7 @@ import { IoIosCloseCircleOutline } from "react-icons/io";
 import Contact from "../Contact/Contact";
 import { ToastContainer, toast } from "react-toastify";
 import { useData } from "../../UseContaxt/Datacontaxt";
+import SliderComponent from "./SliderComponent";
 
 function Servicepopup({ info, closePopup, selectedNews }) {
   const { setSubjectAndMessage, subject, message } = useData();
@@ -103,47 +104,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
           <div className="Newspopupchild">
             <div className="allsliderarea">
               <div className="slidernews">
-                <div
-                  id="gallery"
-                  className="relative w-full"
-                  data-carousel="slide"
-                >
-                  <div className="relative h-96 overflow-hidden rounded-lg md:h-96">
-                    {[1, 2, 3, 4, 5].map((index) => (
-                      <div
-                        key={index}
-                        className={`duration-700 ease-in-out transition-opacity ${
-                          activeIndex === index ? "opacity-100" : "opacity-0"
-                        }`}
-                        data-carousel-item={
-                          activeIndex === index ? "active" : undefined
-                        }
-                      >
-                        <img
-                          src={`https://flowbite.s3.amazonaws.com/docs/gallery/square/image-${index}.jpg`}
-                          className="absolute block max-w-full h-auto -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 opacity-100"
-                          alt=""
-                        />
-                      </div>
-                    ))}
-                  </div>
-                  <button
-                    type="button"
-                    className="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
-                    data-carousel-prev
-                    onClick={prevSlide}
-                  >
-                    <span>&lt; Previous</span>
-                  </button>
-                  <button
-                    type="button"
-                    className="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
-                    data-carousel-next
-                    onClick={nextSlide}
-                  >
-                    <span>Next &gt;</span>
-                  </button>
-                </div>
+                <SliderComponent/>
               </div>
             </div>
             <div className="mainintro">
