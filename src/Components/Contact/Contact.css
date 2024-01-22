@@ -125,6 +125,9 @@ border-bottom: 1px solid black;
   color: #fff;
   margin-top: 3em;
 }
+.inputbottomborder{
+border-bottom: black 1px solid;
+}
 /* .maps {
     width: 70%;
     height: 100%;
