@@ -86,17 +86,18 @@ function About() {
       <div className="mainsection">
         <div className="AboutImage">
           <div>
-          <Tilt className="Tilt" options={defaultOptions}>
-            <div className="ImageSet">
-              <div className="ImageShow">
-                <img
-                  className=""
-                  src="https://images.pexels.com/photos/35537/child-children-girl-happy.jpg?cs=srgb&dl=pexels-bess-hamiti-35537.jpg&fm=jpg"
-                  alt=""
-                />
-              </div>
-            </div>{" "}
-          </Tilt></div>
+            <Tilt className="Tilt" options={defaultOptions}>
+              <div className="ImageSet">
+                <div className="ImageShow">
+                  <img
+                    className=""
+                    src="https://images.pexels.com/photos/35537/child-children-girl-happy.jpg?cs=srgb&dl=pexels-bess-hamiti-35537.jpg&fm=jpg"
+                    alt=""
+                  />
+                </div>
+              </div>{" "}
+            </Tilt>
+          </div>
         </div>
 
         <div className="aboutinfo">

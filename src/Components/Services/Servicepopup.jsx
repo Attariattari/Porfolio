@@ -78,11 +78,11 @@ function Servicepopup({ info, closePopup, selectedNews }) {
             <div className="flex justify-center items-center py-2 font-serif text-xl">
               <div>{info.title}</div>
             </div>
-            <div className="p-3">{info.details}</div>
-            <div className="p-3">{info.detailstwo}</div>
-            <div className="p-3">{info.detailsthree}</div>
-            <div className="p-3">{info.detailsfour}</div>
-            <div className="mt-3 p-3 font-bold">{info.forhair}</div>
+            <div className="p-3 text-center">{info.details}</div>
+            <div className="p-3 text-center">{info.detailstwo}</div>
+            <div className="p-3 text-center">{info.detailsthree}</div>
+            <div className="p-3 text-center">{info.detailsfour}</div>
+            <div className="mt-3 p-3 text-center font-bold">{info.forhair}</div>
             <div className="p-3 FullDetails">
               <button
                 className="Fulldetails"
@@ -117,7 +117,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
             </div>
             <div className="mainintro">
               <div className="font-serif text-3xl">Introduction:</div>
-              <div className="introtwo">{selectedNews.IntroductionTwo}</div>
+              <div className="introtwo text-center">{selectedNews.IntroductionTwo}</div>
             </div>
             <div className="mainintro">
               <div className="font-serif text-3xl">Chapter 1:</div>
@@ -129,7 +129,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                   <div className="font-serif text-2xl pb-2">
                     {chapter.title}.
                   </div>
-                  <div className="introtwo">{chapter.details}</div>
+                  <div className="introtwo text-center">{chapter.details}</div>
                 </div>
               ))}
             </div>
@@ -143,7 +143,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                   <div className="font-serif text-2xl pb-2">
                     {chapter.title}.
                   </div>
-                  <div className="introtwo">{chapter.details}</div>
+                  <div className="introtwo text-center">{chapter.details}</div>
                 </div>
               ))}
             </div>
@@ -157,7 +157,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                   <div className="font-serif text-2xl pb-2">
                     {chapter.title}.
                   </div>
-                  <div className="introtwo">{chapter.details}</div>
+                  <div className="introtwo text-center">{chapter.details}</div>
                 </div>
               ))}
             </div>
@@ -171,7 +171,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                   <div className="font-serif text-2xl pb-2">
                     {chapter.title}.
                   </div>
-                  <div className="introtwo">{chapter.details}</div>
+                  <div className="introtwo text-center">{chapter.details}</div>
                 </div>
               ))}
             </div>
@@ -185,7 +185,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                   <div className="font-serif text-2xl pb-2">
                     {chapter.title}.
                   </div>
-                  <div className="introtwo">{chapter.details}</div>
+                  <div className="introtwo text-center">{chapter.details}</div>
                 </div>
               ))}
             </div>
@@ -199,7 +199,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                   <div className="font-serif text-2xl pb-2">
                     {chapter.title}.
                   </div>
-                  <div className="introtwo">{chapter.details}</div>
+                  <div className="introtwo text-center">{chapter.details}</div>
                 </div>
               ))}
             </div>
@@ -213,7 +213,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                   <div className="font-serif text-2xl pb-2">
                     {chapter.title}.
                   </div>
-                  <div className="introtwo">{chapter.details}</div>
+                  <div className="introtwo text-center">{chapter.details}</div>
                 </div>
               ))}
             </div>
@@ -227,7 +227,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                   <div className="font-serif text-2xl pb-2">
                     {chapter.title}.
                   </div>
-                  <div className="introtwo">{chapter.details}</div>
+                  <div className="introtwo text-center">{chapter.details}</div>
                 </div>
               ))}
             </div>
@@ -241,7 +241,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                   <div className="font-serif text-2xl pb-2">
                     {chapter.title}.
                   </div>
-                  <div className="introtwo">{chapter.details}</div>
+                  <div className="introtwo text-center">{chapter.details}</div>
                 </div>
               ))}
             </div>
@@ -255,13 +255,13 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                   <div className="font-serif text-2xl pb-2">
                     {chapter.title}.
                   </div>
-                  <div className="introtwo">{chapter.details}</div>
+                  <div className="introtwo text-center">{chapter.details}</div>
                 </div>
               ))}
             </div>
             <div className="mainintro">
               <div className="font-serif text-3xl">By The End Of Guide:</div>
-              <div className="introtwo">{selectedNews.end}</div>
+              <div className="introtwo text-center">{selectedNews.end}</div>
             </div>
             <div className="mainintro">
               <div className="font-serif text-3xl">Thanks For Read. 👍</div>

@@ -41,7 +41,7 @@ export default function TextSlider() {
               <div className="Muhyotechicon">
                 <GiHadesSymbol />
               </div>
-              <p className="Muhyotechtext">
+              <p className="Muhyotechtext text-center">
                 “Awesome to work with Muhyo. Good organized, easy to communicate
                 with, responsive with next iterations.”
               </p>
@@ -56,7 +56,7 @@ export default function TextSlider() {
               <div className="Muhyotechicon">
                 <GiHadesSymbol />
               </div>
-              <p className="Muhyotechtext">
+              <p className="Muhyotechtext text-center">
                 “Muhyo collaboration: Organized, responsive,
                 effective—effortless iterations, ensuring successful outcomes.”
               </p>
@@ -71,7 +71,7 @@ export default function TextSlider() {
               <div className="Muhyotechicon">
                 <GiHadesSymbol />
               </div>
-              <p className="Muhyotechtext">
+              <p className="Muhyotechtext text-center">
                 “Partnering with Muhyo: Efficient, communicative, smooth
                 iterations—ensuring productive, successful collaboration.”
               </p>
@@ -86,7 +86,7 @@ export default function TextSlider() {
               <div className="Muhyotechicon">
                 <GiHadesSymbol />
               </div>
-              <p className="Muhyotechtext">
+              <p className="Muhyotechtext text-center">
                 “Muhyo teamwork: Organized, responsive, communicative—successful
                 outcomes, streamlined iterations, effective collaboration.”
               </p>
@@ -101,7 +101,7 @@ export default function TextSlider() {
               <div className="Muhyotechicon">
                 <GiHadesSymbol />
               </div>
-              <p className="Muhyotechtext">
+              <p className="Muhyotechtext text-center">
                 “Collaborating with Muhyo: Organized, responsive,
                 effective—smooth iterations, ensuring successful collaboration
                 and outcomes.”
@@ -133,7 +133,7 @@ export default function TextSlider() {
                       <div className="Muhyotechicon">
                         <GiHadesSymbol />
                       </div>
-                      <p className="Muhyotechtext">
+                      <p className="Muhyotechtext text-center">
                         “Awesome to work with Muhyo. Good organized, easy to
                         communicate with, responsive with next iterations.”
                       </p>
@@ -153,7 +153,7 @@ export default function TextSlider() {
                       <div className="Muhyotechicon">
                         <GiHadesSymbol />
                       </div>
-                      <p className="Muhyotechtext">
+                      <p className="Muhyotechtext text-center">
                         “Muhyo collaboration: Organized, responsive,
                         effective—effortless iterations, ensuring successful
                         outcomes.”
@@ -174,7 +174,7 @@ export default function TextSlider() {
                       <div className="Muhyotechicon">
                         <GiHadesSymbol />
                       </div>
-                      <p className="Muhyotechtext">
+                      <p className="Muhyotechtext text-center">
                         “Partnering with Muhyo: Efficient, communicative, smooth
                         iterations—ensuring productive, successful
                         collaboration.”
@@ -195,7 +195,7 @@ export default function TextSlider() {
                       <div className="Muhyotechicon">
                         <GiHadesSymbol />
                       </div>
-                      <p className="Muhyotechtext">
+                      <p className="Muhyotechtext text-center">
                         “Muhyo teamwork: Organized, responsive,
                         communicative—successful outcomes, streamlined
                         iterations, effective collaboration.”
@@ -216,7 +216,7 @@ export default function TextSlider() {
                       <div className="Muhyotechicon">
                         <GiHadesSymbol />
                       </div>
-                      <p className="Muhyotechtext">
+                      <p className="Muhyotechtext text-center">
                         “Collaborating with Muhyo: Organized, responsive,
                         effective—smooth iterations, ensuring successful
                         collaboration and outcomes.”

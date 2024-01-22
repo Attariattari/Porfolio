@@ -98,6 +98,7 @@
 .secondchild {
   font-size: 16px;
   color: #010101c9;
+  text-align: center;
 }
 
 @media only screen and (max-width: 1350px) {
@@ -524,6 +525,7 @@
   font-weight: 500;
   color: #2e2e2f;
   height: auto;
+  text-align: center;
 }
 
 .table-fixed {
