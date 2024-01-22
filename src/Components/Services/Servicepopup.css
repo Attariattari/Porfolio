@@ -201,7 +201,7 @@
 
 .Closeone:hover {
     transform: scale(1.1) rotate(360deg);
-    box-shadow: 0 0 24px 0 rgb(39, 39, 39);
+    box-shadow: 0 0 24px 0 rgb(0, 0, 0);
     transition: transform 0.4s ease-out, box-shadow 0.4s ease-out;
     -webkit-transform: scale(1.1) rotate(360deg);
     -moz-transform: scale(1.1) rotate(360deg);

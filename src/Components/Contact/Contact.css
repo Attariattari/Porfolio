@@ -56,6 +56,7 @@ border-bottom: 1px solid black;
   cursor: pointer !important;
   z-index: 100;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+  margin-bottom: 3em;
 }
 
 .submitform .buttonsub::before {
@@ -109,6 +110,9 @@ border-bottom: 1px solid black;
     padding-left: 0.5em;
     padding-right: 0.5em;
   }
+  .Footer{
+    margin-top: 3em;
+  }
 }
 .Footer{
   width: 100%;
@@ -119,6 +123,7 @@ border-bottom: 1px solid black;
   justify-content: start;
   align-items: center;
   color: #fff;
+  margin-top: 3em;
 }
 /* .maps {
     width: 70%;

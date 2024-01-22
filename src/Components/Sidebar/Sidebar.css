@@ -15,3 +15,39 @@
   background-color: #E3872D;
   box-shadow: 0 0 24px 0 #2c2c2cdb;
 }
+.navclosebutton {
+  margin: auto;
+  width: 2.3rem;
+  height:2.3rem;
+  top: 0.5rem;
+  right: 0.6rem;
+  cursor: pointer;
+  color: #ffffff;
+  justify-content: center;
+  align-items: center;
+  background-color: #e3872d;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5%;
+  box-shadow: 0 0 24px 0 rgb(3, 3, 3);
+  -webkit-border-radius: 5%;
+  -moz-border-radius: 5%;
+  -ms-border-radius: 5%;
+  -o-border-radius: 5%;
+}
+
+.navclosebutton:hover {
+  transform: scale(1.1) rotate(360deg);
+  box-shadow: 0 0 24px 0 rgb(5, 5, 5);
+  transition: transform 0.4s ease-out, box-shadow 0.4s ease-out;
+  -webkit-transform: scale(1.1) rotate(360deg);
+  -moz-transform: scale(1.1) rotate(360deg);
+  -ms-transform: scale(1.1) rotate(360deg);
+  -o-transform: scale(1.1) rotate(360deg);
+}
+@media (min-width: 1024px) {
+  .navclosebutton{
+      display: none;
+  }
+}

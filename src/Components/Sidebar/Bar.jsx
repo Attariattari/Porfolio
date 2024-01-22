@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { HiMenu } from "react-icons/hi";
 import "./Sidebar.css";
-
+import { CgCloseR } from "react-icons/cg";
 export default function Sidebar({ sections }) {
   const scrollToSection = (id) => {
     document.getElementById(id).scrollIntoView({ behavior: "smooth" });
@@ -44,10 +44,10 @@ export default function Sidebar({ sections }) {
           sections={sections}
         >
           <button
+            className="absolute right-3 top-3 md:hidden navclosebutton"
             onClick={() => setShowNav(false)}
-            className="absolute right-0 top-0 md:hidden"
           >
-            Close
+            <CgCloseR className="text-3xl" />
           </button>
         </Nav>
       </div>
