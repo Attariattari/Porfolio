@@ -13,6 +13,9 @@ function Portfolio() {
     localStorage.getItem("activeButton") || "All Show"
   );
 
+  // State to track initial load
+  const [initialLoad, setInitialLoad] = useState(true);
+
   const portfolioData = [
     { category: "Mern Stack", content: <Mernstack /> },
     { category: "UX / UI Designing", content: <UXUIDesigner /> },
@@ -28,6 +31,14 @@ function Portfolio() {
   useEffect(() => {
     localStorage.setItem("activeButton", activeButton);
   }, [activeButton]);
+
+  // Set "All Show" as active on initial load
+  useEffect(() => {
+    if (initialLoad) {
+      setActiveButton("All Show");
+      setInitialLoad(false);
+    }
+  }, [initialLoad]);
 
   const filteredData =
     activeButton === "All Show"
@@ -97,7 +108,7 @@ function Portfolio() {
       <div className="Muhyotech">
         <div className="Muhyotechclicd">
           <div className="webprojectsinfo">
-            <TextSlider/>
+            <TextSlider />
           </div>
         </div>
       </div>
