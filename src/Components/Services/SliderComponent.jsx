@@ -32,7 +32,7 @@ export default function SliderComponent() {
         className="mySwiper"
       >
         <SwiperSlide>
-          <img src="https://images.pexels.com/photos/35537/child-children-girl-happy.jpg?cs=srgb&dl=pexels-bess-hamiti-35537.jpg&fm=jpg" />
+          <img src="https://i.postimg.cc/fTtMpFwj/1706786499282.jpg" />
         </SwiperSlide>
         <SwiperSlide>
           <img src="https://swiperjs.com/demos/images/nature-2.jpg" />
@@ -56,7 +56,7 @@ export default function SliderComponent() {
           <img src="https://swiperjs.com/demos/images/nature-8.jpg" />
         </SwiperSlide>
         <SwiperSlide>
-          <img src="https://swiperjs.com/demos/images/nature-9.jpg" />
+          <img src="https://i.postimg.cc/fTtMpFwj/1706786499282.jpg" />
         </SwiperSlide>
       </Swiper>
     </>

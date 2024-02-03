@@ -115,11 +115,11 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                 <SliderComponent />
               </div>
             </div>
-            <div className="mainintro">
+            <div className="mainintro text-center">
               <div className="font-serif text-3xl">Introduction:</div>
               <div className="introtwo text-center">{selectedNews.IntroductionTwo}</div>
             </div>
-            <div className="mainintro">
+            <div className="mainintro text-center">
               <div className="font-serif text-3xl">Chapter 1:</div>
               {selectedNews.ChapterOne.map((chapter, index) => (
                 <div
@@ -133,7 +133,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                 </div>
               ))}
             </div>
-            <div className="mainintro">
+            <div className="mainintro text-center">
               <div className="font-serif text-3xl">Chapter 2:</div>
               {selectedNews.ChapterTwo.map((chapter, index) => (
                 <div
@@ -147,7 +147,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                 </div>
               ))}
             </div>
-            <div className="mainintro">
+            <div className="mainintro text-center">
               <div className="font-serif text-3xl">Chapter 3:</div>
               {selectedNews.Chapterthree.map((chapter, index) => (
                 <div
@@ -161,7 +161,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                 </div>
               ))}
             </div>
-            <div className="mainintro">
+            <div className="mainintro text-center">
               <div className="font-serif text-3xl">Chapter 4:</div>
               {selectedNews.Chapterfour.map((chapter, index) => (
                 <div
@@ -175,7 +175,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                 </div>
               ))}
             </div>
-            <div className="mainintro">
+            <div className="mainintro text-center">
               <div className="font-serif text-3xl">Chapter 5:</div>
               {selectedNews.Chapterfive.map((chapter, index) => (
                 <div
@@ -189,7 +189,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                 </div>
               ))}
             </div>
-            <div className="mainintro">
+            <div className="mainintro text-center">
               <div className="font-serif text-3xl">Chapter 6:</div>
               {selectedNews.Chaptersix.map((chapter, index) => (
                 <div
@@ -203,7 +203,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                 </div>
               ))}
             </div>
-            <div className="mainintro">
+            <div className="mainintro text-center">
               <div className="font-serif text-3xl">Chapter 7:</div>
               {selectedNews.Chapterseven.map((chapter, index) => (
                 <div
@@ -217,7 +217,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                 </div>
               ))}
             </div>
-            <div className="mainintro">
+            <div className="mainintro text-center">
               <div className="font-serif text-3xl">Chapter 8:</div>
               {selectedNews.Chaptereight.map((chapter, index) => (
                 <div
@@ -231,7 +231,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                 </div>
               ))}
             </div>
-            <div className="mainintro">
+            <div className="mainintro text-center">
               <div className="font-serif text-3xl">Chapter 9:</div>
               {selectedNews.Chapternine.map((chapter, index) => (
                 <div
@@ -245,7 +245,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                 </div>
               ))}
             </div>
-            <div className="mainintro">
+            <div className="mainintro text-center">
               <div className="font-serif text-3xl">Chapter 10:</div>
               {selectedNews.Chapterten.map((chapter, index) => (
                 <div
@@ -259,11 +259,11 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                 </div>
               ))}
             </div>
-            <div className="mainintro">
+            <div className="mainintro text-center">
               <div className="font-serif text-3xl">By The End Of Guide:</div>
               <div className="introtwo text-center">{selectedNews.end}</div>
             </div>
-            <div className="mainintro">
+            <div className="mainintro text-center">
               <div className="font-serif text-3xl">Thanks For Read. 👍</div>
             </div>
             <div className="goback">
