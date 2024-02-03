@@ -58,7 +58,7 @@ h1, h2, h3 {
 }
 /* Adjust the width of the scrollbar */
 ::-webkit-scrollbar {
-    width: 0rem;
+    width: 1rem;
 }
 /* Style the track of the scrollbar */
 ::-webkit-scrollbar-track {
@@ -66,8 +66,8 @@ h1, h2, h3 {
 }
 /* Style the thumb of the scrollbar */
 ::-webkit-scrollbar-thumb {
-    background-color: #e3882d00;
-    width: 0em;
+    background-color: #e3882d;
+    width: 0.5em;
     border-radius: 1px;
     background-clip: content-box;
     min-height: 20px;

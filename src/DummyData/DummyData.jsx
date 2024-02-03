@@ -236,8 +236,7 @@ Best regards,
 };
 // ================================Mern Stack Data=================================
 export const Mernstackfirst = {
-  img: "https://images.pexels.com/photos/35537/child-children-girl-happy.jpg?cs=srgb&dl=pexels-bess-hamiti-35537.jpg&fm=jpg",
-  iconfirst: <LuSearchCode />,
+  img: "https://i.postimg.cc/fTtMpFwj/1706786499282.jpg",
   iconSecond: <FaPlus />,
   title: "Melt Water",
   createit: "11-12-2020",
@@ -249,7 +248,8 @@ export const Mernstackfirst = {
     "Melt water is a company which provides solution which helps customers make more informed decisions.",
 };
 export const Mernstacksecond = {
-  img: "https://images.unsplash.com/photo-1517061391662-b09454c10462?q=80&w=1533&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  img: "https://images.pexels.com/photos/35537/child-children-girl-happy.jpg?cs=srgb&dl=pexels-bess-hamiti-35537.jpg&fm=jpg",
+  iconfirst: <LuSearchCode />,
   iconfirst: <LuSearchCode />,
   iconSecond: <FaPlus />,
   title: "Aiaiai Audio",
