@@ -91,7 +91,7 @@ function About() {
                 <div className="ImageShow">
                   <img
                     className=""
-                    src="/public/1706786499282.jpg"
+                    src="https://i.postimg.cc/fTtMpFwj/1706786499282.jpg"
                     alt=""
                   />
                 </div>
