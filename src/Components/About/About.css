@@ -20,23 +20,25 @@
   justify-content: space-between;
   align-items: center;
   margin-top: 6em;
+ gap: 20px;
 }
 
 .AboutImage {
-  width: 35%;
+  width: 39%;
   height: 30em;
   display: flex;
   justify-content: center;
-  margin-left: -1em;
+  align-items: flex-start;
+  margin-top: -8em;
 }
 
 .ImageSet {
-  width: 17em;
-  height: 19em;
+  width: 27em;
+  height: 30em;
 }
 
 .aboutinfo {
-  width: 65%;
+  width: 59%;
   height: auto;
   padding-right: 2em;
   margin-bottom: 2em;
@@ -122,9 +124,8 @@
   }
 
   .ImageSet {
-    width: 17em;
-    height: 19em;
-    background-color: #2e2e2f;
+    width: 23em;
+    height: 27em;
   }
 
   .aboutinfo {
@@ -146,6 +147,10 @@
     font-weight: bold;
   }
 
+  .AboutImage {
+    margin-top: -18em;
+  }
+
   .aboutinfo {
     width: 60%;
     height: auto;
@@ -154,9 +159,8 @@
   }
 
   .ImageSet {
-    width: 15em;
-    height: 17em;
-    background-color: #2e2e2f;
+    width: 21em;
+    height: 25em;
   }
 
   .Aboutsomeglassy {
@@ -197,6 +201,11 @@
     padding: 1em;
   }
 
+  .ImageSet {
+    width: 18em;
+    height: 23em;
+  }
+
   .firstchild {
     font-size: 20px;
     font-weight: 600;
@@ -211,7 +220,7 @@
 
 @media only screen and (max-width: 1023px) {
   .AboutImage {
-    width: 35%;
+    width: 39%;
     height: 30em;
     display: flex;
     justify-content: center;
@@ -219,16 +228,17 @@
   }
 
   .ImageSet {
-    width: 17em;
-    height: 19em;
+    width: 23em;
+    height: 29em;
   }
 
   .aboutinfo {
-    width: 65%;
+    width: 59%;
     height: auto;
     padding-right: 0em;
     margin-bottom: 2em;
     padding-bottom: 2em;
+    padding-right: 1em;
   }
 
   .AboutDetailsme {
@@ -267,7 +277,7 @@
 
   .mainsection {
     width: 100%;
-    height: auto;
+    height:100%;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -277,16 +287,21 @@
   }
 
   .AboutImage {
-    width: 80%;
-    height: 35em;
+    width: 100%;
+    height: 30em;
     display: flex;
     justify-content: center;
+    align-items: center;
     margin-bottom: 3em;
+    margin-top:0em;
   }
 
   .ImageSet {
-    width: 95%;
-    height: 100%;
+    width: 25em;
+    height: 31em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .aboutinfo {
@@ -392,8 +407,8 @@
   }
 
   .ImageSet {
-    width: 91%;
-    height: 25em;
+    width: 24em;
+    height: 30em;
     margin-left: 14px;
   }
 
@@ -435,8 +450,8 @@
   }
 
   .ImageSet {
-    width: 91%;
-    height: 25em;
+    width: 24em;
+    height: 30em;
   }
 
   .aboutinfo {

@@ -30,14 +30,13 @@ function Nav({ show, children, sections, scrollToSection }) {
         <div className="flex flex-col gap-7 p-10  text-lg font-extralight">
           <div className="">
             {sections.map((section) => (
-              <Link
-                to={section.id}
-                key={section.id}
+              <div
+                key={`/${section.id}`}
                 onClick={() => scrollToSection(section.id)}
                 className={`LinkHover  ${section.id}Hover`}
               >
                 {section.title}
-              </Link>
+              </div>
             ))}
           </div>
         </div>

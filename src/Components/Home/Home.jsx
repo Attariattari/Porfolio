@@ -15,7 +15,7 @@ function Home() {
           <div className="border rounded-full">
             <img
               className="avtar rounded-full"
-              src="https://images.pexels.com/photos/35537/child-children-girl-happy.jpg?cs=srgb&dl=pexels-bess-hamiti-35537.jpg&fm=jpg"
+              src="/public/1706786499282.jpg"
               alt=""
             />
           </div>
