@@ -4,7 +4,7 @@ import "../Components/Sidebar/Bar";
 import "./Nav.css";
 import { Link } from "react-router-dom";
 
-function Nav({ show, children, sections, scrollToSection }) {
+function Nav({ show, children, sections, handleSectionClick }) {
   
   return (
     <div
@@ -32,7 +32,7 @@ function Nav({ show, children, sections, scrollToSection }) {
             {sections.map((section) => (
               <div
                 key={`/${section.id}`}
-                onClick={() => scrollToSection(section.id)}
+                onClick={() => handleSectionClick(section.id)}
                 className={`LinkHover  ${section.id}Hover`}
               >
                 {section.title}
