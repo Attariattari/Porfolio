@@ -2,7 +2,13 @@
     width: 100%;
     height: auto;
 }
-@media only screen and (max-width: 1950px) {
+.ContactUs{
+  color: #E3872D;
+  font-weight: bold;
+  border-bottom: 1px solid #E3872D;
+  margin-bottom: 2em;
+}
+@media only screen and (max-width: 100000000000px) {
 .formarea {
     width: 100%;
     height: 30em;
@@ -112,6 +118,9 @@ border-bottom: 1px solid black;
   }
   .Footer{
     margin-top: 3em;
+  }
+  .contectinfo{
+    margin-top: 6em;
   }
 }
 .Footer{

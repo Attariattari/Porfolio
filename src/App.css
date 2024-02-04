@@ -58,21 +58,21 @@ h1, h2, h3 {
 }
 /* Adjust the width of the scrollbar */
 ::-webkit-scrollbar {
-    width: 1rem;
+    width: 10px;
 }
 /* Style the track of the scrollbar */
 ::-webkit-scrollbar-track {
-    background-color: #00000000 transparent;
+    background-color: #ffffff; width: 10px;
 }
 /* Style the thumb of the scrollbar */
 ::-webkit-scrollbar-thumb {
     background-color: #e3882d;
-    width: 0.5em;
-    border-radius: 1px;
+    width: 10px;
+    border-radius: 10px;
     background-clip: content-box;
-    min-height: 20px;
-    -webkit-border-radius: 1px;
-    -moz-border-radius: 1px;
-    -ms-border-radius: 1px;
-    -o-border-radius: 1px;
+    min-height: auto;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
 }
