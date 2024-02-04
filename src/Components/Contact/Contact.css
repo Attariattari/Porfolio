@@ -1,15 +1,17 @@
 .Contact {
-    width: 100%;
-    height: auto;
+  width: 100%;
+  height: auto;
 }
-.ContactUs{
+
+.ContactUs {
   color: #E3872D;
   font-weight: bold;
   border-bottom: 1px solid #E3872D;
   margin-bottom: 2em;
 }
+
 @media only screen and (max-width: 100000000000px) {
-.formarea {
+  .formarea {
     width: 100%;
     height: 30em;
     margin-top: 6em;
@@ -19,30 +21,31 @@
     justify-content: center;
     align-items: center;
     margin-bottom: 2em;
-}
+  }
 
-.contectinfo {
+  .contectinfo {
     width: 40%;
     height: 100%;
     display: flex;
     justify-content: start;
     align-items: start;
     flex-direction: column;
-}
+  }
 
-.form {
+  .form {
     width: 60%;
     height: 100%;
     display: flex;
     justify-content: start;
     align-items: start;
-    
+
+  }
+
+  .borderform {
+    border-bottom: 1px solid black;
+  }
 }
-.borderform
-{
-border-bottom: 1px solid black;
-}
-}
+
 .submitform .buttonsub {
   width: 50%;
   padding: 10px;
@@ -83,6 +86,7 @@ border-bottom: 1px solid black;
   left: -20%;
 
 }
+
 @media only screen and (max-width: 1023px) {
   .formarea {
     width: 100%;
@@ -93,37 +97,47 @@ border-bottom: 1px solid black;
     flex-direction: column;
     margin-bottom: 5em;
     margin-top: 6em;
+  }
+
+  .contectinfo {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: start;
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .form {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: start;
+    align-items: start;
+    margin-top: 2em;
+  }
 }
-.contectinfo {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: start;
-  align-items: start;
-  flex-direction: column;
-}
-.form {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: start;
-  align-items: start;
- margin-top: 2em;
-}
-}
+
 @media only screen and (max-width: 600px) {
   .formarea {
     padding-left: 0.5em;
     padding-right: 0.5em;
   }
-  .Footer{
+
+  .Footer {
     margin-top: 3em;
   }
-  .contectinfo{
+
+  .buttonsub {
+    padding-bottom: 2em;
+  }
+
+  .contectinfo {
     margin-top: 6em;
   }
 }
-.Footer{
+
+.Footer {
   width: 100%;
   height: 8em;
   background-color: #041230;
@@ -134,9 +148,11 @@ border-bottom: 1px solid black;
   color: #fff;
   margin-top: 3em;
 }
-.inputbottomborder{
-border-bottom: black 1px solid;
+
+.inputbottomborder {
+  border-bottom: black 1px solid;
 }
+
 /* .maps {
     width: 70%;
     height: 100%;

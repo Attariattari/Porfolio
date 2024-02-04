@@ -93,7 +93,7 @@ function Contact() {
         </div>
       </div>
       <div className="formarea md:mt-28">
-        <div className="contectinfo "> 
+        <div className="contectinfo ">
           <div className="text-3xl text-zinc-800  ContactUs">Contact Us.</div>
           <div className="space-y-5">
             <div className="flex space-x-5 text-sm">
