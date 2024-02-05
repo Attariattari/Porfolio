@@ -7,8 +7,6 @@ import {
   korbanstudio,
   theoceancleanup,
   toddshelton,
-  doucals,
-  frenchtoday,
 } from "../../../DummyData/DummyData";
 
 const OtherCMSData = [
@@ -18,8 +16,6 @@ const OtherCMSData = [
   korbanstudio,
   theoceancleanup,
   toddshelton,
-  doucals,
-  frenchtoday,
 ];
 
 function OtherCMS() {

@@ -493,26 +493,6 @@ export const toddshelton = {
   Link: " https://toddshelton.com/",
   Visit: "Todd shelton",
 };
-export const doucals = {
-  img: "https://images.unsplash.com/photo-1670244208393-bd46e800340e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDMyNXxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  iconfirst: <LuSearchCode />,
-  iconSecond: <FaPlus />,
-  title: "Doucals",
-  createit: "10-23-2020",
-  thanks: "Thanks a lot doucals for choosing us.",
-  Link: " https://doucals.com/",
-  Visit: "Doucals",
-};
-export const frenchtoday = {
-  img: "https://images.unsplash.com/photo-1653089116335-137ea51598a9?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDMyMHxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  iconfirst: <LuSearchCode />,
-  iconSecond: <FaPlus />,
-  title: "French today",
-  createit: "11-15-2020",
-  thanks: "Thanks a lot french today for choosing us.",
-  Link: " https://frenchtoday.com/",
-  Visit: "french today",
-};
 // ================================News=================================
 export const whatisreact = {
   img: "https://a.storyblok.com/f/231922/1726x1040/77b3bc456f/tutorial-react-image.png/m/1200x630/",
