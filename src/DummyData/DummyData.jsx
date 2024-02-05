@@ -495,7 +495,7 @@ export const toddshelton = {
 };
 // ================================News=================================
 export const whatisreact = {
-  img: "https://a.storyblok.com/f/231922/1726x1040/77b3bc456f/tutorial-react-image.png/m/1200x630/",
+  img: "https://www.credencys.com/wp-content/uploads/2019/08/what-is-react-js.jpg",
   title: "Mastering React for Modern Web Development.",
   NewsSection:"React",
   Introduction:
