@@ -33,7 +33,7 @@
     &:focus {
         color: #031e58;
         box-shadow: 0 0 24px 0 #031e58;
-        transform: scale(1.1) rotate(360deg);
+        transform: rotate(360deg) scale(1.1);
         transition: transform 0.4s ease-out;
     }
 
@@ -58,12 +58,18 @@
         opacity: 0;
         pointer-events: none;
         transform: translateY(1rem);
-        transition: all 300ms ease 200ms;
+        transition: opacity 300ms ease, transform 300ms ease;
     }
 
-    &:hover::before {
+    &:hover::before,
+    &:focus::before {
         opacity: 1;
         transform: translateY(0);
+    }
+
+    &:not(:hover):not(:focus)::before {
+        opacity: 0;
+        transform: translateY(1rem);
     }
 }
 
@@ -81,7 +87,7 @@
     justify-content: center;
     align-items: center;
     font-size: 25px;
-
+    position: relative;
     &:last-child {
         margin-right: 0;
     }
@@ -90,7 +96,7 @@
     &:focus {
         color: #1e40af;
         box-shadow: 0 0 24px 0 #1e40af;
-        transform: scale(1.1) rotate(360deg);
+        transform: rotate(360deg) scale(1.1);
         transition: transform 0.4s ease-out;
     }
 
@@ -115,17 +121,20 @@
         opacity: 0;
         pointer-events: none;
         transform: translateY(1rem);
-        transition: all 300ms ease 200ms;
+        transition: opacity 300ms ease, transform 300ms ease;
     }
 
-    &:hover::before {
+    &:hover::before,
+    &:focus::before {
         opacity: 1;
         transform: translateY(0);
     }
+
+    &:not(:hover):not(:focus)::before {
+        opacity: 0;
+        transform: translateY(1rem);
+    }
 }
-
-
-
 
 .gmail {
     width: 3.6rem;
@@ -141,6 +150,7 @@
     justify-content: center;
     align-items: center;
     font-size: 25px;
+    position: relative;
 
     &:last-child {
         margin-right: 0;
@@ -150,7 +160,7 @@
     &:focus {
         color: #dd4b39;
         box-shadow: 0 0 24px 0 #dd4b39;
-        transform: scale(1.1) rotate(360deg);
+        transform: rotate(360deg) scale(1.1);
         transition: transform 0.4s ease-out;
     }
 
@@ -175,12 +185,18 @@
         opacity: 0;
         pointer-events: none;
         transform: translateY(1rem);
-        transition: all 300ms ease 200ms;
+        transition: opacity 300ms ease, transform 300ms ease;
     }
 
-    &:hover::before {
+    &:hover::before,
+    &:focus::before {
         opacity: 1;
         transform: translateY(0);
+    }
+
+    &:not(:hover):not(:focus)::before {
+        opacity: 0;
+        transform: translateY(1rem);
     }
 }
 
@@ -207,7 +223,7 @@
     &:focus {
         color: #00e576;
         box-shadow: 0 0 24px 0 #00e576;
-        transform: scale(1.1) rotate(360deg);
+        transform: rotate(360deg) scale(1.1);
         transition: transform 0.4s ease-out;
     }
 
@@ -232,12 +248,18 @@
         opacity: 0;
         pointer-events: none;
         transform: translateY(1rem);
-        transition: all 300ms ease 200ms;
+        transition: opacity 300ms ease, transform 300ms ease;
     }
 
-    &:hover::before {
+    &:hover::before,
+    &:focus::before {
         opacity: 1;
         transform: translateY(0);
+    }
+
+    &:not(:hover):not(:focus)::before {
+        opacity: 0;
+        transform: translateY(1rem);
     }
 }
 
@@ -265,7 +287,7 @@
     &:focus {
         color: #000000;
         box-shadow: 0 0 24px 0 #000000;
-        transform: scale(1.1) rotate(360deg);
+        transform: rotate(360deg) scale(1.1);
         transition: transform 0.4s ease-out;
     }
 
@@ -290,12 +312,18 @@
         opacity: 0;
         pointer-events: none;
         transform: translateY(1rem);
-        transition: all 300ms ease 200ms;
+        transition: opacity 300ms ease, transform 300ms ease;
     }
 
-    &:hover::before {
+    &:hover::before,
+    &:focus::before {
         opacity: 1;
         transform: translateY(0);
+    }
+
+    &:not(:hover):not(:focus)::before {
+        opacity: 0;
+        transform: translateY(1rem);
     }
 }
 
@@ -323,7 +351,7 @@
     &:focus {
         color: #9d09ea;
         box-shadow: 0 0 24px 0 #9d09ea;
-        transform: scale(1.1) rotate(360deg);
+        transform: rotate(360deg) scale(1.1);
         transition: transform 0.4s ease-out;
     }
 
@@ -348,11 +376,17 @@
         opacity: 0;
         pointer-events: none;
         transform: translateY(1rem);
-        transition: all 300ms ease 200ms;
+        transition: opacity 300ms ease, transform 300ms ease;
     }
 
-    &:hover::before {
+    &:hover::before,
+    &:focus::before {
         opacity: 1;
         transform: translateY(0);
+    }
+
+    &:not(:hover):not(:focus)::before {
+        opacity: 0;
+        transform: translateY(1rem);
     }
 }
