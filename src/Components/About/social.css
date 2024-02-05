@@ -65,6 +65,7 @@
     &:focus::before {
         opacity: 1;
         transform: translateY(0);
+        transition-delay: 0.3s;
     }
 
     &:not(:hover):not(:focus)::before {
@@ -88,6 +89,7 @@
     align-items: center;
     font-size: 25px;
     position: relative;
+
     &:last-child {
         margin-right: 0;
     }
@@ -128,6 +130,7 @@
     &:focus::before {
         opacity: 1;
         transform: translateY(0);
+        transition-delay: 0.3s;
     }
 
     &:not(:hover):not(:focus)::before {
@@ -192,6 +195,7 @@
     &:focus::before {
         opacity: 1;
         transform: translateY(0);
+        transition-delay: 0.3s;
     }
 
     &:not(:hover):not(:focus)::before {
@@ -255,6 +259,7 @@
     &:focus::before {
         opacity: 1;
         transform: translateY(0);
+        transition-delay: 0.3s;
     }
 
     &:not(:hover):not(:focus)::before {
@@ -319,6 +324,7 @@
     &:focus::before {
         opacity: 1;
         transform: translateY(0);
+        transition-delay: 0.3s;
     }
 
     &:not(:hover):not(:focus)::before {
@@ -353,6 +359,10 @@
         box-shadow: 0 0 24px 0 #9d09ea;
         transform: rotate(360deg) scale(1.1);
         transition: transform 0.4s ease-out;
+        -webkit-transform: rotate(360deg) scale(1.1);
+        -moz-transform: rotate(360deg) scale(1.1);
+        -ms-transform: rotate(360deg) scale(1.1);
+        -o-transform: rotate(360deg) scale(1.1);
     }
 
     &:focus {
@@ -383,6 +393,8 @@
     &:focus::before {
         opacity: 1;
         transform: translateY(0);
+        transition-delay: 0.3s;
+        /* Delay to match the rotation duration */
     }
 
     &:not(:hover):not(:focus)::before {
