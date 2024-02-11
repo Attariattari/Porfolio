@@ -15,7 +15,7 @@
 .child {
   background-color: #041230a4;
   width: 100%;
-  height: 100vh;
+  height: 100dvh;
 }
 
 .avtar {
@@ -42,7 +42,7 @@
 }
 
 .Info {
-  font-family: "Montserrat";
+  font-family: "Neue-Helvetica","Helvetica","Arial","sans-serif";
   text-transform: uppercase;
   color: #fff;
   font-size: 50px;
