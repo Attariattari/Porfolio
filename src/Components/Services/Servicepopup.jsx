@@ -26,6 +26,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
       document.body.style.overflow = "auto";
     };
   }, [info]);
+
   const HairFunction = () => {
     if (subject && message) {
       toast.warning("Data already sent. Please wait for a response.");
@@ -46,6 +47,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
       toast.error("Error sending data. Please try again.");
     }
   };
+  
   const [activeIndex, setActiveIndex] = useState(1);
 
   // Function to go to the next slide
