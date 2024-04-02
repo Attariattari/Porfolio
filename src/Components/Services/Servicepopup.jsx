@@ -279,6 +279,3 @@ function Servicepopup({ info, closePopup, selectedNews }) {
 }
 
 export default Servicepopup;
-{
-  /*  */
-}
