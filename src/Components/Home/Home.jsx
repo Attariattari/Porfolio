@@ -15,7 +15,7 @@ function Home() {
           <div className="border rounded-full">
             <img
               className="avtar rounded-full"
-              src="https://res-console.cloudinary.com/dg5gwixf1/thumbnails/v1/image/upload/v1732204178/YnVxam1oOGtzeHFzdHA4dGU1dG8=/drilldown"
+              src="https://res.cloudinary.com/dg5gwixf1/image/upload/v1732204178/buqjmh8ksxqstp8te5to.jpg"
               alt=""
               style={{ objectPosition: "top" }}
             />
