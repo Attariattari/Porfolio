@@ -27,14 +27,15 @@ function About() {
     deleteSpeed: 70,
   });
   const handleDownload = () => {
-    const pdfUrl = "https://orange-cristin-19.tiiny.site/";
+    const pdfUrl =
+      "https://res.cloudinary.com/dg5gwixf1/image/upload/v1734884321/My_new_CV_no_image_hwmaah.pdf";
 
     toast.promise(
       new Promise((resolve, reject) => {
         const link = document.createElement("a");
         link.href = pdfUrl;
         link.download = "Document_from_Ghulam_Muhyo_Din.pdf"; // specify the filename
-        link.target = "_blank"; // open in a new tab or window
+
         document.body.appendChild(link);
 
         try {
@@ -91,8 +92,9 @@ function About() {
                 <div className="ImageShow">
                   <img
                     className=""
-                    src="https://i.postimg.cc/fTtMpFwj/1706786499282.jpg"
+                    src="https://res-console.cloudinary.com/dg5gwixf1/thumbnails/v1/image/upload/v1732204178/YnVxam1oOGtzeHFzdHA4dGU1dG8=/drilldown"
                     alt=""
+                    style={{ objectPosition: "top" }}
                   />
                 </div>
               </div>{" "}
