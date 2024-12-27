@@ -114,6 +114,12 @@ function Servicepopup({ info, closePopup, selectedNews }) {
         <div className="Newspopup font-serif">
           <div className="Newspopupchild">
             <div className="allsliderarea">
+              <button
+                className="Closeone absolute top-2 right-2"
+                onClick={closePopup}
+              >
+                <CgCloseR className="text-3xl" />
+              </button>
               <div
                 className="text-3xl"
                 style={{
