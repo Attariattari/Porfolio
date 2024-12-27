@@ -29,6 +29,7 @@ function About() {
   const handleDownload = () => {
     const pdfUrl =
       "https://res.cloudinary.com/dg5gwixf1/image/upload/v1734884321/My_new_CV_no_image_hwmaah.pdf";
+    const isMobile = /Mobi|Android/i.test(navigator.userAgent); // Check if the user is on mobile
 
     toast.promise(
       new Promise((resolve, reject) => {
@@ -36,15 +37,24 @@ function About() {
         link.href = pdfUrl;
         link.download = "Document_from_Ghulam_Muhyo_Din.pdf"; // specify the filename
 
-        document.body.appendChild(link);
-
-        try {
-          link.click();
+        if (isMobile) {
+          // For mobile, create a temporary link and open in a new tab
+          const iframe = document.createElement("iframe");
+          iframe.style.display = "none";
+          iframe.src = pdfUrl;
+          document.body.appendChild(iframe);
           resolve("Download started successfully!");
-        } catch (error) {
-          reject("Error starting download. Please try again.");
-        } finally {
-          document.body.removeChild(link);
+        } else {
+          // For desktop, use the standard download approach
+          document.body.appendChild(link);
+          try {
+            link.click();
+            resolve("Download started successfully!");
+          } catch (error) {
+            reject("Error starting download. Please try again.");
+          } finally {
+            document.body.removeChild(link);
+          }
         }
       }),
       {
@@ -57,6 +67,7 @@ function About() {
       }
     );
   };
+
   const defaultOptions = {
     reverse: false, // reverse the tilt direction
     max: 35, // max tilt rotation (degrees)
