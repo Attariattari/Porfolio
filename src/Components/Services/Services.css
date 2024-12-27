@@ -1,429 +1,413 @@
 .Services {
-    width: 100%;
+  width: 100%;
 }
 
 .Servicesabout {
-    padding-top: 29px;
+  padding-top: 29px;
 }
 
 .Servicesborder {
-    border-left: 0.4em #E3872D solid;
-    margin-top: 3em;
-    margin-left: 3em;
-    padding-left: 1em;
-    height: 5.5em;
+  border-left: 0.4em #e3872d solid;
+  margin-top: 3em;
+  margin-left: 3em;
+  padding-left: 1em;
+  height: 5.5em;
 }
 .Servicestext {
-    font-size: 40px;
-    font-weight: 600;
-    padding: 0%;
-    margin: 0%;
+  font-size: 40px;
+  font-weight: 600;
+  padding: 0%;
+  margin: 0%;
 }
 
 .Servicessection {
-    margin-top: 6em;
-    padding: 40px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    flex-wrap: wrap;
-    max-width: 100%;
-    height: auto;
-    gap: 35px;
+  margin-top: 6em;
+  padding: 40px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  flex-wrap: wrap;
+  max-width: 100%;
+  height: auto;
+  gap: 35px;
 }
-
+.Serviceslabel {
+  font-size: 17px;
+  font-weight: 600;
+  text-align: center;
+}
 @media only screen and (max-width: 2600px) {
-    .merndetails {
-        width: 100%;
-        height: auto;
-        padding-right: 3em;
-        padding-left: 3em;
-        margin-top: -5em;
-    }
+  .merndetails {
+    width: 100%;
+    height: auto;
+    padding-right: 3em;
+    padding-left: 3em;
+    margin-top: -5em;
+  }
 
-    .detailsone {
-        width: 50%;
-    }
+  .detailsone {
+    width: 50%;
+  }
 
-    .popbuttonstwo {
-        width: 100%;
-        height: 3em;
-        display: flex;
-        justify-content: space-evenly;
-        align-items: center;
-        gap: 30px;
-    }
+  .popbuttonstwo {
+    width: 100%;
+    height: 3em;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    gap: 30px;
+  }
 
-    .detailsveiw {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        margin-top: 2em;
+  .detailsveiw {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    margin-top: 2em;
+  }
 
-    }
+  .backgroundimage {
+    width: 50%;
+  }
 
-    .backgroundimage {
-        width: 50%;
-    }
+  .one {
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+  }
 
-    .one {
-        border-right: 1px solid black;
-        border-bottom: 1px solid black;
-    }
+  .two {
+    border-bottom: 1px solid black;
+  }
 
-    .two {
-        border-bottom: 1px solid black;
-    }
-
-    .three {
-        border-right: 1px solid black;
-
-    }
+  .three {
+    border-right: 1px solid black;
+  }
 }
 
 @media only screen and (max-width: 1200px) {
-    .Servicessection {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
-        height: auto;
-    }
+  .Servicessection {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    height: auto;
+  }
 }
 
 @media only screen and (max-width: 1023px) {
-    .Servicessection {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
-        height: auto;
-    }
+  .Servicessection {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    height: auto;
+  }
 }
 
 @media only screen and (max-width: 979px) {
-    .Servicessection {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
-        height: auto;
-        padding: 1em 6em 2em 6em;
-    }
+  .Servicessection {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    height: auto;
+    padding: 1em 6em 2em 6em;
+  }
 
-    .Servicesabout {
-        padding: 0em 0em 0em 0em;
-    }
+  .Servicesabout {
+    padding: 0em 0em 0em 0em;
+  }
 
-    .detailsmern {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        gap: 10px;
-    }
+  .detailsmern {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 10px;
+  }
 
-    .detailsone {
-        width: 100%;
-    }
+  .detailsone {
+    width: 100%;
+  }
 
-    .backgroundimage {
-        width: 100%;
-    }
+  .backgroundimage {
+    width: 100%;
+  }
 }
 
 @media only screen and (max-width: 768px) {
+  .Servicesabout {
+    padding: 0em 0em 0em 2em;
+  }
 
-    .Servicesabout {
+  .Servicessection {
+    margin-top: 5em;
+    padding: 05px;
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    flex-wrap: wrap;
+    height: auto;
+    margin-bottom: 2em;
+    padding: 1em 6em 2em 6em;
+    gap: 35px;
+  }
 
-        padding: 0em 0em 0em 2em;
-    }
+  .Servicestext {
+    font-size: 30px;
+    font-weight: 600;
+    padding: 0%;
+    margin: 0%;
+  }
 
-    .Servicessection {
-        margin-top: 5em;
-        padding: 05px;
-        display: grid;
-        grid-template-columns: repeat(1, 1fr);
-        flex-wrap: wrap;
-        height: auto;
-        margin-bottom: 2em;
-        padding: 1em 6em 2em 6em;
-        gap: 35px;
-    }
+  .Servicesborder {
+    border-left: 0.4em #e3872d solid;
+    margin-top: 3em;
+    margin-left: 1em;
+    padding-left: 1em;
+    height: 4.5em;
+  }
 
-    .Servicestext {
-        font-size: 30px;
-        font-weight: 600;
-        padding: 0%;
-        margin: 0%;
-    }
+  .detailsveiw {
+    grid-template-columns: repeat(1, 1fr);
+    margin-top: 2em;
+  }
 
-    .Servicesborder {
-        border-left: 0.4em #E3872D solid;
-        margin-top: 3em;
-        margin-left: 1em;
-        padding-left: 1em;
-        height: 4.5em;
-    }
+  .popbuttonstwo {
+    margin-bottom: 3em;
+  }
 
-    .detailsveiw {
-        grid-template-columns: repeat(1, 1fr);
-        margin-top: 2em;
-    }
+  .one {
+    border-right: none;
+    border-bottom: none;
+  }
 
-    .popbuttonstwo {
-        margin-bottom: 3em;
-    }
+  .two {
+    border-bottom: none;
+  }
 
-    .one {
-        border-right: none;
-        border-bottom: none;
-    }
-
-    .two {
-        border-bottom: none;
-    }
-
-    .three {
-        border-right: none;
-
-    }
+  .three {
+    border-right: none;
+  }
 }
 
-
 @media only screen and (max-width: 600px) {
-    .Servicessection {
-        margin-top: 5em;
-        padding: 05px;
-        display: grid;
-        grid-template-columns: repeat(1, 1fr);
-        flex-wrap: wrap;
-        height: auto;
-        margin-bottom: 2em;
-        gap: 35px;
-    }
+  .Servicessection {
+    margin-top: 5em;
+    padding: 05px;
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    flex-wrap: wrap;
+    height: auto;
+    margin-bottom: 2em;
+    gap: 35px;
+  }
 
-    .Servicestext {
-        font-size: 25px;
-        font-weight: 600;
-        padding: 0%;
-        margin: 0%;
-    }
+  .Servicestext {
+    font-size: 25px;
+    font-weight: 600;
+    padding: 0%;
+    margin: 0%;
+  }
 
+  .Servicesabout {
+    padding: 0em 0em 0em 0.5em;
+  }
 
-    .Servicesabout {
+  .Servicesborder {
+    border-left: 0.4em #e3872d solid;
+    margin-top: 3em;
+    margin-left: 1em;
+    height: 4em;
+  }
 
-        padding: 0em 0em 0em 0.5em;
-    }
-
-
-    .Servicesborder {
-        border-left: 0.4em #E3872D solid;
-        margin-top: 3em;
-        margin-left: 1em;
-        height: 4em;
-    }
-
-    .merndetails {
-        padding-right: 0.5em;
-        padding-left: 0.5em;
-    }
-
+  .merndetails {
+    padding-right: 0.5em;
+    padding-left: 0.5em;
+  }
 }
 
 .ServiceBox {
-    display: flex;
-    justify-content: start;
-    align-items: start;
-    flex-direction: column;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    border-radius: 3px;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    -ms-border-radius: 3px;
-    -o-border-radius: 3px;
+  display: flex;
+  justify-content: start;
+  align-items: start;
+  flex-direction: column;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
 }
 
 .Servicesdetails {
-    display: flex;
-    justify-content: space-around;
-    align-items: start;
-    flex-direction: column;
-    width: 100%;
-    height: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: start;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
 }
 
 .Servicesicons {
-    font-size: 40px;
-    color: #E3872D;
-
+  font-size: 40px;
+  color: #e3872d;
 }
 
 .Servicesicons:hover {
-    font-size: 40px;
-    color: #041230;
+  font-size: 40px;
+  color: #041230;
 }
 
 .Serviceslabel {
-    font-size: 17px;
-    font-weight: 600;
+  font-size: 17px;
+  font-weight: 600;
 }
 
 .Servicesinfo {
-    font-size: 17px;
-    color: #222222;
-    text-align: center;
+  font-size: 17px;
+  color: #222222;
+  text-align: center;
 }
 
 .ServiceBox Button {
-    width: 100%;
-    padding: 10px;
-    text-decoration: none !important;
-    color: #fff !important;
-    background-color: #E3872D !important;
-    font-weight: 600 !important;
-    font-family: "Montserrat" !important;
-    border-radius: 3px !important;
-    display: inline-block !important;
-    position: relative !important;
-    overflow: hidden !important;
-    border: none !important;
-    font-size: 1em !important;
-    line-height: 1.8 !important;
-    letter-spacing: 0.5px !important;
-    cursor: pointer !important;
-    z-index: 100;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+  width: 100%;
+  padding: 10px;
+  text-decoration: none !important;
+  color: #fff !important;
+  background-color: #e3872d !important;
+  font-weight: 600 !important;
+  font-family: "Montserrat" !important;
+  border-radius: 3px !important;
+  display: inline-block !important;
+  position: relative !important;
+  overflow: hidden !important;
+  border: none !important;
+  font-size: 1em !important;
+  line-height: 1.8 !important;
+  letter-spacing: 0.5px !important;
+  cursor: pointer !important;
+  z-index: 100;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
 }
 
 .ServiceBox button::before {
-    position: absolute;
-    content: "";
-    top: 0px;
-    height: 100%;
-    left: -25%;
-    width: 0%;
-    background-color: #041230;
-    transform: skew(50deg);
-    transition-duration: .4s;
-    z-index: -100;
+  position: absolute;
+  content: "";
+  top: 0px;
+  height: 100%;
+  left: -25%;
+  width: 0%;
+  background-color: #041230;
+  transform: skew(50deg);
+  transition-duration: 0.4s;
+  z-index: -100;
 }
 
 .ServiceBox button:hover::before {
-    width: 150%;
-    left: -20%;
-
+  width: 150%;
+  left: -20%;
 }
-
-
 
 .detailsmern {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-
 .backgroundimage img {
-    object-fit: fill;
+  object-fit: fill;
 }
 
 .titletwo {
-    font-size: 23px;
-    font-weight: bold;
+  font-size: 23px;
+  font-weight: bold;
 }
 
 .projectstartecd {
-    width: 80%;
-    height: 3em;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid #E3872D;
-    font-size: 17px;
+  width: 80%;
+  height: 3em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #e3872d;
+  font-size: 17px;
 }
 
 .buttonget Button {
-    width: 70%;
-    padding: 10px;
-    text-decoration: none !important;
-    color: #fff !important;
-    background-color: #E3872D !important;
-    font-weight: 600 !important;
-    font-family: "Montserrat" !important;
-    border-radius: 3px !important;
-    display: inline-block !important;
-    position: relative !important;
-    overflow: hidden !important;
-    border: none !important;
-    font-size: 1em !important;
-    line-height: 1.8 !important;
-    letter-spacing: 0.5px !important;
-    cursor: pointer !important;
-    z-index: 100;
-    margin-top: 4em;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+  width: 70%;
+  padding: 10px;
+  text-decoration: none !important;
+  color: #fff !important;
+  background-color: #e3872d !important;
+  font-weight: 600 !important;
+  font-family: "Montserrat" !important;
+  border-radius: 3px !important;
+  display: inline-block !important;
+  position: relative !important;
+  overflow: hidden !important;
+  border: none !important;
+  font-size: 1em !important;
+  line-height: 1.8 !important;
+  letter-spacing: 0.5px !important;
+  cursor: pointer !important;
+  z-index: 100;
+  margin-top: 4em;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
 }
 
 .buttonget button::before {
-    position: absolute;
-    content: "";
-    top: 0px;
-    height: 100%;
-    left: -25%;
-    width: 0%;
-    background-color: #041230;
-    transform: skew(50deg);
-    transition-duration: .4s;
-    z-index: -100;
+  position: absolute;
+  content: "";
+  top: 0px;
+  height: 100%;
+  left: -25%;
+  width: 0%;
+  background-color: #041230;
+  transform: skew(50deg);
+  transition-duration: 0.4s;
+  z-index: -100;
 }
 
 .buttonget button:hover::before {
-    width: 150%;
-    left: -20%;
-
+  width: 150%;
+  left: -20%;
 }
-
-
 
 .detailsveiw div {
-    padding: 30px;
+  padding: 30px;
 
-    color: #000000;
-    font-size: 17px;
+  color: #000000;
+  font-size: 17px;
 }
 
-
-
 .popbuttonstwo Button {
-    width: 50%;
-    padding: 10px;
-    text-decoration: none !important;
-    color: #fff !important;
-    background-color: #E3872D !important;
-    font-weight: 600 !important;
-    font-family: "Montserrat" !important;
-    border-radius: 3px !important;
-    display: inline-block !important;
-    position: relative !important;
-    overflow: hidden !important;
-    border: none !important;
-    font-size: 1em !important;
-    line-height: 1.8 !important;
-    letter-spacing: 0.5px !important;
-    cursor: pointer !important;
-    z-index: 100;
-    margin-top: 4em;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+  width: 50%;
+  padding: 10px;
+  text-decoration: none !important;
+  color: #fff !important;
+  background-color: #e3872d !important;
+  font-weight: 600 !important;
+  font-family: "Montserrat" !important;
+  border-radius: 3px !important;
+  display: inline-block !important;
+  position: relative !important;
+  overflow: hidden !important;
+  border: none !important;
+  font-size: 1em !important;
+  line-height: 1.8 !important;
+  letter-spacing: 0.5px !important;
+  cursor: pointer !important;
+  z-index: 100;
+  margin-top: 4em;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
 }
 
 .popbuttonstwo button::before {
-    position: absolute;
-    content: "";
-    top: 0px;
-    height: 100%;
-    left: -25%;
-    width: 0%;
-    background-color: #041230;
-    transform: skew(50deg);
-    transition-duration: .4s;
-    z-index: -100;
+  position: absolute;
+  content: "";
+  top: 0px;
+  height: 100%;
+  left: -25%;
+  width: 0%;
+  background-color: #041230;
+  transform: skew(50deg);
+  transition-duration: 0.4s;
+  z-index: -100;
 }
 
 .popbuttonstwo button:hover::before {
-    width: 150%;
-    left: -20%;
+  width: 150%;
+  left: -20%;
 }
