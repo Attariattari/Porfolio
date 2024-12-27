@@ -274,83 +274,6 @@ export const Mernstackthered = {
   details:
     "Ball System Group is a company which provides beauty straight out of the garage. Studiogusto meets a team of avant-garde automotive services in this new digital experience we like calling The Human Machine.",
 };
-export const Mernstackfour = {
-  img: "https://images.unsplash.com/photo-1557389352-e721da78ad9f?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDd8fHxlbnwwfHx8fHw%3D",
-  iconfirst: <LuSearchCode />,
-  iconSecond: <FaPlus />,
-  title: "Cuts Clothing",
-  createit: "11-15-2020",
-  thanks: "Thanks a lot Cuts Clothing for Choosing Us.",
-  plateform: "Cuts Clothing website was build in MERN-STACK(REACTJS) Framework",
-  Link: "https://www.cutsclothing.com/",
-  Visit: "Cuts",
-  details: "Cuts Clothing is a company which provide user online shopping",
-};
-export const Mernstackfive = {
-  img: "https://images.unsplash.com/photo-1556583655-41906bede87a?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDE4fHx8ZW58MHx8fHx8",
-  iconfirst: <LuSearchCode />,
-  iconSecond: <FaPlus />,
-  title: "Heineken",
-  createit: "11-15-2020",
-  thanks: "Thanks a lot HEINEKEN for Choosing Us.",
-  plateform: "Heineken website was build in MERN-STACK(REACTJS) Framework",
-  Link: "https://heineken.hr/age-gate",
-  Visit: "Heineken",
-  details:
-    "ALT and HEINEKEN, in close partnership, created a digital rebrand of the company and a website that extends the already established visual language of HEINEKEN.",
-};
-export const Mernstacksix = {
-  img: "https://images.unsplash.com/photo-1698060437027-18f4b99ff132?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDQwMnxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  iconfirst: <LuSearchCode />,
-  iconSecond: <FaPlus />,
-  title: "Mercury",
-  createit: "11-15-2020",
-  thanks: "Thanks a lot MERCURY for Choosing us.",
-  plateform: "Mercury website was build in MERN-STACK(REACTJS) Framework",
-  Link: "https://mercury.com.mt/",
-  Visit: "Mercury",
-  details:
-    "Sales website for Mercury Towers by Zaha Hadid Architects. An interactive sales tool was built in order to promote the sale of luxury apartments.",
-};
-export const Mernstackseven = {
-  img: "https://images.unsplash.com/photo-1703379686089-1369cb4e90d0?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDIzfENEd3V3WEpBYkV3fHxlbnwwfHx8fHw%3D",
-  iconfirst: <LuSearchCode />,
-  iconSecond: <FaPlus />,
-  title: "Moooi",
-  createit: "11-15-2020",
-  thanks: "Thanks a lot MOOOI for Choosing us.",
-  plateform: "Moooi website was build in MERN-STACK(REACTJS) Framework",
-  Link: "https://mercury.com.mt/",
-  Visit: "Moooi",
-  details:
-    "Moooi fills the void created by the postponement of Milan’s Salone del Mobile with a multi-sensory brand experience, an unexpected and immersive world uncovering their newest products.",
-};
-export const Mernstackeight = {
-  img: "https://images.unsplash.com/photo-1689699544570-812a5e3f805c?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDMwfENEd3V3WEpBYkV3fHxlbnwwfHx8fHw%3D",
-  iconfirst: <LuSearchCode />,
-  iconSecond: <FaPlus />,
-  title: "Play valorant",
-  createit: "11-15-2020",
-  thanks: "Thanks a lot VALORANT for Choosing us.",
-  plateform: "Valorant website was build in MERN-STACK(REACTJS) Framework",
-  Link: "https://playvalorant.com/",
-  Visit: "Play",
-  details:
-    "VALORANT is a character-based 5v5 FPS where gunplay meets unique agent abilities. This animated site tells players all they need to know to get excited about Riot Games’ latest title.",
-};
-export const Mernstacknine = {
-  img: "https://images.unsplash.com/photo-1689699544570-812a5e3f805c?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDMwfENEd3V3WEpBYkV3fHxlbnwwfHx8fHw%3D",
-  iconfirst: <LuSearchCode />,
-  iconSecond: <FaPlus />,
-  title: "Play valorant",
-  createit: "11-15-2020",
-  thanks: "Thanks a lot VALORANT for Choosing us.",
-  plateform: "Valorant website was build in MERN-STACK(REACTJS) Framework",
-  Link: "https://playvalorant.com/",
-  Visit: "Play",
-  details:
-    "VALORANT is a character-based 5v5 FPS where gunplay meets unique agent abilities. This animated site tells players all they need to know to get excited about Riot Games’ latest title.",
-};
 
 // ================================UX / UI Designing=================================
 export const BankingApp = {
@@ -386,44 +309,6 @@ export const fooddeliverwebandmobileapp = {
   title: "food deliver web and mobile app",
   Link: "https://drive.google.com/file/d/1hEORnrCSUJpPjGmT__8PM1tsCIs-7qCM/view",
   createit: "05-28-2021",
-};
-export const Wireframeandflowchart = {
-  img: "https://plus.unsplash.com/premium_photo-1686199460521-23c5951c8c80?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDE2N3xDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  iconfirst: <LuSearchCode />,
-  iconSecond: <FaPlus />,
-  type: "UX/UI Designing",
-  plateform: "Software - Figma + Illustrator",
-  title: "Wireframe and flow chart",
-  Link: "https://drive.google.com/file/d/1hEORnrCSUJpPjGmT__8PM1tsCIs-7qCM/view",
-  createit: "06-02-2021",
-  details: "Wireframe & Flow chart of mobile app",
-};
-export const weblandingpage = {
-  title: "Web landing page",
-  createit: "05-29-2021",
-  img: "https://images.unsplash.com/photo-1698296725423-9ede5de2d624?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDIxN3xDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  iconfirst: <LuSearchCode />,
-  iconSecond: <FaPlus />,
-  type: "UI/UX Designer",
-  subtitle: "Website Prototype",
-  plateform: "Software – Figma + Illustrator",
-  Link: "https://drive.google.com/file/d/1NnkoQUsUUFmbrnggD76p1M6qtxxOir8P/view",
-  Visit: "View Prototype ",
-};
-export const multiplescreens = {
-  title: "Multiple screens",
-  createit: "06-03-2021",
-  img: "https://images.unsplash.com/photo-1671017614105-d3273404f9ab?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDIyOHxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  iconfirst: <LuSearchCode />,
-  iconSecond: <FaPlus />,
-  type: "UI/UX Designer",
-  subtitle: "Website Prototype",
-  plateform: "Software – Figma + Illustrator",
-  Linkone:
-    "https://drive.google.com/file/d/1F2_RdM9ppOKlGPQB5LZI7Z9KWmrKOGZ8/view",
-  Linktwo:
-    "https://drive.google.com/file/d/1WPo9ANgzushScvOjs0NbChblwh0Reqbn/view",
-  Visit: "Software",
 };
 
 // ================================Others CMS=================================
@@ -463,39 +348,21 @@ export const bigcommerce = {
   Link: "https://www.bigcommerce.com/",
   Visit: "big comme",
 };
-export const korbanstudio = {
-  img: "https://images.unsplash.com/photo-1679967486442-562ac8798ad8?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDMwMHxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  iconfirst: <LuSearchCode />,
-  iconSecond: <FaPlus />,
-  title: "Korban studio",
-  createit: "11-12-2020",
-  thanks: "Thanks a lot korban studio for choosing us.",
-  Link: "https://www.korbanstudio.com/",
-  Visit: "korban",
-};
-export const theoceancleanup = {
-  img: "https://images.unsplash.com/photo-1698243282692-616402a5d535?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDMwNnxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  iconfirst: <LuSearchCode />,
-  iconSecond: <FaPlus />,
-  title: "The ocean cleanup",
-  createit: "11-12-2020",
-  thanks: "Thanks a lot the ocean cleanup for choosing us.",
-  Link: "https://products.theoceancleanup.com/",
-  Visit: "The ocean",
-};
-export const toddshelton = {
-  img: "https://plus.unsplash.com/premium_photo-1683141316518-70595b251f01?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDMxOHxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
-  iconfirst: <LuSearchCode />,
-  iconSecond: <FaPlus />,
-  title: "Todd shelton",
-  createit: "11-12-2020",
-  thanks: "Thanks a lot todd shelton for choosing us.",
-  Link: " https://toddshelton.com/",
-  Visit: "Todd shelton",
-};
 // ================================News=================================
 export const whatisreact = {
   img: "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735286897/DALL_E_2024-12-27_12.58.53_-_A_visually_engaging_image_for_Mastering_React_for_Modern_Web_Development._The_design_includes_a_dynamic_modern_user_interface_with_React_s_signature_skt87u.webp",
+  Slides: [
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313682/Portfolio%20News%20Images/React/DALL_E_2024-12-27_17.43.08_-_A_vibrant_and_modern_visual_representation_for_Understanding_React_Basics_._The_design_features_a_dynamic_user_interface_with_components_highlighted_lvw1xd.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313681/Portfolio%20News%20Images/React/DALL_E_2024-12-27_17.43.19_-_A_creative_visualization_of_Managing_State_and_Props_in_React_development._The_image_features_a_flowchart-like_representation_of_data_flowing_betwee_mawegi.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313681/Portfolio%20News%20Images/React/DALL_E_2024-12-27_17.43.20_-_An_engaging_and_modern_representation_of_React_Hooks_._The_image_showcases_key_hooks_like_useState_useEffect_and_useContext_as_dynamic_tools_intera_xjgde1.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313680/Portfolio%20News%20Images/React/DALL_E_2024-12-27_17.43.22_-_A_visually_dynamic_image_representing_Routing_with_React_Router_._The_design_includes_a_map-like_layout_with_interconnected_paths_symbolizing_navigat_jbprcn.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313679/Portfolio%20News%20Images/React/DALL_E_2024-12-27_17.43.27_-_An_engaging_and_professional_representation_of_State_Management_with_Redux_._The_image_features_a_central_Redux_store_symbolized_as_a_hub_with_data_vnkvdr.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313678/Portfolio%20News%20Images/React/DALL_E_2024-12-27_17.43.29_-_A_professional_and_creative_representation_of_Testing_React_Applications_._The_image_features_a_dynamic_depiction_of_testing_workflows_with_React_com_rhovyy.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313678/Portfolio%20News%20Images/React/DALL_E_2024-12-27_17.43.30_-_A_visually_advanced_and_creative_representation_of_Advanced_React_Patterns_._The_image_showcases_key_patterns_like_Higher_Order_Components_HOCs_Re_gqbskx.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313678/Portfolio%20News%20Images/React/DALL_E_2024-12-27_17.43.15_-_A_creative_and_modern_depiction_of_Setting_Up_Your_Development_Environment_for_React_development._The_image_includes_a_sleek_coding_workstation_with_y1ql1e.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313678/Portfolio%20News%20Images/React/DALL_E_2024-12-27_17.43.24_-_A_vibrant_and_modern_representation_of_Styling_in_React_._The_image_features_various_styling_approaches_including_CSS-in-JS_preprocessors_and_fram_vcaipd.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313677/Portfolio%20News%20Images/React/DALL_E_2024-12-27_17.43.17_-_A_visually_engaging_representation_of_Building_React_Components_._The_image_features_modular_blocks_connecting_seamlessly_to_form_a_cohesive_structur_fhtkqx.webp",
+  ],
   title: "Mastering React for Modern Web Development.",
   NewsSection: "React",
   Introduction:
@@ -574,9 +441,20 @@ export const whatisreact = {
   ],
   end: "By the end of this guide, you'll have mastered React for modern web development, equipped with the skills to build dynamic, scalable, and performant applications. Let's embark on this exciting journey together!",
 };
-
 export const whatisnodejs = {
   img: "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735286898/DALL_E_2024-12-27_12.59.02_-_A_visually_engaging_image_for_Mastering_Node.js_for_Modern_Backend_Development._The_design_includes_a_dynamic_backend_server_architecture_with_Node_usrsxp.webp",
+  Slides: [
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313855/Portfolio%20News%20Images/Node/DALL_E_2024-12-27_17.44.31_-_A_visually_engaging_representation_of_Introduction_to_Node.js_._The_image_showcases_a_Node.js_logo_at_the_center_surrounded_by_elements_representing_wyt04n.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313855/Portfolio%20News%20Images/Node/DALL_E_2024-12-27_17.44.33_-_A_creative_visualization_of_Setting_Up_Your_Node.js_Environment_._The_image_features_tools_like_Node.js_and_npm_Node_Package_Manager_prominently_di_sjio4w.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313855/Portfolio%20News%20Images/Node/DALL_E_2024-12-27_17.44.35_-_An_engaging_visual_representation_of_Building_Your_First_Node.js_Application_._The_image_features_a_Node.js_server_setup_with_a_terminal_displaying_b_gmusgg.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313854/Portfolio%20News%20Images/Node/DALL_E_2024-12-27_17.44.37_-_A_dynamic_and_visually_striking_representation_of_Asynchronous_Programming_in_Node.js_._The_image_features_a_Node.js_application_with_flowing_lines_a_jcaewp.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313852/Portfolio%20News%20Images/Node/DALL_E_2024-12-27_17.44.41_-_A_visually_engaging_representation_of_Database_Integration_with_Node.js_._The_image_features_Node.js_connecting_with_popular_databases_like_MongoDB_a_fovnbk.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313852/Portfolio%20News%20Images/Node/DALL_E_2024-12-27_17.44.44_-_An_engaging_and_dynamic_visualization_of_Real-time_Applications_with_Socket.IO_._The_image_features_a_real-time_communication_setup_including_symbol_xg8cte.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313851/Portfolio%20News%20Images/Node/DALL_E_2024-12-27_17.44.38_-_A_professional_and_engaging_representation_of_Express.js_-_Building_Web_Applications_._The_image_features_an_Express.js_logo_at_the_center_with_inter_fugnp4.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313850/Portfolio%20News%20Images/Node/DALL_E_2024-12-27_17.44.43_-_A_professional_representation_of_RESTful_API_Development_._The_image_showcases_a_Node.js_application_creating_a_RESTful_API_with_icons_representing_fpdrjl.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313850/Portfolio%20News%20Images/Node/DALL_E_2024-12-27_17.44.48_-_A_professional_and_vibrant_representation_of_Scaling_and_Deployment_of_Node.js_Applications_._The_image_features_a_Node.js_server_scaling_with_multip_yiypsq.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313849/Portfolio%20News%20Images/Node/DALL_E_2024-12-27_17.44.46_-_A_visually_compelling_representation_of_Testing_and_Debugging_Node.js_Applications_._The_image_features_a_Node.js_application_under_test_with_tools_l_bfru2h.webp",
+  ],
   title: "Unleashing the Power of Node.js in Web Development",
   NewsSection: "Node.js",
   Introduction:
@@ -657,6 +535,18 @@ export const whatisnodejs = {
 };
 export const whatisuxuidesigner = {
   img: "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735286895/DALL_E_2024-12-27_12.59.10_-_A_visually_captivating_image_for_Decoding_the_Craft__A_Dive_into_UX_UI_Design._The_design_features_sleek_user_interface_elements_wireframe_sketches_zncfgt.webp",
+  Slides: [
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313907/Portfolio%20News%20Images/UI/DALL_E_2024-12-27_17.45.24_-_A_visually_captivating_image_that_represents_Understanding_the_Essence_of_UX_UI_Design._The_image_features_a_harmonious_blend_of_sleek_user_interfac_vabeak.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313904/Portfolio%20News%20Images/UI/DALL_E_2024-12-27_17.45.26_-_An_engaging_and_modern_image_for_the_chapter_Fundamentals_of_Human-Centered_Design._The_scene_includes_a_designer_working_on_a_laptop_surrounded_by_vxw6rh.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313904/Portfolio%20News%20Images/UI/DALL_E_2024-12-27_17.45.31_-_A_visually_appealing_representation_for_the_chapter_Crafting_Intuitive_User_Interfaces_._The_image_showcases_a_digital_workspace_featuring_UI_design_vnrib0.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313903/Portfolio%20News%20Images/UI/DALL_E_2024-12-27_17.45.28_-_An_engaging_and_modern_representation_of_The_UX_Design_Process._The_design_features_a_step-by-step_flowchart_or_diagram_showing_stages_like_research_x08zoc.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313902/Portfolio%20News%20Images/UI/DALL_E_2024-12-27_17.45.34_-_An_engaging_and_modern_representation_for_the_chapter_User_Testing_and_Feedback_in_a_UX_UI_design_guide._The_illustration_includes_scenes_of_a_desig_oubhu8.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313902/Portfolio%20News%20Images/UI/DALL_E_2024-12-27_17.45.32_-_An_engaging_and_dynamic_visualization_for_the_chapter_Wireframing_and_Prototyping_in_UX_UI_design._The_image_features_a_professional_workspace_with_zitmiw.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313900/Portfolio%20News%20Images/UI/DALL_E_2024-12-27_17.45.41_-_A_visually_futuristic_and_dynamic_representation_of_the_chapter_Emerging_Trends_and_Future_Directions_in_UX_UI_Design._The_design_should_feature_abs_aypdz6.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313900/Portfolio%20News%20Images/UI/DALL_E_2024-12-27_17.45.35_-_An_image_representing_the_chapter_Responsive_and_Accessible_Design_from_a_guide_on_UX_UI_design._The_image_features_a_seamless_integration_of_variou_t7jdoq.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313899/Portfolio%20News%20Images/UI/DALL_E_2024-12-27_17.45.37_-_An_engaging_and_creative_representation_for_the_chapter_Interaction_Design_and_Microinteractions_in_a_UX_UI_design_guide._The_illustration_should_sh_roadkq.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313899/Portfolio%20News%20Images/UI/DALL_E_2024-12-27_17.45.39_-_An_engaging_and_modern_representation_of_the_chapter_Tools_of_the_Trade_in_UX_UI_design._The_image_should_depict_a_workspace_featuring_tools_like_Sk_tzha9d.webp",
+  ],
   title: "Decoding the Craft: A Dive into UX/UI Design",
   NewsSection: "UX/XI Designer",
   Introduction:
@@ -737,6 +627,18 @@ export const whatisuxuidesigner = {
 };
 export const whatisbranding = {
   img: "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735287452/DALL_E_2024-12-27_13.17.04_-_A_visually_engaging_image_for_The_Art_of_Branding_in_Web_Development._The_design_showcases_branding_elements_like_elegant_typography_vibrant_color_eiabx4.webp",
+  Slides: [
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313946/Portfolio%20News%20Images/Branding/DALL_E_2024-12-27_17.46.53_-_A_visually_compelling_image_representing_Aligning_Brand_Strategy_with_Web_Development._The_design_highlights_a_fusion_of_creative_branding_elements_kydqxd.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313945/Portfolio%20News%20Images/Branding/DALL_E_2024-12-27_17.46.51_-_A_visually_engaging_image_for_the_chapter_The_Foundations_of_Branding._The_design_showcases_a_cohesive_blend_of_iconic_branding_elements_such_as_log_gyclnt.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313945/Portfolio%20News%20Images/Branding/DALL_E_2024-12-27_17.46.55_-_A_modern_and_elegant_representation_of_Crafting_a_Visual_Identity_for_a_branding_guide_in_web_development._The_image_features_a_designer_s_workspace_tsrtsp.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313943/Portfolio%20News%20Images/Branding/DALL_E_2024-12-27_17.47.13_-_A_visually_compelling_and_dynamic_representation_of_the_chapter_Evolving_Brand_Strategies_in_the_Digital_Age._The_image_should_depict_futuristic_bra_ghsqvz.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313943/Portfolio%20News%20Images/Branding/DALL_E_2024-12-27_17.47.04_-_An_artistic_and_visually_engaging_representation_for_the_chapter_Content_Strategy_and_Brand_Messaging_in_the_context_of_web_development_and_branding_dr2088.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313942/Portfolio%20News%20Images/Branding/DALL_E_2024-12-27_17.46.56_-_An_elegant_and_professional_representation_for_the_chapter_User_Experience_UX_and_Branding._The_image_features_a_user_interacting_with_a_sleek_web_tpgui9.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313942/Portfolio%20News%20Images/Branding/DALL_E_2024-12-27_17.47.06_-_A_modern_and_professional_representation_for_the_chapter_Social_Media_Integration_in_the_context_of_web_development_and_branding._The_design_feature_pijgwa.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313942/Portfolio%20News%20Images/Branding/DALL_E_2024-12-27_17.46.58_-_A_professional_and_elegant_visualization_for_the_chapter_Responsive_Design_and_Brand_Consistency_in_The_Art_of_Branding_in_Web_Development._This_i_jtap0w.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313941/Portfolio%20News%20Images/Branding/DALL_E_2024-12-27_17.47.09_-_An_engaging_and_dynamic_visual_representation_for_the_chapter_Analytics_and_Brand_Performance_in_the_context_of_web_development_and_branding._The_im_f6vdot.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313939/Portfolio%20News%20Images/Branding/DALL_E_2024-12-27_17.47.11_-_A_modern_and_professional_representation_for_the_chapter_E-commerce_and_Brand_Merchandising._The_scene_features_an_online_shopping_experience_on_a_v_j7nzbz.webp",
+  ],
   title: "The Art of Branding in Web Development.",
   NewsSection: "Branding",
   Introduction:
@@ -817,6 +719,18 @@ export const whatisbranding = {
 };
 export const whatisSocialMedia = {
   img: "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735287526/DALL_E_2024-12-27_13.18.20_-_A_visually_dynamic_image_for_The_Role_of_Social_Media_in_Web_Development._The_design_integrates_social_media_icons_like_Facebook_Twitter_Instagram_yb6awi.webp",
+  Slides: [
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313981/Portfolio%20News%20Images/Social/DALL_E_2024-12-27_17.56.22_-_A_visually_dynamic_representation_of_The_Social_Media_Landscape_for_web_development._The_image_features_a_vibrant_collage_of_social_media_icons_like_ydofu3.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313981/Portfolio%20News%20Images/Social/DALL_E_2024-12-27_17.56.24_-_A_visually_engaging_image_for_the_chapter_titled_Integrating_Social_Media_into_Web_Design_from_The_Role_of_Social_Media_in_Web_Development._The_de_rixdtz.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313979/Portfolio%20News%20Images/Social/DALL_E_2024-12-27_17.56.26_-_An_engaging_and_vibrant_illustration_representing_Leveraging_Social_Authentication_in_web_development._The_scene_features_a_website_interface_with_s_vlngw2.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313978/Portfolio%20News%20Images/Social/DALL_E_2024-12-27_17.56.29_-_A_vibrant_and_visually_engaging_representation_of_Social_Media_APIs_and_Web_Development._The_design_showcases_a_seamless_connection_between_social_m_grqk4g.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313978/Portfolio%20News%20Images/Social/DALL_E_2024-12-27_17.56.27_-_A_visually_dynamic_representation_of_Social_Media_and_User_Experience_UX_in_web_development._The_image_should_depict_a_harmonious_blend_of_social_c6x3cn.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313977/Portfolio%20News%20Images/Social/DALL_E_2024-12-27_17.56.33_-_A_creative_and_engaging_illustration_of_the_chapter_Social_Media_Marketing_and_Web_Development._The_image_features_a_blend_of_vibrant_icons_represen_bvpyg8.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313976/Portfolio%20News%20Images/Social/DALL_E_2024-12-27_17.56.31_-_A_visually_compelling_image_representing_the_chapter_Content_Strategy_for_Social_Media._The_design_should_feature_a_vibrant_and_dynamic_layout_show_zvqakx.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313975/Portfolio%20News%20Images/Social/DALL_E_2024-12-27_17.56.36_-_A_vibrant_and_creative_visual_representation_for_the_chapter_titled_Social_Media_and_E-commerce_in_the_context_of_web_development._The_image_feature_ppm5ua.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313974/Portfolio%20News%20Images/Social/DALL_E_2024-12-27_17.56.38_-_An_innovative_and_visually_striking_representation_for_the_chapter_titled_Emerging_Trends_in_Social_Media_and_Web_Development._The_design_integrates_yr0vg8.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735313974/Portfolio%20News%20Images/Social/DALL_E_2024-12-27_17.56.34_-_A_modern_and_visually_striking_representation_of_the_chapter_titled_Analytics_and_Social_Media_Performance._The_image_features_abstract_analytics_ch_vo2ryt.webp",
+  ],
   title: "The Role of Social Media in Web Development.",
   NewsSection: "Social Media",
   Introduction:
@@ -897,6 +811,18 @@ export const whatisSocialMedia = {
 };
 export const whatisMarketing = {
   img: "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735287585/DALL_E_2024-12-27_13.19.19_-_A_visually_compelling_image_for_Unveiling_the_Web_Developer_s_Guide_to_Marketing._The_design_combines_marketing_elements_such_as_growth_graphs_digi_e0flan.webp",
+  Slides: [
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735314008/Portfolio%20News%20Images/Marketing/DALL_E_2024-12-27_20.25.54_-_A_creative_and_modern_illustration_representing_SEO_Fundamentals_for_Web_Developers_._The_image_should_depict_concepts_like_search_engine_optimizatio_z7coqe.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735314013/Portfolio%20News%20Images/Marketing/DALL_E_2024-12-27_20.25.51_-_An_engaging_and_dynamic_illustration_for_Developing_a_Marketing_Mindset._The_scene_features_a_blend_of_web_development_tools_and_marketing_symbols_gor1od.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735314013/Portfolio%20News%20Images/Marketing/DALL_E_2024-12-27_20.25.49_-_A_visually_compelling_image_representing_The_Convergence_of_Web_Development_and_Marketing_._The_design_integrates_elements_of_modern_web_development_pqp277.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735314010/Portfolio%20News%20Images/Marketing/DALL_E_2024-12-27_20.25.52_-_A_visually_striking_and_modern_illustration_representing_Building_a_Brand-Driven_Web_Presence_._The_design_features_elements_of_digital_branding_suc_ofge4m.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735314009/Portfolio%20News%20Images/Marketing/DALL_E_2024-12-27_20.25.55_-_A_visually_engaging_and_creative_illustration_representing_Content_Marketing_Strategies._The_design_incorporates_dynamic_content_creation_elements_s_aibh6h.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735314008/Portfolio%20News%20Images/Marketing/DALL_E_2024-12-27_20.25.57_-_A_visually_engaging_and_vibrant_illustration_representing_Social_Media_Integration._The_design_features_interconnected_icons_of_major_social_media_p_gem9rg.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735314007/Portfolio%20News%20Images/Marketing/DALL_E_2024-12-27_20.26.01_-_A_visually_engaging_and_modern_illustration_representing_Paid_Advertising_for_Web_Projects_._The_design_includes_elements_like_digital_advertising_sc_jgzel1.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735314007/Portfolio%20News%20Images/Marketing/DALL_E_2024-12-27_20.26.00_-_A_creative_and_professional_illustration_representing_Analytics_and_Data-Driven_Decision_Making._The_design_features_elements_like_graphs_charts_a_umxkjx.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735314005/Portfolio%20News%20Images/Marketing/DALL_E_2024-12-27_20.25.59_-_An_engaging_and_modern_illustration_representing_Email_Marketing_Essentials_for_web_developers._The_design_features_elements_like_an_email_inbox_ne_xh5wv0.webp",
+    "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735314006/Portfolio%20News%20Images/Marketing/DALL_E_2024-12-27_20.26.03_-_A_professional_and_visually_engaging_illustration_representing_Building_Partnerships_and_Collaborations_in_web_development_and_marketing._The_design_mkyorg.webp",
+  ],
   title: "Unveiling the Web Developer's Guide to Marketing",
   NewsSection: "Marketing",
   Introduction:

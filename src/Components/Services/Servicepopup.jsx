@@ -123,7 +123,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
                 {selectedNews.NewsSection}.
               </div>
               <div className="slidernews">
-                <SliderComponent />
+                <SliderComponent selectedNews={selectedNews} />
               </div>
             </div>
             <div className="mainintro text-center">

@@ -2,26 +2,10 @@ import React, { useState } from "react";
 import "./Projects.css";
 import {
   Mernstackfirst,
-  Mernstackfive,
-  Mernstackfour,
   Mernstacksecond,
-  Mernstacksix,
   Mernstackthered,
-  Mernstackseven,
-  Mernstackeight,
-  Mernstacknine
 } from "../../../DummyData/DummyData";
-const mernstack = [
-  Mernstackfirst,
-  Mernstackfive,
-  Mernstackfour,
-  Mernstacksecond,
-  Mernstacksix,
-  Mernstackthered,
-  Mernstackseven,
-  Mernstackeight,
-  Mernstacknine
-];
+const mernstack = [Mernstackfirst, Mernstacksecond, Mernstackthered];
 function Designing() {
   return (
     <div className="Mernstack flex justify-center items-center flex-wrap">

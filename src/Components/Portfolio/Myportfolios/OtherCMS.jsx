@@ -4,19 +4,9 @@ import {
   bulldogtribe,
   amyherzogdesigns,
   bigcommerce,
-  korbanstudio,
-  theoceancleanup,
-  toddshelton,
 } from "../../../DummyData/DummyData";
 
-const OtherCMSData = [
-  bulldogtribe,
-  amyherzogdesigns,
-  bigcommerce,
-  korbanstudio,
-  theoceancleanup,
-  toddshelton,
-];
+const OtherCMSData = [bulldogtribe, amyherzogdesigns, bigcommerce];
 
 function OtherCMS() {
   return (

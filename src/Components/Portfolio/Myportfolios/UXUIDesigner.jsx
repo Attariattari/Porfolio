@@ -4,19 +4,9 @@ import {
   BankingApp,
   AouponApp,
   fooddeliverwebandmobileapp,
-  Wireframeandflowchart,
-  weblandingpage,
-  multiplescreens,
 } from "../../../DummyData/DummyData";
 
-const Uxuidesigner = [
-  BankingApp,
-  AouponApp,
-  fooddeliverwebandmobileapp,
-  Wireframeandflowchart,
-  weblandingpage,
-  multiplescreens,
-];
+const Uxuidesigner = [BankingApp, AouponApp, fooddeliverwebandmobileapp];
 
 function Designer() {
   return (
