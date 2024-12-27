@@ -4,6 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { useData } from "../../UseContaxt/Datacontaxt";
 import SliderComponent from "./SliderComponent";
 import { CgCloseR } from "react-icons/cg";
+import { FaArrowLeft } from "react-icons/fa6";
 function Servicepopup({ info, closePopup, selectedNews }) {
   const { setSubjectAndMessage, subject, message } = useData();
   const [scrollDisabled, setScrollDisabled] = useState(false);
@@ -115,10 +116,13 @@ function Servicepopup({ info, closePopup, selectedNews }) {
           <div className="Newspopupchild">
             <div className="allsliderarea">
               <button
-                className="Closeone absolute top-2 right-2"
+                className="absolute top-2 left-2 flex space-x-2 justify-center items-center"
                 onClick={closePopup}
               >
-                <CgCloseR className="text-3xl" />
+                <FaArrowLeft className="text-1xl " />
+                <p className="" style={{ fontSize: "11px" }}>
+                  Back
+                </p>
               </button>
               <div
                 className="text-3xl"

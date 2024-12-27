@@ -7,8 +7,6 @@ import { useData } from "../../UseContaxt/Datacontaxt";
 
 function Contact() {
   const { subject, message } = useData();
-  console.log(subject);
-  console.log(message);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -221,28 +219,3 @@ function Contact() {
 }
 
 export default Contact;
-{
-  /*      {/* <div className="mapsgettech">
-        <div className="maps rounded-xl">
-          <iframe
-            title="Google Map"
-            src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d6805.521423332021!2d74.34257200000002!3d31.475768!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3919042715f767ad%3A0xb0251034ce47145e!2sARFA%20Tower%2C%20Lahore%20%E2%80%93%20Kasur%20Rd%2C%20Nishtar%20Town%2C%20Lahore%2C%20Punjab%2C%20Pakistan!5e0!3m2!1sen!2sus!4v1704818346002!5m2!1sen!2sus"
-            width="100%"
-            height="100%"
-            className="rounded-xl"
-            allowFullScreen=""
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          ></iframe>
-        </div>
-        <div className="gettech rounded-xl">
-          <div className="techtext">Get in Touch.</div>{" "}
-          <div>
-            <div className="coustmerthanks">
-              Excited to hear about your project! Drop me a message, and let's
-              turn your ideas into a standout website.
-            </div>
-          </div>
-        </div>
-      </div> */
-}
