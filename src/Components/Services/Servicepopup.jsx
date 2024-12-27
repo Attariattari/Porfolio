@@ -72,30 +72,41 @@ function Servicepopup({ info, closePopup, selectedNews }) {
       {info && (
         <div className="Servicepopup">
           <div className="Servicepopupchild">
-            <div className="ImagePopup">
-              <img src={info.img} alt="" />
-            </div>
-            <div className="flex justify-center items-center py-2 font-serif text-xl">
-              <div>{info.title}</div>
-            </div>
-            <div className="p-3 text-center">{info.details}</div>
-            <div className="p-3 text-center">{info.detailstwo}</div>
-            <div className="p-3 text-center">{info.detailsthree}</div>
-            <div className="p-3 text-center">{info.detailsfour}</div>
-            <div className="mt-3 p-3 text-center font-bold">{info.forhair}</div>
-            <div className="p-3 FullDetails">
+            {/* Sticky Header Section */}
+            <div className="sticky top-0 z-10 bg-white shadow-md">
+              <div className="ImagePopup">
+                <img src={info.img} alt="" className="w-full" />
+              </div>
               <button
-                className="Fulldetails"
-                onClick={() => HairFunction(info)}
+                className="Closeone absolute top-2 right-2"
+                onClick={closePopup}
               >
-                Hair Me
+                <CgCloseR className="text-3xl" />
               </button>
-
-              <ToastContainer position="top-right" theme="dark" />
             </div>
-            <button className="Closeone" onClick={closePopup}>
-              <CgCloseR className="text-3xl" />
-            </button>
+
+            {/* Scrollable Content Section */}
+            <div className="ScrollableContent overflow-y-auto max-h-[400px]">
+              <div className="flex justify-center items-center py-2 font-serif text-xl">
+                <div>{info.title}</div>
+              </div>
+              <div className="p-3 text-center">{info.details}</div>
+              <div className="p-3 text-center">{info.detailstwo}</div>
+              <div className="p-3 text-center">{info.detailsthree}</div>
+              <div className="p-3 text-center">{info.detailsfour}</div>
+              <div className="mt-3 p-3 text-center font-bold">
+                {info.forhair}
+              </div>
+              <div className="p-3 FullDetails">
+                <button
+                  className="Fulldetails"
+                  onClick={() => HairFunction(info)}
+                >
+                  Hair Me
+                </button>
+                <ToastContainer position="top-right" theme="dark" />
+              </div>
+            </div>
           </div>
         </div>
       )}
