@@ -6,7 +6,7 @@ import { LuSearchCode } from "react-icons/lu";
 import { FaPlus } from "react-icons/fa6";
 
 export const Webdeveloper = {
-  img: "https://wallpaperaccess.com/full/8901670.png",
+  img: "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735288223/DALL_E_2024-12-27_13.21.28_-_An_eye-catching_and_professional_image_for_a_MERN_Stack_Development_Company._The_design_features_the_logos_of_MongoDB_Express.js_React_and_Node.js_vuy9ue.webp",
   background:
     "https://www.dreamsoft4u.com/wp-content/uploads/2023/05/MERN-Stack-image.png.webp",
   icon: <FaLaptopCode />,
@@ -44,7 +44,7 @@ Best regards,
 [Your Company Name]`,
 };
 export const Uxuidesigner = {
-  img: "https://wallpapercave.com/wp/wp9775559.png",
+  img: "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735288222/DALL_E_2024-12-27_13.21.33_-_An_engaging_and_modern_image_for_UI_UX_Design_Services._The_design_features_sleek_interface_wireframes_vibrant_color_palettes_user_journey_maps_a_ithsp5.webp",
   icon: <SiWebpack />,
   title: "UI/UX Design Services.",
   titletwo: "UI/UX Design Services",
@@ -83,7 +83,7 @@ Best regards,
 [Your Company Name]`,
 };
 export const Backenddeveloper = {
-  img: "https://miro.medium.com/v2/resize:fit:1358/1*WDX58nzlaiClqTFT59v7RQ.jpeg",
+  img: "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735288221/DALL_E_2024-12-27_13.21.35_-_A_professional_and_engaging_image_for_Node.js_Development_Services._The_design_features_the_Node.js_logo_prominently_with_visuals_of_server-side_pr_bqe019.webp",
   icon: <FaNodeJs />,
   title: "Node.JS Development Services",
   background:
@@ -123,7 +123,7 @@ export const Backenddeveloper = {
   [Your Company Name]`,
 };
 export const Branding = {
-  img: "https://img.freepik.com/free-photo/branding-advertisment-copyright-value-profile-concept_53876-121048.jpg",
+  img: "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735288224/DALL_E_2024-12-27_13.22.36_-_A_visually_striking_and_modern_branding_image_for_SparkHub__Igniting_Innovation_Connecting_Futures._The_design_features_a_sleek_logo_concept_with_d_orstas.webp",
   icon: <SiBrandfolder />,
   title: "SparkHub: Igniting Innovation, Connecting Futures.",
   background:
@@ -160,7 +160,7 @@ Best regards,
 [Your Company Name]`,
 };
 export const SocialMedia = {
-  img: "https://c0.wallpaperflare.com/preview/983/956/951/digital-marketing-search-engine-optimization-marketing-content.jpg",
+  img: "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735288219/DALL_E_2024-12-27_13.25.38_-_A_vibrant_and_modern_branding_image_for_Amplify_Your_Brand_Presence_focusing_on_social_media._The_design_features_popular_social_media_platform_icon_ltflvh.webp",
   icon: <IoShareSocial />,
   title: "Amplify Your Brand Presence.",
   background:
@@ -198,7 +198,7 @@ Best regards,
 [Your Company Name]`,
 };
 export const SEO = {
-  img: "https://c0.wallpaperflare.com/preview/345/723/808/search-engine-optimization-seo-digital-marketing-laptop.jpg",
+  img: "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735288219/DALL_E_2024-12-27_13.26.39_-_A_sleek_and_professional_image_for_Boost_Your_Online_Visibility_focused_on_SEO._The_design_features_elements_like_search_engine_graphs_keyword_clou_lznaes.webp",
   icon: <FaChartLine />,
   background:
     "https://www.dreamsoft4u.com/wp-content/uploads/2023/05/Healthcare-Software-image.png.webp",
@@ -495,9 +495,9 @@ export const toddshelton = {
 };
 // ================================News=================================
 export const whatisreact = {
-  img: "https://www.credencys.com/wp-content/uploads/2019/08/what-is-react-js.jpg",
+  img: "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735286897/DALL_E_2024-12-27_12.58.53_-_A_visually_engaging_image_for_Mastering_React_for_Modern_Web_Development._The_design_includes_a_dynamic_modern_user_interface_with_React_s_signature_skt87u.webp",
   title: "Mastering React for Modern Web Development.",
-  NewsSection:"React",
+  NewsSection: "React",
   Introduction:
     "In the ever-evolving landscape of web development, React has emerged as a powerhouse for creating dynamic and responsive user interfaces. Its popularity and efficiency make it an indispensable tool for developers. In this blog post, we'll dive into the fundamentals of React and explore its key concepts.",
   IntroductionTwo:
@@ -576,9 +576,9 @@ export const whatisreact = {
 };
 
 export const whatisnodejs = {
-  img: "https://e1.pxfuel.com/desktop-wallpaper/556/958/desktop-wallpaper-react-js-mern-stack.jpg",
+  img: "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735286898/DALL_E_2024-12-27_12.59.02_-_A_visually_engaging_image_for_Mastering_Node.js_for_Modern_Backend_Development._The_design_includes_a_dynamic_backend_server_architecture_with_Node_usrsxp.webp",
   title: "Unleashing the Power of Node.js in Web Development",
-  NewsSection:"Node.js",
+  NewsSection: "Node.js",
   Introduction:
     "In the dynamic realm of web development, Node.js has emerged as a transformative force. This blog post serves as a comprehensive guide, unraveling the core concepts of Node.js and showcasing its prowess in crafting robust and scalable web applications.",
   IntroductionTwo:
@@ -656,9 +656,9 @@ export const whatisnodejs = {
   end: "By the end of this guide, you'll have unleashed the power of Node.js in web development, equipped with the skills to create scalable, high-performance applications. Let's dive into the world of Node.js and elevate your web development capabilities!",
 };
 export const whatisuxuidesigner = {
-  img: "https://wallpapercave.com/dwp1x/wp9775513.jpg",
+  img: "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735286895/DALL_E_2024-12-27_12.59.10_-_A_visually_captivating_image_for_Decoding_the_Craft__A_Dive_into_UX_UI_Design._The_design_features_sleek_user_interface_elements_wireframe_sketches_zncfgt.webp",
   title: "Decoding the Craft: A Dive into UX/UI Design",
-  NewsSection:"UX/XI Designer",
+  NewsSection: "UX/XI Designer",
   Introduction:
     "In the multifaceted world of web development, the harmony of User Experience (UX) and User Interface (UI) design is an art form that defines the success of digital products. This blog post is your compass into the realm of UX/UI design, unraveling its significance, principles, and the impact it has on crafting exceptional user journeys.",
   IntroductionTwo:
@@ -736,9 +736,9 @@ export const whatisuxuidesigner = {
   end: "By the end of this guide, you'll have decoded the craft of UX/UI design, equipped with the knowledge and skills to create user-centric, visually stunning, and functionally seamless digital experiences. Let's embark on this enriching journey into the realm of UX/UI design!",
 };
 export const whatisbranding = {
-  img: "https://images.unsplash.com/photo-1518893494013-481c1d8ed3fd?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fGJyYW5kfGVufDB8fDB8fHww",
+  img: "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735287452/DALL_E_2024-12-27_13.17.04_-_A_visually_engaging_image_for_The_Art_of_Branding_in_Web_Development._The_design_showcases_branding_elements_like_elegant_typography_vibrant_color_eiabx4.webp",
   title: "The Art of Branding in Web Development.",
-  NewsSection:"Branding",
+  NewsSection: "Branding",
   Introduction:
     "In the digital age, where first impressions are often made online, the concept of branding has transcended the traditional realm of business. This blog post aims to unravel the essence of branding, exploring its significance, principles, and its intersection with the world of web development.",
   IntroductionTwo:
@@ -816,9 +816,9 @@ export const whatisbranding = {
   end: "By the end of this guide, you'll possess the knowledge and skills to artfully integrate branding into web development, creating online experiences that resonate with users, reinforce brand identity, and drive success in the digital realm. Let's embark on this creative journey into The Art of Branding in Web Development together!",
 };
 export const whatisSocialMedia = {
-  img: "https://www.vocso.com/blog/wp-content/uploads/2023/05/The-Role-Of-Website-Design-In-Building-A-Strong-Social-Media-Following.webp",
+  img: "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735287526/DALL_E_2024-12-27_13.18.20_-_A_visually_dynamic_image_for_The_Role_of_Social_Media_in_Web_Development._The_design_integrates_social_media_icons_like_Facebook_Twitter_Instagram_yb6awi.webp",
   title: "The Role of Social Media in Web Development.",
-  NewsSection:"Social Media",
+  NewsSection: "Social Media",
   Introduction:
     "In the contemporary digital landscape, social media has become an integral part of our online experiences. As a web developer, understanding the dynamics of social media is paramount. This blog post aims to explore the symbiotic relationship between web development and social media, challenges, and the art of crafting compelling online spaces.",
   IntroductionTwo:
@@ -896,9 +896,9 @@ export const whatisSocialMedia = {
   end: "By the end of this guide, you'll have a deep understanding of the symbiotic relationship between social media and web development. Armed with strategic insights and practical knowledge, you'll be prepared to harness the power of social media to enhance user engagement, drive traffic, and amplify the impact of your web projects. Let's dive into The Role of Social Media in Web Development together!",
 };
 export const whatisMarketing = {
-  img: "https://danielpuiatti.com/wp-content/uploads/2023/01/Dreamweaver-Is-It-Still-a-Viable-Web-Development-Tool-1200x686.webp",
+  img: "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735287585/DALL_E_2024-12-27_13.19.19_-_A_visually_compelling_image_for_Unveiling_the_Web_Developer_s_Guide_to_Marketing._The_design_combines_marketing_elements_such_as_growth_graphs_digi_e0flan.webp",
   title: "Unveiling the Web Developer's Guide to Marketing",
-  NewsSection:"Marketing",
+  NewsSection: "Marketing",
   Introduction:
     "In the ever-evolving digital landscape, the symbiotic relationship between web development and marketing is undeniable. As a web developer, understanding the fundamentals of marketing can elevate your projects and contribute to their success. Showcasing the art of crafting compelling online narratives.",
   IntroductionTwo:

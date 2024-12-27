@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "./Servicepopup.css";
-import { IoIosCloseCircleOutline } from "react-icons/io";
-import Contact from "../Contact/Contact";
 import { ToastContainer, toast } from "react-toastify";
 import { useData } from "../../UseContaxt/Datacontaxt";
 import SliderComponent from "./SliderComponent";
@@ -47,7 +45,7 @@ function Servicepopup({ info, closePopup, selectedNews }) {
       toast.error("Error sending data. Please try again.");
     }
   };
-  
+
   const [activeIndex, setActiveIndex] = useState(1);
 
   // Function to go to the next slide
@@ -95,8 +93,8 @@ function Servicepopup({ info, closePopup, selectedNews }) {
 
               <ToastContainer position="top-right" theme="dark" />
             </div>
-            <button className="Closeone" onClick={closePopup}>              
-              <CgCloseR  className="text-3xl" />
+            <button className="Closeone" onClick={closePopup}>
+              <CgCloseR className="text-3xl" />
             </button>
           </div>
         </div>
@@ -119,7 +117,9 @@ function Servicepopup({ info, closePopup, selectedNews }) {
             </div>
             <div className="mainintro text-center">
               <div className="font-serif text-3xl">Introduction:</div>
-              <div className="introtwo text-center">{selectedNews.IntroductionTwo}</div>
+              <div className="introtwo text-center">
+                {selectedNews.IntroductionTwo}
+              </div>
             </div>
             <div className="mainintro text-center">
               <div className="font-serif text-3xl">Chapter 1:</div>
