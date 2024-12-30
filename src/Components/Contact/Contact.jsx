@@ -56,6 +56,24 @@ function Contact() {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
+    // Placeholder validation
+    if (
+      formData.message.includes("[Recipient's Name]") ||
+      formData.message.includes("[Your Company Name]")
+    ) {
+      toast.error(
+        "Please replace placeholders in the message before submitting!"
+      );
+      return;
+    }
+    if (
+      formData.message.includes("[Recipient's Name]") ||
+      formData.message.includes("[Your Company Name]")
+    ) {
+      errors.message =
+        "Please replace placeholders in the message! and enter the correct name and compnay name!";
+    }
+    // Empty fields validation
     if (Object.values(formData).some((value) => value.trim() === "")) {
       toast.error("Please fill in all fields!");
       return;
@@ -69,10 +87,12 @@ function Contact() {
         subject: "",
         message: "",
       });
+      toast.success("Form submitted successfully!");
     } catch (error) {
       toast.error("Error submitting form. Please try again.");
     }
   };
+
   const handleTextareaChange = (e) => {
     const rows = e.target.value.split("\n").length;
 
