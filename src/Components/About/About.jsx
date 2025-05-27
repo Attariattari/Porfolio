@@ -92,7 +92,7 @@ function About() {
                 <div className="ImageShow">
                   <img
                     className=""
-                    src="https://res.cloudinary.com/dg5gwixf1/image/upload/v1732204178/buqjmh8ksxqstp8te5to.jpg"
+                    src="https://res-console.cloudinary.com/dg5gwixf1/thumbnails/v1/image/upload/v1748354790/MTc0MzY5ODI1MjE0NF9sY3dwc3E=/drilldown"
                     alt=""
                     style={{ objectPosition: "top" }}
                   />
