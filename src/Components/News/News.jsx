@@ -6,7 +6,7 @@ import {
   whatisuxuidesigner,
   whatisbranding,
   whatisSocialMedia,
-  whatisMarketing
+  whatisMarketing,
 } from "../../DummyData/DummyData";
 import Servicepopup from "../Services//Servicepopup";
 
@@ -16,7 +16,7 @@ const whatisreacta = [
   whatisuxuidesigner,
   whatisbranding,
   whatisSocialMedia,
-  whatisMarketing
+  whatisMarketing,
 ];
 
 function News() {
@@ -45,8 +45,14 @@ function News() {
               <div className="Servicesicons shadow-lg ">
                 <img src={service.img} alt="" />
               </div>
-              <div className="text-center text-md font-bold py-2">{service.title}</div>
-              <div className="text-center Servicesinfo">{service.Introduction}</div>
+              <div className="text-center text-md font-bold py-2">
+                {service.title}
+              </div>
+              <div className="text-center Servicesinfo">
+                {service.Introduction?.length > 180
+                  ? `${service.Introduction.slice(0, 180)}...`
+                  : service.Introduction}
+              </div>
             </div>
             <button
               onClick={() => handleButtonClick(service)}
@@ -65,5 +71,5 @@ function News() {
 export default News;
 
 // {
-//  
+//
 // }

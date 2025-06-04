@@ -53,6 +53,7 @@
   margin-top: 2em;
   margin-bottom: 2em;
 }
+
 .Servicepopup {
   width: 100%;
   height: 100%;
@@ -67,9 +68,9 @@
 }
 
 .Servicepopupchild {
-  width: 40%;
+  width: 50%;
   height: auto;
-  background-color: #adadade2;
+  background-color: #ffffffe2;
   backdrop-filter: blur(10px);
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
@@ -84,19 +85,9 @@
   border-radius: 5px 5px 0 0;
 }
 
-.Closeone {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  cursor: pointer;
-  background: transparent;
-  border: none;
-  color: #000;
-}
-
 .ScrollableContent {
   overflow-y: auto;
-  max-height: 400px;
+  max-height: 600px;
   padding: 10px;
 }
 
@@ -200,26 +191,48 @@
 }
 
 .Closeone {
-  position: absolute;
-  margin: auto;
   width: 2.3rem;
   height: 2.3rem;
   top: 0.5rem;
   right: 0.6rem;
   cursor: pointer;
-  color: #ffffff;
-  justify-content: center;
-  align-items: center;
-  background-color: #000000;
+  color: #fff;
+  background-color: #e3872d;
+  font-weight: 600;
+  font-family: "Montserrat";
+  border-radius: 5%;
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 5%;
+  border: none;
+  position: absolute;
+  z-index: 100;
+  font-size: 1em;
+  line-height: 1.8;
+  letter-spacing: 0.5px;
   box-shadow: 0 0 24px 0 rgb(3, 3, 3);
+  overflow: hidden;
+}
+
+.Closeone::before {
+  position: absolute;
+  content: "";
+  top: 0px;
+  height: 100%;
+  left: -25%;
+  width: 0%;
+  background-color: #041230;
+  transform: skew(50deg);
+  transition-duration: 0.4s;
+  z-index: -1;
+}
+
+.Closeone:hover::before {
+  width: 150%;
+  left: -20%;
 }
 
 .Closeone:hover {
-  transform: scale(1.1) rotate(360deg);
   box-shadow: 0 0 24px 0 rgb(0, 0, 0);
   transition: transform 0.4s ease-out, box-shadow 0.4s ease-out;
 }
@@ -238,6 +251,10 @@
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   transition: transform 0.4s ease-out, box-shadow 0.4s ease-out;
   border-radius: 50%;
+  -webkit-transform: scale(1.2) rotate(360deg);
+  -moz-transform: scale(1.2) rotate(360deg);
+  -ms-transform: scale(1.2) rotate(360deg);
+  -o-transform: scale(1.2) rotate(360deg);
 }
 
 .Header {

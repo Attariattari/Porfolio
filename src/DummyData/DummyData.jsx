@@ -1,239 +1,722 @@
 import { FaChartLine, FaLaptopCode, FaNodeJs } from "react-icons/fa6";
 import { IoShareSocial } from "react-icons/io5";
-import { SiBrandfolder } from "react-icons/si";
+import { SiBrandfolder, SiDatabricks, SiSpringsecurity } from "react-icons/si";
 import { SiWebpack } from "react-icons/si";
-import { LuSearchCode } from "react-icons/lu";
+import { LuComputer, LuSearchCode } from "react-icons/lu";
 import { FaPlus } from "react-icons/fa6";
+import { FaCode } from "react-icons/fa6";
+import { PiFigmaLogoFill } from "react-icons/pi";
+import { MdOutlineFileCopy, MdOutlineMarkUnreadChatAlt } from "react-icons/md";
+import { BsSpeedometer } from "react-icons/bs";
+import { CiGrid42 } from "react-icons/ci";
+import { GrIntegration } from "react-icons/gr";
+import { GiArmoredBoomerang } from "react-icons/gi";
+import { AiOutlineDeploymentUnit } from "react-icons/ai";
+import "../Components/Services/Services.css";
 
-export const Webdeveloper = {
-  img: "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735288223/DALL_E_2024-12-27_13.21.28_-_An_eye-catching_and_professional_image_for_a_MERN_Stack_Development_Company._The_design_features_the_logos_of_MongoDB_Express.js_React_and_Node.js_vuy9ue.webp",
-  background:
-    "https://www.dreamsoft4u.com/wp-content/uploads/2023/05/MERN-Stack-image.png.webp",
-  icon: <FaLaptopCode />,
-  title: "MERN Stack Development Company.",
-  titletwo: "MERN Stack Development Company",
-  titlethree:
-    "We serve businesses in all industrial domains with MERN Stack web applications.",
-  about:
-    "Our MERN Stack Development Services utilize MongoDB, ExpressJS, ReactJS, and NodeJS to build dynamic web applications that deliver high performance and scalability.",
-  button: "Start MERN Project!",
-  details:
-    "MERN is a technology stack that helps users gain access to faster, more scalable, and highly advanced application development. MERN stack is a combination of JavaScript technologies; in other words, it is a JavaScript stack used to make a business more agile and enhance its performance.",
-  detailstwo:
-    "MERN stack consists of 4 main components – MongoDB, React, Express.js, and Node JS. Each of these components has its own unique set of advantages that they offer to users. They complement each other and perform different functions in a web application development project.",
-  detailsthree:
-    "MERN stack is popular amongst clients and web development specialists because it offers fast product delivery and enhanced scalability. Many users are currently using MERN for quick and great quality app development.",
-  detailsfour:
-    "So, if you too want to explore all the benefits of MERN stack development services, as well as where you can find them at competitive rates, then keep reading. With 2BTech, you can hire MERN stack developers who are the best in the IT industry.",
-  forhair:
-    "Your MERN Stack Development Services Business Partner. Hire A Dedicated MERN Stack Developer.",
-  subject: "Revolutionize Your Digital Presence with Our MERN Stack Expertise!",
-  message: `Dear [Recipient's Name],
+export const services = [
+  {
+    id: 1,
+    title: "Frontend Development",
+    icons: <FaCode className="icons" />,
+    intro:
+      "Modern, fast, and responsive frontend development to elevate your digital presence with engaging and visually appealing user interfaces.",
+    description: (
+      <>
+        <p className="mb-3 text-gray-700 dark:text-gray-300">
+          Our Frontend Development service is all about creating blazing-fast,
+          visually captivating, and highly interactive user interfaces. We bring
+          your vision to life with precision using modern tools like React.js,
+          Next.js, and Tailwind CSS — ensuring your app looks and performs
+          beautifully on every device.
+        </p>
+
+        <p className="mb-3 font-semibold" style={{ color: "#e3872d" }}>
+          What You’ll Get:
+        </p>
+
+        <ul className="list-disc list-inside mb-4 text-gray-700 dark:text-gray-300 space-y-1">
+          <li>Responsive designs that work flawlessly across all devices.</li>
+          <li>
+            Lightning-fast performance optimized for SEO and accessibility.
+          </li>
+          <li>Elegant, smooth animations using Framer Motion.</li>
+          <li>
+            Scalable architecture powered by TypeScript and Redux for advanced
+            control.
+          </li>
+          <li>Custom UI components tailored to match your brand perfectly.</li>
+        </ul>
+
+        <p className="text-gray-600 dark:text-gray-400 italic">
+          Whether you're starting fresh or revamping an existing UI, we help you
+          deliver polished, production-ready frontends that leave a lasting
+          impression and increase user engagement.
+        </p>
+      </>
+    ),
+
+    technologies: [
+      "React.js",
+      "Next.js",
+      "Tailwind CSS",
+      "Framer Motion",
+      "Redux",
+      "TypeScript",
+    ],
+    subject: "Enhance Your UI with Stunning Frontend Development",
+    message: `Dear [Recipient's Name],
+
+Are you ready to impress your users with a beautiful, high-performance frontend? Our team creates interactive, pixel-perfect user interfaces that bring your designs to life using React.js, Next.js, Tailwind CSS and more. Whether you're building from scratch or improving an existing UI, we deliver fast, responsive, and seamless experiences.
+
+Let’s craft a frontend that truly stands out!
+
+Best regards,
+[Your Company Name]`,
+  },
+  {
+    id: 2,
+    title: "Backend Development",
+    icons: <LuComputer className="icons" />,
+    intro:
+      "Robust, scalable, and secure backend development to power your application with performance and reliability.",
+    description: (
+      <>
+        <p className="mb-3 text-gray-700 dark:text-gray-300">
+          Our Backend Development service ensures your application runs smoothly
+          behind the scenes. From RESTful APIs to real-time systems, we
+          specialize in building reliable, high-performance server-side
+          solutions using modern tools like Node.js, Express, and MongoDB.
+        </p>
+
+        <p className="mb-3 font-semibold" style={{ color: "#e3872d" }}>
+          What You’ll Get:
+        </p>
+
+        <ul className="list-disc list-inside mb-4 text-gray-700 dark:text-gray-300 space-y-1">
+          <li>Scalable architecture built with Node.js and Express.js.</li>
+          <li>
+            Efficient and secure database integration using MongoDB & Mongoose.
+          </li>
+          <li>
+            Cleanly structured RESTful APIs for seamless frontend-backend
+            communication.
+          </li>
+          <li>
+            JWT-based user authentication & authorization for maximum security.
+          </li>
+          <li>Optimized backend logic for performance and future scaling.</li>
+        </ul>
+
+        <p className="text-gray-600 dark:text-gray-400 italic">
+          Whether you're building a new backend from scratch or refactoring an
+          existing one, our expert team delivers secure, maintainable solutions
+          that scale with your business.
+        </p>
+      </>
+    ),
+    technologies: [
+      "Node.js",
+      "Express.js",
+      "MongoDB",
+      "Mongoose",
+      "JWT",
+      "REST API",
+    ],
+    subject: "Build a Rock-Solid Backend for Your Application",
+    message: `Dear [Recipient's Name],
+
+Looking for a secure and scalable backend? We provide expert backend development using Node.js, Express, and MongoDB. From building REST APIs to complex logic and user authentication, our solutions are clean, efficient, and built to scale.
+
+Let’s power your app from the inside!
+
+Best regards,
+[Your Company Name]`,
+  },
+  {
+    id: 3,
+    title: "Responsive Websites",
+    icons: <MdOutlineFileCopy className="icons" />,
+    intro:
+      "Seamless, elegant websites that adapt flawlessly to any device or screen size with unmatched performance and accessibility.",
+    description: (
+      <>
+        <p className="mb-3 text-gray-700 dark:text-gray-300">
+          Our Responsive Website service ensures your digital presence looks and
+          works perfectly on every screen — from mobile phones and tablets to
+          desktops and large displays. We combine precision in layout with best
+          practices in accessibility and speed optimization to deliver
+          experiences that feel natural and intuitive everywhere.
+        </p>
+
+        <p className="mb-3 font-semibold" style={{ color: "#e3872d" }}>
+          What You’ll Get:
+        </p>
+
+        <ul className="list-disc list-inside mb-4 text-gray-700 dark:text-gray-300 space-y-1">
+          <li>
+            Pixel-perfect layouts that scale beautifully across all devices.
+          </li>
+          <li>Mobile-first approach using modern CSS techniques.</li>
+          <li>
+            Tailwind CSS for clean, utility-first styling with full
+            responsiveness.
+          </li>
+          <li>Optimized performance and accessibility on all viewports.</li>
+          <li>
+            Flexbox and Grid for precise layout control and dynamic flexibility.
+          </li>
+        </ul>
+
+        <p className="text-gray-600 dark:text-gray-400 italic">
+          Whether you're launching a new brand or upgrading an old design, our
+          responsive solutions guarantee a consistent, polished experience — no
+          matter the screen size.
+        </p>
+      </>
+    ),
+    technologies: [
+      "HTML5",
+      "CSS3",
+      "Tailwind CSS",
+      "Media Queries",
+      "Flexbox",
+      "Grid",
+    ],
+    subject: "Deliver Seamless UX Across All Devices with Responsive Design",
+    message: `Dear [Recipient's Name],
+
+Is your website ready for all screen sizes? We specialize in responsive design that adapts seamlessly to mobile, tablet, and desktop devices. Our pixel-perfect layouts ensure optimal performance, accessibility, and aesthetics—no matter the screen.
+
+Let’s make your site universally beautiful!
+
+Best regards,
+[Your Company Name]`,
+  },
+  {
+    id: 4,
+    title: "Figma to React",
+    icons: <PiFigmaLogoFill className="icons" />,
+    intro:
+      "Transform stunning Figma designs into responsive, pixel-perfect React or Next.js applications with clean, maintainable code.",
+    description: (
+      <>
+        <p className="mb-3 text-gray-700 dark:text-gray-300">
+          Our Figma to React service turns your design vision into a fully
+          functional, high-quality frontend. We faithfully translate every pixel
+          of your Figma mockups into reusable, performant components using
+          React.js or Next.js. The result? Visually identical interfaces that
+          feel as good as they look.
+        </p>
+
+        <p className="mb-3 font-semibold" style={{ color: "#e3872d" }}>
+          What You’ll Get:
+        </p>
+
+        <ul className="list-disc list-inside mb-4 text-gray-700 dark:text-gray-300 space-y-1">
+          <li>100% design fidelity with mobile responsiveness.</li>
+          <li>
+            Modern React or Next.js code structure with modular components.
+          </li>
+          <li>
+            Integration of Styled Components, Tailwind, or custom CSS solutions.
+          </li>
+          <li>Framer Motion animations for delightful interactions.</li>
+          <li>
+            Pixel-perfect layouts that align exactly with your design system.
+          </li>
+        </ul>
+
+        <p className="text-gray-600 dark:text-gray-400 italic">
+          Whether you're designing landing pages, dashboards, or entire apps, we
+          transform your static Figma designs into dynamic, production-ready
+          code.
+        </p>
+      </>
+    ),
+    technologies: [
+      "Figma",
+      "React.js",
+      "Next.js",
+      "Styled Components",
+      "Framer Motion",
+      "Tailwind CSS",
+    ],
+    subject: "Convert Your Figma Designs into Powerful React Apps",
+    message: `Dear [Recipient's Name],
+
+Do you have a design in Figma waiting to go live? We convert Figma designs into high-performance React or Next.js applications with pixel-perfect accuracy and elegant animations. Let us bring your vision to life with clean and reusable code.
+
+Let’s turn your designs into reality!
+
+Best regards,
+[Your Company Name]`,
+  },
+  {
+    id: 5,
+    title: "Full MERN Stack Apps",
+    icons: <SiDatabricks className="icons" />,
+    intro:
+      "End-to-end development using MongoDB, Express, React, and Node.js — complete, scalable web apps from idea to launch.",
+    description: (
+      <>
+        <p className="mb-3 text-gray-700 dark:text-gray-300">
+          Our Full MERN Stack service brings your business ideas to life with
+          robust, full-featured applications powered by MongoDB, Express.js,
+          React.js, and Node.js. Whether you're building a SaaS platform, an
+          eCommerce site, or a custom business solution — we take care of
+          everything from backend logic to frontend UI.
+        </p>
+
+        <p className="mb-3 font-semibold" style={{ color: "#e3872d" }}>
+          What You’ll Get:
+        </p>
+
+        <ul className="list-disc list-inside mb-4 text-gray-700 dark:text-gray-300 space-y-1">
+          <li>
+            Fully integrated backend with secure APIs and efficient database
+            models.
+          </li>
+          <li>
+            Beautiful, responsive frontend built with React.js and Redux
+            Toolkit.
+          </li>
+          <li>Authentication and authorization with JWT and middleware.</li>
+          <li>
+            Image handling, uploads, and media integration using Cloudinary.
+          </li>
+          <li>
+            Secure payment gateways and real-time transactions via Stripe.
+          </li>
+        </ul>
+
+        <p className="text-gray-600 dark:text-gray-400 italic">
+          From MVPs to enterprise-level apps, we deliver high-quality full-stack
+          applications that scale with your business needs.
+        </p>
+      </>
+    ),
+    technologies: [
+      "MongoDB",
+      "Express.js",
+      "React.js",
+      "Node.js",
+      "Redux Toolkit",
+      "Cloudinary",
+      "Stripe",
+    ],
+    subject:
+      "Revolutionize Your Digital Presence with Our MERN Stack Expertise!",
+    message: `Dear [Recipient's Name],
 
 Hope this message finds you well! We understand the pivotal role a robust web presence plays in today's digital landscape. That's why we're excited to introduce our MERN stack development services, designed to elevate your online experience.
 
-Our team of seasoned experts specializes in MongoDB, Express.js, React.js, and Node.js, ensuring the development of web applications that are not just functional but also scalable and efficient. From crafting intuitive user interfaces with React.js to building a reliable backend with Node.js and Express.js, we've got your MERN stack needs covered.
+Our team of seasoned experts specializes in MongoDB, Express.js, React.js, and Node.js, ensuring the development of web applications that are not just functional but also scalable and efficient.
 
-Whether you're looking to enhance your current web application or embark on a new digital venture, our tailored solutions are precisely what you need. Let us transform your ideas into a seamlessly integrated, high-performance web application that stands out in the competitive online landscape.
-
-Ready to take your online presence to the next level? Contact us today to discuss how our MERN stack development expertise can be customized to meet your unique requirements.
-
-Looking forward to the opportunity of working together!
+Let us transform your ideas into a high-performance web application that stands out!
 
 Best regards,
 [Your Company Name]`,
-};
-export const Uxuidesigner = {
-  img: "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735288222/DALL_E_2024-12-27_13.21.33_-_An_engaging_and_modern_image_for_UI_UX_Design_Services._The_design_features_sleek_interface_wireframes_vibrant_color_palettes_user_journey_maps_a_ithsp5.webp",
-  icon: <SiWebpack />,
-  title: "UI/UX Design Services.",
-  titletwo: "UI/UX Design Services",
-  background:
-    "https://www.dreamsoft4u.com/wp-content/uploads/2023/05/UI-UX-Design-image.png.webp",
-  titlethree:
-    "Crafting beautiful, intuitive, and user-friendly interfaces every time.",
-  about:
-    "Combining 21+ years of experience, we provide custom design solutions that bring your brand to life and meet user needs hassle-free. We work closely with you every step of the way.",
-  button: "LET’S CREATE TOGETHER",
-  details:
-    "UX/UI design is a crucial aspect of creating digital interfaces that deliver exceptional user experiences. It focuses on enhancing user satisfaction by improving the usability, accessibility, and overall pleasure provided in the interaction between the user and the product.",
-  detailstwo:
-    "A skilled UX/UI designer combines creativity and technical expertise to design interfaces that not only look visually appealing but also ensure a seamless and enjoyable user journey. The collaboration of User Experience (UX) and User Interface (UI) elements results in a design that is both aesthetically pleasing and user-friendly.",
-  detailsthree:
-    "Businesses and digital platforms widely recognize the significance of UX/UI design in engaging users and driving success. The demand for skilled UX/UI designers is high, making it a sought-after expertise in the world of digital product development.",
-  detailsfour:
-    "If you are seeking to elevate your digital presence with captivating and user-centric designs, look no further. At 2BTech, we offer dedicated UX/UI design services, providing you with access to top-notch designers who can transform your vision into visually stunning and highly functional digital experiences.",
-  forhair:
-    "Your UX/UI Design Services Partner. Hire A Dedicated Designer for Exceptional Digital Experiences.",
-  subject:
-    "Transform Your Digital Landscape with Our Expert UX/UI Design Services!",
-  message: `Dear [Recipient's Name],
+  },
+  {
+    id: 6,
+    title: "Speed & Performance",
+    icons: <BsSpeedometer className="icons" />,
+    intro:
+      "Optimize loading times and elevate user experience with industry-standard speed practices.",
+    description: (
+      <>
+        <p className="mb-3 text-gray-700 dark:text-gray-300">
+          A fast website is a successful website. We specialize in performance
+          optimization using techniques like code splitting, lazy loading, image
+          optimization, and efficient asset delivery. Our approach improves not
+          just load time but also SEO and overall user engagement.
+        </p>
 
-Greetings! In the dynamic realm of digital experiences, the design plays a pivotal role in capturing and retaining user attention. We understand the importance of delivering not just visually appealing but also intuitively crafted interfaces that leave a lasting impression.
+        <p className="mb-3 font-semibold" style={{ color: "#e3872d" }}>
+          What You’ll Get:
+        </p>
 
-Our team of seasoned UX/UI designers is dedicated to creating designs that prioritize user satisfaction, ensuring your digital platform stands out in terms of both aesthetics and functionality. From wireframes to polished user interfaces, we have the expertise to bring your vision to life.
+        <ul className="list-disc list-inside mb-4 text-gray-700 dark:text-gray-300 space-y-1">
+          <li>Comprehensive Lighthouse audits and actionable fixes.</li>
+          <li>Next.js image optimization and CDN delivery with Cloudflare.</li>
+          <li>
+            Lazy loading, caching, and asset compression for faster loads.
+          </li>
+          <li>Webpack configuration for optimal bundle sizes.</li>
+          <li>Best practices that enhance performance and SEO rankings.</li>
+        </ul>
 
-Whether you're looking to revamp your current digital interface or embark on a new project, our tailored UX/UI design solutions are designed to meet your unique requirements. Let us collaborate to create an immersive digital experience that resonates with your audience.
+        <p className="text-gray-600 dark:text-gray-400 italic">
+          Speed directly affects bounce rates and conversions — let us make your
+          site lightning-fast and user-loved.
+        </p>
+      </>
+    ),
+    technologies: [
+      "Lighthouse",
+      "Next.js Image",
+      "Webpack",
+      "Cloudflare",
+      "Lazy Load",
+      "SEO Best Practices",
+    ],
+    subject: "Boost Your Site’s Speed & Performance Today",
+    message: `Dear [Recipient's Name],
 
-Ready to transform your digital landscape? Reach out to us today to explore how our UX/UI design expertise can elevate your brand and user engagement.
+Website running slow? We specialize in speed optimization using lazy loading, code splitting, and advanced performance tools. Your users—and Google—will love how fast and smooth your site becomes.
 
-Looking forward to the opportunity of working together!
-
-Best regards,
-[Your Company Name]`,
-};
-export const Backenddeveloper = {
-  img: "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735288221/DALL_E_2024-12-27_13.21.35_-_A_professional_and_engaging_image_for_Node.js_Development_Services._The_design_features_the_Node.js_logo_prominently_with_visuals_of_server-side_pr_bqe019.webp",
-  icon: <FaNodeJs />,
-  title: "Node.JS Development Services",
-  background:
-    "https://www.dreamsoft4u.com/wp-content/uploads/2023/05/Node.JS-image.png.webp",
-  titletwo: "Node.JS Development Services",
-  titlethree:
-    "Fast, Scalable, and Secure Applications to Take Your Business Forward.",
-  about:
-    "Leverage power of Node.JS to reach a wider audience with a high-performing app. Ensure smooth user experience and handle high traffic volumes with our solutions.",
-  button: "GET YOUR APP BUILT!",
-
-  details:
-    "Backend development is the backbone of any robust digital platform, responsible for server-side logic, database management, and ensuring seamless communication between the database and the frontend. It is a critical component that powers the functionality and performance of web applications.",
-  detailstwo:
-    "Our team of skilled backend developers specializes in crafting scalable, secure, and efficient server-side solutions. From designing robust APIs to managing databases, we ensure that your digital infrastructure is not only reliable but also poised for future growth.",
-  detailsthree:
-    "In today's competitive digital landscape, a well-architected backend is essential for delivering high-performance applications. Businesses and developers alike recognize the importance of a solid backend foundation in creating user-centric and dynamic online experiences.",
-  detailsfour:
-    "Explore the possibilities of enhanced digital performance with our dedicated backend development services. At 2BTech, we offer a team of experienced backend developers ready to tackle your project and propel your digital presence to new heights.",
-  forhair:
-    "Your Backend Development Services Partner. Hire A Dedicated Backend Developer.",
-  subject:
-    "Elevate Your Digital Infrastructure with Our Backend Development Expertise!",
-  message: `Dear [Recipient's Name],
-  
-  I trust this message finds you well! In the ever-evolving landscape of digital innovation, a robust backend is the key to unlocking the full potential of your web applications. We understand the critical role backend development plays in ensuring seamless functionality and optimal performance.
-  
-  Our team of dedicated backend developers excels in designing and implementing scalable, secure, and high-performance server-side solutions. From crafting efficient APIs to database management, we ensure that your digital infrastructure is not just reliable but also ready for the demands of tomorrow.
-  
-  Whether you're looking to enhance your current backend architecture or embark on a new digital venture, our tailored backend development solutions are designed to meet your specific needs. Let us collaborate to build a backend that forms the solid foundation for your digital success.
-  
-  Ready to elevate your digital infrastructure? Connect with us today to explore how our backend development expertise can make a difference in your digital journey.
-  
-  Looking forward to the opportunity of working together!
-  
-  Best regards,
-  [Your Company Name]`,
-};
-export const Branding = {
-  img: "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735288224/DALL_E_2024-12-27_13.22.36_-_A_visually_striking_and_modern_branding_image_for_SparkHub__Igniting_Innovation_Connecting_Futures._The_design_features_a_sleek_logo_concept_with_d_orstas.webp",
-  icon: <SiBrandfolder />,
-  title: "SparkHub: Igniting Innovation, Connecting Futures.",
-  background:
-    "https://www.dreamsoft4u.com/wp-content/uploads/2023/05/Staff-Augmentation-image.png.webp",
-  titletwo: "SparkHub: Igniting Innovation, Connecting Futures.",
-  titlethree:
-    "Empower Your Business with Swift, Scalable, and Secure Applications for Unparalleled Growth.",
-  about:
-    "Branding is the art of imprinting a distinctive identity onto your business canvas, a symphony where authenticity and innovation create a brief, memorable masterpiece.",
-  button: "Elevate Your Presence!",
-  details:
-    "Branding is the art and science of creating a unique and memorable identity for your business. It involves shaping perceptions, building trust, and establishing a strong connection with your target audience. A well-crafted brand is the foundation for success in today's competitive marketplace.",
-  detailstwo:
-    "Our team of seasoned branding experts specializes in translating your vision into a compelling brand identity. From defining your brand strategy to designing captivating visual elements, we are dedicated to creating a brand that resonates with your audience and sets you apart.",
-  detailsthree:
-    "In a world where first impressions matter, a distinctive brand is a powerful asset. Businesses across industries recognize the impact of effective branding in creating lasting impressions and fostering customer loyalty.",
-  detailsfour:
-    "Transform your business identity with our comprehensive branding services. At 2BTech, we offer a team of experienced branding professionals ready to elevate your brand presence and help you stand out in the crowded marketplace.",
-  forhair: "Your Branding Services Partner. Hire A Dedicated Branding Expert.",
-  subject: "Define Your Success with Our Expert Branding Services!",
-  message: `Dear [Recipient's Name],
-
-Warm greetings! In the dynamic landscape of business, a strong and memorable brand is the cornerstone of success. We understand the significance of creating a distinctive identity that not only captures attention but also builds trust and connection with your audience.
-
-Our team of dedicated branding experts is committed to translating your vision into a compelling brand story. From shaping your brand strategy to designing visually stunning elements, we strive to create a brand that reflects your values and resonates with your target audience.
-
-Whether you're looking to establish a new brand identity or revamp your existing one, our tailored branding solutions are designed to meet your unique requirements. Let us collaborate to craft a brand that not only stands out but also leaves a lasting impression in the minds of your audience.
-
-Ready to define your success through impactful branding? Reach out to us today to explore how our branding expertise can elevate your business identity.
-
-Looking forward to the opportunity of working together!
+Let’s speed things up!
 
 Best regards,
 [Your Company Name]`,
-};
-export const SocialMedia = {
-  img: "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735288219/DALL_E_2024-12-27_13.25.38_-_A_vibrant_and_modern_branding_image_for_Amplify_Your_Brand_Presence_focusing_on_social_media._The_design_features_popular_social_media_platform_icon_ltflvh.webp",
-  icon: <IoShareSocial />,
-  title: "Amplify Your Brand Presence.",
-  background:
-    "https://www.dreamsoft4u.com/wp-content/uploads/2023/05/Salesforce-Application-image.png.webp",
-  titletwo: "ConnectHub: Igniting Conversations, Shaping Futures.",
-  titlethree:
-    "Empower Your Brand with Vibrant Social Media Strategies for Unmatched Online Presence.",
-  about:
-    "In the digital symphony of brand expression, social media is the crescendo where authenticity and innovation harmonize to create a lasting impression. It's not just about posting; it's about crafting experiences that resonate with your audience.",
-  button: "Amplify Your Presence!",
-  details:
-    "Social media has become an integral part of modern communication, offering unparalleled opportunities for businesses to connect with their audience. A strategic and engaging social media presence is crucial for brand visibility, customer engagement, and overall business success.",
-  detailstwo:
-    "Our team of social media experts specializes in crafting dynamic and effective social media strategies. From content creation to community management, we are committed to maximizing your brand's presence on popular social platforms and fostering meaningful connections with your audience.",
-  detailsthree:
-    "In the fast-paced world of social media, staying relevant and engaging is paramount. Businesses recognize the impact of a well-executed social media strategy in building brand awareness, driving traffic, and fostering a loyal online community.",
-  detailsfour:
-    "Elevate your social media game with our comprehensive services. At 2BTech, we offer a team of experienced social media professionals ready to navigate the ever-evolving social landscape and position your brand for success.",
-  forhair:
-    "Your Social Media Services Partner. Hire A Dedicated Social Media Expert.",
-  subject: "Boost Your Brand's Impact with Our Expert Social Media Services!",
-  message: `Dear [Recipient's Name],
+  },
+  {
+    id: 7,
+    title: "Security & Login Systems",
+    icons: <SiSpringsecurity className="icons" />,
+    intro:
+      "Keep your users safe and your platform secure with robust authentication strategies.",
+    description: (
+      <>
+        <p className="mb-3 text-gray-700 dark:text-gray-300">
+          We build advanced login and authentication systems that prioritize
+          security and scalability. Using JWT, OAuth, 2FA, and best practices,
+          we ensure user data remains protected and access is tightly
+          controlled.
+        </p>
 
-I hope this message finds you well! In the realm of modern communication, social media stands as a powerful tool for connecting with your audience and amplifying your brand's presence. We understand the significance of a strategic and engaging social media strategy in today's dynamic digital landscape.
+        <p className="mb-3 font-semibold" style={{ color: "#e3872d" }}>
+          What You’ll Get:
+        </p>
 
-Our team of dedicated social media experts is here to craft and execute dynamic strategies tailored to your brand. From creating compelling content to fostering community engagement, we are committed to maximizing your brand's impact on popular social platforms.
+        <ul className="list-disc list-inside mb-4 text-gray-700 dark:text-gray-300 space-y-1">
+          <li>JWT-based token systems with secure expiry handling.</li>
+          <li>OAuth integrations with platforms like Google and GitHub.</li>
+          <li>NextAuth and Passport.js implementations for seamless auth.</li>
+          <li>Hashed password storage using bcrypt.</li>
+          <li>Optional 2FA, email verification, and password recovery flow.</li>
+          <li>Role-based access control for users and admins.</li>
+        </ul>
 
-Whether you're looking to establish a strong social media presence or enhance your current strategy, our tailored social media solutions are designed to meet your unique needs. Let us collaborate to boost your brand's visibility, drive engagement, and cultivate a loyal online community.
+        <p className="text-gray-600 dark:text-gray-400 italic">
+          Security is not optional — it’s essential. Let’s fortify your
+          authentication systems with trust and reliability.
+        </p>
+      </>
+    ),
+    technologies: [
+      "JWT",
+      "OAuth",
+      "bcrypt",
+      "Passport.js",
+      "NextAuth",
+      "Cookies",
+      "2FA",
+    ],
+    subject: "Secure Your Platform with Advanced Auth Systems",
+    message: `Dear [Recipient's Name],
 
-Ready to elevate your social media game? Contact us today to explore how our social media expertise can make a difference for your brand.
+Your users’ data is valuable—protect it. We implement advanced login systems using JWT, OAuth, and 2FA to keep your app secure. Features include email verification, password resets, and role-based access.
 
-Looking forward to the opportunity of working together!
-
-Best regards,
-[Your Company Name]`,
-};
-export const SEO = {
-  img: "https://res.cloudinary.com/dg5gwixf1/image/upload/v1735288219/DALL_E_2024-12-27_13.26.39_-_A_sleek_and_professional_image_for_Boost_Your_Online_Visibility_focused_on_SEO._The_design_features_elements_like_search_engine_graphs_keyword_clou_lznaes.webp",
-  icon: <FaChartLine />,
-  background:
-    "https://www.dreamsoft4u.com/wp-content/uploads/2023/05/Healthcare-Software-image.png.webp",
-  title: "Boost Your Online Visibility.",
-  titletwo: "Drive Traffic and Dominate Search Rankings.",
-  titlethree:
-    "SEO, the digital compass guiding your website to the summit of search engine results, where visibility transforms into organic growth.",
-  about:
-    "In the vast online landscape, SEO is the cornerstone of digital success, sculpting your web presence for search engines and users alike. It's not just about ranking higher; it's about crafting a seamless user experience that resonates with your audience.",
-  button: "Optimize Your Website!",
-  details:
-    "SEO is the catalyst for online success, ensuring your website not only ranks higher on search engines but also provides value to your visitors. A well-optimized site is a powerful asset, attracting organic traffic and converting leads into customers.",
-  detailstwo:
-    "Our SEO experts specialize in developing and implementing effective strategies to enhance your online visibility. From keyword research to on-page optimization, we focus on every aspect to ensure your website stands out in the competitive digital landscape.",
-  detailsthree:
-    "In the ever-evolving realm of SEO, staying ahead is crucial. We understand the dynamic nature of search algorithms and tailor our approach to align with the latest trends, ensuring your website maintains a prominent position in search engine results.",
-  detailsfour:
-    "Transform your online presence with our results-driven SEO services. At [Your Company Name], we offer a dedicated team of SEO professionals ready to navigate the complexities of search engine optimization and propel your website to new heights.",
-  forhair: "Your SEO Partner. Elevate Your Online Visibility.",
-  subject: "Enhance Your Online Presence with Our Expert SEO Services!",
-  message: `Dear [Recipient's Name],
-
-I hope this message finds you well! In the digital landscape, achieving online success requires more than just a website; it requires strategic SEO excellence. As the driving force behind increased visibility and organic growth, SEO plays a pivotal role in ensuring your website stands out in search engine results.
-
-Our team of seasoned SEO professionals is dedicated to developing and implementing effective strategies tailored to your online goals. From comprehensive keyword research to meticulous on-page optimization, we focus on every detail to enhance your website's visibility and drive organic traffic.
-
-Whether you're looking to improve your current SEO strategy or embark on a new optimization journey, our tailored SEO solutions are designed to meet your unique needs. Let us collaborate to optimize your website, increase your online visibility, and drive meaningful results for your business.
-
-Ready to transform your online presence with strategic SEO? Reach out to us today to explore how our SEO expertise can make a significant impact on your website's performance.
-
-Looking forward to the opportunity of working together!
+Let’s make security your strength.
 
 Best regards,
 [Your Company Name]`,
-};
+  },
+  {
+    id: 8,
+    title: "Admin Dashboard",
+    icons: <CiGrid42 className="icons" />,
+    intro: "Easy tools to manage your data and users with clarity and control.",
+    description: (
+      <>
+        <p className="mb-3 text-gray-700 dark:text-gray-300">
+          We design and build intuitive, responsive admin dashboards tailored to
+          your application’s needs. Manage users, track orders, view reports,
+          and control content — all from a sleek and powerful interface.
+        </p>
+
+        <p className="mb-3 font-semibold" style={{ color: "#e3872d" }}>
+          What You’ll Get:
+        </p>
+
+        <ul className="list-disc list-inside mb-4 text-gray-700 dark:text-gray-300 space-y-1">
+          <li>Role-based access control and secure login for admins.</li>
+          <li>Beautiful data visualizations with Chart.js and Recharts.</li>
+          <li>
+            Custom filters, tables, and modals with Material UI or Tailwind.
+          </li>
+          <li>Real-time dashboard updates and analytics.</li>
+          <li>Scalable MongoDB-backed data management.</li>
+        </ul>
+
+        <p className="text-gray-600 dark:text-gray-400 italic">
+          A powerful dashboard saves time and empowers you to scale — let’s make
+          data management effortless.
+        </p>
+      </>
+    ),
+    technologies: [
+      "React.js",
+      "Chart.js",
+      "Recharts",
+      "Material UI",
+      "Tailwind",
+      "MongoDB",
+    ],
+    subject: "Streamline Management with a Powerful Admin Dashboard",
+    message: `Dear [Recipient's Name],
+
+Need a better way to manage your app? Our custom admin dashboards help you control users, products, and data with ease. Interactive charts, filters, and permissions built just for you.
+
+Let’s simplify your backend operations!
+
+Best regards,
+[Your Company Name]`,
+  },
+  {
+    id: 9,
+    title: "Payment & API Integration",
+    icons: <GrIntegration className="icons" />,
+    intro:
+      "Connect your app seamlessly with payment gateways and third-party APIs.",
+    description: (
+      <>
+        <p className="mb-3 text-gray-700 dark:text-gray-300">
+          Enhance your application by integrating reliable payment processors
+          and essential third-party services. We connect Stripe, PayPal,
+          Cloudinary, SendGrid, Razorpay, and more with full security and
+          optimization.
+        </p>
+
+        <p className="mb-3 font-semibold" style={{ color: "#e3872d" }}>
+          What You’ll Get:
+        </p>
+
+        <ul className="list-disc list-inside mb-4 text-gray-700 dark:text-gray-300 space-y-1">
+          <li>
+            Secure payment gateway integrations (Stripe, PayPal, Razorpay).
+          </li>
+          <li>Media handling with Cloudinary for fast uploads and delivery.</li>
+          <li>
+            Email automation via SendGrid for notifications and marketing.
+          </li>
+          <li>Third-party APIs like Google Maps for enhanced app features.</li>
+          <li>Robust error handling and optimized API workflows.</li>
+        </ul>
+
+        <p className="text-gray-600 dark:text-gray-400 italic">
+          Power up your app with seamless integrations that your users will
+          appreciate.
+        </p>
+      </>
+    ),
+    technologies: [
+      "Stripe",
+      "PayPal",
+      "Cloudinary",
+      "SendGrid",
+      "Razorpay",
+      "Google Maps API",
+    ],
+    subject: "Seamless Integration of Payment & APIs Into Your App",
+    message: `Dear [Recipient's Name],
+
+Looking to accept payments or connect third-party services? We integrate APIs like Stripe, PayPal, Cloudinary, and more—fully optimized and secure.
+
+Let’s power up your application’s capabilities!
+
+Best regards,
+[Your Company Name]`,
+  },
+  {
+    id: 10,
+    title: "SEO Optimization",
+    icons: <GiArmoredBoomerang className="icons" />,
+    intro:
+      "Modern, fast, and effective SEO strategies to boost your Google rankings and increase organic traffic.",
+    description: (
+      <>
+        <p className="mb-3 text-gray-700 dark:text-gray-300">
+          Our SEO Optimization service helps your website get discovered by
+          search engines and rank higher on Google. We apply best technical SEO
+          practices like metadata optimization, sitemap creation, structured
+          data (schema.org), and Open Graph tags to make your content more
+          visible and engaging to both users and search engines.
+        </p>
+
+        <p className="mb-3 font-semibold" style={{ color: "#e3872d" }}>
+          What You’ll Get:
+        </p>
+
+        <ul className="list-disc list-inside mb-4 text-gray-700 dark:text-gray-300 space-y-1">
+          <li>
+            Comprehensive sitemap and robots.txt management for better
+            crawlability.
+          </li>
+          <li>
+            Optimized meta titles and descriptions targeting relevant keywords.
+          </li>
+          <li>
+            Implementation of structured data (schema.org) to enhance search
+            results.
+          </li>
+          <li>
+            Integration of Open Graph tags for improved social sharing previews.
+          </li>
+          <li>
+            Page speed improvements to boost SEO rankings and user experience.
+          </li>
+        </ul>
+
+        <p className="text-gray-600 dark:text-gray-400 italic">
+          Whether you want to improve an existing site’s SEO or start fresh, we
+          help increase your organic traffic and grow your digital presence with
+          proven optimization techniques.
+        </p>
+      </>
+    ),
+    technologies: [
+      "Google Search Console",
+      "Schema.org",
+      "Next.js SEO",
+      "Yoast",
+      "Meta Tags",
+      "Open Graph",
+    ],
+    subject: "Rank Higher on Google with Expert SEO Services",
+    message: `Dear [Recipient's Name],
+
+Want to get found on Google? We provide expert SEO optimization including metadata, sitemaps, page speed, and structured data to help you rank higher and attract more visitors.
+
+Let’s boost your organic visibility!
+
+Best regards,
+[Your Company Name]`,
+  },
+  {
+    id: 11,
+    title: "Deployment & DevOps",
+    icons: <AiOutlineDeploymentUnit className="icons" />,
+    intro:
+      "Launching and maintaining your apps smoothly with modern DevOps practices.",
+    description: (
+      <>
+        <p className="mb-3 text-gray-700 dark:text-gray-300">
+          Our Deployment & DevOps service ensures your applications are launched
+          seamlessly and maintained efficiently. We set up continuous
+          integration and continuous deployment (CI/CD) pipelines, manage
+          staging and production environments, and handle cloud infrastructure
+          provisioning. Using platforms like Vercel, Netlify, AWS, and
+          DigitalOcean, we guarantee your app is reliable, secure, and scalable.
+        </p>
+
+        <p className="mb-3 font-semibold" style={{ color: "#e3872d" }}>
+          What You’ll Get:
+        </p>
+
+        <ul className="list-disc list-inside mb-4 text-gray-700 dark:text-gray-300 space-y-1">
+          <li>Automated CI/CD pipelines for faster, error-free deployments.</li>
+          <li>
+            Robust version control integration using Git and GitHub Actions.
+          </li>
+          <li>
+            Cloud deployments on Vercel, Netlify, AWS, or DigitalOcean tailored
+            to your needs.
+          </li>
+          <li>
+            Containerization with Docker for consistent environments across
+            development and production.
+          </li>
+          <li>Server configuration and reverse proxy setups using Nginx.</li>
+        </ul>
+
+        <p className="text-gray-600 dark:text-gray-400 italic">
+          Whether you are launching a new app or scaling an existing one, we
+          ensure your deployment process is smooth, secure, and scalable to
+          support your growth.
+        </p>
+      </>
+    ),
+    technologies: [
+      "GitHub Actions",
+      "Vercel",
+      "Netlify",
+      "Docker",
+      "AWS",
+      "DigitalOcean",
+      "Nginx",
+    ],
+    subject: "Deploy with Confidence Using Our DevOps Expertise",
+    message: `Dear [Recipient's Name],
+
+Worried about launching or scaling your app? We manage deployment pipelines, version control, and server setups with tools like Docker, Vercel, and AWS — ensuring smooth launches every time.
+
+Let’s deploy the right way!
+
+Best regards,
+[Your Company Name]`,
+  },
+  {
+    id: 12,
+    title: "Live Chat & Notifications",
+    icons: <MdOutlineMarkUnreadChatAlt className="icons" />,
+    intro: "Real-time messaging and alerts to keep your users engaged.",
+    description: (
+      <>
+        <p className="mb-3 text-gray-700 dark:text-gray-300">
+          Our Live Chat & Notifications service transforms your app into a
+          highly interactive platform. We implement real-time messaging, push
+          notifications, and dynamic dashboards using robust technologies like
+          Socket.IO, Firebase, and WebSockets. This ensures your users receive
+          instant updates and seamless communication.
+        </p>
+
+        <p className="mb-3 font-semibold" style={{ color: "#e3872d" }}>
+          What You’ll Get:
+        </p>
+
+        <ul className="list-disc list-inside mb-4 text-gray-700 dark:text-gray-300 space-y-1">
+          <li>Real-time chat functionality with instant message delivery.</li>
+          <li>Push notifications to keep users informed and engaged.</li>
+          <li>
+            Event-driven architecture using Event Emitters for responsive apps.
+          </li>
+          <li>
+            Integration with Firebase and Pusher for scalable realtime features.
+          </li>
+          <li>
+            Customizable notification dashboards for user-friendly experiences.
+          </li>
+        </ul>
+
+        <p className="text-gray-600 dark:text-gray-400 italic">
+          Whether you want to add live chat support or real-time alerts, we
+          create interactive features that keep your users connected and engaged
+          at all times.
+        </p>
+      </>
+    ),
+    technologies: [
+      "Socket.IO",
+      "Pusher",
+      "Firebase",
+      "WebSockets",
+      "Event Emitters",
+    ],
+    subject: "Add Real-Time Features Like Chat & Notifications",
+    message: `Dear [Recipient's Name],
+
+Looking to boost interactivity? We implement real-time messaging, alerts, and dashboards using Socket.IO, Firebase, and more. Give your users the power of live updates!
+
+Let’s bring your app to life!
+
+Best regards,
+[Your Company Name]`,
+  },
+];
+
 // ================================Mern Stack Data=================================
 export const Mernstackfirst = {
   img: "https://i.postimg.cc/fTtMpFwj/1706786499282.jpg",

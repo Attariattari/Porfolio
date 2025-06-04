@@ -75,8 +75,16 @@ function Servicepopup({ info, closePopup, selectedNews }) {
           <div className="Servicepopupchild">
             {/* Sticky Header Section */}
             <div className="sticky top-0 z-10 bg-white shadow-md">
-              <div className="ImagePopup">
-                <img src={info.img} alt="" className="w-full" />
+              <div className="flex flex-col items-center text-center gap-2 py-4 border-b border-gray-300 dark:border-zinc-700">
+                <div className="text-4xl" style={{ color: "#e3872d" }}>
+                  {info.icons}
+                </div>
+                <h2
+                  className="text-2xl font-semibold font-serif"
+                  style={{ color: "#e3872d" }}
+                >
+                  {info.title}
+                </h2>
               </div>
               <button
                 className="Closeone absolute top-2 right-2"
@@ -87,30 +95,58 @@ function Servicepopup({ info, closePopup, selectedNews }) {
             </div>
 
             {/* Scrollable Content Section */}
-            <div className="ScrollableContent overflow-y-auto max-h-[400px]">
-              <div className="flex justify-center items-center py-2 font-serif text-xl">
-                <div>{info.title}</div>
+            <div className="ScrollableContent overflow-y-auto max-h-[400px] p-4 rounded-md shadow-lg bg-white dark:bg-zinc-900">
+              {/* Icon & Title */}
+              
+
+              {/* Description */}
+              <div className="mt-4 text-center text-sm sm:text-base leading-relaxed text-gray-700 dark:text-gray-300 px-2">
+                {info.description}
               </div>
-              <div className="p-3 text-center">{info.details}</div>
-              <div className="p-3 text-center">{info.detailstwo}</div>
-              <div className="p-3 text-center">{info.detailsthree}</div>
-              <div className="p-3 text-center">{info.detailsfour}</div>
-              <div className="mt-3 p-3 text-center font-bold">
-                {info.forhair}
+
+              {/* Technologies Section */}
+              <div className="mt-6 px-2">
+                <h3
+                  className="text-lg font-semibold mb-2 text-center"
+                  style={{ color: "#e3872d" }}
+                >
+                  Technologies We Use
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                  {info.technologies.map((tech, index) => (
+                    <div
+                      key={index}
+                      className="flex items-start gap-2 text-sm font-medium bg-orange-50 dark:bg-zinc-800 px-3 py-2 rounded-md"
+                    >
+                      <span className="text-xl" style={{ color: "#e3872d" }}>
+                        ✔
+                      </span>
+                      <span style={{ color: "#e3872d" }}>{tech}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="p-3 FullDetails">
+
+              {/* CTA Button */}
+              <div className="mt-6 flex justify-center">
                 <button
-                  className="Fulldetails"
+                  className="px-6 py-2 rounded-md font-semibold shadow transition duration-200"
+                  style={{
+                    backgroundColor: "#e3872d",
+                    color: "white",
+                  }}
                   onClick={() => HairFunction(info)}
                 >
-                  Hair Me
+                  Hire Me
                 </button>
-                <ToastContainer position="top-right" theme="dark" />
               </div>
+
+              <ToastContainer position="top-right" theme="dark" />
             </div>
           </div>
         </div>
       )}
+
       {selectedNews && (
         <div className="Newspopup font-serif">
           <div className="Newspopupchild">

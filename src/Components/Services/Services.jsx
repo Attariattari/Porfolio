@@ -1,24 +1,9 @@
 import React, { useEffect, useState } from "react";
 import "./Services.css";
-import {
-  Webdeveloper,
-  Uxuidesigner,
-  Backenddeveloper,
-  Branding,
-  SocialMedia,
-  SEO,
-} from "../../DummyData/DummyData";
+import { services } from "../../DummyData/DummyData";
 import Servicepopup from "./Servicepopup";
 import AOS from "aos";
 import "aos/dist/aos.css";
-const servicesData = [
-  Webdeveloper,
-  Uxuidesigner,
-  Backenddeveloper,
-  Branding,
-  SocialMedia,
-  SEO,
-];
 
 function Services() {
   const [selectedService, setSelectedService] = useState(null);
@@ -46,17 +31,18 @@ function Services() {
         </div>
       </div>
       <div className="Servicessection">
-        {servicesData.slice(0, 6).map((service, index) => (
+        {services.map((service, index) => (
           <div className="ServiceBox" key={index}>
             <div className="Servicesdetails">
-              <img src={service.img} alt="" />
+              <div className="icons">{service.icons}</div>
               <div className="Serviceslabel">{service.title}</div>
-              <div className="Servicesinfo">{service.details}</div>
+              <div className="Servicesinfo">
+                {service.intro?.length > 68
+                  ? `${service.intro.slice(0, 68)}...`
+                  : service.intro}
+              </div>
             </div>
-            <button
-              onClick={() => handleButtonClick(service)}
-              className=" mt-3"
-            >
+            <button onClick={() => handleButtonClick(service)} className="mt-3">
               More info
             </button>
           </div>

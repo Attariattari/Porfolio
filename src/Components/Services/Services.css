@@ -13,6 +13,7 @@
   padding-left: 1em;
   height: 5.5em;
 }
+
 .Servicestext {
   font-size: 40px;
   font-weight: 600;
@@ -30,11 +31,13 @@
   height: auto;
   gap: 35px;
 }
+
 .Serviceslabel {
   font-size: 17px;
   font-weight: 600;
   text-align: center;
 }
+
 @media only screen and (max-width: 2600px) {
   .merndetails {
     width: 100%;
@@ -233,16 +236,32 @@
 
 .Servicesdetails {
   display: flex;
-  justify-content: space-around;
-  align-items: start;
+  justify-content: center;
+  /* horizontally center */
+  align-items: center;
+  /* vertically center in cross axis */
   flex-direction: column;
   width: 100%;
+  gap: 10px;
   height: 100%;
+  text-align: center;
+  /* center the text inside elements */
+}
+
+.icons {
+  width: 50px;
+  height: 50px;
+
 }
 
 .Servicesicons {
   font-size: 40px;
   color: #e3872d;
+}
+
+.title-popup {
+  color: #e3872d;
+
 }
 
 .Servicesicons:hover {
@@ -253,12 +272,17 @@
 .Serviceslabel {
   font-size: 17px;
   font-weight: 600;
+  margin-bottom: 5px;
+  color: #e3872d;
+
+  /* spacing below title */
 }
 
 .Servicesinfo {
   font-size: 17px;
   color: #222222;
-  text-align: center;
+  max-width: 300px;
+  /* optional: limit width for better readability */
 }
 
 .ServiceBox Button {
