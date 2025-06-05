@@ -714,6 +714,126 @@ Best regards,
   },
 ];
 
+export const projects = [
+  // ===== MERN / NEXT / NODE =====
+  {
+    id: "mern",
+    category:"Mern Stack",
+    title: "DevOverflow – Developer Forum",
+    description:
+      "Full-stack Q&A forum like StackOverflow using MERN & Next.js. Includes voting, auth, tags, and comments.",
+    image:
+      "https://user-images.githubusercontent.com/770322/233832992-f2cf0fc7-2547-46b4-8422-9db2d5a2c0ae.png",
+    link: "https://github.com/safak/youtube2022/tree/devoverflow",
+  },
+  {
+    id: "mern",
+    category:"Mern Stack",
+    title: "Bookify – Book Store API",
+    description:
+      "RESTful Node/Express API with MongoDB. Features include user auth, book management, filters, and Stripe payment.",
+    image:
+      "https://miro.medium.com/v2/resize:fit:1400/1*TDDM1kYbw9fPYKmYgo6kCg.png",
+    link: "https://github.com/ameerthehacker/book-store-api",
+  },
+  {
+    id: "mern",
+    category:"Mern Stack",
+    title: "HireMe – Freelancing Platform",
+    description:
+      "Freelancing web app using Next.js + MongoDB where users can post and apply to jobs.",
+    image:
+      "https://repository-images.githubusercontent.com/555416097/f6b1e905-bb8a-4cd2-b51f-87563d12d9c1",
+    link: "https://github.com/safak/youtube2022/tree/devfreelance",
+  },
+
+  // ===== UX/UI / FIGMA =====
+  {
+    id: "uxui",
+    category:'UX/UI',
+    title: "Financio – Finance Dashboard (Figma)",
+    description:
+      "Modern dark-themed Figma dashboard with neumorphism, graphs, and stat cards.",
+    image:
+      "https://cdn.dribbble.com/users/108183/screenshots/16494532/media/7cc8bba8e1bcb9aef362c30d7e7b7313.jpg",
+    link: "https://www.figma.com/community/file/1129251402743561957",
+  },
+  {
+    id: "uxui",
+    category:'UX/UI',
+    title: "Foodies – Food Delivery App UI",
+    description:
+      "Beautiful mobile-first food delivery app design with cart and product detail screens.",
+    image:
+      "https://cdn.dribbble.com/users/720472/screenshots/14072808/media/325b4fa1ef487de68a2fa3a6a601b9a0.jpg",
+    link: "https://www.figma.com/community/file/979179129404583176",
+  },
+
+  // ===== AI / ML =====
+  {
+    id: "ai",
+    category:"AI",
+    title: "ChatMind – AI Chatbot",
+    description:
+      "OpenAI-powered chatbot using Node.js and React. Works like ChatGPT with conversation memory.",
+    image:
+      "https://repository-images.githubusercontent.com/625038644/f98771b7-0379-4d6b-a4e8-212bb2b8cfaa",
+    link: "https://github.com/hkirat/ai-chatbot",
+  },
+  {
+    id: "ai",
+    category:"AI",
+    title: "ImageGen – AI Image Generator",
+    description:
+      "Full-stack DALL·E clone that generates images from text using OpenAI API + MERN.",
+    image: "https://i.ytimg.com/vi/NICKqV8YBnY/maxresdefault.jpg",
+    link: "https://github.com/adrianhajdin/project_ai_image_generator",
+  },
+
+  // ===== E-COMMERCE =====
+  {
+    id: "ecommerce",
+    category:"E-commerce",
+    title: "Shopify Clone",
+    description:
+      "Full MERN e-commerce website with cart, checkout, Stripe, and admin dashboard.",
+    image:
+      "https://repository-images.githubusercontent.com/330945354/91d76d3d-f56c-4e0e-9f03-d150cb861202",
+    link: "https://github.com/rohan-paul/Awesome-Ecommerce",
+  },
+  {
+    id: "ecommerce",
+    category:"E-commerce",
+    title: "Zay Shop – Simple Storefront",
+    description:
+      "Responsive HTML/CSS e-commerce frontend for small stores, no backend.",
+    image: "https://colorlib.com/wp/wp-content/uploads/sites/2/zay.jpg",
+    link: "https://github.com/mobirise/zay-shop",
+  },
+
+  // ===== PORTFOLIO =====
+  {
+    id: "portfolio",
+    category:"Portfolio",
+    title: "DevFolio – Developer Portfolio",
+    description:
+      "Responsive portfolio website built with HTML, CSS, JS — great for developers.",
+    image:
+      "https://bootstrapmade.com/demo/templates/DevFolio/assets/img/hero-bg.jpg",
+    link: "https://github.com/saadpasta/developerFolio",
+  },
+  {
+    id: "portfolio",
+    category:"Portfolio",
+    title: "Minimal React Portfolio",
+    description:
+      "Clean React.js portfolio template with smooth scroll, dark mode, and responsive layout.",
+    image:
+      "https://repository-images.githubusercontent.com/202398604/3d2cf300-866d-11e9-9e2f-cd5c7c2e3d9f",
+    link: "https://github.com/chetanverma16/devfolio",
+  },
+];
+
 // ================================Mern Stack Data=================================
 export const Mernstackfirst = {
   img: "https://i.postimg.cc/fTtMpFwj/1706786499282.jpg",

@@ -1,11 +1,9 @@
 /* ===========================================================================Mern Css====================================================================== */
 .Mernimagesection {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 30px;
-  padding-left: 3em;
-  padding-right: 3em;
-  margin-top: 3em;
+  padding: 3em;
 }
 
 .Mernimagesection .Imagecontainer {
@@ -17,10 +15,6 @@
   height: auto;
   border-radius: 1%;
   cursor: pointer;
-  -webkit-border-radius: 1%;
-  -moz-border-radius: 1%;
-  -ms-border-radius: 1%;
-  -o-border-radius: 1%;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
 }
 

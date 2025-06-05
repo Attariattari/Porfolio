@@ -4,59 +4,64 @@ import { useLocation } from "react-router-dom";
 import { HiMenu } from "react-icons/hi";
 import "./Sidebar.css";
 import { CgCloseR } from "react-icons/cg";
+
 export default function Sidebar({
   sections,
   openIconStyle,
   closeIconStyle,
   activeSection,
-  scrollToSection, // 👈 App.js se mila, ye hi use hoga
+  scrollToSection,
 }) {
-  // ❌ is function ko hata do
-  // const scrollToSection = (id) => {
-  //   document.getElementById(id).scrollIntoView({ behavior: "smooth" });
-  // };
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 720);
+  const [showNav, setShowNav] = useState(window.innerWidth >= 720);
+  const location = useLocation();
 
-  const [showNav, setShowNav] = useState(false);
-
-  function resize() {
-    if (window.innerWidth >= 1024) {
-      setShowNav(false);
-    }
+  function handleResize() {
+    const mobile = window.innerWidth < 720;
+    setIsMobile(mobile);
+    setShowNav(!mobile); // if mobile, hide sidebar; if desktop, show sidebar
   }
 
   useEffect(() => {
-    window.addEventListener("resize", resize);
-    return () => window.removeEventListener("resize", resize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   useEffect(() => {
-    setShowNav(false);
-  }, [useLocation()]);
+    if (isMobile) setShowNav(false); // close nav on route change (mobile only)
+  }, [location.pathname]);
 
   return (
     <div className="Sidebar">
-      <div className="xl:hidden lg:hidden flex items-center justify-between p-4 absolute z-10 w-full text-white font-bold Nav">
-        <div className="left-0">Muhyo Tech</div>
-        <button onClick={() => setShowNav(true)} className="right-0">
-          <HiMenu className="barbtn text-3xl" />
-        </button>
-      </div>
+      {/* Mobile header only */}
+      {isMobile && (
+        <div className="flex items-center justify-between p-4 absolute z-10 w-full text-white font-bold Nav">
+          <div>Muhyo Tech</div>
+          <button onClick={() => setShowNav(true)}>
+            <HiMenu className="barbtn text-3xl" />
+          </button>
+        </div>
+      )}
+
       <div className="flex">
         <Nav
           show={showNav}
+          setShowNav={setShowNav}
           scrollToSection={scrollToSection}
           sections={sections}
-          setShowNav={setShowNav}
           openIconStyle={openIconStyle}
           closeIconStyle={closeIconStyle}
           activeSection={activeSection}
+          isMobile={isMobile}
         >
-          <button
-            className="absolute right-3 top-3 md:hidden navclosebutton"
-            onClick={() => setShowNav(false)}
-          >
-            <CgCloseR className="text-3xl" />
-          </button>
+          {/* {isMobile && (
+            <button
+              className="absolute right-3 top-3 navclosebutton"
+              onClick={() => setShowNav(false)}
+            >
+              <CgCloseR className="text-3xl" />
+            </button>
+          )} */}
         </Nav>
       </div>
     </div>

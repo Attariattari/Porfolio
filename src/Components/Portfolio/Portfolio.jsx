@@ -2,11 +2,9 @@ import React, { useState, useEffect } from "react";
 import "./Portfolio.css";
 import "./Myportfolios/Projects.css";
 import Mernstack from "./Myportfolios/Mernstack";
-import Designing from "./Myportfolios/Designing";
-import OtherCMS from "./Myportfolios/OtherCMS";
-import UXUIDesigner from "./Myportfolios/UXUIDesigner";
 import Feadback from "./Feadback";
 import TextSlider from "./TextSlider";
+import { projects } from "../../DummyData/DummyData";
 
 function Portfolio() {
   const [activeButton, setActiveButton] = useState(
@@ -15,16 +13,14 @@ function Portfolio() {
 
   // State to track initial load
   const [initialLoad, setInitialLoad] = useState(true);
-
-  const portfolioData = [
-    { category: "Mern Stack", content: <Mernstack /> },
-    { category: "UX / UI Designing", content: <UXUIDesigner /> },
-    { category: "Others CMS", content: <OtherCMS /> },
-    { category: "Designing", content: <Designing /> },
+  const categories = [
+    "All Show",
+    ...new Set(projects.map((item) => item.category)),
   ];
 
   const handleButtonClick = (buttonText) => {
     setActiveButton(buttonText);
+    console.log(`Button clicked: ${buttonText}`);
   };
 
   // Update localStorage whenever activeButton changes
@@ -42,8 +38,16 @@ function Portfolio() {
 
   const filteredData =
     activeButton === "All Show"
-      ? portfolioData
-      : portfolioData.filter((item) => item.category === activeButton);
+      ? projects
+      : projects.filter((item) => item.category === activeButton);
+  const portfolioData = [
+    {
+      category: activeButton,
+      content: <Mernstack filteredata={filteredData} />,
+    },
+  ];
+
+  console.log("Filtered Data:", filteredData);
 
   return (
     <div className="Portfolio">
@@ -55,51 +59,22 @@ function Portfolio() {
       </div>
       <div className="ProtfolioSection">
         <div className="ProtfolioButtons space-x-8">
-          <button
-            className={`Buttonfor ${
-              activeButton === "All Show" ? "activeButton" : ""
-            }`}
-            onClick={() => handleButtonClick("All Show")}
-          >
-            All Show
-          </button>
-          <button
-            className={`Buttonfor ${
-              activeButton === "Mern Stack" ? "activeButton" : ""
-            }`}
-            onClick={() => handleButtonClick("Mern Stack")}
-          >
-            Mern Stack
-          </button>
-          <button
-            className={`Buttonfor ${
-              activeButton === "UX / UI Designing" ? "activeButton" : ""
-            }`}
-            onClick={() => handleButtonClick("UX / UI Designing")}
-          >
-            UX / UI Designing
-          </button>
-          <button
-            className={`Buttonfor ${
-              activeButton === "Others CMS" ? "activeButton" : ""
-            }`}
-            onClick={() => handleButtonClick("Others CMS")}
-          >
-            Others CMS
-          </button>
-          <button
-            className={`Buttonfor ${
-              activeButton === "Designing" ? "activeButton" : ""
-            }`}
-            onClick={() => handleButtonClick("Designing")}
-          >
-            Designing
-          </button>
+          {categories.map((cat, idx) => (
+            <button
+              key={idx}
+              className={`Buttonfor ${
+                activeButton === cat ? "activeButton" : ""
+              }`}
+              onClick={() => handleButtonClick(cat)}
+            >
+              {cat}
+            </button>
+          ))}
         </div>
       </div>
 
       <div className="PortfolioContent">
-        {filteredData.map((item, index) => (
+        {portfolioData.map((item, index) => (
           <div key={index} className="PortfolioItem">
             <p>{item.content}</p>
           </div>

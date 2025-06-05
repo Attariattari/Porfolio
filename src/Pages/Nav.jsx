@@ -1,8 +1,8 @@
 import Logo from "./Logo";
 import "../Components/Sidebar/Bar";
 import "./Nav.css";
-import { useState } from "react";
 import { IoMenuOutline, IoCloseOutline } from "react-icons/io5";
+import { useEffect } from "react";
 
 function Nav({
   children,
@@ -12,98 +12,105 @@ function Nav({
   scrollToSection,
   setShowNav,
   activeSection,
+  show,
+  isMobile,
 }) {
-  const [navshow, setNavShow] = useState(() => {
-    const saved = localStorage.getItem("sidebar_nav_show");
-    return saved === null ? true : JSON.parse(saved);
-  });
-
-  const openNav = () => {
-    setNavShow(true);
-    localStorage.setItem("sidebar_nav_show", true);
-  };
-
-  const closeNav = () => {
-    setNavShow(false);
-    localStorage.setItem("sidebar_nav_show", false);
-  };
-
+  const closeNav = () => setShowNav(false);
+  const openNav = () => setShowNav(true);
+  // ✅ Automatically open nav if isMobile is true
+  useEffect(() => {
+    if (isMobile) {
+      setShowNav(false);
+    }
+  }, [isMobile]);
   return (
     <div
       className={
         "top-0 z-10 text-gray-100 fixed lg:static h-screen transition-all flex flex-col" +
-        (navshow ? " w-[18em]" : " w-[10em]")
+        (show
+          ? isMobile
+            ? " w-[10em]" // Mobile open: icons only
+            : " w-[18em]" // Desktop open: full
+          : isMobile
+          ? " w-0 overflow-hidden" // Mobile closed: fully hidden
+          : " w-[10em]") // Desktop closed: icons only ✅
       }
       style={{
-        maxWidth: navshow ? "17rem" : "10em",
+        maxWidth: show
+          ? isMobile
+            ? "10em"
+            : "17rem"
+          : isMobile
+          ? "0"
+          : "10em", // Desktop closed: 10em sidebar ✅
         backgroundColor: "#041230",
       }}
     >
-      {/* Sticky Header */}
+      {/* Header */}
       <div
         className="w-full h-44 sticky top-0 flex justify-center items-center z-20"
         style={{ borderBottom: "0.1px solid rgb(157, 154, 154)" }}
       >
         <div className="relative flex justify-center w-full h-full items-center">
-          <Logo show={navshow} />
+          <Logo show={show} />
           {children}
 
-          {/* Toggle Buttons (you can replace these with icons) */}
-          {!navshow && (
-            <button
-              onClick={openNav}
-              className="absolute right-2 top-2   rounded"
-            >
-              <IoCloseOutline size={28} />
-            </button>
-          )}
-          {navshow && (
-            <button
-              onClick={closeNav}
-              className="absolute right-2 top-2   rounded"
-            >
-              <IoMenuOutline size={28} />
-            </button>
-          )}
+          {/* Buttons only on mobile */}
+
+          <>
+            {show ? (
+              <button
+                onClick={closeNav}
+                className="absolute right-2 top-2 rounded"
+              >
+                <IoCloseOutline size={28} />
+              </button>
+            ) : (
+              <button
+                onClick={openNav}
+                className="absolute right-2 top-2 rounded"
+              >
+                <IoMenuOutline size={28} />
+              </button>
+            )}
+          </>
         </div>
       </div>
-
-      {/* Scrollable Navigation */}
+      {/* Navigation Items */}
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         <nav className="flex flex-col gap-2">
           <div
             className={`flex flex-col ${
-              navshow ? "gap-7 p-10" : "gap-4 p-4"
+              show ? "gap-7 p-10" : "gap-4 p-4"
             } text-lg font-extralight`}
           >
             <div>
               {sections.map((section) => (
                 <div
-                  key={`/${section.id}`}
+                  key={section.id}
                   onClick={() => {
                     scrollToSection(section.id);
-                    setShowNav(false);
+                    if (isMobile) closeNav();
                   }}
-                  className={`LinkHover ${
-                    section.id
-                  }Hover flex items-center transition-all duration-300 cursor-pointer ${
-                    navshow ? "justify-start gap-2" : "justify-center"
+                  className={`LinkHover flex items-center min-h-[2rem] transition-all duration-300 cursor-pointer ${
+                    show
+                      ? isMobile
+                        ? "justify-center"
+                        : "justify-start gap-2"
+                      : "justify-center"
                   } ${
                     activeSection === section.id
-                      ? "font-bold"
+                      ? "font-bold text-[#e3882d]"
                       : "text-gray-100 font-normal"
                   }`}
-                  style={{
-                    color: activeSection === section.id ? "#e3882d" : undefined,
-                  }}
                 >
                   <div
                     title={section.title}
-                    style={!navshow ? closeIconStyle : openIconStyle}
+                    style={show ? openIconStyle : closeIconStyle}
                   >
                     {section.icon}
                   </div>
-                  {navshow && <div>{section.title}</div>}
+                  {!isMobile && show && <div>{section.title}</div>}
                 </div>
               ))}
             </div>

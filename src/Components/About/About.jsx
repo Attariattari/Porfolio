@@ -28,13 +28,13 @@ function About() {
   });
   const handleDownload = () => {
     const pdfUrl =
-      "https://res.cloudinary.com/dg5gwixf1/image/upload/v1734884321/My_new_CV_no_image_hwmaah.pdf";
+      "https://smallpdf.com/file#s=4f1a0b1b-a8ed-48b9-9d7f-9997eff7760f/My_new_CV_no_image_hwmaah.pdf";
 
     toast.promise(
       new Promise((resolve, reject) => {
         const link = document.createElement("a");
         link.href = pdfUrl;
-        link.download = "Document_from_Ghulam_Muhyo_Din.pdf"; // specify the filename
+        link.download = "Document_from_Ghulam_Muhyo_Din.pdf";
 
         document.body.appendChild(link);
 
@@ -57,6 +57,7 @@ function About() {
       }
     );
   };
+
   const defaultOptions = {
     reverse: false, // reverse the tilt direction
     max: 35, // max tilt rotation (degrees)
@@ -108,6 +109,7 @@ function About() {
           <div className="buttonsection mt-4">
             <button
               onClick={handleDownload}
+              target="_blank"
               className="w-44 px-2 py-3 Aboutdownhirebtn rounded-sm"
             >
               Download cv
