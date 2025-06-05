@@ -1,7 +1,4 @@
-import { FaChartLine, FaLaptopCode, FaNodeJs } from "react-icons/fa6";
-import { IoShareSocial } from "react-icons/io5";
-import { SiBrandfolder, SiDatabricks, SiSpringsecurity } from "react-icons/si";
-import { SiWebpack } from "react-icons/si";
+import { SiDatabricks, SiSpringsecurity } from "react-icons/si";
 import { LuComputer, LuSearchCode } from "react-icons/lu";
 import { FaPlus } from "react-icons/fa6";
 import { FaCode } from "react-icons/fa6";
