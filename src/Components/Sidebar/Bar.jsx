@@ -12,12 +12,12 @@ export default function Sidebar({
   activeSection,
   scrollToSection,
 }) {
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 720);
-  const [showNav, setShowNav] = useState(window.innerWidth >= 720);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+  const [showNav, setShowNav] = useState(window.innerWidth >= 1024);
   const location = useLocation();
 
   function handleResize() {
-    const mobile = window.innerWidth < 720;
+    const mobile = window.innerWidth < 1024;
     setIsMobile(mobile);
     setShowNav(!mobile); // if mobile, hide sidebar; if desktop, show sidebar
   }
