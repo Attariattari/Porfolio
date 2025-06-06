@@ -32,7 +32,6 @@
   background-clip: content-box;
 }
 
-/* Firefox support */
 .custom-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: #e3882d transparent;
