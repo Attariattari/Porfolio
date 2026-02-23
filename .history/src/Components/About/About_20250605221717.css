@@ -1,0 +1,659 @@
+.About {
+  background-color: rgb(255, 255, 255);
+  font-family: "Montserrat";
+  width: 100%;
+}
+
+.Aboutborder {
+  border-left: 0.4em #e3872d solid;
+  margin-top: 3em;
+  margin-left: 3em;
+  padding-left: 1em;
+  height: 5em;
+}
+
+.mainsection {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6em;
+ gap: 20px;
+}
+
+.AboutImage {
+  width: 39%;
+  height: 30em;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  margin-top: -8em;
+}
+
+.ImageSet {
+  width: 27em;
+  height: 33em;
+}
+
+.aboutinfo {
+  width: 59%;
+  height: auto;
+  padding-right: 2em;
+  margin-bottom: 2em;
+  padding-bottom: 2em;
+}
+
+.AboutDetailsme {
+  font-size: 1.8em;
+  font-weight: bold;
+  color: #2e2e2f;
+}
+
+.aboutmyAbilities {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.Aboutsome {
+  width: 45%;
+  height: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: start;
+  flex-direction: column;
+  padding: 1em 1em 2em 1em;
+  background-color: transparent;
+}
+
+.Aboutsomeglassy {
+  width: 100%;
+  height: auto;
+  padding: 1em;
+}
+
+.aboutcharts {
+  width: 55%;
+  height: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: start;
+  flex-direction: column;
+  padding: 1em 1em 2em 1em;
+}
+
+.Aboutchartsglassy {
+  width: 100%;
+  height: auto;
+  padding: 1em;
+}
+
+.firstchild {
+  font-size: 25px;
+  font-weight: 600;
+  color: #010101c9;
+}
+
+.secondchild {
+  font-size: 16px;
+  color: #010101c9;
+  text-align: center;
+}
+
+@media only screen and (max-width: 1350px) {
+  .mainsection {
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 6em;
+  }
+
+  .AboutImage {
+    width: 35%;
+    height: 30em;
+    display: flex;
+    justify-content: center;
+    margin-left: 1em;
+  }
+
+  .ImageSet {
+    width: 23em;
+    height: 27em;
+  }
+
+  .aboutinfo {
+    width: 60%;
+    height: auto;
+    margin-bottom: 2em;
+    padding-bottom: 2em;
+  }
+
+  .AboutDetailsme {
+    font-size: 1.6em;
+    font-weight: bold;
+  }
+}
+
+@media only screen and (max-width: 1200px) {
+  .AboutDetailsme {
+    font-size: 1.3em;
+    font-weight: bold;
+  }
+
+  .AboutImage {
+    margin-top: -18em;
+  }
+
+  .aboutinfo {
+    width: 60%;
+    height: auto;
+    margin-bottom: 2em;
+    padding-bottom: 2em;
+  }
+
+  .ImageSet {
+    width: 21em;
+    height: 25em;
+  }
+
+  .Aboutsomeglassy {
+    width: 100%;
+    height: auto;
+    padding: 1em;
+  }
+
+  .Aboutchartsglassy {
+    width: 100%;
+    height: auto;
+    padding: 1em;
+  }
+
+  .firstchild {
+    font-size: 20px;
+    font-weight: 600;
+    color: #010101c9;
+  }
+
+  .secondchild {
+    font-size: 16px;
+    color: #010101c9;
+  }
+}
+
+@media only screen and (max-width: 1150px) {
+  .Aboutsomeglassy {
+    width: 100%;
+    height: auto;
+    padding: 1em;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  }
+
+  .Aboutchartsglassy {
+    width: 100%;
+    height: auto;
+    padding: 1em;
+  }
+
+  .ImageSet {
+    width: 18em;
+    height: 23em;
+  }
+
+  .firstchild {
+    font-size: 20px;
+    font-weight: 600;
+    color: #010101c9;
+  }
+
+  .secondchild {
+    font-size: 16px;
+    color: #010101c9;
+  }
+}
+
+@media only screen and (max-width: 1023px) {
+  .AboutImage {
+    width: 39%;
+    height: 30em;
+    display: flex;
+    justify-content: center;
+    margin-left: -1em;
+  }
+
+  .ImageSet {
+    width: 23em;
+    height: 29em;
+  }
+
+  .aboutinfo {
+    width: 59%;
+    height: auto;
+    padding-right: 0em;
+    margin-bottom: 2em;
+    padding-bottom: 2em;
+    padding-right: 1em;
+  }
+
+  .AboutDetailsme {
+    font-size: 1.4em;
+    font-weight: bold;
+  }
+
+  .Aboutsomeglassy {
+    width: 100%;
+    height: auto;
+    padding: 1em;
+  }
+
+  .Aboutchartsglassy {
+    width: 100%;
+    height: auto;
+    padding: 1em;
+  }
+
+  .firstchild {
+    font-size: 20px;
+    font-weight: 600;
+    color: #010101c9;
+  }
+
+  .secondchild {
+    font-size: 16px;
+    color: #010101c9;
+  }
+}
+
+@media only screen and (max-width: 969px) {
+  .Aboutborder {
+    border-left: #e3872d 0.4em solid;
+  }
+
+  .mainsection {
+    width: 100%;
+    height:100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 7em;
+    flex-direction: column;
+  }
+
+  .AboutImage {
+    width: 100%;
+    height: 30em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 3em;
+    margin-top:0em;
+  }
+
+  .ImageSet {
+    width: 25em;
+    height: 31em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .aboutinfo {
+    width: 80%;
+    height: auto;
+    margin-bottom: 1em;
+    overflow-y: hidden;
+    margin-top: 2em;
+    margin-bottom: 2em;
+    padding-bottom: 2em;
+  }
+
+  .AboutDetailsme {
+    font-size: 1.4em;
+    font-weight: bold;
+  }
+
+  .buttonsection {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: start;
+    height: 3.3em;
+  }
+
+  .Aboutpersonal {
+    display: none;
+  }
+
+  .aboutmyAbilities {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  .Aboutsome {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: start;
+    flex-direction: column;
+    padding: 1em 6em 2em 6em;
+  }
+
+  .Aboutsomeglassy {
+    width: 100%;
+    height: auto;
+    padding: 1em;
+
+
+  }
+
+  .Aboutchartsglassy {
+    width: 100%;
+    height: auto;
+    padding: 1em;
+
+
+  }
+
+  .aboutcharts {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: start;
+    flex-direction: column;
+    padding: 1em 6em 2em 6em;
+    background-color: transparent;
+  }
+
+  .firstchild {
+    font-size: 20px;
+    font-weight: 600;
+    color: #010101c9;
+  }
+
+  .secondchild {
+    font-size: 16px;
+    color: #010101c9;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .aboutinfo {
+    width: 80%;
+    height: auto;
+    margin-bottom: 2em;
+    padding-bottom: 2em;
+    overflow-y: hidden;
+    margin-top: 2em;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .AboutImage {
+    width: 100%;
+    height: 30em;
+    display: flex;
+    justify-content: center;
+  }
+
+  .ImageSet {
+    width: 24em;
+    height: 30em;
+    margin-left: 14px;
+  }
+
+  .aboutinfo {
+    width: 100%;
+    height: auto;
+    padding: 5px;
+    margin-bottom: 2em;
+    padding-bottom: 2em;
+    overflow-y: hidden;
+    margin-top: 2em;
+  }
+
+  .AboutDetailsme {
+    font-size: 1.2em;
+    font-weight: bold;
+  }
+
+  .Aboutsome {
+    padding: 5px;
+  }
+
+  .aboutcharts {
+    padding: 5px;
+  }
+}
+
+@media only screen and (max-width: 500px) {
+  .mainborder {
+    margin: 0em 0em 0em -1.5em;
+  }
+
+  .AboutImage {
+    width: 100%;
+    height: 30em;
+    display: flex;
+    justify-content: center;
+    margin-left: -1em;
+  }
+
+  .ImageSet {
+    width: 21em;
+    height: 26em;
+  }
+
+  .aboutinfo {
+    width: 100%;
+    height: auto;
+    padding: 5px;
+    margin-bottom: 2em;
+    padding-bottom: 2em;
+    overflow-y: hidden;
+    margin-top: 2em;
+  }
+
+  .AboutDetailsme {
+    font-size: 1.6em;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .aboutwork {
+    font-size: 1.8em;
+    height: auto;
+  }
+
+  .Aboutsomeglassy {
+    width: 100%;
+    height: auto;
+    padding: 1em;
+  }
+
+  .Aboutsome {
+    padding: 5px;
+  }
+
+  .aboutcharts {
+    padding: 5px;
+  }
+}
+
+.Aboutme {
+  font-size: 40px;
+  font-weight: 600;
+  padding: 0%;
+  margin: 0%;
+}
+
+.ImageShow {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.ImageShow img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  box-shadow: 16px 14px 20px #000000bc;
+  z-index: 1;
+  position: relative;
+  object-position: center;
+}
+
+.ImageShow:before {
+  content: "";
+  position: absolute;
+  top: 25px;
+  bottom: -25px;
+  left: 25px;
+  right: -25px;
+  border: 10px solid #041230;
+  box-shadow: 4px 2x 7px #000000bc;
+}
+
+.Aboutme {
+  font-size: 40px;
+  font-weight: 600;
+  padding: 0%;
+  margin: 0%;
+}
+
+.aboutwork {
+  font-size: 1.1em;
+  font-weight: 500;
+  color: #2e2e2f;
+  height: auto;
+  text-align: center;
+}
+
+.table-fixed {
+  border-collapse: collapse;
+  overflow-x: hidden;
+}
+
+.table-fixed td {
+  width: 25%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 768px) {
+  .table-fixed td {
+    width: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: inherit;
+  }
+
+  .table-fixed tr {
+    display: block;
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .table-fixed td {
+    width: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: inherit;
+  }
+
+  .table-fixed tr {
+    display: block;
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 500px) {
+  .table-fixed td {
+    width: 100%;
+    display: inline-block;
+    box-sizing: border-box;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: inherit;
+  }
+
+  .table-fixed td {
+    display: block;
+    margin-bottom: 10px;
+  }
+}
+
+.Whatsapp {
+  font-weight: bold;
+}
+
+.Whatsapp:hover {
+  color: #e3872d;
+  text-decoration: underline;
+}
+
+.buttonsection {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: start;
+  height: 3.3em;
+
+}
+
+.buttonsection .Aboutdownhirebtn {
+  text-decoration: none !important;
+  color: #fff !important;
+  background-color: #e3872d !important;
+  font-weight: 600 !important;
+  font-family: "Montserrat" !important;
+  border-radius: 3px !important;
+  display: inline-block !important;
+  position: relative !important;
+  overflow: hidden !important;
+  border: none !important;
+  font-size: 1em !important;
+  line-height: 1.8 !important;
+  letter-spacing: 0.5px !important;
+  cursor: pointer !important;
+  z-index: 100;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+}
+
+.buttonsection .Aboutdownhirebtn::before {
+  position: absolute;
+  content: "";
+  top: 0px;
+  height: 100%;
+  left: -25%;
+  width: 0%;
+  background-color: #041230;
+  transform: skew(50deg);
+  transition-duration: 0.4s;
+  z-index: -100;
+}
+
+.buttonsection .Aboutdownhirebtn:hover::before {
+  width: 150%;
+  left: -20%;
+}
