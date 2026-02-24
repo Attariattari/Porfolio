@@ -1,0 +1,40 @@
+/* --- Premium News Slider --- */
+
+.mySwiper {
+    width: 100%;
+    padding-top: 30px;
+    padding-bottom: 60px;
+}
+
+.swiper-slide {
+    background-position: center;
+    background-size: cover;
+    width: 450px;
+    /* Larger for the new layout */
+    height: 500px;
+    border-radius: 30px;
+    overflow: hidden;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 4px solid white;
+}
+
+[class*="dark"] .swiper-slide {
+    border-color: #1e1e24;
+}
+
+.swiper-slide-active {
+    transform: scale(1.05);
+    z-index: 10;
+}
+
+.swiper-slide img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.swiper-pagination-bullet-active {
+    background: #e3872d !important;
+}

@@ -1,0 +1,200 @@
+.Services {
+    width: 100%;
+    background-color: #f8f9fa;
+    padding-bottom: 80px;
+}
+
+
+/* Section Layout */
+
+.Servicessection {
+    margin-top: 2em;
+    padding: 0 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    max-width: 1300px;
+    margin-left: auto;
+    margin-right: auto;
+    gap: 30px;
+}
+
+@media only screen and (max-width: 1200px) {
+    .Servicessection {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 0 30px;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .Servicessection {
+        grid-template-columns: 1fr;
+        padding: 0 20px;
+    }
+}
+
+.ServiceBox {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 40px 30px;
+    background: #ffffff;
+    border-radius: 24px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+    z-index: 1;
+}
+
+
+/* Glassmorphism background effect */
+
+.ServiceBox::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(227, 135, 45, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+    opacity: 0;
+    transition: all 0.4s ease;
+    z-index: -1;
+}
+
+
+/* Decorative floating number or text */
+
+.ServiceBox::after {
+    content: attr(data-index);
+    position: absolute;
+    top: -20px;
+    right: -10px;
+    font-size: 8rem;
+    font-weight: 900;
+    color: rgba(0, 0, 0, 0.03);
+    line-height: 1;
+    z-index: -2;
+    transition: all 0.4s ease;
+}
+
+.ServiceBox:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    border-color: rgba(227, 135, 45, 0.2);
+}
+
+.ServiceBox:hover::before {
+    opacity: 1;
+}
+
+.ServiceBox:hover::after {
+    color: rgba(227, 135, 45, 0.05);
+    transform: translate(-10px, 10px);
+}
+
+.Servicesdetails {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    text-align: left;
+}
+
+.icons {
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #e3872d 0%, #ffad5a 100%);
+    color: white;
+    border-radius: 18px;
+    font-size: 32px;
+    box-shadow: 0 10px 20px rgba(227, 135, 45, 0.2);
+    transition: all 0.4s ease;
+}
+
+.ServiceBox:hover .icons {
+    transform: rotateY(360deg) scale(1.1);
+    box-shadow: 0 15px 30px rgba(227, 135, 45, 0.3);
+}
+
+.Serviceslabel {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #041230;
+    margin: 10px 0 0;
+    letter-spacing: -0.5px;
+}
+
+.Servicesinfo {
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.7;
+    margin-bottom: 10px;
+    min-height: 80px;
+}
+
+.ServiceBox button {
+    margin-top: auto;
+    width: fit-content;
+    padding: 12px 28px;
+    background: transparent;
+    color: #e3872d;
+    border: 2px solid #e3872d;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ServiceBox button::after {
+    content: '→';
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+}
+
+.ServiceBox button:hover {
+    background: #e3872d;
+    color: white;
+    transform: translateX(5px);
+    box-shadow: 0 5px 15px rgba(227, 135, 45, 0.3);
+}
+
+.ServiceBox button:hover::after {
+    transform: translateX(5px);
+}
+
+
+/* Background gradient blobs */
+
+.Services {
+    position: relative;
+    overflow: hidden;
+}
+
+.Services::before {
+    content: '';
+    position: absolute;
+    top: -10%;
+    right: -10%;
+    width: 40%;
+    height: 40%;
+    background: radial-gradient(circle, rgba(227, 135, 45, 0.05) 0%, transparent 70%);
+    z-index: 0;
+}
+
+.Services::after {
+    content: '';
+    position: absolute;
+    bottom: -10%;
+    left: -10%;
+    width: 40%;
+    height: 40%;
+    background: radial-gradient(circle, rgba(4, 18, 48, 0.03) 0%, transparent 70%);
+    z-index: 0;
+}

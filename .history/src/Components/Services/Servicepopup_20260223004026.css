@@ -1,0 +1,268 @@
+        .popupparent {
+    width: 100%;
+    /* --- Midnight Cyber Design System --- */
+     :root {
+        --primary-glow: #6366f1;
+        --secondary-glow: #a855f7;
+        --accent-neon: #10b981;
+        --bg-deep: #020617;
+        --glass-bg: rgba(15, 23, 42, 0.7);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+    }
+    .Serviceall {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .scroll-disabled {
+        overflow: hidden !important;
+    }
+    /* --- Floating Glass Overlay --- */
+    .Servicepopup {
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(circle at center, rgba(10, 10, 30, 0.4) 0%, rgba(2, 6, 23, 0.95) 100%);
+        backdrop-filter: blur(25px) saturate(180%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+        padding: 24px;
+        animation: fadeIn 0.5s ease;
+    }
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    /* --- The Master Card (Service) --- */
+    .Servicepopupchild {
+        width: 100%;
+        max-width: 800px;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 32px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 0 80px rgba(99, 102, 241, 0.15), inset 0 0 20px rgba(255, 255, 255, 0.05);
+        animation: slideScaleUp 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+    @keyframes slideScaleUp {
+        from {
+            opacity: 0;
+            transform: translateY(50px) scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+    /* Decorative Glows */
+    .Servicepopupchild::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: conic-gradient(from 0deg, transparent, var(--primary-glow), transparent 30%);
+        animation: rotateGlow 10s linear infinite;
+        opacity: 0.1;
+        z-index: 0;
+    }
+    @keyframes rotateGlow {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+    .modal-inner-content {
+        position: relative;
+        z-index: 1;
+        padding: 50px;
+        max-height: 85vh;
+        overflow-y: auto;
+    }
+    .modal-inner-content::-webkit-scrollbar {
+        width: 4px;
+    }
+    .modal-inner-content::-webkit-scrollbar-thumb {
+        background: linear-gradient(to bottom, var(--primary-glow), var(--secondary-glow));
+        border-radius: 10px;
+    }
+    /* Close Button Neon */
+    .modal-close-btn {
+        position: absolute;
+        top: 24px;
+        right: 24px;
+        width: 44px;
+        height: 44px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--glass-border);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--text-main);
+        transition: all 0.3s ease;
+        z-index: 10;
+    }
+    .modal-close-btn:hover {
+        background: var(--primary-glow);
+        box-shadow: 0 0 20px var(--primary-glow);
+        transform: rotate(90deg);
+    }
+    /* Header Typography */
+    .modal-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    .modal-icon-box {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 20px;
+        background: linear-gradient(135deg, var(--primary-glow), var(--secondary-glow));
+        border-radius: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 40px;
+        color: white;
+        box-shadow: 0 15px 30px rgba(99, 102, 241, 0.4);
+    }
+    .modal-header h2 {
+        font-size: 3rem;
+        font-weight: 900;
+        background: linear-gradient(to right, #fff, var(--primary-glow));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -2px;
+    }
+    .modal-desc {
+        font-size: 1.25rem;
+        line-height: 1.8;
+        color: var(--text-muted);
+        text-align: center;
+        margin-bottom: 50px;
+    }
+    /* Tech Pills */
+    .tech-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 60px;
+    }
+    .tech-pill {
+        padding: 10px 24px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 50px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        .Header {
+            width: 100%;
+            height: 2.5em;
+            background-color: #e3872d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px;
+            font-size: 20px;
+            border-radius: 5px 5px 0px 0px;
+        }
+        .Header div {
+            width: 90%;
+        }
+        .Header button {
+            width: 10%;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .FullDetails Button {
+            width: 100%;
+            padding: 10px;
+            text-decoration: none !important;
+            color: #fff !important;
+            background-color: #e3872d !important;
+            font-weight: 600 !important;
+            font-family: "Montserrat" !important;
+            border-radius: 3px !important;
+            display: inline-block !important;
+            position: relative !important;
+            overflow: hidden !important;
+            border: none !important;
+            font-size: 1em !important;
+            line-height: 1.8 !important;
+            letter-spacing: 0.5px !important;
+            cursor: pointer !important;
+            z-index: 100;
+        }
+        .FullDetails button::before {
+            position: absolute;
+            content: "";
+            top: 0px;
+            height: 100%;
+            left: -25%;
+            width: 0%;
+            background-color: #041230;
+            transform: skew(50deg);
+            transition-duration: 0.4s;
+            z-index: -100;
+        }
+        .FullDetails button:hover::before {
+            width: 150%;
+            left: -20%;
+        }
+        .send_data {
+            display: none;
+        }
+        .goback {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 3em;
+        }
+        .goback Button {
+            width: 30%;
+            padding: 10px;
+            text-decoration: none !important;
+            color: #fff !important;
+            background-color: #e3872d !important;
+            font-weight: 600 !important;
+            font-family: "Montserrat" !important;
+            border-radius: 3px !important;
+            display: inline-block !important;
+            position: relative !important;
+            overflow: hidden !important;
+            border: none !important;
+            font-size: 1em !important;
+            line-height: 1.8 !important;
+            letter-spacing: 0.5px !important;
+            cursor: pointer !important;
+            z-index: 100;
+        }
+        .goback button::before {
+            position: absolute;
+            content: "";
+            top: 0px;
+            height: 100%;
+            left: -25%;
+            width: 0%;
+            background-color: #041230;
+            transform: skew(50deg);
+            transition-duration: 0.4s;
+            z-index: -100;
+        }
+        .goback button:hover::before {
+            width: 150%;
+            left: -20%;
+        }

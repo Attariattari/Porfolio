@@ -1,0 +1,173 @@
+.Services {
+    width: 100%;
+    background-color: #020617;
+    /* Deep Midnight */
+    padding-bottom: 120px;
+    position: relative;
+    overflow: hidden;
+}
+
+
+/* Decorative Orbs */
+
+.Services::before {
+    content: "EXPERTISE";
+    position: absolute;
+    top: 50px;
+    right: -100px;
+    font-size: 15rem;
+    font-weight: 950;
+    color: rgba(99, 102, 241, 0.03);
+    z-index: 0;
+    user-select: none;
+    letter-spacing: -10px;
+}
+
+.aura-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    z-index: 0;
+    opacity: 0.1;
+    pointer-events: none;
+}
+
+.aura-blob-1 {
+    width: 450px;
+    height: 450px;
+    background: var(--primary-color);
+    top: 10%;
+    left: -150px;
+}
+
+.aura-blob-2 {
+    width: 350px;
+    height: 350px;
+    background: #a855f7;
+    bottom: 0%;
+    right: -100px;
+}
+
+.aura-blob-3 {
+    width: 300px;
+    height: 300px;
+    background: #f43f5e;
+    top: 50%;
+    left: 40%;
+}
+
+.Services::after {
+    content: '';
+    position: absolute;
+    bottom: 5%;
+    left: -5%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.1) 0%, transparent 70%);
+    filter: blur(60px);
+}
+
+.Servicessection {
+    margin-top: 4em;
+    padding: 0 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    max-width: 1300px;
+    margin-left: auto;
+    margin-right: auto;
+    gap: 30px;
+    position: relative;
+    z-index: 10;
+}
+
+.ServiceBox {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 50px 35px;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border-radius: 32px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    overflow: hidden;
+}
+
+.ServiceBox:hover {
+    transform: translateY(-20px);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: #6366f1;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(99, 102, 241, 0.2);
+}
+
+.icons {
+    width: 75px;
+    height: 75px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6366f1;
+    background: rgba(99, 102, 241, 0.1);
+    border-radius: 20px;
+    font-size: 34px;
+    margin-bottom: 25px;
+    transition: all 0.4s ease;
+}
+
+.ServiceBox:hover .icons {
+    background: #6366f1;
+    color: white;
+    transform: scale(1.1) rotate(10deg);
+    box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+}
+
+.Serviceslabel {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin-bottom: 15px;
+    letter-spacing: -1px;
+}
+
+.Servicesinfo {
+    font-size: 1.05rem;
+    color: #94a3b8;
+    line-height: 1.7;
+    margin-bottom: 30px;
+    min-height: 80px;
+}
+
+.ServiceBox button {
+    margin-top: auto;
+    width: fit-content;
+    padding: 14px 32px;
+    background: transparent;
+    color: #6366f1;
+    border: 2px solid rgba(99, 102, 241, 0.3);
+    border-radius: 100px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ServiceBox button:hover {
+    background: #6366f1;
+    color: white;
+    border-color: #6366f1;
+    transform: translateX(5px);
+    box-shadow: 0 5px 15px rgba(99, 102, 241, 0.3);
+}
+
+@media only screen and (max-width: 768px) {
+    .Servicessection {
+        padding: 0 20px;
+        gap: 20px;
+    }
+    .ServiceBox {
+        padding: 40px 25px;
+    }
+}

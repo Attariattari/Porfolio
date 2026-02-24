@@ -1,0 +1,213 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
+.gototop {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    cursor: pointer;
+    background-color: #e3872d;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    padding: 10px;
+    font-size: 16px;
+    z-index: 1200;
+    box-shadow: 0 0 24px 0 #313131;
+    animation: mover 1s infinite alternate;
+    -webkit-animation: mover 1s infinite alternate;
+}
+
+@keyframes mover {
+    0% {
+        transform: translatey(0);
+    }
+    100% {
+        transform: translatey(10px);
+        -webkit-transform: translatey(10px);
+        -moz-transform: translatey(10px);
+        -ms-transform: translatey(10px);
+        -o-transform: translatey(10px);
+    }
+}
+
+:root {
+    --primary-color: #6366f1;
+    /* Modern Indigo */
+    --secondary-color: #f8fafc;
+    --text-dark: #f1f5f9;
+    --text-light: #94a3b8;
+    --bg-light: #020617;
+    /* Midnight Base */
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+
+/* Modern Header Styles */
+
+.AboutHeader_modern {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto 60px;
+    padding: 20px 20px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+.HeaderBadge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.BadgeLine {
+    width: 30px;
+    height: 2px;
+    background: var(--primary-color);
+    opacity: 0.6;
+}
+
+.BadgeText {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+}
+
+.HeaderBadge:hover .BadgeLine {
+    width: 50px;
+    opacity: 1;
+    transition: var(--transition);
+}
+
+.HeaderTitle {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: var(--secondary-color);
+    line-height: 1.1;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.GradientText {
+    background: linear-gradient(90deg, var(--primary-color), #ffad5a);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+}
+
+.HeaderDivider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.HeaderDivider .Dot {
+    width: 8px;
+    height: 8px;
+    background: var(--primary-color);
+    border-radius: 50%;
+}
+
+.HeaderDivider .Line {
+    width: 100px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+    animation: lineExpand 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes lineExpand {
+    0% {
+        transform: scaleX(0.5);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scaleX(1.2);
+        opacity: 1;
+    }
+}
+
+.AboutHeader_modern:hover .HeaderTitle {
+    transform: translateY(-5px);
+    transition: var(--transition);
+}
+
+
+/* App.css */
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Open Sans', sans-serif;
+    scroll-behavior: smooth;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+}
+
+.app {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    /* Use 100vh to make the layout take the full height of the viewport */
+}
+
+.sidebar {
+    z-index: 999;
+}
+
+.content {
+    flex-grow: 1;
+    overflow-y: auto;
+    /* Enable vertical scrolling for the content area */
+    width: 100%;
+}
+
+h1,
+h2,
+h3 {
+    font-family: 'Montserrat', sans-serif;
+}
+
+
+/* GLOBAL SCROLLBAR – Webkit Browsers (Chrome, Edge, Safari) */
+
+::-webkit-scrollbar {
+    width: 2px;
+    height: 2px;
+    /* optional for horizontal scrollbar */
+}
+
+::-webkit-scrollbar-track {
+    background-color: transparent;
+    /* cleaner look */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #6366f1;
+    border-radius: 10px;
+    background-clip: content-box;
+}
+
+
+/* Optional: Add smooth transition (looks nice on hover) */
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #818cf8;
+    /* lighter indigo on hover */
+}
+
+
+/* FIREFOX SUPPORT */
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #6366f1 transparent;
+}
