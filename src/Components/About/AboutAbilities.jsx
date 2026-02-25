@@ -1,45 +1,29 @@
 import React from "react";
 import "./About.css";
-import { FaRocket, FaPalette, FaCode, FaChartLine } from "react-icons/fa";
 
-function AboutAbilities({ typesome, Cursor }) {
-  const highlights = [
-    {
-      icon: <FaRocket />,
-      title: "Fast Performance",
-      desc: "Optimized, lag-free user experiences across all devices.",
-    },
-    {
-      icon: <FaPalette />,
-      title: "Modern Design",
-      desc: "Clean, pixel-perfect interfaces that wow users instantly.",
-    },
-    {
-      icon: <FaCode />,
-      title: "Clean Code",
-      desc: "Scalable and maintainable codebases using best practices.",
-    },
-    {
-      icon: <FaChartLine />,
-      title: "SEO Friendly",
-      desc: "Search engine optimized structures for maximum visibility.",
-    },
-  ];
-
+function AboutAbilities({ typesome, Cursor, typeEffect }) {
   return (
     <div className="Aboutsomeglassy">
-      <div className="AboutSomeTitle text-2xl font-bold mb-8">
-        About My <span className="GradientText">Abilities</span>
+      <div className="firstchild font-semibold">
+        S{typesome}
+        <Cursor />
       </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        {highlights.map((item, index) => (
-          <div key={index} className="AbilityCard">
-            <span className="AbilityIcon">{item.icon}</span>
-            <h3 className="AbilityTitle">{item.title}</h3>
-            <p className="AbilityDesc">{item.desc}</p>
-          </div>
-        ))}
+      <div className="secondchild">
+        I am a{" "}
+        <span
+          style={{
+            color: "#E3872D",
+          }}
+        >
+          {typeEffect}
+          <cursor />
+        </span>
+        , and I'm very passionate and dedicated to my work. With 3 years
+        experience as a professional Web developer, I have acquired the skills
+        and knowledge necessary to make your project a success. I enjoy every
+        step of the design process, from discussion and collaboration to concept
+        and execution, but I find the most satisfaction in seeing the finished
+        product do everything for you that it was created to do.
       </div>
     </div>
   );

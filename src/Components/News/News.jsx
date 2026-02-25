@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./News.css";
+import "../Services/Services.css";
 import {
   whatisreact,
   whatisnodejs,
@@ -8,9 +8,9 @@ import {
   whatisSocialMedia,
   whatisMarketing,
 } from "../../DummyData/DummyData";
-import Servicepopup from "../Services/Servicepopup";
+import Servicepopup from "../Services//Servicepopup";
 
-const newsData = [
+const whatisreacta = [
   whatisreact,
   whatisnodejs,
   whatisuxuidesigner,
@@ -20,78 +20,56 @@ const newsData = [
 ];
 
 function News() {
-  const [selectedNews, setSelectedNews] = useState(null);
+  const [selectedNews, setselectedNews] = useState(null);
 
-  const handleButtonClick = (news) => {
-    setSelectedNews(news);
+  const handleButtonClick = (service) => {
+    setselectedNews(service);
   };
 
   const closePopup = () => {
-    setSelectedNews(null);
+    setselectedNews(null);
   };
 
   return (
     <div className="News">
-      {/* Background Decorative Blobs */}
-      <div className="aura-blob aura-blob-1"></div>
-      <div className="aura-blob aura-blob-2"></div>
-      <div className="aura-blob aura-blob-3"></div>
-
-      {/* MUHYO TECH Section Header */}
-      <div className="AboutHeader_modern">
-        <div className="HeaderBadge">
-          <span className="BadgeLine"></span>
-          <span className="BadgeText">INSIGHTS & NEWS</span>
-          <span className="BadgeLine"></span>
-        </div>
-        <h2 className="HeaderTitle">
-          Latest <span className="GradientText">Articles</span>
-        </h2>
-        <div className="HeaderDivider">
-          <div className="Dot"></div>
-          <div className="Line"></div>
-          <div className="Dot"></div>
+      <div className="Servicesabout">
+        <div className="Servicesborder">
+          <div className="text-zinc-800 Servicestext">LATEST NEWS</div>
+          <div className="text-lg">Check out our latest News</div>
         </div>
       </div>
-
-      <div className="news-grid">
-        {newsData.map((item, index) => (
-          <div
-            className="news-card"
-            key={index}
-            onClick={() => handleButtonClick(item)}
-          >
-            <div className="news-image-container">
-              <img src={item.img} alt={item.title} />
+      <div className="Servicessection">
+        {whatisreacta.map((service, index) => (
+          <div className="ServiceBox" key={index}>
+            <div className="Servicesdetails">
+              <div className="Servicesicons shadow-lg ">
+                <img src={service.img} alt="" />
+              </div>
+              <div className="text-center text-md font-bold py-2">
+                {service.title}
+              </div>
+              <div className="text-center Servicesinfo">
+                {service.Introduction?.length > 180
+                  ? `${service.Introduction.slice(0, 180)}...`
+                  : service.Introduction}
+              </div>
             </div>
-
-            <div className="news-card-content">
-              <span className="news-tag">Tech Insight</span>
-              <h3 className="news-card-title">{item.title}</h3>
-
-              <p className="news-card-excerpt">
-                {item.Introduction?.length > 140
-                  ? `${item.Introduction.slice(0, 140)}...`
-                  : item.Introduction}
-              </p>
-
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleButtonClick(item);
-                }}
-                className="news-read-more"
-              >
-                Read Story <span>→</span>
-              </button>
-            </div>
+            <button
+              onClick={() => handleButtonClick(service)}
+              className="Button mt-3"
+            >
+              More info
+            </button>
           </div>
         ))}
       </div>
-
       <Servicepopup selectedNews={selectedNews} closePopup={closePopup} />
     </div>
   );
 }
 
 export default News;
+
+// {
+//
+// }

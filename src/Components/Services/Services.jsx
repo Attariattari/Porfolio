@@ -24,24 +24,10 @@ function Services() {
   }, []);
   return (
     <div className="Services">
-      {/* Background Decorative Blobs */}
-      <div className="aura-blob aura-blob-1"></div>
-      <div className="aura-blob aura-blob-2"></div>
-      <div className="aura-blob aura-blob-3"></div>
-
-      <div className="AboutHeader_modern">
-        <div className="HeaderBadge">
-          <span className="BadgeLine"></span>
-          <span className="BadgeText">OUR SERVICES</span>
-          <span className="BadgeLine"></span>
-        </div>
-        <h2 className="HeaderTitle">
-          Amazing <span className="GradientText">Services</span>
-        </h2>
-        <div className="HeaderDivider">
-          <div className="Dot"></div>
-          <div className="Line"></div>
-          <div className="Dot"></div>
+      <div className="Servicesabout">
+        <div className="Servicesborder">
+          <div className="text-zinc-800 Servicestext">AMAZING SERVICES</div>
+          <div className="text-lg">Meet our amazing services</div>
         </div>
       </div>
       <div className="Servicessection">

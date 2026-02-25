@@ -1,132 +1,121 @@
+/* ===========================================================================Mern Css====================================================================== */
 .Mernimagesection {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-    gap: 40px;
-    padding: 3rem 0;
-    width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+  padding: 3em;
 }
 
 .Mernimagesection .Imagecontainer {
-    position: relative;
-    overflow: hidden;
-    height: 480px;
-    border-radius: 40px;
-    cursor: pointer;
-    background-color: #0f172a;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    transition: all 0.7s cubic-bezier(0.19, 1, 0.22, 1);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-}
-
-.Mernimagesection .Imagecontainer:hover {
-    transform: translateY(-20px);
-    border-color: rgba(99, 102, 241, 0.5);
-    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6), 0 0 30px rgba(99, 102, 241, 0.2);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+  height: auto;
+  border-radius: 1%;
+  cursor: pointer;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
 }
 
 .Mernimagesection img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 1.2s cubic-bezier(0.19, 1, 0.22, 1);
+  width: 17em;
+  height: 19.125em;
+  border-radius: 1%;
+  object-fit: cover;
+  transition: transform 0.3s ease-in-out;
+  -webkit-border-radius: 1%;
+  -moz-border-radius: 1%;
+  -ms-border-radius: 1%;
+  -o-border-radius: 1%;
 }
 
 .Mernimagesection .Imagecontainer:hover img {
-    transform: scale(1.15);
-    filter: brightness(0.4) saturate(1.2);
+  transform: scale(1.1);
+
 }
 
-
-/* Premium Tag */
-
-.project-tag {
-    position: absolute;
-    top: 30px;
-    left: 30px;
-    background: rgba(99, 102, 241, 0.2);
-    backdrop-filter: blur(12px);
-    color: #f8fafc;
-    padding: 8px 20px;
-    border-radius: 100px;
-    font-size: 0.8rem;
-    font-weight: 800;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    z-index: 5;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.4s ease;
+.Mernimagesection .Imagecontainer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #04123059;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
 }
 
-.Mernimagesection .Imagecontainer:hover .project-tag {
-    background: #6366f1;
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+.Mernimagesection .Imagecontainer:hover::after {
+  opacity: 1;
 }
 
 .imagehovertext {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    padding: 50px 40px;
-    z-index: 10;
-    transform: translateY(40px);
-    opacity: 0;
-    transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
-    background: linear-gradient(to top, rgba(2, 6, 23, 0.95) 0%, transparent 100%);
+  color: white;
+  font-size: 1.1em;
+  padding: 10px;
+  z-index: 599;
+  transition: opacity 0.3s ease-in-out;
+  position: absolute;
+  opacity: 0;
 }
 
 .Mernimagesection .Imagecontainer:hover .imagehovertext {
-    transform: translateY(0);
-    opacity: 1;
-}
-
-.imagehovertext h3 {
-    color: white;
-    font-size: 2.2rem;
-    font-weight: 900;
-    margin-bottom: 15px;
-    letter-spacing: -2px;
-    line-height: 1;
-}
-
-.imagehovertext p {
-    color: #94a3b8;
-    font-size: 1.1rem;
-    margin-bottom: 30px;
-    line-height: 1.6;
-}
-
-.merntext {
-    background: linear-gradient(90deg, #6366f1, #a855f7);
-    color: white;
-    border: none;
-    padding: 16px 40px;
-    border-radius: 100px;
-    font-weight: 800;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.4s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+  opacity: 1;
 }
 
 .merntext:hover {
-    transform: translateX(10px) scale(1.05);
-    box-shadow: 0 0 40px rgba(99, 102, 241, 0.5);
+  color: #e3872d;
+  text-decoration: underline;
 }
 
-@media only screen and (max-width: 768px) {
-    .Mernimagesection {
-        grid-template-columns: 1fr;
-        gap: 30px;
-    }
-    .Mernimagesection .Imagecontainer {
-        height: 420px;
-        border-radius: 30px;
-    }
-    .imagehovertext h3 {
-        font-size: 1.8rem;
-    }
+.ProtfolioPopup {
+  width: 100%;
+  height: 25em;
+  object-fit: contain;
+  position: relative;
 }
+
+.ProtfolioPopup {
+  margin: auto;
+  width: 2rem;
+  top: 0.5rem;
+  right: 0.6rem;
+  cursor: pointer;
+  color: #e3872d;
+}
+
+.ProtfolioPopup :hover {
+  color: #ffffff;
+  transform: scale(1.2) rotate(360deg);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  transition: transform 0.4s ease-out, box-shadow 0.4s ease-out;
+  border-radius: 50%;
+}
+
+.showallandlees {
+  width: 50%;
+  padding: 10px;
+  background-color: #e3872d;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 3em;
+}
+
+
+@media only screen and (max-width: 768px) {
+
+  .Mernimagesection {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
+}
+
+
+
+
+/* ===========================================================================Mern Css====================================================================== */

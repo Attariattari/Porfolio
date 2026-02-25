@@ -718,127 +718,125 @@ export const projects = [
   // ===== MERN / NEXT / NODE =====
   {
     id: "mern",
-    category: "Mern Stack",
+    category:"Mern Stack",
     title: "DevOverflow – Developer Forum",
     description:
       "Full-stack Q&A forum like StackOverflow using MERN & Next.js. Includes voting, auth, tags, and comments.",
     image:
-      "https://images.unsplash.com/photo-1587620962725-abab7fe55159?auto=format&fit=crop&q=80&w=1000",
+      "https://user-images.githubusercontent.com/770322/233832992-f2cf0fc7-2547-46b4-8422-9db2d5a2c0ae.png",
     link: "https://github.com/safak/youtube2022/tree/devoverflow",
   },
   {
     id: "mern",
-    category: "Mern Stack",
+    category:"Mern Stack",
     title: "Bookify – Book Store API",
     description:
       "RESTful Node/Express API with MongoDB. Features include user auth, book management, filters, and Stripe payment.",
     image:
-      "https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&q=80&w=1000",
+      "https://miro.medium.com/v2/resize:fit:1400/1*TDDM1kYbw9fPYKmYgo6kCg.png",
     link: "https://github.com/ameerthehacker/book-store-api",
   },
   {
     id: "mern",
-    category: "Mern Stack",
+    category:"Mern Stack",
     title: "HireMe – Freelancing Platform",
     description:
       "Freelancing web app using Next.js + MongoDB where users can post and apply to jobs.",
     image:
-      "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&q=80&w=1000",
+      "https://repository-images.githubusercontent.com/555416097/f6b1e905-bb8a-4cd2-b51f-87563d12d9c1",
     link: "https://github.com/safak/youtube2022/tree/devfreelance",
   },
 
   // ===== UX/UI / FIGMA =====
   {
     id: "uxui",
-    category: "UX/UI",
+    category:'UX/UI',
     title: "Financio – Finance Dashboard (Figma)",
     description:
       "Modern dark-themed Figma dashboard with neumorphism, graphs, and stat cards.",
     image:
-      "https://images.unsplash.com/photo-1542744154-638706979603?auto=format&fit=crop&q=80&w=1000",
+      "https://cdn.dribbble.com/users/108183/screenshots/16494532/media/7cc8bba8e1bcb9aef362c30d7e7b7313.jpg",
     link: "https://www.figma.com/community/file/1129251402743561957",
   },
   {
     id: "uxui",
-    category: "UX/UI",
+    category:'UX/UI',
     title: "Foodies – Food Delivery App UI",
     description:
       "Beautiful mobile-first food delivery app design with cart and product detail screens.",
     image:
-      "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&q=80&w=1000",
+      "https://cdn.dribbble.com/users/720472/screenshots/14072808/media/325b4fa1ef487de68a2fa3a6a601b9a0.jpg",
     link: "https://www.figma.com/community/file/979179129404583176",
   },
 
   // ===== AI / ML =====
   {
     id: "ai",
-    category: "AI",
+    category:"AI",
     title: "ChatMind – AI Chatbot",
     description:
       "OpenAI-powered chatbot using Node.js and React. Works like ChatGPT with conversation memory.",
     image:
-      "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=1000",
+      "https://repository-images.githubusercontent.com/625038644/f98771b7-0379-4d6b-a4e8-212bb2b8cfaa",
     link: "https://github.com/hkirat/ai-chatbot",
   },
   {
     id: "ai",
-    category: "AI",
+    category:"AI",
     title: "ImageGen – AI Image Generator",
     description:
       "Full-stack DALL·E clone that generates images from text using OpenAI API + MERN.",
-    image:
-      "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=1000",
+    image: "https://i.ytimg.com/vi/NICKqV8YBnY/maxresdefault.jpg",
     link: "https://github.com/adrianhajdin/project_ai_image_generator",
   },
 
   // ===== E-COMMERCE =====
   {
     id: "ecommerce",
-    category: "E-commerce",
+    category:"E-commerce",
     title: "Shopify Clone",
     description:
       "Full MERN e-commerce website with cart, checkout, Stripe, and admin dashboard.",
     image:
-      "https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&q=80&w=1000",
+      "https://repository-images.githubusercontent.com/330945354/91d76d3d-f56c-4e0e-9f03-d150cb861202",
     link: "https://github.com/rohan-paul/Awesome-Ecommerce",
   },
   {
     id: "ecommerce",
-    category: "E-commerce",
+    category:"E-commerce",
     title: "Zay Shop – Simple Storefront",
     description:
       "Responsive HTML/CSS e-commerce frontend for small stores, no backend.",
-    image:
-      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=1000",
+    image: "https://colorlib.com/wp/wp-content/uploads/sites/2/zay.jpg",
     link: "https://github.com/mobirise/zay-shop",
   },
 
   // ===== PORTFOLIO =====
   {
     id: "portfolio",
-    category: "Portfolio",
+    category:"Portfolio",
     title: "DevFolio – Developer Portfolio",
     description:
       "Responsive portfolio website built with HTML, CSS, JS — great for developers.",
     image:
-      "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&q=80&w=1000",
+      "https://bootstrapmade.com/demo/templates/DevFolio/assets/img/hero-bg.jpg",
     link: "https://github.com/saadpasta/developerFolio",
   },
   {
     id: "portfolio",
-    category: "Portfolio",
+    category:"Portfolio",
     title: "Minimal React Portfolio",
     description:
       "Clean React.js portfolio template with smooth scroll, dark mode, and responsive layout.",
     image:
-      "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1000",
+      "https://repository-images.githubusercontent.com/202398604/3d2cf300-866d-11e9-9e2f-cd5c7c2e3d9f",
     link: "https://github.com/chetanverma16/devfolio",
   },
 ];
 
 // ================================Mern Stack Data=================================
 export const Mernstackfirst = {
-  img: "https://images.unsplash.com/photo-1542601906948-ad48d273759a?auto=format&fit=crop&q=80&w=1000",
+  img: "https://i.postimg.cc/fTtMpFwj/1706786499282.jpg",
   iconSecond: <FaPlus />,
   title: "Melt Water",
   createit: "11-12-2020",
@@ -850,7 +848,7 @@ export const Mernstackfirst = {
     "Melt water is a company which provides solution which helps customers make more informed decisions.",
 };
 export const Mernstacksecond = {
-  img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=1000",
+  img: "https://images.pexels.com/photos/35537/child-children-girl-happy.jpg?cs=srgb&dl=pexels-bess-hamiti-35537.jpg&fm=jpg",
   iconfirst: <LuSearchCode />,
   iconfirst: <LuSearchCode />,
   iconSecond: <FaPlus />,
@@ -864,7 +862,7 @@ export const Mernstacksecond = {
     "AIAIAI is an audio design company, dedicated to developing premium audio products with their world-renowned network of music makers, industrial designers and audio technicians.",
 };
 export const Mernstackthered = {
-  img: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1000",
+  img: "https://images.unsplash.com/photo-1557167045-84a590d5ca22?q=80&w=1510&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   iconfirst: <LuSearchCode />,
   iconSecond: <FaPlus />,
   title: "Ball System Group",
@@ -880,7 +878,7 @@ export const Mernstackthered = {
 // ================================UX / UI Designing=================================
 export const BankingApp = {
   title: "Banking App",
-  img: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80&w=1000",
+  img: "https://images.unsplash.com/photo-1700700736073-03e5b3c16bfc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDEwOHxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
   iconfirst: <LuSearchCode />,
   iconSecond: <FaPlus />,
   createit: "05-28-2021",
@@ -892,7 +890,7 @@ export const BankingApp = {
     "https://drive.google.com/file/d/1Nf8tm9EG_0oPqLUm0pXRxOfIoF9Z6u9x/view",
 };
 export const AouponApp = {
-  img: "https://images.unsplash.com/photo-1621944190711-2682ae26bb0a?auto=format&fit=crop&q=80&w=1000",
+  img: "https://images.unsplash.com/photo-1696595861034-0ac6a17d7912?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDQ0M3xDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
   iconfirst: <LuSearchCode />,
   iconSecond: <FaPlus />,
   type: "Mobile application",
@@ -903,7 +901,7 @@ export const AouponApp = {
   Visit: "Aoupon",
 };
 export const fooddeliverwebandmobileapp = {
-  img: "https://images.unsplash.com/photo-1526367790999-0150786486a9?auto=format&fit=crop&q=80&w=1000",
+  img: "https://images.unsplash.com/photo-1698474804175-bea12943ef24?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDE2M3xDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
   iconfirst: <LuSearchCode />,
   iconSecond: <FaPlus />,
   type: "UX/UI Designing",
@@ -915,7 +913,7 @@ export const fooddeliverwebandmobileapp = {
 
 // ================================Others CMS=================================
 export const bulldogtribe = {
-  img: "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?auto=format&fit=crop&q=80&w=1000",
+  img: "https://images.unsplash.com/photo-1653407497540-26207a2408d7?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDI3OXxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
   iconfirst: <LuSearchCode />,
   iconSecond: <FaPlus />,
   title: "Bulldogtribe",
@@ -931,7 +929,7 @@ export const bulldogtribe = {
     "Bulldogtribe is a spanish website and it a company which provides user buy things for dogs basically E-commerce Website.",
 };
 export const amyherzogdesigns = {
-  img: "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&q=80&w=1000",
+  img: "https://images.unsplash.com/photo-1651497634590-ce388a6a686a?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDI4NXxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
   iconfirst: <LuSearchCode />,
   iconSecond: <FaPlus />,
   title: "amy herzog designs",
@@ -941,7 +939,7 @@ export const amyherzogdesigns = {
   Visit: "Amy Herzog",
 };
 export const bigcommerce = {
-  img: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=1000",
+  img: "https://plus.unsplash.com/premium_photo-1672759323736-0cb0c6df207d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDI5MnxDRHd1d1hKQWJFd3x8ZW58MHx8fHx8",
   iconfirst: <LuSearchCode />,
   iconSecond: <FaPlus />,
   title: "Big commerce",

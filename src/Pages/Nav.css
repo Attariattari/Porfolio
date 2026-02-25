@@ -1,45 +1,45 @@
 .LinkHover:hover {
-    color: var(--primary-color);
+  color: rgb(227 135 45)
 }
 
 .LinkHover {
-    position: relative;
-    overflow: hidden;
-    z-index: 1;
-    transition: all 0.3s linear;
-    display: flex;
-    width: 100%;
-    margin-bottom: 1.5em;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  transition: all 0.3s linear;
+  display: flex;
+  width: 100%;
+  margin-bottom: 1.5em;
 }
 
 .barbtn {
-    display: none;
+  display: none;
 }
 
 
 /* Custom scrollbar only for elements with .custom-scrollbar */
-
 .custom-scrollbar::-webkit-scrollbar {
-    width: 2px;
+  width: 2px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-    background-color: transparent;
+  background-color: transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-    background-color: var(--primary-color);
-    border-radius: 10px;
-    background-clip: content-box;
+  background-color: #e3882d;
+  border-radius: 10px;
+  background-clip: content-box;
 }
 
 .custom-scrollbar {
-    scrollbar-width: thin;
-    scrollbar-color: var(--primary-color) transparent;
+  scrollbar-width: thin;
+  scrollbar-color: #e3882d transparent;
 }
 
+
 @media (max-width: 1024px) {
-    .barbtn {
-        display: block;
-    }
+  .barbtn {
+    display: block;
+  }
 }

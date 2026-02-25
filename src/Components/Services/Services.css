@@ -1,173 +1,437 @@
 .Services {
-    width: 100%;
-    background-color: #020617;
-    /* Deep Midnight */
-    padding-bottom: 120px;
-    position: relative;
-    overflow: hidden;
+  width: 100%;
 }
 
-
-/* Decorative Orbs */
-
-.Services::before {
-    content: "EXPERTISE";
-    position: absolute;
-    top: 50px;
-    right: -100px;
-    font-size: 15rem;
-    font-weight: 950;
-    color: rgba(99, 102, 241, 0.03);
-    z-index: 0;
-    user-select: none;
-    letter-spacing: -10px;
+.Servicesabout {
+  padding-top: 29px;
 }
 
-.aura-blob {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(100px);
-    z-index: 0;
-    opacity: 0.1;
-    pointer-events: none;
+.Servicesborder {
+  border-left: 0.4em #e3872d solid;
+  margin-top: 3em;
+  margin-left: 3em;
+  padding-left: 1em;
+  height: 5.5em;
 }
 
-.aura-blob-1 {
-    width: 450px;
-    height: 450px;
-    background: var(--primary-color);
-    top: 10%;
-    left: -150px;
-}
-
-.aura-blob-2 {
-    width: 350px;
-    height: 350px;
-    background: #a855f7;
-    bottom: 0%;
-    right: -100px;
-}
-
-.aura-blob-3 {
-    width: 300px;
-    height: 300px;
-    background: #f43f5e;
-    top: 50%;
-    left: 40%;
-}
-
-.Services::after {
-    content: '';
-    position: absolute;
-    bottom: 5%;
-    left: -5%;
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle, rgba(168, 85, 247, 0.1) 0%, transparent 70%);
-    filter: blur(60px);
+.Servicestext {
+  font-size: 40px;
+  font-weight: 600;
+  padding: 0%;
+  margin: 0%;
 }
 
 .Servicessection {
-    margin-top: 4em;
-    padding: 0 var(--container-padding);
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    max-width: 1300px;
-    margin-left: auto;
-    margin-right: auto;
-    gap: 30px;
-    position: relative;
-    z-index: 10;
-}
-
-.ServiceBox {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    padding: 50px 35px;
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(10px);
-    border-radius: 32px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-    overflow: hidden;
-}
-
-.ServiceBox:hover {
-    transform: translateY(-20px);
-    background: rgba(255, 255, 255, 0.05);
-    border-color: #6366f1;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(99, 102, 241, 0.2);
-}
-
-.icons {
-    width: 75px;
-    height: 75px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #6366f1;
-    background: rgba(99, 102, 241, 0.1);
-    border-radius: 20px;
-    font-size: 34px;
-    margin-bottom: 25px;
-    transition: all 0.4s ease;
-}
-
-.ServiceBox:hover .icons {
-    background: #6366f1;
-    color: white;
-    transform: scale(1.1) rotate(10deg);
-    box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+  margin-top: 6em;
+  padding: 40px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  flex-wrap: wrap;
+  max-width: 100%;
+  height: auto;
+  gap: 35px;
 }
 
 .Serviceslabel {
-    font-size: 1.75rem;
-    font-weight: 800;
-    color: #f8fafc;
-    margin-bottom: 15px;
-    letter-spacing: -1px;
+  font-size: 17px;
+  font-weight: 600;
+  text-align: center;
 }
 
-.Servicesinfo {
-    font-size: 1.05rem;
-    color: #94a3b8;
-    line-height: 1.7;
-    margin-bottom: 30px;
-    min-height: 80px;
-}
+@media only screen and (max-width: 2600px) {
+  .merndetails {
+    width: 100%;
+    height: auto;
+    padding-right: 3em;
+    padding-left: 3em;
+    margin-top: -5em;
+  }
 
-.ServiceBox button {
-    margin-top: auto;
-    width: fit-content;
-    padding: 14px 32px;
-    background: transparent;
-    color: #6366f1;
-    border: 2px solid rgba(99, 102, 241, 0.3);
-    border-radius: 100px;
-    font-weight: 700;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
+  .detailsone {
+    width: 50%;
+  }
+
+  .popbuttonstwo {
+    width: 100%;
+    height: 3em;
     display: flex;
+    justify-content: space-evenly;
     align-items: center;
-    gap: 10px;
+    gap: 30px;
+  }
+
+  .detailsveiw {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    margin-top: 2em;
+  }
+
+  .backgroundimage {
+    width: 50%;
+  }
+
+  .one {
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+  }
+
+  .two {
+    border-bottom: 1px solid black;
+  }
+
+  .three {
+    border-right: 1px solid black;
+  }
 }
 
-.ServiceBox button:hover {
-    background: #6366f1;
-    color: white;
-    border-color: #6366f1;
-    transform: translateX(5px);
-    box-shadow: 0 5px 15px rgba(99, 102, 241, 0.3);
+@media only screen and (max-width: 1200px) {
+  .Servicessection {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    height: auto;
+  }
+}
+
+@media only screen and (max-width: 1023px) {
+  .Servicessection {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    height: auto;
+  }
+}
+
+@media only screen and (max-width: 979px) {
+  .Servicessection {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    height: auto;
+    padding: 1em 6em 2em 6em;
+  }
+
+  .Servicesabout {
+    padding: 0em 0em 0em 0em;
+  }
+
+  .detailsmern {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .detailsone {
+    width: 100%;
+  }
+
+  .backgroundimage {
+    width: 100%;
+  }
 }
 
 @media only screen and (max-width: 768px) {
-    .Servicessection {
-        padding: 0 20px;
-        gap: 20px;
-    }
-    .ServiceBox {
-        padding: 40px 25px;
-    }
+  .Servicesabout {
+    padding: 0em 0em 0em 2em;
+  }
+
+  .Servicessection {
+    margin-top: 5em;
+    padding: 05px;
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    flex-wrap: wrap;
+    height: auto;
+    margin-bottom: 2em;
+    padding: 1em 6em 2em 6em;
+    gap: 35px;
+  }
+
+  .Servicestext {
+    font-size: 30px;
+    font-weight: 600;
+    padding: 0%;
+    margin: 0%;
+  }
+
+  .Servicesborder {
+    border-left: 0.4em #e3872d solid;
+    margin-top: 3em;
+    margin-left: 1em;
+    padding-left: 1em;
+    height: 4.5em;
+  }
+
+  .detailsveiw {
+    grid-template-columns: repeat(1, 1fr);
+    margin-top: 2em;
+  }
+
+  .popbuttonstwo {
+    margin-bottom: 3em;
+  }
+
+  .one {
+    border-right: none;
+    border-bottom: none;
+  }
+
+  .two {
+    border-bottom: none;
+  }
+
+  .three {
+    border-right: none;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .Servicessection {
+    margin-top: 5em;
+    padding: 05px;
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    flex-wrap: wrap;
+    height: auto;
+    margin-bottom: 2em;
+    gap: 35px;
+  }
+
+  .Servicestext {
+    font-size: 25px;
+    font-weight: 600;
+    padding: 0%;
+    margin: 0%;
+  }
+
+  .Servicesabout {
+    padding: 0em 0em 0em 0.5em;
+  }
+
+  .Servicesborder {
+    border-left: 0.4em #e3872d solid;
+    margin-top: 3em;
+    margin-left: 1em;
+    height: 4em;
+  }
+
+  .merndetails {
+    padding-right: 0.5em;
+    padding-left: 0.5em;
+  }
+}
+
+.ServiceBox {
+  display: flex;
+  justify-content: start;
+  align-items: start;
+  flex-direction: column;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+}
+
+.Servicesdetails {
+  display: flex;
+  justify-content: center;
+  /* horizontally center */
+  align-items: center;
+  /* vertically center in cross axis */
+  flex-direction: column;
+  width: 100%;
+  gap: 10px;
+  height: 100%;
+  text-align: center;
+  /* center the text inside elements */
+}
+
+.icons {
+  width: 50px;
+  height: 50px;
+
+}
+
+.Servicesicons {
+  font-size: 40px;
+  color: #e3872d;
+}
+
+.title-popup {
+  color: #e3872d;
+
+}
+
+.Servicesicons:hover {
+  font-size: 40px;
+  color: #041230;
+}
+
+.Serviceslabel {
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #e3872d;
+
+  /* spacing below title */
+}
+
+.Servicesinfo {
+  font-size: 17px;
+  color: #222222;
+  max-width: 300px;
+  /* optional: limit width for better readability */
+}
+
+.ServiceBox Button {
+  width: 100%;
+  padding: 10px;
+  text-decoration: none !important;
+  color: #fff !important;
+  background-color: #e3872d !important;
+  font-weight: 600 !important;
+  font-family: "Montserrat" !important;
+  border-radius: 3px !important;
+  display: inline-block !important;
+  position: relative !important;
+  overflow: hidden !important;
+  border: none !important;
+  font-size: 1em !important;
+  line-height: 1.8 !important;
+  letter-spacing: 0.5px !important;
+  cursor: pointer !important;
+  z-index: 100;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+}
+
+.ServiceBox button::before {
+  position: absolute;
+  content: "";
+  top: 0px;
+  height: 100%;
+  left: -25%;
+  width: 0%;
+  background-color: #041230;
+  transform: skew(50deg);
+  transition-duration: 0.4s;
+  z-index: -100;
+}
+
+.ServiceBox button:hover::before {
+  width: 150%;
+  left: -20%;
+}
+
+.detailsmern {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.backgroundimage img {
+  object-fit: fill;
+}
+
+.titletwo {
+  font-size: 23px;
+  font-weight: bold;
+}
+
+.projectstartecd {
+  width: 80%;
+  height: 3em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #e3872d;
+  font-size: 17px;
+}
+
+.buttonget Button {
+  width: 70%;
+  padding: 10px;
+  text-decoration: none !important;
+  color: #fff !important;
+  background-color: #e3872d !important;
+  font-weight: 600 !important;
+  font-family: "Montserrat" !important;
+  border-radius: 3px !important;
+  display: inline-block !important;
+  position: relative !important;
+  overflow: hidden !important;
+  border: none !important;
+  font-size: 1em !important;
+  line-height: 1.8 !important;
+  letter-spacing: 0.5px !important;
+  cursor: pointer !important;
+  z-index: 100;
+  margin-top: 4em;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+}
+
+.buttonget button::before {
+  position: absolute;
+  content: "";
+  top: 0px;
+  height: 100%;
+  left: -25%;
+  width: 0%;
+  background-color: #041230;
+  transform: skew(50deg);
+  transition-duration: 0.4s;
+  z-index: -100;
+}
+
+.buttonget button:hover::before {
+  width: 150%;
+  left: -20%;
+}
+
+.detailsveiw div {
+  padding: 30px;
+
+  color: #000000;
+  font-size: 17px;
+}
+
+.popbuttonstwo Button {
+  width: 50%;
+  padding: 10px;
+  text-decoration: none !important;
+  color: #fff !important;
+  background-color: #e3872d !important;
+  font-weight: 600 !important;
+  font-family: "Montserrat" !important;
+  border-radius: 3px !important;
+  display: inline-block !important;
+  position: relative !important;
+  overflow: hidden !important;
+  border: none !important;
+  font-size: 1em !important;
+  line-height: 1.8 !important;
+  letter-spacing: 0.5px !important;
+  cursor: pointer !important;
+  z-index: 100;
+  margin-top: 4em;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+}
+
+.popbuttonstwo button::before {
+  position: absolute;
+  content: "";
+  top: 0px;
+  height: 100%;
+  left: -25%;
+  width: 0%;
+  background-color: #041230;
+  transform: skew(50deg);
+  transition-duration: 0.4s;
+  z-index: -100;
+}
+
+.popbuttonstwo button:hover::before {
+  width: 150%;
+  left: -20%;
 }

@@ -27,7 +27,8 @@ function About() {
     deleteSpeed: 70,
   });
   const handleDownload = () => {
-    const pdfUrl = "/CV.pdf";
+    const pdfUrl =
+      "https://smallpdf.com/file#s=4f1a0b1b-a8ed-48b9-9d7f-9997eff7760f/My_new_CV_no_image_hwmaah.pdf";
 
     toast.promise(
       new Promise((resolve, reject) => {
@@ -53,7 +54,7 @@ function About() {
           render: "Download failed. Please try again.",
           autoClose: 3000,
         },
-      },
+      }
     );
   };
 
@@ -77,58 +78,53 @@ function About() {
   };
 
   return (
-    <div className="About" id="About">
-      {/* Background Decorative Blobs */}
-      <div className="aura-blob aura-blob-1"></div>
-      <div className="aura-blob aura-blob-2"></div>
-      <div className="aura-blob aura-blob-3"></div>
-
-      <div className="AboutHeader_modern">
-        <div className="HeaderBadge">
-          <span className="BadgeLine"></span>
-          <span className="BadgeText">ABOUT ME</span>
-          <span className="BadgeLine"></span>
-        </div>
-        <h2 className="HeaderTitle">
-          Main Information <span className="GradientText">About Me</span>
-        </h2>
-        <div className="HeaderDivider">
-          <div className="Dot"></div>
-          <div className="Line"></div>
-          <div className="Dot"></div>
+    <div className="About">
+      <div className="Servicesabout">
+        <div className="Servicesborder">
+          <div className="text-zinc-800 Servicestext">ABOUT ME</div>
+          <div className="text-lg">Main informations about me</div>
         </div>
       </div>
-
       <div className="mainsection">
         <div className="AboutImage">
-          <Tilt className="Tilt" options={defaultOptions}>
-            <div className="ImageSet">
-              <div className="ImageShow">
-                <img
-                  src="https://res.cloudinary.com/dg5gwixf1/image/upload/fl_preserve_transparency/v1748354790/1743698252144_lcwpsq.jpg?_s=public-apps"
-                  alt="Ghulam Muhyo Din"
-                />
-              </div>
-            </div>
-          </Tilt>
+          <div>
+            <Tilt className="Tilt" options={defaultOptions}>
+              <div className="ImageSet">
+                <div className="ImageShow">
+                  <img
+                    className=""
+                    src="https://res.cloudinary.com/dg5gwixf1/image/upload/fl_preserve_transparency/v1748354790/1743698252144_lcwpsq.jpg?_s=public-apps"
+                    alt=""
+                    style={{ objectPosition: "top" }}
+                  />
+                </div>
+              </div>{" "}
+            </Tilt>
+          </div>
         </div>
 
         <div className="aboutinfo">
           <Aboutinfo typeEffect={typeEffect} Cursor={Cursor} />
           <Aboutsocial />
-
-          <div className="buttonsection">
-            <button onClick={handleDownload} className="Aboutdownhirebtn">
-              Download CV
+          <div className="buttonsection mt-4">
+            <button
+              onClick={handleDownload}
+              target="_blank"
+              className="w-44 px-2 py-3 Aboutdownhirebtn rounded-sm"
+            >
+              Download cv
             </button>
-            <button className="Aboutdownhirebtn" onClick={haireme}>
-              Hire Me
+            <ToastContainer position="top-right" theme="dark" />
+
+            <button
+              className="w-44 px-2 py-3 Aboutdownhirebtn rounded-sm"
+              onClick={haireme}
+            >
+              Hire me
             </button>
           </div>
-          <ToastContainer position="top-right" theme="dark" />
         </div>
       </div>
-
       <div className="aboutmyAbilities">
         <div className="Aboutsome">
           <AboutAbilities
@@ -138,7 +134,9 @@ function About() {
           />
         </div>
         <div className="aboutcharts">
-          <Aboutmyprogres />
+          <div className="Aboutchartsglassy">
+            <Aboutmyprogres />
+          </div>
         </div>
       </div>
     </div>

@@ -1,35 +1,23 @@
 import React from "react";
 import "./Projects.css";
 
-function Mernstack({ filteredata }) {
+function Mernstack({ category, filteredata }) {
   return (
-    <div className="Mernstack">
+    <div className="Mernstack flex justify-center items-center flex-wrap">
       <div className="Mernimagesection">
-        {filteredata.map((item, index) => {
-          // Robust mapping for different data formats
-          const projectImage = item.image || item.img;
-          const projectLink = item.link || item.Link;
-          const projectCategory = item.category || "Project";
-
-          return (
-            <div key={index} className="Imagecontainer">
-              <span className="project-tag">{projectCategory}</span>
-              <img src={projectImage} alt={item.title} />
-              <div className="imagehovertext">
-                <h3>{item.title}</h3>
-                <p>
-                  {item.description ||
-                    "A professional creative project showcase."}
-                </p>
-                <a href={projectLink} target="_blank" rel="noopener noreferrer">
-                  <button className="merntext">
-                    View Project <span>→</span>
-                  </button>
-                </a>
-              </div>
+        {filteredata.map((item, index) => (
+          <div
+            key={index}
+            className="flex justify-center items-center Imagecontainer shadow-md shadow-neutral-700"
+          >
+            <img src={item.img} alt={item.title} />
+            <div className="imagehovertext ">
+              <a href={item.Link} target="_blank" rel="noopener noreferrer">
+                <button className="merntext">{item.title}</button>
+              </a>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
     </div>
   );

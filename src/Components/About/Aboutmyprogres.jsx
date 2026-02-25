@@ -4,11 +4,16 @@ import "./Aboutmyprogres.css";
 function ProgressBar({ label, experience, progress }) {
   return (
     <div className="progress">
-      <div className="progress-info">
-        <div className="progress-label">
-          {label} <span className="progress-experience">• {experience}</span>
+      <div className="flex justify-between items-center ">
+        <div
+          className="text-black"
+          style={{
+            fontSize: "1em",
+          }}
+        >
+          {label} - <span className="text-sm">{experience}</span>
         </div>
-        <div className="progress-percentage">{progress}%</div>
+        <div className="text-black">{progress}%</div>
       </div>
 
       <div className="progress-bar-container">
@@ -19,77 +24,98 @@ function ProgressBar({ label, experience, progress }) {
 }
 
 function Aboutmyprogres() {
-  const [progress, setProgress] = useState(new Array(9).fill(0));
-  const targetProgress = [95, 90, 85, 80, 75, 88, 82, 70, 85];
-  const containerRef = useRef(null);
+  const [progress1, setProgress1] = useState(0);
+  const [progress2, setProgress2] = useState(0);
+  const [progress3, setProgress3] = useState(0);
+  const [progress4, setProgress4] = useState(0);
+  const [progress5, setProgress5] = useState(0);
+
+  const observerRef = useRef(null);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
+    observerRef.current = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) {
-          startAnimation();
-          observer.disconnect();
-        }
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            startProgressAnimation();
+            observerRef.current.unobserve(entry.target);
+          }
+        });
       },
-      { threshold: 0.3 },
+      { threshold: 0.5 }
     );
 
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
-    }
-
-    return () => observer.disconnect();
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
   }, []);
 
-  const startAnimation = () => {
-    targetProgress.forEach((target, index) => {
-      let current = 0;
-      const interval = setInterval(() => {
-        if (current >= target) {
-          clearInterval(interval);
-        } else {
-          current += 1;
-          setProgress((prev) => {
-            const next = [...prev];
-            next[index] = current;
-            return next;
-          });
-        }
-      }, 15);
+  const startProgressAnimation = () => {
+    const intervals = [
+      setInterval(
+        () => setProgress1((prev) => (prev < 70 ? prev + 1 : 70)),
+        10
+      ),
+      setInterval(
+        () => setProgress2((prev) => (prev < 50 ? prev + 1 : 50)),
+        10
+      ),
+      setInterval(
+        () => setProgress3((prev) => (prev < 80 ? prev + 1 : 80)),
+        10
+      ),
+      setInterval(
+        () => setProgress4((prev) => (prev < 60 ? prev + 1 : 60)),
+        10
+      ),
+      setInterval(
+        () => setProgress5((prev) => (prev < 90 ? prev + 1 : 90)),
+        10
+      ),
+    ];
+
+    intervals.forEach((interval) => {
+      setTimeout(() => clearInterval(interval), 2000); // Clear intervals after 2 seconds
     });
   };
 
-  const skills = [
-    { label: "Frontend Development", experience: "3+ Years", target: 95 },
-    { label: "UI/UX Design", experience: "2 Years", target: 90 },
-    { label: "React / Next.js", experience: "3 Years", target: 85 },
-    { label: "Node.js / Backend", experience: "2 Years", target: 80 },
-    { label: "Graphic Design", experience: "4 Years", target: 75 },
-    { label: "WordPress / CMS", experience: "3 Years", target: 88 },
-    { label: "App Interface Design", experience: "2 Years", target: 82 },
-    { label: "Digital Marketing", experience: "2 Years", target: 70 },
-    {
-      label: "SEO & Performance Optimization",
-      experience: "3 Years",
-      target: 85,
-    },
-  ];
+  useEffect(() => {
+    if (observerRef.current) {
+      observerRef.current.observe(
+        document.getElementById("progress-container")
+      );
+    }
+  }, []);
 
   return (
-    <div className="Aboutchartsglassy" ref={containerRef}>
-      <div className="AboutSomeTitle text-2xl font-bold mb-8">
-        Knowledge & <span className="GradientText">Expertise</span>
-      </div>
-      <div className="progress-list">
-        {skills.map((skill, index) => (
-          <ProgressBar
-            key={index}
-            label={skill.label}
-            experience={skill.experience}
-            progress={progress[index]}
-          />
-        ))}
-      </div>
+    <div id="progress-container">
+      <ProgressBar
+        label="Full Stack Developer"
+        experience="2 Years"
+        progress={progress1}
+      />
+      <ProgressBar
+        label="Front-end Developer"
+        experience="1 Year"
+        progress={progress2}
+      />
+      <ProgressBar
+        label="Backend Developer"
+        experience="3 Years"
+        progress={progress3}
+      />
+      <ProgressBar
+        label="UI/UX Designer"
+        experience="2 Years"
+        progress={progress4}
+      />
+      <ProgressBar
+        label="DevOps Engineer"
+        experience="1 Year"
+        progress={progress5}
+      />
     </div>
   );
 }

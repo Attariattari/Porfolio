@@ -32,8 +32,8 @@ function Nav({
             ? " w-[10em]" // Mobile open: icons only
             : " w-[18em]" // Desktop open: full
           : isMobile
-            ? " w-0 overflow-hidden" // Mobile closed: fully hidden
-            : " w-[10em]") // Desktop closed: icons only ✅
+          ? " w-0 overflow-hidden" // Mobile closed: fully hidden
+          : " w-[10em]") // Desktop closed: icons only ✅
       }
       style={{
         maxWidth: show
@@ -41,16 +41,15 @@ function Nav({
             ? "10em"
             : "17rem"
           : isMobile
-            ? "0"
-            : "10em", // Desktop closed: 10em sidebar ✅
-        backgroundColor: "var(--bg-light)",
-        borderRight: "1px solid var(--glass-border)",
+          ? "0"
+          : "10em", // Desktop closed: 10em sidebar ✅
+        backgroundColor: "#041230",
       }}
     >
       {/* Header */}
       <div
         className="w-full h-44 sticky top-0 flex justify-center items-center z-20"
-        style={{ borderBottom: "1px solid var(--glass-border)" }}
+        style={{ borderBottom: "0.1px solid rgb(157, 154, 154)" }}
       >
         <div className="relative flex justify-center w-full h-full items-center">
           <Logo show={show} />
@@ -101,7 +100,7 @@ function Nav({
                       : "justify-center"
                   } ${
                     activeSection === section.id
-                      ? "font-bold text-[var(--primary-color)]"
+                      ? "font-bold text-[#e3882d]"
                       : "text-gray-100 font-normal"
                   }`}
                 >

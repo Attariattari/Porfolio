@@ -1,296 +1,659 @@
 .About {
-    background-color: var(--bg-light);
-    /* Midnight Base */
-    font-family: 'Outfit', sans-serif;
-    width: 100%;
-    padding: 0px 0;
-    position: relative;
-    overflow: hidden;
+  background-color: rgb(255, 255, 255);
+  font-family: "Montserrat";
+  width: 100%;
 }
 
-
-/* Background Decoration */
-
-.About::before {
-    content: "IDENTITY";
-    position: absolute;
-    top: 50px;
-    right: -100px;
-    font-size: 15rem;
-    font-weight: 950;
-    color: rgba(99, 102, 241, 0.03);
-    /* This matches var(--primary-color) #6366f1 */
-    z-index: 0;
-    user-select: none;
-    letter-spacing: -10px;
-}
-
-.aura-blob {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(100px);
-    z-index: 0;
-    opacity: 0.15;
-    pointer-events: none;
-}
-
-.aura-blob-1 {
-    width: 400px;
-    height: 400px;
-    background: var(--primary-color);
-    top: 20%;
-    left: -100px;
-}
-
-.aura-blob-2 {
-    width: 300px;
-    height: 300px;
-    background: #a855f7;
-    bottom: 10%;
-    right: -50px;
-}
-
-.aura-blob-3 {
-    width: 250px;
-    height: 250px;
-    background: #f43f5e;
-    top: 40%;
-    right: 30%;
+.Aboutborder {
+  border-left: 0.4em #e3872d solid;
+  margin-top: 3em;
+  margin-left: 3em;
+  padding-left: 1em;
+  height: 5em;
 }
 
 .mainsection {
-    width: 100%;
-    max-width: 1300px;
-    margin: 0 auto;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 80px;
-    align-items: center;
-    padding: 0 var(--container-padding);
-    position: relative;
-    z-index: 10;
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6em;
+ gap: 20px;
 }
 
 .AboutImage {
-    flex: 1;
-    min-width: 320px;
+  width: 39%;
+  height: 30em;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  margin-top: -8em;
 }
 
 .ImageSet {
-    position: relative;
-}
-
-.ImageShow {
-    position: relative;
-    z-index: 2;
-    border-radius: 40px;
-    overflow: hidden;
-    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.ImageShow img {
-    width: 100%;
-    height: 600px;
-    object-fit: cover;
-    display: block;
-    filter: saturate(1.1) contrast(1.1);
-}
-
-
-/* Decorative frame */
-
-.ImageShow::after {
-    content: "";
-    position: absolute;
-    inset: 30px;
-    border: 2px solid var(--primary-color);
-    z-index: 5;
-    border-radius: 30px;
-    opacity: 0.5;
-    pointer-events: none;
+  width: 27em;
+  height: 33em;
 }
 
 .aboutinfo {
-    flex: 1.5;
-    min-width: 350px;
+  width: 59%;
+  height: auto;
+  padding-right: 2em;
+  margin-bottom: 2em;
+  padding-bottom: 2em;
 }
 
 .AboutDetailsme {
-    font-size: 3.5rem;
-    font-weight: 950;
-    color: var(--secondary-color);
-    margin-bottom: 25px;
-    line-height: 1;
-    letter-spacing: -3px;
+  font-size: 1.8em;
+  font-weight: bold;
+  color: #2e2e2f;
+}
+
+.aboutmyAbilities {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.Aboutsome {
+  width: 45%;
+  height: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: start;
+  flex-direction: column;
+  padding: 1em 1em 2em 1em;
+  background-color: transparent;
+}
+
+.Aboutsomeglassy {
+  width: 100%;
+  height: auto;
+  padding: 1em;
+}
+
+.aboutcharts {
+  width: 55%;
+  height: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: start;
+  flex-direction: column;
+  padding: 1em 1em 2em 1em;
+}
+
+.Aboutchartsglassy {
+  width: 100%;
+  height: auto;
+  padding: 1em;
+}
+
+.firstchild {
+  font-size: 25px;
+  font-weight: 600;
+  color: #010101c9;
+}
+
+.secondchild {
+  font-size: 16px;
+  color: #010101c9;
+  text-align: center;
+}
+
+@media only screen and (max-width: 1350px) {
+  .mainsection {
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 6em;
+  }
+
+  .AboutImage {
+    width: 35%;
+    height: 30em;
+    display: flex;
+    justify-content: center;
+    margin-left: 1em;
+  }
+
+  .ImageSet {
+    width: 23em;
+    height: 27em;
+  }
+
+  .aboutinfo {
+    width: 60%;
+    height: auto;
+    margin-bottom: 2em;
+    padding-bottom: 2em;
+  }
+
+  .AboutDetailsme {
+    font-size: 1.6em;
+    font-weight: bold;
+  }
+}
+
+@media only screen and (max-width: 1200px) {
+  .AboutDetailsme {
+    font-size: 1.3em;
+    font-weight: bold;
+  }
+
+  .AboutImage {
+    margin-top: -18em;
+  }
+
+  .aboutinfo {
+    width: 60%;
+    height: auto;
+    margin-bottom: 2em;
+    padding-bottom: 2em;
+  }
+
+  .ImageSet {
+    width: 21em;
+    height: 25em;
+  }
+
+  .Aboutsomeglassy {
+    width: 100%;
+    height: auto;
+    padding: 1em;
+  }
+
+  .Aboutchartsglassy {
+    width: 100%;
+    height: auto;
+    padding: 1em;
+  }
+
+  .firstchild {
+    font-size: 20px;
+    font-weight: 600;
+    color: #010101c9;
+  }
+
+  .secondchild {
+    font-size: 16px;
+    color: #010101c9;
+  }
+}
+
+@media only screen and (max-width: 1150px) {
+  .Aboutsomeglassy {
+    width: 100%;
+    height: auto;
+    padding: 1em;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  }
+
+  .Aboutchartsglassy {
+    width: 100%;
+    height: auto;
+    padding: 1em;
+  }
+
+  .ImageSet {
+    width: 18em;
+    height: 23em;
+  }
+
+  .firstchild {
+    font-size: 20px;
+    font-weight: 600;
+    color: #010101c9;
+  }
+
+  .secondchild {
+    font-size: 16px;
+    color: #010101c9;
+  }
+}
+
+@media only screen and (max-width: 1023px) {
+  .AboutImage {
+    width: 39%;
+    height: 30em;
+    display: flex;
+    justify-content: center;
+    margin-left: -1em;
+  }
+
+  .ImageSet {
+    width: 23em;
+    height: 29em;
+  }
+
+  .aboutinfo {
+    width: 59%;
+    height: auto;
+    padding-right: 0em;
+    margin-bottom: 2em;
+    padding-bottom: 2em;
+    padding-right: 1em;
+  }
+
+  .AboutDetailsme {
+    font-size: 1.4em;
+    font-weight: bold;
+  }
+
+  .Aboutsomeglassy {
+    width: 100%;
+    height: auto;
+    padding: 1em;
+  }
+
+  .Aboutchartsglassy {
+    width: 100%;
+    height: auto;
+    padding: 1em;
+  }
+
+  .firstchild {
+    font-size: 20px;
+    font-weight: 600;
+    color: #010101c9;
+  }
+
+  .secondchild {
+    font-size: 16px;
+    color: #010101c9;
+  }
+}
+
+@media only screen and (max-width: 969px) {
+  .Aboutborder {
+    border-left: #e3872d 0.4em solid;
+  }
+
+  .mainsection {
+    width: 100%;
+    height:100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 7em;
+    flex-direction: column;
+  }
+
+  .AboutImage {
+    width: 100%;
+    height: 30em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 3em;
+    margin-top:0em;
+  }
+
+  .ImageSet {
+    width: 25em;
+    height: 31em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .aboutinfo {
+    width: 80%;
+    height: auto;
+    margin-bottom: 1em;
+    overflow-y: hidden;
+    margin-top: 2em;
+    margin-bottom: 2em;
+    padding-bottom: 2em;
+  }
+
+  .AboutDetailsme {
+    font-size: 1.4em;
+    font-weight: bold;
+  }
+
+  .buttonsection {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: start;
+    height: 3.3em;
+  }
+
+  .Aboutpersonal {
+    display: none;
+  }
+
+  .aboutmyAbilities {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  .Aboutsome {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: start;
+    flex-direction: column;
+    padding: 1em 6em 2em 6em;
+  }
+
+  .Aboutsomeglassy {
+    width: 100%;
+    height: auto;
+    padding: 1em;
+
+
+  }
+
+  .Aboutchartsglassy {
+    width: 100%;
+    height: auto;
+    padding: 1em;
+
+
+  }
+
+  .aboutcharts {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: start;
+    flex-direction: column;
+    padding: 1em 6em 2em 6em;
+    background-color: transparent;
+  }
+
+  .firstchild {
+    font-size: 20px;
+    font-weight: 600;
+    color: #010101c9;
+  }
+
+  .secondchild {
+    font-size: 16px;
+    color: #010101c9;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .aboutinfo {
+    width: 80%;
+    height: auto;
+    margin-bottom: 2em;
+    padding-bottom: 2em;
+    overflow-y: hidden;
+    margin-top: 2em;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .AboutImage {
+    width: 100%;
+    height: 30em;
+    display: flex;
+    justify-content: center;
+  }
+
+  .ImageSet {
+    width: 24em;
+    height: 30em;
+    margin-left: 14px;
+  }
+
+  .aboutinfo {
+    width: 100%;
+    height: auto;
+    padding: 5px;
+    margin-bottom: 2em;
+    padding-bottom: 2em;
+    overflow-y: hidden;
+    margin-top: 2em;
+  }
+
+  .AboutDetailsme {
+    font-size: 1.2em;
+    font-weight: bold;
+  }
+
+  .Aboutsome {
+    padding: 5px;
+  }
+
+  .aboutcharts {
+    padding: 5px;
+  }
+}
+
+@media only screen and (max-width: 500px) {
+  .mainborder {
+    margin: 0em 0em 0em -1.5em;
+  }
+
+  .AboutImage {
+    width: 100%;
+    height: 30em;
+    display: flex;
+    justify-content: center;
+    margin-left: -1em;
+  }
+
+  .ImageSet {
+    width: 21em;
+    height: 26em;
+  }
+
+  .aboutinfo {
+    width: 100%;
+    height: auto;
+    padding: 5px;
+    margin-bottom: 2em;
+    padding-bottom: 2em;
+    overflow-y: hidden;
+    margin-top: 2em;
+  }
+
+  .AboutDetailsme {
+    font-size: 1.6em;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .aboutwork {
+    font-size: 1.8em;
+    height: auto;
+  }
+
+  .Aboutsomeglassy {
+    width: 100%;
+    height: auto;
+    padding: 1em;
+  }
+
+  .Aboutsome {
+    padding: 5px;
+  }
+
+  .aboutcharts {
+    padding: 5px;
+  }
+}
+
+.Aboutme {
+  font-size: 40px;
+  font-weight: 600;
+  padding: 0%;
+  margin: 0%;
+}
+
+.ImageShow {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.ImageShow img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  box-shadow: 16px 14px 20px #000000bc;
+  z-index: 1;
+  position: relative;
+  object-position: center;
+}
+
+.ImageShow:before {
+  content: "";
+  position: absolute;
+  top: 25px;
+  bottom: -25px;
+  left: 25px;
+  right: -25px;
+  border: 10px solid #041230;
+  box-shadow: 4px 2x 7px #000000bc;
+}
+
+.Aboutme {
+  font-size: 40px;
+  font-weight: 600;
+  padding: 0%;
+  margin: 0%;
 }
 
 .aboutwork {
-    font-size: 1.3rem;
-    line-height: 1.8;
-    color: var(--text-light);
-    margin-bottom: 40px;
+  font-size: 1.1em;
+  font-weight: 500;
+  color: #2e2e2f;
+  height: auto;
+  text-align: center;
 }
-
-.typeeffect {
-    color: var(--primary-color);
-    font-weight: 900;
-}
-
-
-/* Info Table */
 
 .table-fixed {
-    width: 100%;
-    margin: 40px 0;
-    background: rgba(255, 255, 255, 0.02);
-    backdrop-filter: blur(10px);
-    border-radius: 32px;
-    padding: 30px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+  border-collapse: collapse;
+  overflow-x: hidden;
 }
 
 .table-fixed td {
-    padding: 15px 20px;
-    color: var(--text-light);
-    font-size: 1.1rem;
-}
-
-.table-fixed td:nth-child(even) {
-    color: var(--secondary-color);
-    font-weight: 700;
-}
-
-
-/* Buttons section */
-
-.buttonsection {
-    display: flex;
-    gap: 25px;
-    margin-top: 50px;
-}
-
-.Aboutdownhirebtn {
-    background: linear-gradient(135deg, var(--primary-color), #818cf8);
-    color: white;
-    padding: 16px 40px;
-    border-radius: 16px;
-    font-weight: 700;
-    font-size: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    border: none;
-    cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-    box-shadow: 0 15px 30px rgba(99, 102, 241, 0.3);
-}
-
-.Aboutdownhirebtn:nth-child(2) {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    box-shadow: none;
-}
-
-.Aboutdownhirebtn:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 20px 40px rgba(99, 102, 241, 0.4);
-}
-
-.Aboutdownhirebtn:nth-child(2):hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: var(--primary-color);
-}
-
-
-/* Abilities & Charts */
-
-.aboutmyAbilities {
-    width: 100%;
-    max-width: 1300px;
-    margin: 120px auto 100px;
-    display: flex;
-    gap: 40px;
-    padding: 0 var(--container-padding);
-    align-items: stretch;
-}
-
-.Aboutsome,
-.aboutcharts {
-    flex: 1;
-    display: flex;
-}
-
-.Aboutsomeglassy,
-.Aboutchartsglassy {
-    background: rgba(255, 255, 255, 0.02);
-    backdrop-filter: blur(20px);
-    padding: 50px;
-    border-radius: 40px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    flex: 1;
-    width: 100%;
-}
-
-.AboutSomeTitle {
-    color: var(--secondary-color);
-    letter-spacing: 1px;
-}
-
-.AbilityCard {
-    background: rgba(255, 255, 255, 0.02);
-    padding: 30px;
-    border-radius: 24px;
-    margin-bottom: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    transition: all 0.4s ease;
-}
-
-.AbilityCard:hover {
-    background: rgba(99, 102, 241, 0.05);
-    border-color: var(--primary-color);
-    transform: translateX(10px);
-}
-
-.AbilityIcon {
-    font-size: 2.5rem;
-    color: var(--primary-color);
-    margin-bottom: 20px;
-}
-
-.AbilityTitle {
-    font-size: 1.4rem;
-    font-weight: 800;
-    color: var(--secondary-color);
-    margin-bottom: 10px;
-}
-
-.AbilityDesc {
-    font-size: 1rem;
-    color: var(--text-light);
-}
-
-@media (max-width: 1024px) {
-    .mainsection {
-        flex-direction: column;
-        text-align: center;
-    }
-    .aboutmyAbilities {
-        flex-direction: column;
-    }
-    .table-fixed {
-        margin: 40px 0;
-    }
-    .buttonsection {
-        justify-content: center;
-    }
+  width: 25%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 @media (max-width: 768px) {
-    .AboutDetailsme {
-        font-size: 2.5rem;
-    }
-    .AboutImage img {
-        height: 450px;
-    }
+  .table-fixed td {
+    width: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: inherit;
+  }
+
+  .table-fixed tr {
+    display: block;
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .table-fixed td {
+    width: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: inherit;
+  }
+
+  .table-fixed tr {
+    display: block;
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 500px) {
+  .table-fixed td {
+    width: 100%;
+    display: inline-block;
+    box-sizing: border-box;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: inherit;
+  }
+
+  .table-fixed td {
+    display: block;
+    margin-bottom: 10px;
+  }
+}
+
+.Whatsapp {
+  font-weight: bold;
+}
+
+.Whatsapp:hover {
+  color: #e3872d;
+  text-decoration: underline;
+}
+
+.buttonsection {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: start;
+  height: 3.3em;
+
+}
+
+.buttonsection .Aboutdownhirebtn {
+  text-decoration: none !important;
+  color: #fff !important;
+  background-color: #e3872d !important;
+  font-weight: 600 !important;
+  font-family: "Montserrat" !important;
+  border-radius: 3px !important;
+  display: inline-block !important;
+  position: relative !important;
+  overflow: hidden !important;
+  border: none !important;
+  font-size: 1em !important;
+  line-height: 1.8 !important;
+  letter-spacing: 0.5px !important;
+  cursor: pointer !important;
+  z-index: 100;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+}
+
+.buttonsection .Aboutdownhirebtn::before {
+  position: absolute;
+  content: "";
+  top: 0px;
+  height: 100%;
+  left: -25%;
+  width: 0%;
+  background-color: #041230;
+  transform: skew(50deg);
+  transition-duration: 0.4s;
+  z-index: -100;
+}
+
+.buttonsection .Aboutdownhirebtn:hover::before {
+  width: 150%;
+  left: -20%;
 }

@@ -2,16 +2,16 @@ import React, { useState, useEffect } from "react";
 import "./Portfolio.css";
 import "./Myportfolios/Projects.css";
 import Mernstack from "./Myportfolios/Mernstack";
-import { FaCheckCircle, FaCode, FaUsers, FaAward } from "react-icons/fa";
 import Feadback from "./Feadback";
 import TextSlider from "./TextSlider";
 import { projects } from "../../DummyData/DummyData";
 
 function Portfolio() {
   const [activeButton, setActiveButton] = useState(
-    localStorage.getItem("activeButton") || "All Show",
+    localStorage.getItem("activeButton") || "All Show"
   );
 
+  // State to track initial load
   const [initialLoad, setInitialLoad] = useState(true);
   const categories = [
     "All Show",
@@ -20,12 +20,15 @@ function Portfolio() {
 
   const handleButtonClick = (buttonText) => {
     setActiveButton(buttonText);
+    console.log(`Button clicked: ${buttonText}`);
   };
 
+  // Update localStorage whenever activeButton changes
   useEffect(() => {
     localStorage.setItem("activeButton", activeButton);
   }, [activeButton]);
 
+  // Set "All Show" as active on initial load
   useEffect(() => {
     if (initialLoad) {
       setActiveButton("All Show");
@@ -37,33 +40,25 @@ function Portfolio() {
     activeButton === "All Show"
       ? projects
       : projects.filter((item) => item.category === activeButton);
+  const portfolioData = [
+    {
+      category: activeButton,
+      content: <Mernstack filteredata={filteredData} />,
+    },
+  ];
+
+  console.log("Filtered Data:", filteredData);
 
   return (
     <div className="Portfolio">
-      {/* Background Decorative Blobs */}
-      <div className="aura-blob aura-blob-1"></div>
-      <div className="aura-blob aura-blob-2"></div>
-      <div className="aura-blob aura-blob-3"></div>
-
-      {/* MUHYO TECH Modern Header */}
-      <div className="AboutHeader_modern">
-        <div className="HeaderBadge">
-          <span className="BadgeLine"></span>
-          <span className="BadgeText">PORTFOLIO</span>
-          <span className="BadgeLine"></span>
-        </div>
-        <h2 className="HeaderTitle">
-          Creative <span className="GradientText">Showcase</span>
-        </h2>
-        <div className="HeaderDivider">
-          <div className="Dot"></div>
-          <div className="Line"></div>
-          <div className="Dot"></div>
+      <div className="Servicesabout">
+        <div className="Servicesborder">
+          <div className="text-zinc-800 Servicestext">CREATIVE WORKS</div>
+          <div className="text-lg">Check out our latest creative works</div>
         </div>
       </div>
-
       <div className="ProtfolioSection">
-        <div className="ProtfolioButtons">
+        <div className="ProtfolioButtons space-x-8">
           {categories.map((cat, idx) => (
             <button
               key={idx}
@@ -76,65 +71,57 @@ function Portfolio() {
             </button>
           ))}
         </div>
-
-        <div className="PortfolioContent">
-          <Mernstack filteredata={filteredData} />
-        </div>
       </div>
 
+      <div className="PortfolioContent">
+        {portfolioData.map((item, index) => (
+          <div key={index} className="PortfolioItem">
+            <p>{item.content}</p>
+          </div>
+        ))}
+      </div>
       <div className="Muhyotech">
         <div className="Muhyotechclicd">
           <div className="webprojectsinfo">
-            <div className="TestimonialHeader">
-              <span className="SubTitle">TESTIMONIALS</span>
-              <h2 className="MainTitle">
-                What My <span className="GradientText">Clients Say</span>
-              </h2>
-            </div>
             <TextSlider />
           </div>
         </div>
       </div>
-
-      {/* Modernized Stats/Feedback Section */}
-      <div className="StatsSection">
-        <div className="StatsGrid">
-          {[
-            {
-              target: 100,
-              label: "Projects Completed",
-              suffix: "+",
-              icon: <FaCheckCircle />,
-            },
-            {
-              target: 80,
-              label: "Lines of Code",
-              suffix: "K+",
-              icon: <FaCode />,
-            },
-            {
-              target: 150,
-              label: "Happy Clients",
-              suffix: "+",
-              icon: <FaUsers />,
-            },
-            {
-              target: 25,
-              label: "Global Awards",
-              suffix: "+",
-              icon: <FaAward />,
-            },
-          ].map((stat, index) => (
-            <div key={index} className="StatCard">
-              <div className="StatIcon">{stat.icon}</div>
-              <div className="StatValue">
-                <Feadback targetValue={stat.target} />
-                {stat.suffix}
+      <div className="feadbackparent">
+        <div className="feadback">
+          <div className="flex justify-center items-center feadbakeone">
+            <div className="flex justify-center items-center flex-col">
+              <div className="text-3xl font-semibold flex">
+                <Feadback targetValue={100} />+
               </div>
-              <div className="StatLabel">{stat.label}</div>
-              <div className="StatBar"></div>
+              <div className="text-md">Projects Compelte</div>
             </div>
-          ))}
+          </div>
+          <div className="flex justify-center items-center feadbaketwo">
+            <div className="flex justify-center items-center flex-col">
+              <div className="text-3xl font-semibold flex">
+                <Feadback targetValue={30} />
+                K+
+              </div>
+              <div className="text-md">Codes of Lines</div>
+            </div>
+          </div>
+          <div className="flex justify-center items-center feadbakethree">
+            <div className="flex justify-center items-center flex-col">
+              <div className="text-3xl font-semibold flex ">
+                <Feadback targetValue={100} />+
+              </div>
+              <div className="text-md">Happy Clients</div>
+            </div>
+          </div>
+          <div className="flex justify-center items-center feadbakefour">
+            <div className="flex justify-center items-center flex-col">
+              <div className="text-3xl font-semibold flex">
+                <Feadback targetValue={50} />+
+              </div>
+              <div className="text-md">My Awards</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -142,3 +129,6 @@ function Portfolio() {
 }
 
 export default Portfolio;
+{
+  /*  */
+}

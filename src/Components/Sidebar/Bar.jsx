@@ -13,15 +13,13 @@ export default function Sidebar({
   scrollToSection,
 }) {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
-  const [showNav, setShowNav] = useState(false); // ✅ Default closed (small nav)
+  const [showNav, setShowNav] = useState(window.innerWidth >= 1024);
   const location = useLocation();
 
   function handleResize() {
     const mobile = window.innerWidth < 1024;
     setIsMobile(mobile);
-    if (mobile) {
-      setShowNav(false); // Always hide full nav on mobile resize
-    }
+    setShowNav(!mobile); // if mobile, hide sidebar; if desktop, show sidebar
   }
 
   useEffect(() => {

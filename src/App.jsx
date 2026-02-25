@@ -64,18 +64,16 @@ const App = () => {
     height: "30px",
     fontSize: "1.8rem",
   };
-  const [activeSection, setActiveSection] = useState("Home");
-  const contentRef = useRef(null);
+  const [activeSection, setActiveSection] = useState("About"); // Default active
+  const currentSectionRef = useRef();
 
-  // Scroll spy logic
   useEffect(() => {
+    let initialScrollDone = false;
+
     const handleScroll = () => {
-      if (!contentRef.current) return;
+      const scrollPosition = window.scrollY + window.innerHeight / 3;
 
-      const content = contentRef.current;
-      const scrollPosition = content.scrollTop + content.offsetHeight / 3;
-
-      let current = activeSection;
+      let current = sections[0].id;
 
       for (const { id } of sections) {
         const section = document.getElementById(id);
@@ -98,42 +96,87 @@ const App = () => {
       }
     };
 
-    const contentElement = contentRef.current;
-    if (contentElement) {
-      contentElement.addEventListener("scroll", handleScroll);
-    }
+    // ❌ pehle call hata do
+    // handleScroll();
+
+    const onLoadScroll = () => {
+      if (!initialScrollDone) {
+        initialScrollDone = true;
+        return;
+      }
+      handleScroll();
+    };
+
+    window.addEventListener("scroll", onLoadScroll);
+
+    return () => window.removeEventListener("scroll", onLoadScroll);
+  }, [activeSection]);
+
+  // Scroll event listener to update activeSection on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + window.innerHeight / 3;
+      let current = sections[0].id;
+
+      for (const { id } of sections) {
+        const section = document.getElementById(id);
+        if (section) {
+          const sectionTop = section.offsetTop;
+          const sectionHeight = section.offsetHeight;
+
+          if (
+            scrollPosition >= sectionTop &&
+            scrollPosition < sectionTop + sectionHeight
+          ) {
+            current = id;
+            break;
+          }
+        }
+      }
+
+      if (current !== activeSection) {
+        setActiveSection(current);
+      }
+    };
+
+    // 🟢 Add scroll listener after short delay to avoid triggering on load
+    const timeoutId = setTimeout(() => {
+      window.addEventListener("scroll", handleScroll);
+    }, 1000); // delay of 1 second
 
     return () => {
-      if (contentElement) {
-        contentElement.removeEventListener("scroll", handleScroll);
-      }
+      clearTimeout(timeoutId);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, [activeSection]);
 
-  // Scroll to section on mount or hash change
+  // Scroll to section on mount or hash change AND set activeSection accordingly
   useEffect(() => {
-    const hash = window.location.hash.substring(1);
-
-    // Smooth scroll to About on first visit if no hash
-    const targetId =
-      hash && sections.find((sec) => sec.id === hash) ? hash : "About";
-
-    const timeoutId = setTimeout(() => {
-      const section = document.getElementById(targetId);
+    const scrollToSection = (sectionId) => {
+      const section = document.getElementById(sectionId);
       if (section) {
         section.scrollIntoView({ behavior: "smooth" });
-        setActiveSection(targetId);
+        setActiveSection(sectionId);
       }
-    }, 500); // Small delay to ensure page is ready
+    };
 
-    return () => clearTimeout(timeoutId);
+    const hash = window.location.hash.substring(1);
+    if (hash && sections.find((sec) => sec.id === hash)) {
+      scrollToSection(hash);
+    } else {
+      setActiveSection("About");
+      const section = document.getElementById("About");
+      if (section) {
+        section.scrollIntoView({ behavior: "smooth" });
+      }
+    }
   }, []);
 
   const handleClick = (id) => {
     const section = document.getElementById(id);
     if (section) {
       section.scrollIntoView({ behavior: "smooth" });
-      setActiveSection(id);
+      setActiveSection(id); // 👈 yahi cheez zaroori hay
     }
   };
 
@@ -153,9 +196,14 @@ const App = () => {
             scrollToSection={handleClick} // ✅ ye line zaroor add karo
           />
         </div>
-        <div className="content" ref={contentRef}>
+        <div className="content">
           {sections.map((section) => (
-            <div key={section.id} id={section.id} className={section.id}>
+            <div
+              key={section.id}
+              ref={section.id === "Home" ? currentSectionRef : null}
+              id={section.id}
+              className={section.id}
+            >
               {section.component}
             </div>
           ))}

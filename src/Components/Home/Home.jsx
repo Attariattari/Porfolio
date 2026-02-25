@@ -1,65 +1,46 @@
 import React from "react";
 import "./Home.css";
 import { useTypewriter, Cursor } from "react-simple-typewriter";
-
 function Home() {
   const [typeEffect] = useTypewriter({
-    words: [
-      "UI / UX Designer",
-      "Full Stack Dev",
-      "Digital Architect",
-      "Brand Strategist",
-    ],
+    words: ["UI / UX Designer", "Web Developer", "Web Designer", "Freelancer"],
     loop: {},
-    typeSpeed: 80,
-    deleteSpeed: 50,
+    typeSpeed: 150,
+    deleteSpeed: 70,
   });
-
   return (
-    <div className="Home">
-      <div className="child">
-        {/* Profile Visual */}
-        <div className="glass" data-aos="zoom-in">
-          <div className="border">
+    <div className="bg-slate-700 text-white Home ">
+      <div className="child flex justify-center items-center flex-col">
+        <div className="glass flex justify-center items-center rounded-full ">
+          <div className="border rounded-full">
             <img
-              className="avtar"
+              className="avtar rounded-full"
               src="https://res.cloudinary.com/dg5gwixf1/image/upload/fl_preserve_transparency/v1748354790/1743698252144_lcwpsq.jpg?_s=public-apps"
-              alt="Muhyo Tech"
+              alt=""
               style={{ objectPosition: "top" }}
             />
           </div>
         </div>
-
-        {/* Branding */}
-        <div className="Info" data-aos="fade-up">
-          <div>MUHYO</div>
-          <span className="GradientText">TECH</span>
-        </div>
-
-        {/* Dynamic Roles */}
-        <div
-          className="typewriter-wrap"
-          data-aos="fade-up"
-          data-aos-delay="200"
-        >
-          CREATING{" "}
-          <span>
-            {typeEffect} <Cursor cursorStyle="|" cursorColor="#6366f1" />
-          </span>
-        </div>
-
-        {/* Explore Button */}
-        <div className="Home-Actions" data-aos="fade-up" data-aos-delay="400">
-          <button
-            className="ExploreBtn"
-            onClick={() =>
-              document
-                .getElementById("About")
-                ?.scrollIntoView({ behavior: "smooth" })
-            }
+        <div className="Info">
+          <div>Muhyo</div>
+          <div
+            style={{
+              color: "#E3872D",
+            }}
           >
-            Explore Journey
-          </button>
+            Tech
+          </div>
+        </div>
+        <div className="text-3xl">
+          I'm a{" "}
+          <span
+            className="font-bold"
+            style={{
+              color: "#E3872D",
+            }}
+          >
+            {typeEffect} <Cursor />
+          </span>
         </div>
       </div>
     </div>
