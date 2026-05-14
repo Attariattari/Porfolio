@@ -1,0 +1,196 @@
+:root {
+    --primary-color: #e3872d;
+    --secondary-color: #041230;
+    --text-main: #1a1a1a;
+    --text-muted: #666;
+    --white: #ffffff;
+    --bg-soft: #f8f9fa;
+    --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.Services {
+    width: 100%;
+    background-color: var(--white);
+    padding: 80px 0;
+    overflow: hidden;
+}
+
+
+/* Section Layout */
+
+.Servicessection {
+    max-width: 1200px;
+    margin: 40px auto 0;
+    padding: 0 40px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+.ServiceBox {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 40px 30px;
+    background: var(--white);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 20px;
+    transition: var(--transition);
+    cursor: pointer;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.ServiceBox::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--primary-color) 0%, #ff9e42 100%);
+    opacity: 0;
+    z-index: -1;
+    transition: var(--transition);
+}
+
+.ServiceBox:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-lg);
+    border-color: transparent;
+}
+
+.ServiceBox:hover::before {
+    opacity: 1;
+}
+
+.ServiceBox:hover .Serviceslabel,
+.ServiceBox:hover .Servicesinfo,
+.ServiceBox:hover .CardNumber {
+    color: var(--white);
+}
+
+.ServiceBox:hover .icons {
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotateY(180deg);
+}
+
+.ServiceBox:hover .Servicesicons {
+    color: var(--white);
+}
+
+.ServiceBox:hover button {
+    background: var(--white);
+    color: var(--primary-color);
+}
+
+.CardNumber {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 4rem;
+    font-weight: 800;
+    color: rgba(0, 0, 0, 0.03);
+    line-height: 1;
+    transition: var(--transition);
+    pointer-events: none;
+}
+
+.Servicesdetails {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    text-align: left;
+}
+
+.icons {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(227, 135, 45, 0.1);
+    border-radius: 15px;
+    transition: var(--transition);
+}
+
+.Servicesicons {
+    font-size: 30px;
+    color: var(--primary-color);
+    transition: var(--transition);
+}
+
+.Serviceslabel {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--secondary-color);
+    transition: var(--transition);
+}
+
+.Servicesinfo {
+    font-size: 1rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-bottom: 10px;
+    transition: var(--transition);
+}
+
+.ServiceBox button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: fit-content;
+    padding: 12px 25px;
+    background-color: var(--primary-color);
+    color: var(--white);
+    font-weight: 600;
+    border-radius: 50px;
+    border: none;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: var(--transition);
+    margin-top: auto;
+}
+
+.ServiceBox button svg {
+    transition: var(--transition);
+}
+
+.ServiceBox button:hover svg {
+    transform: translateX(5px);
+}
+
+
+/* Responsiveness */
+
+@media (max-width: 1200px) {
+    .Servicessection {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 0 30px;
+    }
+}
+
+@media (max-width: 768px) {
+    .Services {
+        padding: 50px 0;
+    }
+    .Servicessection {
+        grid-template-columns: 1fr;
+        padding: 0 20px;
+        gap: 20px;
+    }
+    .ServiceBox {
+        padding: 30px 25px;
+    }
+}
+
+
+/* Old styles to be removed/replaced if they were used for things not in the current component */
+
+
+/* The user provided the full file, so replacing it entirely is safe as long as I cover the logic. */

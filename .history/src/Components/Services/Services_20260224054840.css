@@ -1,0 +1,157 @@
+.Services {
+    width: 100%;
+    background-color: #020617;
+    /* Deep Midnight */
+    padding-bottom: 120px;
+    position: relative;
+    overflow: hidden;
+}
+
+
+/* Decorative Orbs */
+
+.Services::before {
+    content: '';
+    position: absolute;
+    top: 10%;
+    right: -5%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+    filter: blur(80px);
+}
+
+.Services::after {
+    content: '';
+    position: absolute;
+    bottom: 5%;
+    left: -5%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.1) 0%, transparent 70%);
+    filter: blur(80px);
+}
+
+.Servicessection {
+    margin-top: 4em;
+    padding: 0 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    max-width: 1300px;
+    margin-left: auto;
+    margin-right: auto;
+    gap: 40px;
+    position: relative;
+    z-index: 10;
+}
+
+.ServiceBox {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 60px 40px;
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(10px);
+    border-radius: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+    overflow: hidden;
+}
+
+.ServiceBox:hover {
+    transform: translateY(-20px);
+    background: rgba(255, 255, 255, 0.04);
+    border-color: #6366f1;
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5), 0 0 30px rgba(99, 102, 241, 0.2);
+}
+
+.ServiceBox::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.05), transparent);
+    transform: translateX(-100%) skewX(-20deg);
+    transition: 0.8s;
+}
+
+.ServiceBox:hover::before {
+    transform: translateX(100%) skewX(-20deg);
+}
+
+.icons {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6366f1;
+    background: rgba(99, 102, 241, 0.1);
+    border-radius: 24px;
+    font-size: 38px;
+    margin-bottom: 30px;
+    transition: all 0.4s ease;
+}
+
+.ServiceBox:hover .icons {
+    background: #6366f1;
+    color: white;
+    transform: scale(1.1) rotate(10deg);
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+}
+
+.Serviceslabel {
+    font-size: 2rem;
+    font-weight: 950;
+    color: white;
+    margin-bottom: 20px;
+    letter-spacing: -1.5px;
+    line-height: 1;
+}
+
+.Servicesinfo {
+    font-size: 1.1rem;
+    color: #94a3b8;
+    line-height: 1.8;
+    margin-bottom: 40px;
+}
+
+.service-cta-btn {
+    margin-top: auto;
+    width: fit-content;
+    padding: 16px 40px;
+    background: transparent;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 100px;
+    font-weight: 800;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.service-cta-btn:hover {
+    background: #6366f1;
+    border-color: #6366f1;
+    transform: translateX(10px);
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+}
+
+@media only screen and (max-width: 768px) {
+    .Servicessection {
+        padding: 0 20px;
+        gap: 25px;
+    }
+    .ServiceBox {
+        padding: 40px 25px;
+        border-radius: 30px;
+    }
+    .Serviceslabel {
+        font-size: 1.5rem;
+    }
+}

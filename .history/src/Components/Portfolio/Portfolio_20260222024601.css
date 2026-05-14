@@ -1,0 +1,137 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
+.Portfolio {
+    font-family: 'Outfit', sans-serif;
+    width: 100%;
+    height: auto;
+    margin-bottom: 4em;
+    background-color: #f8fafc;
+    overflow-x: hidden;
+}
+
+.Servicesabout {
+    padding: 80px 20px;
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    text-align: center;
+    color: white;
+    margin-bottom: 2rem;
+}
+
+.Servicesborder {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.Servicestext {
+    font-size: 3.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+    background: linear-gradient(to right, #ff8c00, #e3872d);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
+}
+
+.Servicesborder .text-lg {
+    font-size: 1.25rem;
+    color: #94a3b8;
+    font-weight: 400;
+}
+
+.ProtfolioSection {
+    width: 100%;
+    margin: 3em 0;
+    padding: 0 5%;
+}
+
+.ProtfolioButtons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.2rem;
+    margin-bottom: 4rem;
+}
+
+.Buttonfor {
+    padding: 12px 28px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #475569;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.Buttonfor:hover {
+    color: #e3872d;
+    border-color: #e3872d;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(227, 135, 45, 0.2);
+}
+
+.activeButton {
+    background: #e3872d;
+    color: white !important;
+    border-color: #e3872d;
+    box-shadow: 0 10px 15px -3px rgba(227, 135, 45, 0.3);
+}
+
+.PortfolioContent {
+    padding: 0 5%;
+    min-height: 400px;
+}
+
+.PortfolioItem {
+    animation: fadeIn 0.6s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* Custom Horizontal Line or Divider */
+
+.section-divider {
+    width: 80px;
+    height: 4px;
+    background: #e3872d;
+    margin: 1.5rem auto;
+    border-radius: 2px;
+}
+
+@media only screen and (max-width: 768px) {
+    .Servicestext {
+        font-size: 2.5rem;
+    }
+    .ProtfolioButtons {
+        gap: 0.8rem;
+    }
+    .Buttonfor {
+        padding: 10px 20px;
+        font-size: 0.85rem;
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    .ProtfolioSection {
+        margin-top: 2em;
+    }
+    .PortfolioContent {
+        padding: 0 15px;
+    }
+    .Servicestext {
+        font-size: 2rem;
+    }
+}

@@ -1,0 +1,440 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
+:root {
+    --primary-color: #e3872d;
+    --secondary-color: #041230;
+    --text-dark: #1a1a1a;
+    --text-light: #666;
+    --bg-light: #ffffff;
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
+}
+
+.About {
+    background-color: var(--bg-light);
+    font-family: 'Outfit', sans-serif;
+    width: 100%;
+    padding: 80px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+
+/* Background Decoration */
+
+.About::before {
+    content: "ABOUT";
+    position: absolute;
+    top: 50px;
+    right: -50px;
+    font-size: 15rem;
+    font-weight: 900;
+    color: rgba(4, 18, 48, 0.03);
+    z-index: 0;
+    user-select: none;
+}
+
+
+/* Header Styles */
+
+
+/* Header Styles - Premium Redesign */
+
+.AboutHeader_Premium {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto 80px;
+    padding: 0 20px;
+    position: relative;
+    z-index: 10;
+}
+
+.AboutHeader_Premium::before {
+    content: "";
+    position: absolute;
+    top: -100px;
+    left: -150px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(227, 135, 45, 0.08) 0%, transparent 70%);
+    z-index: -1;
+    pointer-events: none;
+}
+
+.HeaderBadge {
+    margin-bottom: 25px;
+}
+
+.BadgeText {
+    background: rgba(227, 135, 45, 0.1);
+    color: var(--primary-color);
+    padding: 8px 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    border-radius: 50px;
+    border: 1px solid rgba(227, 135, 45, 0.2);
+    display: inline-block;
+}
+
+.PremiumTitle {
+    font-size: 5rem;
+    font-weight: 800;
+    color: var(--secondary-color);
+    line-height: 1.1;
+    margin-bottom: 20px;
+    letter-spacing: -3px;
+}
+
+.PremiumHighlight {
+    color: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color) 0%, #ffaa5e 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+}
+
+.TitleDecoration {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 30px;
+}
+
+.DecorLine {
+    height: 6px;
+    width: 50px;
+    background: var(--primary-color);
+    border-radius: 10px;
+}
+
+.DecorLine.Long {
+    width: 100px;
+    opacity: 0.2;
+}
+
+.DecorDot {
+    width: 10px;
+    height: 10px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    box-shadow: 0 0 15px var(--primary-color);
+}
+
+.PremiumSubtitle {
+    font-size: 1.3rem;
+    color: var(--text-light);
+    max-width: 750px;
+    line-height: 1.7;
+    font-weight: 400;
+}
+
+
+/* Main Section Layout */
+
+.mainsection {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 60px;
+    align-items: center;
+    padding: 0 20px;
+    position: relative;
+    z-index: 1;
+}
+
+.AboutImage {
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    justify-content: center;
+}
+
+.ImageSet {
+    position: relative;
+    width: 100%;
+    max-width: 450px;
+}
+
+.ImageShow {
+    position: relative;
+    z-index: 2;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+}
+
+.ImageShow img {
+    width: 100%;
+    height: 550px;
+    object-fit: cover;
+    display: block;
+}
+
+.ImageShow:hover {
+    transform: translateY(-10px);
+}
+
+
+/* Decorative frame behind image */
+
+.ImageShow::after {
+    content: "";
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    right: -30px;
+    bottom: -30px;
+    border: 4px solid var(--primary-color);
+    z-index: -1;
+    border-radius: 20px;
+    transition: var(--transition);
+}
+
+.ImageShow:hover::after {
+    top: 15px;
+    left: 15px;
+    right: -15px;
+    bottom: -15px;
+}
+
+
+/* Info Section */
+
+.aboutinfo {
+    flex: 1.5;
+    min-width: 350px;
+}
+
+.AboutDetailsme {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--secondary-color);
+    margin-bottom: 20px;
+    line-height: 1.2;
+}
+
+.aboutwork {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-light);
+    margin-bottom: 30px;
+}
+
+.typeeffect {
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+
+/* Table / Details styling */
+
+.table-fixed {
+    width: 100%;
+    margin: 30px 0;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--glass-border);
+}
+
+.table-fixed td {
+    padding: 12px 15px;
+    color: var(--text-light);
+    font-size: 1rem;
+}
+
+.table-fixed td:nth-child(even) {
+    color: var(--secondary-color);
+    font-weight: 600;
+}
+
+.Whatsapp a {
+    color: var(--primary-color) !important;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+
+/* Buttons section */
+
+.buttonsection {
+    display: flex;
+    gap: 20px;
+    margin-top: 40px;
+}
+
+.Aboutdownhirebtn {
+    background: var(--primary-color);
+    color: white;
+    padding: 15px 35px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 4px 15px rgba(227, 135, 45, 0.3);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.Aboutdownhirebtn:nth-child(2) {
+    background: var(--secondary-color);
+    box-shadow: 0 4px 15px rgba(4, 18, 48, 0.2);
+}
+
+.Aboutdownhirebtn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.Aboutdownhirebtn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: transform 0.5s ease;
+    z-index: -1;
+}
+
+.Aboutdownhirebtn:hover::before {
+    transform: translateX(100%);
+}
+
+
+/* Abilities & Charts Section */
+
+.aboutmyAbilities {
+    width: 100%;
+    max-width: 1200px;
+    margin: 100px auto 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    padding: 0 20px;
+}
+
+.Aboutsome {
+    flex: 1;
+    min-width: 350px;
+}
+
+.aboutcharts {
+    flex: 1;
+    min-width: 350px;
+}
+
+.Aboutchartsglassy {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow);
+}
+
+
+/* Social Icons */
+
+.social {
+    margin: 30px 0;
+    width: 100%;
+    max-width: 400px;
+}
+
+.social ul {
+    display: flex;
+    gap: 15px;
+    list-style: none;
+    padding: 0;
+}
+
+.social-icon a {
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: white;
+    color: var(--secondary-color);
+    font-size: 1.2rem;
+    transition: var(--transition);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eee;
+}
+
+.social-icon a:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(227, 135, 45, 0.2);
+    border-color: var(--primary-color);
+}
+
+
+/* Media Queries */
+
+@media (max-width: 992px) {
+    .mainsection {
+        flex-direction: column;
+        text-align: center;
+    }
+    .Servicestext {
+        font-size: 2.5rem;
+    }
+    .aboutinfo {
+        padding-right: 0;
+    }
+    .buttonsection {
+        justify-content: center;
+    }
+    .AboutImage {
+        margin-top: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .About {
+        padding: 60px 0;
+    }
+    .table-fixed td {
+        display: block;
+        width: 100%;
+        padding: 10px 0;
+        text-align: center;
+    }
+    .table-fixed tr {
+        display: block;
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .Servicestext {
+        font-size: 2rem;
+    }
+    .buttonsection {
+        flex-direction: column;
+        align-items: center;
+    }
+    .Aboutdownhirebtn {
+        width: 100%;
+        max-width: 280px;
+    }
+}

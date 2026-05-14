@@ -1,0 +1,169 @@
+.Services {
+    width: 100%;
+    background-color: #020617;
+    /* Deep Midnight */
+    padding-bottom: 120px;
+    position: relative;
+    overflow: hidden;
+    font-family: 'Outfit', sans-serif;
+}
+
+
+/* Background Decorative Element */
+
+.Services::before {
+    content: "SOLUTIONS";
+    position: absolute;
+    top: 50px;
+    left: -100px;
+    font-size: 15rem;
+    font-weight: 950;
+    color: rgba(99, 102, 241, 0.03);
+    z-index: 0;
+    letter-spacing: -10px;
+    pointer-events: none;
+    transform: rotate(-5deg);
+}
+
+
+/* Glowing Orbs */
+
+.Services::after {
+    content: '';
+    position: absolute;
+    bottom: 5%;
+    right: -5%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.1) 0%, transparent 70%);
+    filter: blur(80px);
+}
+
+.Servicessection {
+    margin-top: 4rem;
+    padding: 0 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    max-width: 1300px;
+    margin-left: auto;
+    margin-right: auto;
+    gap: 40px;
+    position: relative;
+    z-index: 10;
+}
+
+.ServiceBox {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 60px 40px;
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(15px);
+    border-radius: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+    overflow: hidden;
+}
+
+.ServiceBox:hover {
+    transform: translateY(-25px);
+    background: rgba(255, 255, 255, 0.04);
+    border-color: #6366f1;
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6), 0 0 30px rgba(99, 102, 241, 0.2);
+}
+
+
+/* Cinematic Shine Effect */
+
+.ServiceBox::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.05), transparent);
+    transform: translateX(-100%) skewX(-20deg);
+    transition: 0.8s;
+}
+
+.ServiceBox:hover::before {
+    transform: translateX(100%) skewX(-20deg);
+}
+
+.icons {
+    width: 85px;
+    height: 85px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6366f1;
+    background: rgba(99, 102, 241, 0.1);
+    border-radius: 24px;
+    font-size: 42px;
+    margin-bottom: 30px;
+    transition: all 0.4s ease;
+}
+
+.ServiceBox:hover .icons {
+    background: #6366f1;
+    color: white;
+    transform: scale(1.1) rotate(10deg);
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+}
+
+.Serviceslabel {
+    font-size: 2.2rem;
+    font-weight: 950;
+    color: white;
+    margin-bottom: 20px;
+    letter-spacing: -2px;
+    line-height: 1;
+}
+
+.Servicesinfo {
+    font-size: 1.15rem;
+    color: #94a3b8;
+    line-height: 1.8;
+    margin-bottom: 40px;
+}
+
+.service-cta-btn {
+    margin-top: auto;
+    width: fit-content;
+    padding: 16px 45px;
+    background: rgba(255, 255, 255, 0.03);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 100px;
+    font-weight: 900;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.service-cta-btn:hover {
+    background: #6366f1;
+    border-color: #6366f1;
+    transform: translateX(10px);
+    box-shadow: 0 10px 40px rgba(99, 102, 241, 0.4);
+}
+
+@media only screen and (max-width: 768px) {
+    .Servicessection {
+        padding: 0 20px;
+        gap: 25px;
+    }
+    .ServiceBox {
+        padding: 50px 30px;
+        border-radius: 30px;
+    }
+    .Serviceslabel {
+        font-size: 1.8rem;
+    }
+}

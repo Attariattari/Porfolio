@@ -1,0 +1,207 @@
+.TestimonialSliderContainer {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 10;
+}
+
+.testimonialSwiper {
+    width: 100%;
+    padding: 40px 0 100px 0 !important;
+}
+
+.testimonialGlassCard {
+    background: transparent;
+    padding: 60px 40px;
+    text-align: center;
+    /* Centered for a cleaner look */
+    max-width: 850px;
+    margin: 0 auto;
+    position: relative;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+/* Luxury Border Effect */
+
+.testimonialGlassCard::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 40px;
+    padding: 2px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(99, 102, 241, 0.2), rgba(255, 255, 255, 0.05));
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+}
+
+.cardTop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.quoteCircle {
+    font-size: 3.5rem;
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    opacity: 0.5;
+    margin-bottom: 10px;
+}
+
+.ratingGroup {
+    display: flex;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 8px 16px;
+    border-radius: 100px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.starIcon {
+    color: #fbbf24;
+    font-size: 1rem;
+}
+
+.testimonialText {
+    font-size: 1.8rem;
+    line-height: 1.6;
+    color: #ffffff;
+    font-weight: 300;
+    margin-bottom: 50px;
+    letter-spacing: -0.5px;
+    position: relative;
+    z-index: 5;
+    text-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.authorWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.avatarContainer {
+    width: 80px;
+    height: 80px;
+    border-radius: 24px;
+    /* Squircle for modern look */
+    padding: 3px;
+    background: linear-gradient(45deg, #6366f1, #a855f7);
+    transform: rotate(-5deg);
+    transition: transform 0.3s ease;
+}
+
+.testimonialGlassCard:hover .avatarContainer {
+    transform: rotate(0deg) scale(1.1);
+}
+
+.authorAvatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 21px;
+    object-fit: cover;
+    border: 3px solid #020617;
+}
+
+.authorDetails {
+    text-align: center;
+}
+
+.authorName {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: white;
+    margin: 0;
+    letter-spacing: -0.5px;
+}
+
+.authorRole {
+    font-size: 0.85rem;
+    color: #6366f1;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-weight: 700;
+}
+
+
+/* Autoplay Progress (More Minimal) */
+
+.autoplay-progress {
+    position: absolute;
+    right: 50%;
+    transform: translateX(50%);
+    bottom: 30px;
+    z-index: 10;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.7rem;
+}
+
+.autoplay-progress svg {
+    --progress: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    stroke-width: 2px;
+    stroke: #6366f1;
+    fill: none;
+    stroke-dashoffset: calc(125.6 * (1 - var(--progress)));
+    stroke-dasharray: 125.6;
+    transform: rotate(-90deg);
+}
+
+
+/* Navigation & Pagination */
+
+.swiper-button-next,
+.swiper-button-prev {
+    color: rgba(255, 255, 255, 0.2) !important;
+    transition: all 0.3s ease;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+    color: #6366f1 !important;
+    transform: scale(1.2);
+}
+
+.swiper-pagination-bullet {
+    background: rgba(255, 255, 255, 0.1) !important;
+    width: 8px !important;
+    height: 8px !important;
+    opacity: 1 !important;
+}
+
+.swiper-pagination-bullet-active {
+    background: #6366f1 !important;
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+}
+
+@media (max-width: 768px) {
+    .testimonialGlassCard {
+        padding: 40px 20px;
+    }
+    .testimonialText {
+        font-size: 1.3rem;
+    }
+    .authorName {
+        font-size: 1.2rem;
+    }
+    .quoteCircle {
+        font-size: 2.5rem;
+    }
+}
