@@ -2,6 +2,7 @@ import { Inter } from "next/font/google";
 import "@/app/globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import ScrollToTop from "@/components/ScrollToTop";
 import { Toaster } from "sonner";
 import VisitorTracker from "@/components/VisitorTracker";
@@ -66,6 +67,7 @@ export default function RootLayout({ children }) {
             }}
           />
           <Analytics />
+          <SpeedInsights />
         </ThemeProvider>
       </body>
     </html>
