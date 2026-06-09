@@ -1,0 +1,178 @@
+[
+  {
+    "slug": "building-for-impact-philosophy",
+    "publishStatus": "published",
+    "featured": true
+  },
+  {
+    "slug": "ai-augmented-development-era",
+    "publishStatus": "published",
+    "featured": true
+  },
+  {
+    "slug": "future-of-devex-product-engineers",
+    "publishStatus": "published",
+    "featured": false
+  },
+  {
+    "slug": "moving-brain-to-the-edge-architecture",
+    "publishStatus": "published",
+    "featured": false,
+    "featuredOrder": 0,
+    "imageStatus": "completed"
+  },
+  {
+    "slug": "edge-computing-modern-frontend-architecture",
+    "publishStatus": "published",
+    "featured": false,
+    "featuredOrder": 0,
+    "imageStatus": "completed"
+  },
+  {
+    "slug": "frontend-architecture-edge-computing",
+    "publishStatus": "published",
+    "featured": false,
+    "featuredOrder": 0,
+    "imageStatus": "completed"
+  },
+  {
+    "slug": "beyond-the-origin-edge-computing-frontend",
+    "publishStatus": "published",
+    "featured": false,
+    "featuredOrder": 0,
+    "imageStatus": "completed"
+  },
+  {
+    "slug": "beyond-the-bundle-frontend-edge-computing",
+    "publishStatus": "published",
+    "featured": false,
+    "featuredOrder": 0,
+    "imageStatus": "completed"
+  },
+  {
+    "slug": "rethinking-edge-frontend-architecture",
+    "publishStatus": "published",
+    "featured": false,
+    "featuredOrder": 0,
+    "imageStatus": "completed"
+  },
+  {
+    "slug": "laravel-vs-nodejs-for-founders",
+    "publishStatus": "published",
+    "featured": false,
+    "featuredOrder": 0,
+    "imageStatus": "completed"
+  },
+  {
+    "slug": "laravel-vs-node-for-founders",
+    "publishStatus": "published",
+    "featured": false,
+    "featuredOrder": 0,
+    "imageStatus": "completed"
+  },
+  {
+    "slug": "nextjs-15-production-reality",
+    "publishStatus": "published",
+    "featured": false,
+    "featuredOrder": 0,
+    "imageStatus": "completed"
+  },
+  {
+    "slug": "startup-security-hardening-realities",
+    "publishStatus": "published",
+    "featured": false,
+    "featuredOrder": 0,
+    "imageStatus": "completed"
+  },
+  {
+    "slug": "aws-vs-vercel-infrastructure-tradeoffs",
+    "publishStatus": "published",
+    "featured": false,
+    "featuredOrder": 0,
+    "imageStatus": "completed"
+  },
+  {
+    "slug": "aws-vs-vercel-deployment-tradeoffs",
+    "publishStatus": "published",
+    "featured": false,
+    "featuredOrder": 0,
+    "imageStatus": "completed"
+  },
+  {
+    "slug": "multi-tenancy-hidden-costs-saas",
+    "publishStatus": "published",
+    "featured": false,
+    "featuredOrder": 0,
+    "imageStatus": "completed"
+  },
+  {
+    "slug": "why-we-stopped-fetching-raw-data-mongodb-aggregation",
+    "publishStatus": "published",
+    "featured": false,
+    "featuredOrder": 0,
+    "imageStatus": "completed"
+  },
+  {
+    "slug": "reducing-deployment-anxiety-devops-automation",
+    "publishStatus": "published",
+    "featured": false,
+    "featuredOrder": 0,
+    "imageStatus": "completed"
+  },
+  {
+    "slug": "scaling-mongodb-aggregation-pipelines",
+    "publishStatus": "published",
+    "featured": false,
+    "featuredOrder": 0,
+    "imageStatus": "completed"
+  },
+  {
+    "slug": "mern-stack-production-pitfalls-real-world",
+    "publishStatus": "published",
+    "featured": false,
+    "featuredOrder": 0,
+    "imageStatus": "completed"
+  },
+  {
+    "slug": "micro-frontend-truths-and-regrets",
+    "publishStatus": "published",
+    "featured": false,
+    "featuredOrder": 0,
+    "imageStatus": "completed"
+  },
+  {
+    "slug": "node-js-backend-scaling-lessons",
+    "publishStatus": "published",
+    "featured": true,
+    "featuredOrder": 5,
+    "imageStatus": "completed"
+  },
+  {
+    "slug": "mongodb-aggregation-real-world-performance",
+    "publishStatus": "published",
+    "featured": true,
+    "featuredOrder": 4,
+    "imageStatus": "completed"
+  },
+  {
+    "slug": "how-we-cured-post-merge-panic-devops-automation",
+    "publishStatus": "published",
+    "featured": true,
+    "featuredOrder": 2,
+    "imageStatus": "completed"
+  },
+  {
+    "slug": "why-we-rebuilt-our-frontend-for-googlebot",
+    "publishStatus": "published",
+    "featured": true,
+    "featuredOrder": 3,
+    "imageStatus": "completed"
+  },
+  {
+    "slug": "hidden-tax-of-multi-tenancy-saas-engineering",
+    "publishStatus": "published",
+    "featured": true,
+    "featuredOrder": 1,
+    "imageStatus": "completed"
+  }
+]

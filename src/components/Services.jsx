@@ -168,7 +168,7 @@ export default function Services({ data, showViewAll = false }) {
   if (!data) return null;
 
   const displayData = showViewAll ? data.slice(0, 3) : data;
-  const galleryImages = displayData.map(s => s.banner);
+  const galleryImages = displayData.map((s) => s.banner);
 
   return (
     <SectionWrapper
@@ -176,24 +176,24 @@ export default function Services({ data, showViewAll = false }) {
       title="How I Can Help You"
       subtitle="My Services"
     >
-      <div className="relative max-w-7xl mx-auto mt-12 md:mt-24 group/tree">
+      <div className="relative max-w-7xl mx-auto mt-8 md:mt-12 group/tree">
         {/* Central Vertical Line (Tree Trunk) */}
         <div className="absolute left-[23px] md:left-[51px] lg:left-1/2 top-4 bottom-4 w-[2px] bg-gradient-to-b from-accent/0 via-accent/30 to-accent/0 lg:-translate-x-1/2 z-0" />
         <div className="absolute left-[23px] md:left-[51px] lg:left-1/2 top-4 bottom-4 w-[2px] bg-accent/20 blur-[2px] lg:-translate-x-1/2 z-0 opacity-0 group-hover/tree:opacity-100 transition-opacity duration-1000" />
 
-        <div className="flex flex-col gap-24 md:gap-32 relative z-10 w-full overflow-hidden lg:overflow-visible pb-10">
+        <div className="flex flex-col gap-12 md:gap-12 relative z-10 w-full overflow-hidden lg:overflow-visible pb-10">
           {displayData.map((service, index) => (
-            <ServiceRow 
-              key={service.id} 
-              service={service} 
-              index={index} 
+            <ServiceRow
+              key={service.id}
+              service={service}
+              index={index}
               onImageClick={(idx) => setLightboxIndex(idx)}
             />
           ))}
         </div>
       </div>
 
-      <ImageLightbox 
+      <ImageLightbox
         isOpen={lightboxIndex !== null}
         onClose={() => setLightboxIndex(null)}
         images={galleryImages}

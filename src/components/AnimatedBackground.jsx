@@ -1,9 +1,10 @@
 "use client";
 
+import { memo } from "react";
 import { useTheme } from "./ThemeProvider";
 import { motion } from "framer-motion";
 
-export const AnimatedBackground = () => {
+const AnimatedBackgroundComponent = () => {
   const { isDark } = useTheme();
 
   return (
@@ -132,3 +133,6 @@ export const AnimatedBackground = () => {
     </div>
   );
 };
+
+// PHASE 2 OPTIMIZATION: Memoize to prevent re-renders when parent updates
+export const AnimatedBackground = memo(AnimatedBackgroundComponent);

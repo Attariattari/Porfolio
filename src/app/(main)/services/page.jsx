@@ -4,24 +4,26 @@ import { portfolioData } from "@/lib/data";
 import { ServiceController } from "@/controllers/ServiceController";
 import { serializeDoc } from "@/lib/mongooseHelper";
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// P1 OPTIMIZATION: Enable ISR (Incremental Static Regeneration)
+// Revalidate every 5 minutes for optimal performance
+export const revalidate = 300;
 
 export const metadata = {
   title: "Professional Web Development Services | Muhyo Tech",
-  description: "Specialized engineering solutions for modern brands. From full-stack Next.js architecture to custom digital products.",
+  description:
+    "Specialized engineering solutions for modern brands. From full-stack Next.js architecture to custom digital products.",
 };
 
 const serviceSchema = {
   "@context": "https://schema.org",
   "@type": "Service",
-  "name": "Web Development Services",
-  "provider": {
+  name: "Web Development Services",
+  provider: {
     "@type": "Person",
-    "name": "Muhyo Tech"
+    name: "Muhyo Tech",
   },
-  "serviceType": "Software Engineering",
-  "areaServed": "Worldwide"
+  serviceType: "Software Engineering",
+  areaServed: "Worldwide",
 };
 
 export default async function ServicesPage() {

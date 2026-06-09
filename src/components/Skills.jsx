@@ -39,7 +39,7 @@ export default function Skills({ data }) {
 
   return (
     <SectionWrapper id="skills" title="My Expertise" subtitle="What I Can Do">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-6">
         {data.map((skill, index) => (
           <SkillBar key={skill.name} {...skill} index={index} />
         ))}

@@ -21,6 +21,8 @@ import Image from "next/image";
 import { SectionWrapper, Button } from "./ui";
 import EditorialBackground from "./ui/EditorialBackground";
 import { ImageLightbox } from "./ImageLightbox";
+import { resolveFeaturedBlogs } from "@/lib/blogUtils";
+import { portfolioData } from "@/lib/data";
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import {
@@ -49,7 +51,7 @@ const EditorialHeader = ({
   const [activeFeaturedIndex, setActiveFeaturedIndex] = useState(0);
 
   return (
-    <header className="relative py-30 px-6 overflow-hidden">
+    <header className="relative py-10 px-6 overflow-hidden">
       {/* --- Premium Background Elements --- */}
       <EditorialBackground text="Blog" />
 
@@ -59,16 +61,25 @@ const EditorialHeader = ({
           <div className="lg:col-span-7 space-y-12">
             {/* Label & Heading */}
             <div className="space-y-6">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-accent/10 border border-accent/20"
-              >
-                <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-                <span className="text-xs font-semibold tracking-normal text-accent">
-                  Blog & insights
+              <div className="flex items-center gap-4">
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-accent/10 border border-accent/20"
+                >
+                  <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+                  <span className="text-xs font-semibold tracking-normal text-accent">
+                    Blog & insights
+                  </span>
+                </motion.div>
+
+                {/* Debug Indicator - Will show the source of data */}
+                <span className="text-[10px] font-mono text-muted-foreground/30 uppercase tracking-widest">
+                  {totalArticles > 0
+                    ? "Live Database Connected"
+                    : "Static Fallback Active"}
                 </span>
-              </motion.div>
+              </div>
 
               <motion.h1
                 initial={{ opacity: 0, y: 30 }}
@@ -103,7 +114,7 @@ const EditorialHeader = ({
             >
               <div className="space-y-1">
                 <p className="text-3xl font-bold text-foreground tracking-tight">
-                  50+
+                  {totalArticles}+
                 </p>
                 <p className="text-xs font-semibold text-muted-foreground/40 tracking-normal">
                   Articles published
@@ -111,7 +122,7 @@ const EditorialHeader = ({
               </div>
               <div className="space-y-1">
                 <p className="text-3xl font-bold text-foreground tracking-tight">
-                  10+
+                  {totalCategories}+
                 </p>
                 <p className="text-xs font-semibold text-muted-foreground/40 tracking-normal">
                   Categories
@@ -119,10 +130,10 @@ const EditorialHeader = ({
               </div>
               <div className="space-y-1">
                 <p className="text-3xl font-bold text-accent tracking-tight italic">
-                  Weekly
+                  {latestUpdate?.includes("202") ? "Recent" : "Weekly"}
                 </p>
                 <p className="text-xs font-semibold text-muted-foreground/40 tracking-normal">
-                  Updated
+                  {latestUpdate || "Updated"}
                 </p>
               </div>
             </motion.div>
@@ -312,13 +323,6 @@ const EditorialHeader = ({
             <div className="absolute -z-10 -top-6 -left-6 w-1/2 h-1/2 bg-accent/5 blur-3xl rounded-full" />
           </div>
         </div>
-      </div>
-
-      {/* Vertical Label */}
-      <div className="hidden xl:block absolute left-8 top-1/2 -translate-y-1/2 -rotate-90 origin-left">
-        <span className="text-xs font-semibold text-muted-foreground/20 tracking-normal">
-          Editorial archive / 2026
-        </span>
       </div>
     </header>
   );
@@ -580,7 +584,7 @@ const NewsletterCTA = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-24">
+    <div className="max-w-7xl mx-auto px-6 py-12">
       <div className="relative p-12 lg:p-24 rounded-[4rem] bg-gradient-to-br from-card/80 to-background border border-border/50 overflow-hidden shadow-2xl group">
         <div className="absolute top-0 right-0 w-96 h-96 bg-accent/5 blur-[120px] rounded-full" />
 
@@ -613,8 +617,12 @@ const NewsletterCTA = () => {
                     <CheckCircle2 size={32} />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-white italic tracking-tight">Transmission successful</h3>
-                    <p className="text-sm text-accent/60 font-medium italic mt-2">You are now part of the Muhyo Tech network.</p>
+                    <h3 className="text-xl font-bold text-white italic tracking-tight">
+                      Transmission successful
+                    </h3>
+                    <p className="text-sm text-accent/60 font-medium italic mt-2">
+                      You are now part of the Muhyo Tech network.
+                    </p>
                   </div>
                 </motion.div>
               ) : (
@@ -633,8 +641,8 @@ const NewsletterCTA = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     className="flex-1 bg-transparent border-none outline-none py-6 px-10 text-[10px] font-black tracking-widest uppercase text-foreground placeholder:text-muted-foreground/30 w-full"
                   />
-                  <Button 
-                    type="submit" 
+                  <Button
+                    type="submit"
                     disabled={loading}
                     className="w-full md:w-auto h-[60px] md:h-auto"
                   >
@@ -648,7 +656,7 @@ const NewsletterCTA = () => {
               )}
             </AnimatePresence>
             <p className="text-[11px] text-muted-foreground/30 text-center tracking-normal font-semibold italic">
-               Encryption active &bull; Secure Protocol
+              Encryption active &bull; Secure Protocol
             </p>
           </div>
         </div>
@@ -672,7 +680,6 @@ export default function Blog({ data, isHomePage = false }) {
   );
 
   if (!data) return null;
-
   if (isHomePage) {
     const recentBlogs = data.slice(0, 3);
     return (
@@ -680,12 +687,12 @@ export default function Blog({ data, isHomePage = false }) {
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
             {recentBlogs.map((blog, i) => (
-              <ArticleCard 
-                key={blog.id} 
-                blog={blog} 
-                index={i} 
+              <ArticleCard
+                key={blog.id || blog.slug || i}
+                blog={blog}
+                index={i}
                 onImageClick={(idx) => {
-                  setLightboxImages(recentBlogs.map(b => b.image));
+                  setLightboxImages(recentBlogs.map((b) => b.image));
                   setLightboxIndex(idx);
                 }}
               />
@@ -715,6 +722,9 @@ export default function Blog({ data, isHomePage = false }) {
   }
 
   const filteredBlogs = data.filter((blog) => {
+    // Only published blogs
+    if (blog.publishStatus && blog.publishStatus !== "published") return false;
+
     const matchesSearch =
       blog.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       blog.summary.toLowerCase().includes(searchQuery.toLowerCase());
@@ -723,12 +733,33 @@ export default function Blog({ data, isHomePage = false }) {
     return matchesSearch && matchesCategory;
   });
 
-  const featuredPosts = data.slice(0, 4);
   const displayPosts = useMemo(() => {
     let posts = [...filteredBlogs];
+
+    // SORTING RULE:
+    // 1. Featured blogs first
+    // 2. Then normal blogs
+    // 3. Then order/date
+    posts.sort((a, b) => {
+      const aFeatured = !!a.featured;
+      const bFeatured = !!b.featured;
+
+      if (bFeatured !== aFeatured) {
+        return Number(bFeatured) - Number(aFeatured);
+      }
+      return (a.order ?? 999) - (b.order ?? 999);
+    });
+
     if (activeTab === "trending") posts = [...posts].reverse();
     return posts;
   }, [filteredBlogs, activeTab]);
+
+  // Diagnostic Log
+  if (typeof window !== "undefined") {
+    console.log(
+      `[Blog Component] Rendering with ${data?.length || 0} items. Data Source: ${data?.[0]?._isFromDataJs ? "Static" : "Database"}`,
+    );
+  }
 
   return (
     <div className="min-h-screen selection:bg-accent selection:text-accent-foreground">
@@ -737,17 +768,11 @@ export default function Blog({ data, isHomePage = false }) {
         totalArticles={data.length}
         totalCategories={categories.length - 1}
         latestUpdate={data[0]?.date || "Updated recently"}
-        featuredBlogs={
-          data.filter((b) => b.featured).length > 0
-            ? data.filter((b) => b.featured)
-            : data.slice(0, 3)
-        }
+        featuredBlogs={resolveFeaturedBlogs(data, portfolioData.blogs)}
         trendingTags={[...new Set(data.flatMap((b) => b.tags))].slice(0, 6)}
         onImageClick={(idx) => {
-          const featured = data.filter((b) => b.featured).length > 0
-            ? data.filter((b) => b.featured)
-            : data.slice(0, 3);
-          setLightboxImages(featured.map(b => b.image));
+          const featured = resolveFeaturedBlogs(data, portfolioData.blogs);
+          setLightboxImages(featured.map((b) => b.image));
           setLightboxIndex(idx);
         }}
       />
@@ -774,12 +799,12 @@ export default function Blog({ data, isHomePage = false }) {
                 className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"
               >
                 {displayPosts.map((blog, i) => (
-                  <ArticleCard 
-                    key={blog.id} 
-                    blog={blog} 
-                    index={i} 
+                  <ArticleCard
+                    key={blog.id || blog.slug || i}
+                    blog={blog}
+                    index={i}
                     onImageClick={(idx) => {
-                      setLightboxImages(displayPosts.map(b => b.image));
+                      setLightboxImages(displayPosts.map((b) => b.image));
                       setLightboxIndex(idx);
                     }}
                   />
@@ -818,7 +843,7 @@ export default function Blog({ data, isHomePage = false }) {
       {/* 6. Newsletter CTA */}
       <NewsletterCTA />
 
-      <ImageLightbox 
+      <ImageLightbox
         isOpen={lightboxIndex !== null}
         onClose={() => setLightboxIndex(null)}
         images={lightboxImages}

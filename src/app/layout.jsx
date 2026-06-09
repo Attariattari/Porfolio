@@ -2,21 +2,22 @@ import { Inter } from "next/font/google";
 import "@/app/globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import ScrollToTop from "@/components/ScrollToTop";
 import { Toaster } from "sonner";
 import VisitorTracker from "@/components/VisitorTracker";
 import NetworkListener from "@/components/NetworkListener";
 import SocketRefresh from "@/components/SocketRefresh";
+import { OrganizationSchema } from "@/components/schema/OrganizationSchema";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   title: {
-    default: "Muhyo Tech",
-    template: "%s - Muhyo Tech",
+    default: "Muhyo Tech — Premium Software Engineering & Digital Solutions",
+    template: "%s | Muhyo Tech",
   },
-  description: "Professional Portfolio & Solutions",
+  description:
+    "Architecting high-performance digital solutions with a focus on scalability, aesthetics, and user experience.",
 };
 
 export default function RootLayout({ children }) {
@@ -25,6 +26,7 @@ export default function RootLayout({ children }) {
       <head>
         <link rel="icon" href="/logo.png" />
         <link rel="apple-touch-icon" href="/logo.png" />
+        <OrganizationSchema />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -67,7 +69,6 @@ export default function RootLayout({ children }) {
             }}
           />
           <Analytics />
-          <SpeedInsights />
         </ThemeProvider>
       </body>
     </html>

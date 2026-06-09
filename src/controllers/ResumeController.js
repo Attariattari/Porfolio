@@ -1,12 +1,21 @@
 import dbConnect from "@/lib/dbConnect";
 import { Resume } from "@/models/Portfolio";
 import { serializeDoc } from "@/lib/mongooseHelper";
+import { withCache } from "@/lib/cache";
 
 export const ResumeController = {
-    // GET THE CURRENT RESUME DATA
-    get: async() => {
-        await dbConnect();
-        return serializeDoc(await Resume.findOne({}));
+    // GET THE CURRENT RESUME DATA - with caching
+    get: async () => {
+        const cacheKey = "resume_data";
+        return await withCache(
+            cacheKey,
+            async () => {
+                await dbConnect();
+                return serializeDoc(await Resume.findOne({}));
+            },
+            1800, // 30 minute cache
+            ["resume"]
+        );
     },
 
     // UPSERT THE RESUME (Update or Create if missing)

@@ -15,13 +15,15 @@ import { ProjectController } from "@/controllers/ProjectController";
 import { BlogController } from "@/controllers/BlogController";
 import { AboutController } from "@/controllers/AboutController";
 import { HeroController } from "@/controllers/HeroController";
+import { resolveFeaturedBlogs } from "@/lib/blogUtils";
 
 // ISR (Incremental Static Regeneration) - High Speed
-export const revalidate = 3600; 
+export const revalidate = 3600;
 
 export const metadata = {
   title: "Full Stack Web Developer | Muhyo Tech",
-  description: "Crafting scalable web applications and premium digital experiences. Specialist in Next.js, React, Node.js, and modern architecture.",
+  description:
+    "Crafting scalable web applications and premium digital experiences. Specialist in Next.js, React, Node.js, and modern architecture.",
 };
 
 export default async function HomePage() {
@@ -60,14 +62,8 @@ export default async function HomePage() {
       ? dbFeaturedProjects
       : portfolioData.projects.filter((p) => p.featured);
 
-  // 3. BLOGS: Check DB featured first, fallback to data.js featured
-  const dbFeaturedBlogs = (dbBlogs || []).filter(
-    (b) => b.featured && b.publishStatus === "published" && !b._isFromDataJs,
-  );
-  const blogs =
-    dbFeaturedBlogs.length > 0
-      ? dbFeaturedBlogs
-      : portfolioData.blogs.filter((b) => b.featured);
+  // 3. BLOGS: Use optimized resolver
+  const blogs = resolveFeaturedBlogs(dbBlogs, portfolioData.blogs);
   // --- END FEATURED PATCH ---
 
   // Ensure about data prioritizes database - NO EARLY FALLBACK

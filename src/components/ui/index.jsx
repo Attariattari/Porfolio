@@ -20,7 +20,7 @@ export const SectionWrapper = ({
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-8 md:mb-16"
+          className="text-center mb-8 md:mb-8"
         >
           <h4 className="text-accent text-xs font-bold tracking-normal mb-4">
             {subtitle || "Overview"}
@@ -50,7 +50,8 @@ export const Button = ({
   className = "",
   ...props
 }) => {
-  const baseClass = "group relative inline-flex items-center justify-center gap-3 px-8 py-4 overflow-hidden rounded-full font-bold text-sm tracking-normal transition-all duration-500 transform active:scale-95 z-10 w-fit";
+  const baseClass =
+    "group relative inline-flex items-center justify-center gap-3 px-8 py-4 overflow-hidden rounded-full font-bold text-sm tracking-normal transition-all duration-500 transform active:scale-95 z-10 w-fit";
 
   const variants = {
     primary:
@@ -76,7 +77,7 @@ export const Button = ({
       {variant === "outline" && (
         <div className="absolute top-0 -left-[100%] w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent group-hover:left-[100%] transition-all duration-700 ease-in-out pointer-events-none -z-10" />
       )}
-      
+
       <span className="relative z-10 flex items-center justify-center gap-2 whitespace-nowrap">
         {children}
       </span>

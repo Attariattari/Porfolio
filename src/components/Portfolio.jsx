@@ -326,7 +326,7 @@ const Portfolio = ({ projects }) => {
       {/* 4. Selected Projects Grid: Re-designed as a Dynamic exploration Tree */}
       <section
         id="projects-grid"
-        className="py-12 md:py-24 px-6 relative overflow-hidden"
+        className="py-12 md:py-16 px-6 relative overflow-hidden"
       >
         {/* Decorative Background Elements */}
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-accent/5 blur-[120px] rounded-full pointer-events-none" />
@@ -334,7 +334,7 @@ const Portfolio = ({ projects }) => {
 
         <div className="max-w-7xl mx-auto">
           {/* Section Header */}
-          <div className="text-center mb-16">
+          <div className="text-center mb-12">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -359,7 +359,7 @@ const Portfolio = ({ projects }) => {
           </div>
 
           {/* Category Filter - Premium Switcher */}
-          <div className="flex flex-wrap justify-center gap-4 mb-24">
+          <div className="flex flex-wrap justify-center gap-4 mb-12">
             {categories.map((cat) => (
               <button
                 key={cat}
@@ -389,7 +389,7 @@ const Portfolio = ({ projects }) => {
             <div className="absolute left-[24px] md:left-[52px] lg:left-1/2 top-0 bottom-0 w-[2px] bg-gradient-to-b from-accent/0 via-accent/20 to-accent/0 lg:-translate-x-1/2 z-0" />
             <div className="absolute left-[24px] md:left-[52px] lg:left-1/2 top-0 bottom-0 w-[2px] bg-accent/10 blur-[3px] lg:-translate-x-1/2 z-0 hidden lg:block" />
 
-            <div className="flex flex-col gap-24 md:gap-32 relative z-10">
+            <div className="flex flex-col gap-24 md:gap-24 relative z-10">
               <AnimatePresence mode="popLayout">
                 {filteredProjects.map((project, index) => {
                   const isReversed = index % 2 !== 0;

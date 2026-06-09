@@ -2,9 +2,24 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Loader2, CheckCircle2, XCircle, ImageIcon, FileText, Search, RefreshCcw } from "lucide-react";
+import {
+  Sparkles,
+  Loader2,
+  CheckCircle2,
+  XCircle,
+  ImageIcon,
+  FileText,
+  Search,
+  RefreshCcw,
+} from "lucide-react";
 
-export default function AIBlogProgress({ isOpen, onClose, onComplete, mode = "text", blogId = null }) {
+export default function AIBlogProgress({
+  isOpen,
+  onClose,
+  onComplete,
+  mode = "text",
+  blogId = null,
+}) {
   const [steps, setSteps] = useState([]);
   const [currentStatus, setCurrentStatus] = useState("STARTING");
   const [blogPreview, setBlogPreview] = useState(null);
@@ -21,12 +36,16 @@ export default function AIBlogProgress({ isOpen, onClose, onComplete, mode = "te
       console.log("AI Progress:", data);
 
       setCurrentStatus(data.status);
-      
+
       if (data.status === "CONTENT_READY") {
-        setBlogPreview({ title: data.details?.title, summary: data.details?.summary });
+        setBlogPreview({
+          title: data.details?.title,
+          summary: data.details?.summary,
+        });
       }
 
       if (data.status === "COMPLETED") {
+        eventSource.close();
         if (data.details?.url) setImagePreview(data.details.url);
         setTimeout(() => {
           onComplete?.();
@@ -42,16 +61,21 @@ export default function AIBlogProgress({ isOpen, onClose, onComplete, mode = "te
         setError(data.details?.message || "An unexpected error occurred");
       }
 
-      setSteps(prev => [...prev, { 
-        id: `${data.status}-${Date.now()}-${Math.random()}`, 
-        status: data.status, 
-        message: data.details?.message || data.status,
-        retry: data.retryCount || 0
-      }]);
+      setSteps((prev) => [
+        ...prev,
+        {
+          id: `${data.status}-${Date.now()}-${Math.random()}`,
+          status: data.status,
+          message: data.details?.message || data.status,
+          retry: data.retryCount || 0,
+        },
+      ]);
     };
 
     eventSource.onerror = () => {
-      setError("Connection lost. The pipeline might still be running in the background.");
+      setError(
+        "Connection lost. The pipeline might still be running in the background.",
+      );
       eventSource.close();
     };
 
@@ -80,15 +104,16 @@ export default function AIBlogProgress({ isOpen, onClose, onComplete, mode = "te
 
   const handleDecision = (generateImage) => {
     setPendingBlogId(null);
-    startPipeline(`/api/ai/generate-blog?action=finalize&id=${pendingBlogId}&generateImage=${generateImage}`);
+    startPipeline(
+      `/api/ai/generate-blog?action=finalize&id=${pendingBlogId}&generateImage=${generateImage}`,
+    );
   };
-
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.9, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -101,11 +126,15 @@ export default function AIBlogProgress({ isOpen, onClose, onComplete, mode = "te
               <Sparkles className="w-5 h-5 text-accent animate-pulse" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white uppercase tracking-tight">AI Content Forge</h2>
-              <p className="text-[10px] text-slate-400 uppercase tracking-widest font-black">Autonomous Pipeline Active</p>
+              <h2 className="text-lg font-bold text-white uppercase tracking-tight">
+                AI Content Forge
+              </h2>
+              <p className="text-[10px] text-slate-400 uppercase tracking-widest font-black">
+                Autonomous Pipeline Active
+              </p>
             </div>
           </div>
-          <button 
+          <button
             onClick={onClose}
             className="text-slate-400 hover:text-white transition-colors"
           >
@@ -117,46 +146,74 @@ export default function AIBlogProgress({ isOpen, onClose, onComplete, mode = "te
         <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[70vh] overflow-y-auto">
           {/* Left: Progress Log */}
           <div className="space-y-4">
-            <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Live Execution Log</h3>
+            <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">
+              Live Execution Log
+            </h3>
             <div className="space-y-3">
               {steps.map((step, i) => (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   key={step.id}
                   className="flex gap-3 text-xs"
                 >
                   <div className="mt-0.5">
-                    {step.status === "COMPLETED" ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : 
-                     step.status === "ERROR" || step.status === "REJECTED" ? <XCircle className="w-4 h-4 text-red-500" /> :
-                     step.status === "RETRYING" ? <RefreshCcw className="w-4 h-4 text-amber-500 animate-spin" /> :
-                     <div className="w-4 h-4 rounded-full border-2 border-accent border-t-transparent animate-spin" />}
+                    {step.status === "COMPLETED" ? (
+                      <CheckCircle2 className="w-4 h-4 text-green-500" />
+                    ) : step.status === "ERROR" ||
+                      step.status === "REJECTED" ? (
+                      <XCircle className="w-4 h-4 text-red-500" />
+                    ) : step.status === "RETRYING" ? (
+                      <RefreshCcw className="w-4 h-4 text-amber-500 animate-spin" />
+                    ) : (
+                      <div className="w-4 h-4 rounded-full border-2 border-accent border-t-transparent animate-spin" />
+                    )}
                   </div>
                   <div>
                     <p className="text-slate-300 font-medium">
-                      {step.retry > 0 && <span className="text-amber-500 mr-1">[Retry {step.retry}]</span>}
+                      {step.retry > 0 && (
+                        <span className="text-amber-500 mr-1">
+                          [Retry {step.retry}]
+                        </span>
+                      )}
                       {step.message}
                     </p>
-                    <p className="text-[9px] text-slate-500 font-mono mt-0.5">{step.status}</p>
+                    <p className="text-[9px] text-slate-500 font-mono mt-0.5">
+                      {step.status}
+                    </p>
                   </div>
                 </motion.div>
               ))}
-              {steps.length === 0 && <p className="text-slate-500 text-xs italic">Initializing neural link...</p>}
+              {steps.length === 0 && (
+                <p className="text-slate-500 text-xs italic">
+                  Initializing neural link...
+                </p>
+              )}
             </div>
           </div>
 
           {/* Right: Live Preview */}
           <div className="bg-black/40 rounded-xl border border-white/5 p-4 space-y-4">
-            <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Asset Generation</h3>
-            
+            <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">
+              Asset Generation
+            </h3>
+
             {/* Image Preview */}
             <div className="aspect-video bg-white/5 rounded-lg border border-white/10 overflow-hidden relative group">
               {imagePreview ? (
-                <img src={imagePreview} alt="Generated AI" className="w-full h-full object-cover animate-in fade-in duration-1000" />
+                <img
+                  src={imagePreview}
+                  alt="Generated AI"
+                  className="w-full h-full object-cover animate-in fade-in duration-1000"
+                />
               ) : (
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-600">
-                  <ImageIcon className={`w-8 h-8 mb-2 ${currentStatus === "GENERATING_IMAGE" ? "animate-bounce text-accent/50" : ""}`} />
-                  <span className="text-[9px] uppercase font-bold tracking-widest">Visualizing...</span>
+                  <ImageIcon
+                    className={`w-8 h-8 mb-2 ${currentStatus === "GENERATING_IMAGE" ? "animate-bounce text-accent/50" : ""}`}
+                  />
+                  <span className="text-[9px] uppercase font-bold tracking-widest">
+                    Visualizing...
+                  </span>
                 </div>
               )}
             </div>
@@ -164,9 +221,17 @@ export default function AIBlogProgress({ isOpen, onClose, onComplete, mode = "te
             {/* Blog Preview */}
             <div className="space-y-2">
               {blogPreview ? (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-1">
-                  <h4 className="text-sm font-bold text-white leading-tight">{blogPreview.title}</h4>
-                  <p className="text-[10px] text-slate-400 line-clamp-3 leading-relaxed">{blogPreview.summary}</p>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="space-y-1"
+                >
+                  <h4 className="text-sm font-bold text-white leading-tight">
+                    {blogPreview.title}
+                  </h4>
+                  <p className="text-[10px] text-slate-400 line-clamp-3 leading-relaxed">
+                    {blogPreview.summary}
+                  </p>
                 </motion.div>
               ) : (
                 <div className="space-y-2">
@@ -177,56 +242,33 @@ export default function AIBlogProgress({ isOpen, onClose, onComplete, mode = "te
               )}
             </div>
 
-            {/* Decision Buttons */}
-            <AnimatePresence>
-              {pendingBlogId && (
-                <motion.div 
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  className="p-4 bg-accent/10 border border-accent/20 rounded-xl space-y-3"
-                >
-                  <p className="text-[10px] font-black text-accent uppercase tracking-widest text-center">Action Required</p>
-                  <div className="flex flex-col gap-2">
-                    <button 
-                      onClick={() => handleDecision(true)}
-                      className="w-full py-3 bg-accent text-white text-xs font-black uppercase tracking-widest rounded-lg hover:bg-accent/80 transition-all flex items-center justify-center gap-2"
-                    >
-                      <ImageIcon className="w-4 h-4" /> Generate AI Image
-                    </button>
-                    <button 
-                      onClick={() => handleDecision(false)}
-                      className="w-full py-3 bg-white/5 border border-white/10 text-white text-xs font-black uppercase tracking-widest rounded-lg hover:bg-white/10 transition-all"
-                    >
-                      Skip Image & Publish
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
             {/* Final Status */}
             {currentStatus === "COMPLETED" && (
               <div className="bg-green-500/10 border border-green-500/20 p-3 rounded-lg flex items-center gap-3">
                 <CheckCircle2 className="w-5 h-5 text-green-500" />
-                <span className="text-xs font-bold text-green-500 uppercase tracking-tight">Published to Network</span>
+                <span className="text-xs font-bold text-green-500 uppercase tracking-tight">
+                  Published to Network
+                </span>
               </div>
             )}
 
             {error && (
               <div className="bg-red-500/10 border border-red-500/20 p-3 rounded-lg flex items-center gap-3 text-red-500">
                 <XCircle className="w-5 h-5 flex-shrink-0" />
-                <span className="text-[10px] font-bold uppercase tracking-tight">{error}</span>
+                <span className="text-[10px] font-bold uppercase tracking-tight">
+                  {error}
+                </span>
               </div>
             )}
           </div>
         </div>
 
-
         {/* Footer */}
         <div className="px-6 py-4 border-t border-white/5 bg-white/5 text-center">
           <p className="text-[9px] text-slate-500 font-bold uppercase tracking-[0.2em]">
-            {currentStatus === "COMPLETED" ? "System Idle - Success" : "AI Agent Protocol in Progress"}
+            {currentStatus === "COMPLETED"
+              ? "System Idle - Success"
+              : "AI Agent Protocol in Progress"}
           </p>
         </div>
       </motion.div>

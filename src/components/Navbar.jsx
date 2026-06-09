@@ -37,7 +37,7 @@ export default function Navbar() {
       }`}
     >
       <div className="container mx-auto px-6 flex justify-between items-center">
-        <Link href="/" className="text-2xl font-bold text-foreground">
+        <Link href="/" prefetch={true} className="text-2xl font-bold text-foreground">
           {logo.title}
           <span className="text-accent underline decoration-accent/30 underline-offset-4">
             {logo.accent}
@@ -50,6 +50,7 @@ export default function Navbar() {
             <Link
               key={link.name}
               href={link.href}
+              prefetch={true}
               className="text-sm font-medium text-foreground/80 hover:text-accent transition-colors"
             >
               {link.name}
@@ -58,6 +59,7 @@ export default function Navbar() {
           <ThemeToggle />
           <Link
             href={cta.href}
+            prefetch={true}
             className="px-5 py-2 rounded-full bg-accent text-accent-foreground text-sm font-semibold hover:opacity-90 transition-opacity hover-glow"
           >
             {cta.label}
@@ -90,6 +92,7 @@ export default function Navbar() {
                 <Link
                   key={link.name}
                   href={link.href}
+                  prefetch={true}
                   onClick={() => setIsOpen(false)}
                   className="text-lg font-medium text-foreground hover:text-accent"
                 >
@@ -98,6 +101,7 @@ export default function Navbar() {
               ))}
               <Link
                 href={cta.href}
+                prefetch={true}
                 className="w-full text-center py-3 rounded-lg bg-accent text-accent-foreground font-semibold"
                 onClick={() => setIsOpen(false)}
               >

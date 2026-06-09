@@ -5,35 +5,46 @@ import { portfolioData } from "@/lib/data";
 import { serializeDoc } from "@/lib/mongooseHelper";
 import { sendNewsletterEmail } from "@/lib/newsletter";
 import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socket";
+import { withCache } from "@/lib/cache";
 
 /**
  * ServiceController
- * Optimized for production performance with lean queries.
+ * Optimized for production performance with lean queries and caching.
  */
 export const ServiceController = {
-    // 1. Get All Services - Optimized with lean() and efficient merge
+    // 1. Get All Services - Optimized with lean(), caching, and efficient merge
     async getAll(filterPublished = false) {
+        const cacheKey = `services_all_${filterPublished}`;
+        
         try {
-            await dbConnect();
-            const query = filterPublished ? { publishStatus: "published" } : {};
-            
-            const dbServices = await Service.find(query)
-                .sort({ order: 1, featured: -1, createdAt: -1 })
-                .lean();
+            return await withCache(
+                cacheKey,
+                async () => {
+                    await dbConnect();
+                    const query = filterPublished ? { publishStatus: "published" } : {};
 
-            const uploadedTitles = new Set(dbServices.map((s) => s.title));
-            const fallbackServices = portfolioData.services
-                .filter((s) => !uploadedTitles.has(s.title))
-                .map((s) => ({
-                    ...s,
-                    _isFromDataJs: true,
-                    _dbId: null,
-                    publishStatus: "published",
-                }));
+                    const dbServices = await Service.find(query)
+                        .sort({ order: 1, featured: -1, createdAt: -1 })
+                        .lean();
 
-            return [...serializeDoc(dbServices), ...fallbackServices];
+                    const uploadedTitles = new Set(dbServices.map((s) => s.title));
+                    const fallbackServices = portfolioData.services
+                        .filter((s) => !uploadedTitles.has(s.title))
+                        .map((s) => ({
+                            ...s,
+                            _isFromDataJs: true,
+                            _dbId: null,
+                            publishStatus: "published",
+                        }));
+
+                    return [...serializeDoc(dbServices), ...fallbackServices];
+                },
+                300, // 5 minute cache
+                ["services"]
+            );
         } catch (error) {
-            throw new Error(`Failed to fetch services: ${error.message}`);
+            console.error("[ServiceController.getAll] Error:", error);
+            return portfolioData.services.map((s) => ({ ...s, _isFromDataJs: true }));
         }
     },
 
@@ -56,20 +67,22 @@ export const ServiceController = {
 
             // Fallback to static data
             const fallbackService = portfolioData.services.find(
-                (s) => s.id?.toString() === identifier || s.slug === identifier
+                (s) => s.id ? .toString() === identifier || s.slug === identifier,
             );
 
             if (fallbackService) {
                 return {
                     ...fallbackService,
                     _isFromDataJs: true,
-                    publishStatus: "published"
+                    publishStatus: "published",
                 };
             }
 
             return null;
         } catch (error) {
-            throw new Error(`Failed to fetch service ${identifier}: ${error.message}`);
+            throw new Error(
+                `Failed to fetch service ${identifier}: ${error.message}`,
+            );
         }
     },
 
@@ -157,9 +170,9 @@ export const ServiceController = {
     async reorder(ids) {
         try {
             await dbConnect();
-            
-            const validIds = ids.filter(id => mongoose.Types.ObjectId.isValid(id));
-            
+
+            const validIds = ids.filter((id) => mongoose.Types.ObjectId.isValid(id));
+
             if (validIds.length === 0) return { success: true };
 
             const bulkOps = validIds.map((id, index) => ({
@@ -171,12 +184,12 @@ export const ServiceController = {
 
             // Use native collection bulkWrite for better compatibility and to avoid schema side-effects
             await Service.collection.bulkWrite(bulkOps);
-            
+
             emitSocketEvent(SOCKET_EVENTS.SERVICES_REORDERED);
             emitSocketEvent(SOCKET_EVENTS.STATS_UPDATED);
             return true;
         } catch (error) {
             throw new Error(`Failed to reorder services: ${error.message}`);
         }
-    }
-};
+    },
+};

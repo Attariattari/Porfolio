@@ -67,23 +67,27 @@ export default function AdminSidebar() {
   const router = useRouter();
   const [session, setSession] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
-  
-  const { 
-    notifications, 
-    sidebarOpen, 
-    setSidebarOpen, 
-    sidebarCollapsed, 
-    toggleSidebarCollapse 
+
+  const {
+    notifications,
+    sidebarOpen,
+    setSidebarOpen,
+    sidebarCollapsed,
+    toggleSidebarCollapse,
   } = useAdminStore();
 
   const { data: bookingStats } = useBookingStats();
   useRealTimeBookingUpdates();
 
-  const { stats: messageStats, setStats: setMessageStats, refetch: refetchMessageStats } = useMessageStats();
+  const {
+    stats: messageStats,
+    setStats: setMessageStats,
+    refetch: refetchMessageStats,
+  } = useMessageStats();
   useRealTimeMessageUpdates({
     onNewMessage: () => refetchMessageStats(),
     onStatusUpdate: () => refetchMessageStats(),
-    onStatsUpdate: (newStats) => setMessageStats(newStats)
+    onStatsUpdate: (newStats) => setMessageStats(newStats),
   });
 
   useEffect(() => {
@@ -127,15 +131,28 @@ export default function AdminSidebar() {
       return { ...link, badge: bookingStats.new, badgeColor: "bg-amber-500" };
     }
     if (link.name === "Messages" && messageStats?.newMessages > 0) {
-      return { ...link, badge: messageStats.newMessages, badgeColor: "bg-blue-500 shadow-lg shadow-blue-500/20" };
+      return {
+        ...link,
+        badge: messageStats.newMessages,
+        badgeColor: "bg-blue-500 shadow-lg shadow-blue-500/20",
+      };
     }
     return link;
   }).filter((link) => {
     // Role based visibility
-    if (session?.role !== "super-admin" && session?.role !== "root-super-admin") {
+    if (
+      session?.role !== "super-admin" &&
+      session?.role !== "root-super-admin"
+    ) {
       // Hide these for Admin/User
-      if (["Subscribers", "Notifications", "Users", "Settings"].includes(link.name)) return false;
-      if (link.role === "super-admin" || link.role === "root-super-admin") return false;
+      if (
+        ["Subscribers", "Notifications", "Users", "Settings"].includes(
+          link.name,
+        )
+      )
+        return false;
+      if (link.role === "super-admin" || link.role === "root-super-admin")
+        return false;
     }
     return true;
   });
@@ -143,21 +160,36 @@ export default function AdminSidebar() {
   const sidebarSections = [
     {
       label: "Main",
-      links: filteredLinks.filter(l => ["Dashboard"].includes(l.name))
+      links: filteredLinks.filter((l) => ["Dashboard"].includes(l.name)),
     },
     {
       label: "Management",
-      links: filteredLinks.filter(l => ["Hero", "About", "Projects", "Services", "Blog", "Skills", "Resume", "Social Links"].includes(l.name))
+      links: filteredLinks.filter((l) =>
+        [
+          "Hero",
+          "About",
+          "Projects",
+          "Services",
+          "Blog",
+          "Skills",
+          "Resume",
+          "Social Links",
+        ].includes(l.name),
+      ),
     },
     {
       label: "Communication",
-      links: filteredLinks.filter(l => ["Messages", "Bookings", "Subscribers"].includes(l.name))
+      links: filteredLinks.filter((l) =>
+        ["Messages", "Bookings", "Subscribers"].includes(l.name),
+      ),
     },
     {
       label: "System",
-      links: filteredLinks.filter(l => ["Notifications", "Users", "Settings"].includes(l.name))
-    }
-  ].filter(section => section.links.length > 0);
+      links: filteredLinks.filter((l) =>
+        ["Notifications", "Users", "Settings"].includes(l.name),
+      ),
+    },
+  ].filter((section) => section.links.length > 0);
 
   // Determine current effective collapse state
   const isCollapsed = sidebarCollapsed && !isMobile;
@@ -178,9 +210,9 @@ export default function AdminSidebar() {
       </AnimatePresence>
 
       <motion.div
-        animate={{ 
-          width: isMobile ? 288 : (sidebarCollapsed ? 80 : 288),
-          x: isMobile && !sidebarOpen ? -288 : 0
+        animate={{
+          width: isMobile ? 288 : sidebarCollapsed ? 80 : 288,
+          x: isMobile && !sidebarOpen ? -288 : 0,
         }}
         transition={{ type: "spring", damping: 20, stiffness: 150 }}
         className={`fixed left-0 top-0 h-full bg-[#0a0f1c] border-r border-white/5 flex flex-col z-[70] shadow-2xl`}
@@ -188,13 +220,15 @@ export default function AdminSidebar() {
         {/* Inner Wrapper for content transition safety */}
         <div className="flex-1 flex flex-col w-full h-full overflow-hidden relative">
           {/* Branding */}
-          <div className={`h-20 flex items-center px-6 border-b border-white/5 bg-gradient-to-br from-blue-500/5 to-transparent overflow-hidden shrink-0`}>
+          <div
+            className={`h-20 flex items-center px-6 border-b border-white/5 bg-gradient-to-br from-blue-500/5 to-transparent overflow-hidden shrink-0`}
+          >
             <div className="flex items-center gap-3 min-w-max">
               <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/20 shrink-0">
                 <Zap className="w-6 h-6 text-white" />
               </div>
               {!isCollapsed && (
-                <motion.div 
+                <motion.div
                   initial={false}
                   animate={{ opacity: 1, x: 0 }}
                   className="flex flex-col"
@@ -208,7 +242,7 @@ export default function AdminSidebar() {
                 </motion.div>
               )}
             </div>
-            
+
             {/* Mobile Close Button */}
             {isMobile && (
               <button
@@ -222,7 +256,7 @@ export default function AdminSidebar() {
 
           {/* Navigation */}
           <nav className="flex-1 overflow-y-auto px-3 py-6 custom-scrollbar space-y-8">
-            <div className={`px-4 mb-4 ${isCollapsed ? 'hidden' : 'block'}`}>
+            <div className={`px-4 mb-4 ${isCollapsed ? "hidden" : "block"}`}>
               <NetworkIndicator />
             </div>
             {sidebarSections.map((section, idx) => (
@@ -232,15 +266,13 @@ export default function AdminSidebar() {
                     {section.label}
                   </h3>
                 )}
-                {isCollapsed && (
-                  <div className="h-px bg-white/5 mx-4 my-4" />
-                )}
-                
+                {isCollapsed && <div className="h-px bg-white/5 mx-4 my-4" />}
+
                 <div className="space-y-1">
                   {section.links.map((link) => {
                     const IconComponent = ICON_MAP[link.icon] || FileText;
                     const isActive = pathname === link.href;
-                    
+
                     return (
                       <SidebarItem
                         key={link.name}
@@ -261,8 +293,12 @@ export default function AdminSidebar() {
 
           {/* User Profile & Logout */}
           <div className="p-4 border-t border-white/5 space-y-4 shrink-0 bg-white/[0.01]">
-            <div className={`flex items-center gap-3 ${isCollapsed ? 'justify-center' : 'px-2'}`}>
-              <div className={`w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 p-0.5 shadow-lg shadow-blue-500/20 shrink-0`}>
+            <div
+              className={`flex items-center gap-3 ${isCollapsed ? "justify-center" : "px-2"}`}
+            >
+              <div
+                className={`w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 p-0.5 shadow-lg shadow-blue-500/20 shrink-0`}
+              >
                 <div className="w-full h-full rounded-[9px] bg-[#0a0f1c] flex items-center justify-center overflow-hidden">
                   <User className="w-5 h-5 text-blue-400" />
                 </div>
@@ -273,24 +309,26 @@ export default function AdminSidebar() {
                     {session?.name || "Admin"}
                   </span>
                   <span className="text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5">
-                    {session?.role === 'root-super-admin' ? (
+                    {session?.role === "root-super-admin" ? (
                       <span className="text-amber-400 flex items-center gap-1">
                         <Zap className="w-3 h-3 fill-amber-400" /> Root Admin
                       </span>
-                    ) : session?.role === 'super-admin' ? (
+                    ) : session?.role === "super-admin" ? (
                       <span className="text-accent flex items-center gap-1">
                         <ShieldCheck className="w-3 h-3" /> Super Admin
                       </span>
                     ) : (
                       <span className="text-slate-500">
-                        {session?.role === 'admin' ? '👨💼 Admin' : session?.role || "Synchronizing..."}
+                        {session?.role === "admin"
+                          ? "👨💼 Admin"
+                          : session?.role || "Synchronizing..."}
                       </span>
                     )}
                   </span>
                 </div>
               )}
               {!isCollapsed && (
-                <button 
+                <button
                   onClick={handleLogout}
                   className="ml-auto p-2 text-slate-500 hover:text-red-400 transition-colors bg-white/5 rounded-lg border border-white/5 hover:border-red-400/20"
                   title="Logout"
@@ -299,9 +337,9 @@ export default function AdminSidebar() {
                 </button>
               )}
             </div>
-            
+
             {isCollapsed && (
-              <button 
+              <button
                 onClick={handleLogout}
                 className="w-full p-2 text-slate-500 hover:text-red-400 transition-colors flex justify-center"
                 title="Logout"
@@ -318,7 +356,11 @@ export default function AdminSidebar() {
             onClick={toggleSidebarCollapse}
             className="absolute -right-3 top-24 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-lg z-[80] hover:scale-110 transition-transform active:scale-95 border border-white/10"
           >
-            {sidebarCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+            {sidebarCollapsed ? (
+              <ChevronRight size={14} />
+            ) : (
+              <ChevronLeft size={14} />
+            )}
           </button>
         )}
       </motion.div>
@@ -326,36 +368,52 @@ export default function AdminSidebar() {
   );
 }
 
-function SidebarItem({ href, icon: Icon, label, active, collapsed, badge, badgeColor }) {
+function SidebarItem({
+  href,
+  icon: Icon,
+  label,
+  active,
+  collapsed,
+  badge,
+  badgeColor,
+}) {
   return (
     <Link
       href={href}
       className={`group relative flex items-center h-12 rounded-xl transition-all duration-300 ${
-        active 
-          ? "bg-blue-600/10 text-blue-400" 
+        active
+          ? "bg-blue-600/10 text-blue-400"
           : "text-slate-400 hover:text-white hover:bg-white/[0.03]"
       }`}
     >
       {/* Active Indicator Line */}
       {active && (
-        <motion.div 
+        <motion.div
           layoutId="sidebar-active-pill"
           className="absolute left-0 w-1 h-6 bg-blue-500 rounded-r-full"
         />
       )}
 
-      <div className={`flex items-center w-full px-4 gap-4 ${collapsed ? 'justify-center px-0' : ''}`}>
-        <div className={`relative transition-transform duration-300 group-hover:scale-110 ${active ? 'text-blue-500' : 'group-hover:text-blue-400'}`}>
+      <div
+        className={`flex items-center w-full px-4 gap-4 ${collapsed ? "justify-center px-0" : ""}`}
+      >
+        <div
+          className={`relative transition-transform duration-300 group-hover:scale-110 ${active ? "text-blue-500" : "group-hover:text-blue-400"}`}
+        >
           <Icon size={collapsed ? 22 : 20} strokeWidth={active ? 2.5 : 2} />
-          
+
           {/* Badge for Collapsed View */}
           {collapsed && badge && (
-            <span className={`absolute -top-1 -right-1 w-2 h-2 rounded-full ${badgeColor || 'bg-blue-600'} border border-[#0a0f1c]`} />
+            <span
+              className={`absolute -top-1 -right-1 w-2 h-2 rounded-full ${badgeColor || "bg-blue-600"} border border-[#0a0f1c]`}
+            />
           )}
         </div>
 
         {!collapsed && (
-          <span className={`text-[13px] font-semibold tracking-wide transition-all ${active ? 'text-white' : ''}`}>
+          <span
+            className={`text-[13px] font-semibold tracking-wide transition-all ${active ? "text-white" : ""}`}
+          >
             {label}
           </span>
         )}
@@ -364,7 +422,7 @@ function SidebarItem({ href, icon: Icon, label, active, collapsed, badge, badgeC
           <motion.span
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className={`ml-auto px-2 py-0.5 rounded-full text-[10px] font-bold text-white shadow-sm ${badgeColor || 'bg-blue-600'}`}
+            className={`ml-auto px-2 py-0.5 rounded-full text-[10px] font-bold text-white shadow-sm ${badgeColor || "bg-blue-600"}`}
           >
             {badge}
           </motion.span>

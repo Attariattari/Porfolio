@@ -2,34 +2,45 @@ import dbConnect from "@/lib/dbConnect";
 import { Skill } from "@/models/Portfolio";
 import { portfolioData } from "@/lib/data";
 import { serializeDoc } from "@/lib/mongooseHelper";
+import { withCache } from "@/lib/cache";
 
 /**
  * SkillController
- * Optimized for production with lean queries.
+ * Optimized for production with lean queries and caching.
  */
 export const SkillController = {
-    // 1. Get All Skills - Optimized
+    // 1. Get All Skills - Optimized with caching
     async getAll() {
+        const cacheKey = "skills_all";
+        
         try {
-            await dbConnect();
-            const dbSkills = await Skill.find({}).sort({ order: 1 }).lean();
+            return await withCache(
+                cacheKey,
+                async () => {
+                    await dbConnect();
+                    const dbSkills = await Skill.find({}).sort({ order: 1 }).lean();
 
-            if (!dbSkills || dbSkills.length === 0) {
-                return portfolioData.skills;
-            }
+                    if (!dbSkills || dbSkills.length === 0) {
+                        return portfolioData.skills;
+                    }
 
-            const uploadedNames = new Set(dbSkills.map(s => s.name));
-            const fallbackSkills = portfolioData.skills
-                .filter(s => !uploadedNames.has(s.name))
-                .map(s => ({
-                    ...s,
-                    _isFromDataJs: true,
-                    _dbId: null
-                }));
+                    const uploadedNames = new Set(dbSkills.map((s) => s.name));
+                    const fallbackSkills = portfolioData.skills
+                        .filter((s) => !uploadedNames.has(s.name))
+                        .map((s) => ({
+                            ...s,
+                            _isFromDataJs: true,
+                            _dbId: null,
+                        }));
 
-            return [...serializeDoc(dbSkills), ...fallbackSkills];
+                    return [...serializeDoc(dbSkills), ...fallbackSkills];
+                },
+                1800, // 30 minute cache
+                ["skills"]
+            );
         } catch (error) {
-            throw new Error(`Failed to fetch skills: ${error.message}`);
+            console.error("[SkillController.getAll] Error:", error);
+            return portfolioData.skills;
         }
     },
 
@@ -61,4 +72,4 @@ export const SkillController = {
         await dbConnect();
         return await Skill.deleteMany({});
     },
-};
+};

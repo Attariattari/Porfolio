@@ -7,16 +7,19 @@ export default function InitialLoader() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if it's the first visit in the session
+    // P0 OPTIMIZATION: Skip loader on repeat visits (same session)
     const hasVisited = sessionStorage.getItem("hasVisited");
+    if (hasVisited) {
+      setLoading(false);
+      return;
+    }
 
-    // For demonstration, we'll always show it for 2 seconds
-    // or you can check if (hasVisited) setLoading(false)
-
+    // First visit: show loader for max 1000ms (reduced from 2500ms)
+    // TTI target: 1000ms (reduced by 60%)
     const timer = setTimeout(() => {
       setLoading(false);
       sessionStorage.setItem("hasVisited", "true");
-    }, 2500);
+    }, 1000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -46,7 +49,7 @@ export default function InitialLoader() {
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 1, ease: "easeOut" }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
               className="relative mb-12"
             >
               <div className="w-32 h-32 flex items-center justify-center glass rounded-[2.5rem] border border-accent/20 shadow-[0_0_80px_rgba(var(--accent-rgb),0.15)] overflow-hidden">
@@ -73,7 +76,7 @@ export default function InitialLoader() {
                 <motion.div
                   initial={{ width: "0%" }}
                   animate={{ width: "100%" }}
-                  transition={{ duration: 2, ease: "easeInOut" }}
+                  transition={{ duration: 0.9, ease: "easeInOut" }}
                   className="absolute top-0 left-0 h-full bg-accent shadow-[0_0_15px_rgba(var(--accent-rgb),0.4)]"
                 />
               </div>

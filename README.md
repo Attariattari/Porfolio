@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # 🚀 Muhyo Tech | Professional Portfolio Website
 
 A modern, high-performance portfolio website built with cutting-edge web technologies. Crafted to showcase professional services, projects, and expertise with an elegant, responsive design.
@@ -326,13 +325,3 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ![Status](https://img.shields.io/badge/status-Active-brightgreen)
 
 </div>
-=======
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
->>>>>>> d0f3240e6da17def667e3556d65dc513fb181d8d

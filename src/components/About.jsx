@@ -249,7 +249,6 @@ export default function About({
                   fill
                   className="object-cover transition-transform duration-1000 group-hover:scale-110"
                   priority
-                  unoptimized
                 />
                 {/* Dynamic Overlays */}
                 <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/20 to-transparent opacity-80 group-hover:opacity-40 transition-opacity duration-700" />

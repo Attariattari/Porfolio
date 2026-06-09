@@ -66,7 +66,7 @@ export default function Hero({ initialData = null }) {
   return (
     <section
       ref={containerRef}
-      className="relative min-h-screen flex flex-col justify-center px-6 py-12 overflow-hidden"
+      className="relative min-h-[500px] flex flex-col justify-center px-6 py-12 overflow-hidden"
     >
       <EditorialBackground text="Home" />
       <div className="container mx-auto max-w-7xl relative z-10">
@@ -180,7 +180,6 @@ export default function Hero({ initialData = null }) {
                     fill
                     className="object-cover"
                     priority
-                    unoptimized
                   />
                   {/* Subtle Glow to match the theme */}
                   <div className="absolute inset-0 bg-accent/10 mix-blend-soft-light pointer-events-none" />

@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect } from 'react';
+import { memo, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 
-export default function VisitorTracker() {
+const VisitorTrackerComponent = () => {
   const pathname = usePathname();
 
   useEffect(() => {
@@ -85,3 +85,6 @@ export default function VisitorTracker() {
 
   return null;
 }
+
+// PHASE 2 OPTIMIZATION: Memoize to prevent re-renders
+export default memo(VisitorTrackerComponent);

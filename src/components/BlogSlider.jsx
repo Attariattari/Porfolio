@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronLeft,
@@ -13,11 +13,15 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "./ui";
 
-export default function BlogSlider({ posts }) {
+const BlogSliderComponent = ({ posts }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
 
-  const featuredPosts = posts.filter((post) => post.featured);
+  // PHASE 2 OPTIMIZATION: Memoize featured posts filtering
+  const featuredPosts = useMemo(() => 
+    posts.filter((post) => post.featured), 
+    [posts]
+  );
 
   useEffect(() => {
     if (!isHovered) {
@@ -141,4 +145,7 @@ export default function BlogSlider({ posts }) {
       <div className="absolute bottom-0 left-0 -z-10 w-96 h-96 bg-blue-600/10 blur-[120px] animate-pulse"></div>
     </div>
   );
-}
+};
+
+// PHASE 2 OPTIMIZATION: Memoize to prevent re-renders when parent updates
+export default memo(BlogSliderComponent);

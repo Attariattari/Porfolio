@@ -3,12 +3,14 @@ import { portfolioData } from "@/lib/data";
 import { ProjectController } from "@/controllers/ProjectController";
 import { serializeDoc } from "@/lib/mongooseHelper";
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// P1 OPTIMIZATION: Enable ISR (Incremental Static Regeneration)
+// Revalidate every 5 minutes for optimal cache hit rate
+export const revalidate = 300;
 
 export const metadata = {
   title: "Engineering Portfolio | Featured Projects by Muhyo Tech",
-  description: "Explore a curated showcase of high-performance web applications, specialized tools, and creative digital engineering solutions.",
+  description:
+    "Explore a curated showcase of high-performance web applications, specialized tools, and creative digital engineering solutions.",
 };
 
 export default async function ProjectsPage() {

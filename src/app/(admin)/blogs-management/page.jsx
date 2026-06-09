@@ -58,13 +58,13 @@ export default function BlogsManagement() {
                   {b.title}
                 </h3>
                 {!b._isFromDataJs && (
-                  <div 
+                  <div
                     className="w-2 h-2 rounded-full bg-green-500 shadow-lg shadow-green-500/50 flex-shrink-0"
                     title="This blog is already uploaded to the database"
                   />
                 )}
                 {b._isFromDataJs && (
-                  <div 
+                  <div
                     className="w-2 h-2 rounded-full border-1.5 border-slate-500 flex-shrink-0"
                     title="This is a template from data.js - not uploaded yet"
                   />

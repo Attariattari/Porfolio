@@ -65,6 +65,8 @@ const BlogSchema = new mongoose.Schema({
     tags: [{ type: String }],
     image: { type: String },
     featured: { type: Boolean, default: false, index: true },
+    featuredScore: { type: Number, default: 0 },
+    featuredOrder: { type: Number, default: 0, index: true },
     publishStatus: {
         type: String,
         enum: ["draft", "pending", "published"],
@@ -75,19 +77,40 @@ const BlogSchema = new mongoose.Schema({
     order: { type: Number, default: 0, index: true },
     aiGenerated: { type: Boolean, default: false },
     imageGenerated: { type: Boolean, default: false },
-    imageStatus: { 
-        type: String, 
-        enum: ["pending", "generating", "completed", "failed"], 
-        default: "pending" 
+    imageStatus: {
+        type: String,
+        enum: ["pending", "generating", "completed", "failed"],
+        default: "pending",
     },
     generatedAt: { type: Date },
-    qualityStatus: { type: String, enum: ["passed", "failed"], default: "passed" },
+    qualityStatus: {
+        type: String,
+        enum: ["passed", "failed"],
+        default: "passed",
+    },
     qualityScore: { type: Number, default: 0 },
     qualityMetrics: {
         readability: { type: Number, default: 0 },
         seo: { type: Number, default: 0 },
-        humanTone: { type: Number, default: 0 }
+        humanTone: { type: Number, default: 0 },
     },
+    // === NEW: Enhanced Image Generation Audit Data ===
+    imagePromptEnhanced: { type: String }, // Final architectural prompt used for image generation
+    imageNarrativeAnalysis: {
+        keyLesson: String,
+        emotionalTone: String,
+        visualMetaphor: String,
+        settingType: String,
+        humanElements: String,
+        lightingMood: String,
+    },
+    imageAuditScore: { type: Number, default: 0 }, // Overall quality score from auditor (0-10)
+    imageAuditVisualScore: { type: Number, default: 0 }, // Visual quality (0-10)
+    imageAuditRelevanceScore: { type: Number, default: 0 }, // Relevance to article (0-10)
+    imageAuditCtrPotential: { type: Boolean, default: false }, // Would this increase CTR?
+    imageAuditAttempts: { type: Number, default: 0 }, // Number of generation attempts
+    imageRetryCount: { type: Number, default: 0 }, // Total retry attempts
+    imageError: { type: String }, // Last error message if generation failed
     createdAt: { type: Date, default: Date.now, index: true },
 });
 
@@ -308,7 +331,7 @@ const SiteConfigSchema = new mongoose.Schema({
         transferredBy: { type: String }, // Email of the admin who initiated
         ipAddress: { type: String },
         verified: { type: Boolean, default: false },
-    }],
+    }, ],
 
     // SEO
     seo: {
@@ -331,12 +354,18 @@ const SiteConfigSchema = new mongoose.Schema({
 
 // 12. OTP SCHEMA - Super Admin Transfer OTP System
 const SuperAdminOTPSchema = new mongoose.Schema({
-    email: { type: String, required: true, lowercase: true, trim: true, index: true },
+    email: {
+        type: String,
+        required: true,
+        lowercase: true,
+        trim: true,
+        index: true,
+    },
     code: { type: String, required: true }, // Hashed OTP
     plainCode: { type: String }, // For logging only (remove after 1 min)
     type: {
         type: String,
-        enum: ['transfer_current', 'transfer_new'],
+        enum: ["transfer_current", "transfer_new"],
         required: true,
     },
     transferSessionId: {
@@ -363,8 +392,16 @@ const SuperAdminTransferSessionSchema = new mongoose.Schema({
     initiatedBy: { type: String, required: true, lowercase: true, trim: true },
     status: {
         type: String,
-        enum: ['pending', 'current_verified', 'new_verified', 'confirmed', 'completed', 'failed', 'cancelled'],
-        default: 'pending',
+        enum: [
+            "pending",
+            "current_verified",
+            "new_verified",
+            "confirmed",
+            "completed",
+            "failed",
+            "cancelled",
+        ],
+        default: "pending",
         index: true,
     },
     currentEmailVerified: { type: Boolean, default: false },

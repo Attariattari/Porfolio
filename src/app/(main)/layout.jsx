@@ -6,10 +6,13 @@ import { AnimatedBackground } from "@/components/AnimatedBackground";
 import InitialLoader from "@/components/InitialLoader";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import ScrollProgress from "@/components/ScrollProgress";
+import NavigationWatcher from "@/components/NavigationWatcher";
 import MainDataProvider from "./MainDataProvider";
+import MainProviders from "./MainProviders";
 import { AboutController } from "@/controllers/AboutController";
 import { portfolioData } from "@/lib/data";
 import { serializeDoc } from "@/lib/mongooseHelper";
+import { OrganizationSchema } from "@/components/schema/OrganizationSchema";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -75,6 +78,7 @@ export default async function MainLayout({ children }) {
       className={`${inter.className} transition-colors duration-300 relative pb-32 md:pb-0`}
     >
       <InitialLoader />
+      <NavigationWatcher />
       <ScrollProgress />
       <Sidebar data={globalAbout} />
       <BottomNav />
@@ -84,9 +88,11 @@ export default async function MainLayout({ children }) {
         className="flex flex-col min-h-screen relative z-10 transition-[padding] duration-500 ease-in-out pt-16 md:pt-0"
         style={{ paddingLeft: "var(--sidebar-width, 0px)" }}
       >
-        <MainDataProvider>
-          <main className="grow">{children}</main>
-        </MainDataProvider>
+        <MainProviders>
+          <MainDataProvider>
+            <main className="grow">{children}</main>
+          </MainDataProvider>
+        </MainProviders>
         <Footer data={globalAbout} />
       </div>
     </div>

@@ -944,7 +944,7 @@ export const portfolioData = {
             category: "Engineering",
             tags: ["Product", "Strategy", "Culture"],
             image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=2070&auto=format&fit=crop",
-            featured: true,
+            featured: false,
             readTime: "6 min read",
         },
         {
@@ -969,7 +969,7 @@ export const portfolioData = {
             category: "Design",
             tags: ["UI/UX", "Psychology", "Premium"],
             image: "https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=2000&auto=format&fit=crop",
-            featured: true,
+            featured: false,
             readTime: "10 min read",
         },
         {
@@ -994,7 +994,7 @@ export const portfolioData = {
             category: "Backend",
             tags: ["Scalability", "Infrastructure", "Cloud"],
             image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop",
-            featured: true,
+            featured: false,
             readTime: "12 min read",
         },
         {

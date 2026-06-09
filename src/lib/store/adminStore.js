@@ -490,15 +490,45 @@ const useAdminStore = create((set, get) => ({
   // SETTINGS
   fetchSettings: async () => {
     try {
-        const res = await fetch("/api/settings");
-        const result = await res.json();
-        if (result.success && result.data) {
-            set({ settings: result.data });
-        } else {
-            set({ settings: initialData.siteConfig || {} });
+      // P6 OPTIMIZATION: Check sessionStorage cache first (5 minute TTL)
+      const cacheKey = "muhyo_settings_cache";
+      const cached = typeof window !== "undefined" ? sessionStorage.getItem(cacheKey) : null;
+      
+      if (cached) {
+        const { data, timestamp } = JSON.parse(cached);
+        const now = Date.now();
+        const fiveMinutes = 5 * 60 * 1000;
+        
+        // Return cached data if still valid
+        if (now - timestamp < fiveMinutes) {
+          console.log("[Settings] Using cached data");
+          set({ settings: data });
+          return;
         }
-    } catch (error) {
+      }
+      
+      // Cache miss or expired - fetch from API
+      const res = await fetch("/api/settings");
+      const result = await res.json();
+      
+      if (result.success && result.data) {
+        // Store in cache with timestamp
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem(
+            cacheKey,
+            JSON.stringify({
+              data: result.data,
+              timestamp: Date.now(),
+            })
+          );
+        }
+        set({ settings: result.data });
+      } else {
         set({ settings: initialData.siteConfig || {} });
+      }
+    } catch (error) {
+      console.error("[Settings] Fetch failed:", error);
+      set({ settings: initialData.siteConfig || {} });
     }
   },
 

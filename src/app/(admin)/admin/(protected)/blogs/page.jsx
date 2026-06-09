@@ -85,11 +85,15 @@ export default function BlogsPage() {
           {item._isFromDataJs ? (
             <span className="text-slate-500">Template</span>
           ) : (
-            <span className={
-              item.publishStatus === "published" ? "text-green-500" :
-              item.publishStatus === "pending" ? "text-amber-500" :
-              "text-slate-400"
-            }>
+            <span
+              className={
+                item.publishStatus === "published"
+                  ? "text-green-500"
+                  : item.publishStatus === "pending"
+                    ? "text-amber-500"
+                    : "text-slate-400"
+              }
+            >
               {item.publishStatus || "draft"}
             </span>
           )}
@@ -138,7 +142,11 @@ export default function BlogsPage() {
       label: "AI Status",
       render: (item) => (
         <div className="flex items-center gap-2">
-          {item.aiGenerated && !item.imageGenerated ? (
+          {item.aiGenerated &&
+          (!item.imageStatus ||
+            item.imageStatus === "failed" ||
+            item.imageStatus === "retry_pending" ||
+            !item.imageGenerated) ? (
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -150,12 +158,16 @@ export default function BlogsPage() {
               <Sparkles className="w-3 h-3" />
               Gen Image
             </button>
-          ) : item.aiGenerated ? (
+          ) : item.aiGenerated &&
+            item.imageStatus === "completed" &&
+            item.image ? (
             <div className="flex items-center gap-1 text-[9px] font-bold text-green-500 uppercase">
               <CheckCircle2 className="w-3 h-3" /> AI Complete
             </div>
           ) : (
-            <span className="text-[9px] text-slate-600 font-bold uppercase">Manual</span>
+            <span className="text-[9px] text-slate-600 font-bold uppercase">
+              Manual
+            </span>
           )}
         </div>
       ),
@@ -234,9 +246,9 @@ export default function BlogsPage() {
       options: [
         { label: "Draft - Hidden", value: "draft" },
         { label: "Pending Review", value: "pending" },
-        { label: "Published - Live", value: "published" }
+        { label: "Published - Live", value: "published" },
       ],
-      required: true
+      required: true,
     },
     { name: "featured", label: "Mark as Featured Post", type: "checkbox" },
   ];
@@ -288,13 +300,15 @@ export default function BlogsPage() {
 
   const onSubmit = async (data) => {
     try {
-      const hasNewImages = data.image && data.image.some(img => typeof img !== 'string' || img.isPending);
+      const hasNewImages =
+        data.image &&
+        data.image.some((img) => typeof img !== "string" || img.isPending);
       if (hasNewImages) {
         toast.loading("Encrypting and uploading media...");
       } else {
         toast.loading("Publishing to global index...");
       }
-      
+
       const finalImageUrls = await uploadPendingImages(data.image);
 
       const submissionData = {
@@ -318,7 +332,14 @@ export default function BlogsPage() {
     }
   };
 
-  const pendingImageBlog = blogs.find(b => b.aiGenerated && !b.imageGenerated);
+  const pendingImageBlog = blogs.find(
+    (b) =>
+      b.aiGenerated &&
+      (!b.imageStatus ||
+        b.imageStatus === "failed" ||
+        b.imageStatus === "retry_pending" ||
+        !b.imageGenerated),
+  );
   const hasPendingImage = !!pendingImageBlog;
 
   return (
@@ -338,16 +359,22 @@ export default function BlogsPage() {
 
         <button
           onClick={() => {
-            setEditingBlog(hasPendingImage ? pendingImageBlog : null);
+            if (hasPendingImage) {
+              setSelectedBlogForImage(pendingImageBlog);
+            } else {
+              setSelectedBlogForImage(null);
+            }
             setIsAIProgressOpen(true);
           }}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest text-white shadow-lg transition-all hover:scale-105 active:scale-95 group ${
-            hasPendingImage 
-              ? "bg-gradient-to-r from-amber-500 to-orange-600 shadow-amber-500/20 hover:shadow-amber-500/40" 
+            hasPendingImage
+              ? "bg-gradient-to-r from-amber-500 to-orange-600 shadow-amber-500/20 hover:shadow-amber-500/40"
               : "bg-gradient-to-r from-accent to-blue-600 shadow-accent/20 hover:shadow-accent/40"
           }`}
         >
-          <Sparkles className={`w-4 h-4 ${hasPendingImage ? "animate-bounce" : "group-hover:animate-spin"}`} />
+          <Sparkles
+            className={`w-4 h-4 ${hasPendingImage ? "animate-bounce" : "group-hover:animate-spin"}`}
+          />
           {hasPendingImage ? "Generate Blog Image" : "AI Start Blog Generate"}
         </button>
       </div>
@@ -362,23 +389,23 @@ export default function BlogsPage() {
         onDelete={handleDelete}
         onReorder={reorderBlogs}
         filters={[
-          { 
-            key: 'publishStatus', 
-            label: 'All Publish Status', 
+          {
+            key: "publishStatus",
+            label: "All Publish Status",
             options: [
-              { label: 'Published', value: 'published' },
-              { label: 'Pending', value: 'pending' },
-              { label: 'Draft', value: 'draft' }
-            ]
+              { label: "Published", value: "published" },
+              { label: "Pending", value: "pending" },
+              { label: "Draft", value: "draft" },
+            ],
           },
           {
-            key: 'featured',
-            label: 'All Featured',
+            key: "featured",
+            label: "All Featured",
             options: [
-              { label: 'Featured', value: 'true' },
-              { label: 'Standard', value: 'false' }
-            ]
-          }
+              { label: "Featured", value: "true" },
+              { label: "Standard", value: "false" },
+            ],
+          },
         ]}
       />
 
@@ -400,14 +427,14 @@ export default function BlogsPage() {
 
       <AnimatePresence>
         {isAIProgressOpen && (
-          <AIBlogProgress 
-            isOpen={isAIProgressOpen} 
+          <AIBlogProgress
+            isOpen={isAIProgressOpen}
             onClose={() => {
               setIsAIProgressOpen(false);
               setSelectedBlogForImage(null);
-            }} 
+            }}
             onComplete={() => fetchBlogs()}
-            mode={(selectedBlogForImage || pendingImageBlog) ? "image" : "text"}
+            mode={selectedBlogForImage || pendingImageBlog ? "image" : "text"}
             blogId={selectedBlogForImage?._id || pendingImageBlog?._id}
           />
         )}

@@ -3,7 +3,7 @@ import { runBlogAutomationPipeline } from "../blogAutomation";
 
 /**
  * SERVER SCHEDULER (BACKGROUND WORKER)
- * This is used for long-running servers (e.g. VPS, Docker) 
+ * This is used for long-running servers (e.g. VPS, Docker)
  * where the Node process stays alive.
  */
 
@@ -11,7 +11,7 @@ export function initBlogScheduler() {
     console.log("⏰ Initializing Blog Automation Scheduler (24h)...");
 
     // Run every 24 hours at midnight
-    cron.schedule("0 0 * * *", async () => {
+    cron.schedule("0 0 * * *", async() => {
         console.log("🕒 Scheduled Trigger: Starting Blog Pipeline...");
         try {
             const result = await runBlogAutomationPipeline();
