@@ -20,13 +20,15 @@ export async function generateMetadata({ params }) {
 
   if (!project) return { title: "Project Not Found" };
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://muhyo-tech.vercel.app";
-  const canonicalUrl = `${baseUrl}/projects/${project.slug}`;
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL || "https://muhyo-tech.vercel.app";
+  const canonicalUrl = baseUrl + "/projects/" + project.slug;
 
   return {
-    title: `${project.title} | Muhyo Tech Project",
+    title: `${project.title} | Muhyo Tech Project`,
     description: project.description,
-    keywords: (project.techStack || []).join(", ") || "Web Development, Engineering",
+    keywords:
+      (project.techStack || []).join(", ") || "Web Development, Engineering",
     canonical: canonicalUrl,
     alternates: {
       canonical: canonicalUrl,
@@ -56,9 +58,10 @@ export default async function ProjectPage({ params }) {
   }
 
   // P3 SEO: Add comprehensive JSON-LD schema for projects
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://muhyo-tech.vercel.app";
-  const canonicalUrl = `${baseUrl}/projects/${project.slug}`;
-  
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL || "https://muhyo-tech.vercel.app";
+  const canonicalUrl = baseUrl + "/projects/" + project.slug;
+
   const projectSchema = {
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
@@ -88,4 +91,3 @@ export default async function ProjectPage({ params }) {
     </>
   );
 }
-

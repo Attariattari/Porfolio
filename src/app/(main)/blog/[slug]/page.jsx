@@ -22,13 +22,15 @@ export async function generateMetadata({ params }) {
 
   if (!blog) return { title: "Blog Post Not Found" };
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://muhyo-tech.vercel.app";
-  const canonicalUrl = `${baseUrl}/blog/${blog.slug}`;
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL || "https://muhyo-tech.vercel.app";
+  const canonicalUrl = baseUrl + "/blog/" + blog.slug;
 
   return {
     title: `${blog.title} | Muhyo Tech Blog`,
     description: blog.summary,
-    keywords: blog.tags?.join(", ") || "Next.js, Web Development, Software Engineering",
+    keywords:
+      blog.tags?.join(", ") || "Next.js, Web Development, Software Engineering",
     canonical: canonicalUrl,
     alternates: {
       canonical: canonicalUrl,
@@ -62,8 +64,9 @@ export default async function BlogPostPage({ params }) {
     notFound();
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://muhyo-tech.vercel.app";
-  const canonicalUrl = `${baseUrl}/blog/${blog.slug}`;
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL || "https://muhyo-tech.vercel.app";
+  const canonicalUrl = baseUrl + "/blog/" + blog.slug;
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
