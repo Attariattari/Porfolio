@@ -66,7 +66,7 @@ export const seoAudit = {
           value: "Explore the technical expertise and creative works of a senior full-stack developer.",
         },
         image: { status: "✓ PASS", value: "/logo.png", dimensions: "1200x630" },
-        url: { status: "✓ PASS", value: "https://porfolio-three-bice.vercel.app" },
+        url: { status: "✓ PASS", value: "https://www.muhyotech.com" },
         type: { status: "✓ PASS", value: "website" },
       },
 
@@ -99,10 +99,10 @@ export const seoAudit = {
           status: "✓ PASS",
           value: "Auto-generated for each page",
         },
-        sitemap: { status: "✓ PASS", value: "https://porfolio-three-bice.vercel.app/sitemap.xml" },
+        sitemap: { status: "✓ PASS", value: "https://www.muhyotech.com/sitemap.xml" },
         robotsTxt: {
           status: "✓ PASS",
-          value: "https://porfolio-three-bice.vercel.app/robots.txt",
+          value: "https://www.muhyotech.com/robots.txt",
         },
         mobileOptimized: { status: "✓ PASS", value: "Responsive design" },
         https: { status: "✓ PASS", value: "All pages served over HTTPS" },

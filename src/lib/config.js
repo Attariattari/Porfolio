@@ -1,5 +1,5 @@
 function normalizeSiteUrl(value) {
-  const fallback = "https://porfolio-three-bice.vercel.app";
+  const fallback = "https://www.muhyotech.com";
   const url = value || fallback;
   return url.replace(/\/$/, "");
 }
