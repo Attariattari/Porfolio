@@ -36,15 +36,179 @@ const TOPIC_POOL = [
     "Cybersecurity for Startups: Practical hardening for real teams",
 ];
 
+const BRAND_POSITIONING = `
+Muhyo Tech is a professional software and web engineering brand focused on modern websites, portfolio/business sites, web apps, digital services, AI-assisted workflows, performance, SEO, deployment, automation, and scalable systems.
+Blogs should help visitors trust Muhyo Tech as a practical engineering partner: technical enough for developers, clear enough for founders and business owners, and useful enough to share.
+Connect each article to real client value: faster launches, stronger reliability, better UX, improved discoverability, lower maintenance risk, automation, and long-term scalability.
+Never invent named clients, fake numbers, awards, or case-study results. When discussing Muhyo Tech work, frame it as our approach, our standards, our lessons, or realistic engineering scenarios.
+`;
+
+const PROBLEM_SOLUTION_EDITORIAL_MODE = `
+Prefer problem-solution blog angles often, without making every article identical.
+Strong Muhyo Tech blogs should usually start from a real pain: slow websites, fragile deployments, poor SEO, messy admin workflows, confusing UX, unreliable forms, scaling bottlenecks, security gaps, manual business processes, or AI workflow confusion.
+Then show the engineering response: diagnosis, architecture choice, automation, testing, performance work, UX simplification, monitoring, security hardening, or AI-assisted workflow design.
+Finally connect it to business value: faster launch, fewer bugs, better customer trust, easier content updates, lower downtime, stronger SEO, cleaner operations, easier scaling, or less owner stress.
+Use "we learned", "we approach", "we design", or "we look for" language. Do not claim fake client results or pretend every story happened exactly as written.
+`;
+
+const TOPIC_FAMILIES = [
+  {
+    id: "frontend-architecture",
+    aliases: ["frontend", "front-end", "react", "next.js", "nextjs", "micro-frontends", "microfrontends", "edge computing", "edge", "website", "web app", "digital product", "ux"],
+  },
+  {
+    id: "backend-scaling",
+    aliases: ["node.js", "nodejs", "backend", "api", "scaling", "database sharding", "sharding", "mongodb", "aggregation"],
+  },
+  {
+    id: "devops-cloud",
+    aliases: ["devops", "deployment", "ci/cd", "pipeline", "cloud", "aws", "vercel", "infrastructure"],
+  },
+  {
+    id: "ai-workflows",
+    aliases: ["ai workflow", "ai-assisted", "llm", "ai-augmented", "automation", "gemini", "openai"],
+  },
+  {
+    id: "security-auth",
+    aliases: ["security", "cybersecurity", "authentication", "auth", "oauth", "hardening"],
+  },
+  {
+    id: "business-saas",
+    aliases: ["saas", "startup", "multi-tenancy", "founders", "technical debt", "laravel"],
+  },
+  {
+    id: "seo-performance",
+    aliases: ["seo", "performance", "optimization", "100ms", "traffic", "core web vitals"],
+  },
+];
+
+function normalizeTopicText(value = "") {
+  return String(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9+#./\s-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function getTopicFamily(value = "") {
+  const normalized = normalizeTopicText(value);
+  return TOPIC_FAMILIES.find((family) =>
+    family.aliases.some((alias) => normalized.includes(alias)),
+  )?.id || null;
+}
+
+function getTopicStem(value = "") {
+  return normalizeTopicText(value).split(":")[0].trim();
+}
+
+function isTopicTooSimilar(topic, recentBlogMeta = []) {
+  const topicStem = getTopicStem(topic);
+  const topicFamily = getTopicFamily(topic);
+
+  return recentBlogMeta.some((recent) => {
+    const recentText = normalizeTopicText(
+      [recent.title, recent.category, ...(recent.tags || [])].filter(Boolean).join(" "),
+    );
+    const recentStem = getTopicStem(recent.title);
+    const recentFamily = getTopicFamily(recentText);
+
+    return (
+      (topicStem && recentStem && recentStem.includes(topicStem)) ||
+      (topicFamily && recentFamily && topicFamily === recentFamily)
+    );
+  });
+}
+
+function pickFallbackTopic(recentBlogMeta = []) {
+  const availableTopics = TOPIC_POOL.filter(
+    (topic) => !isTopicTooSimilar(topic, recentBlogMeta),
+  );
+
+  return availableTopics.length > 0
+    ? availableTopics[Math.floor(Math.random() * availableTopics.length)]
+    : TOPIC_POOL[Math.floor(Math.random() * TOPIC_POOL.length)];
+}
+
+async function generateStrategicTopic(recentBlogMeta = [], attempt = 0) {
+  const recentContext = recentBlogMeta
+    .map((blog) =>
+      [blog.title, blog.category, ...(blog.tags || [])].filter(Boolean).join(" | "),
+    )
+    .join("\n");
+
+  const prompt = `
+    TASK: Create one fresh blog topic for Muhyo Tech.
+
+    BRAND POSITIONING:
+    ${BRAND_POSITIONING}
+
+    PROBLEM-SOLUTION EDITORIAL MODE:
+    ${PROBLEM_SOLUTION_EDITORIAL_MODE}
+
+    TOPIC REQUIREMENTS:
+    - Must be related to web development, software engineering, AI workflows, DevOps, SEO, performance, security, SaaS, startup systems, cloud deployment, automation, or digital product delivery.
+    - Must naturally represent Muhyo Tech's work and professional standards.
+    - Must attract readers with a practical, specific, high-curiosity angle.
+    - Prefer topics framed around a painful real-world problem and the engineering fix that creates business value.
+    - Must avoid clickbait, hype, generic beginner topics, and broad textbook titles.
+    - Must not repeat or closely resemble recent blog topics.
+    - Prefer concrete pain points business owners and developers care about.
+
+    RECENT BLOGS TO AVOID:
+    ${recentContext || "No recent blogs found."}
+
+    OUTPUT STRICT JSON:
+    {
+      "topic": "Specific engineering topic with a clear angle",
+      "problem": "The real-world pain this topic starts from",
+      "solutionAngle": "The engineering approach Muhyo Tech can discuss",
+      "businessValue": "The client or business benefit this article should connect to",
+      "whyItWorks": "One sentence explaining why this topic helps Muhyo Tech attract the right readers",
+      "category": "Engineering | Design | Backend | SEO | Technology | Architecture | Culture | Security | Infrastructure",
+      "tags": ["tag1", "tag2", "tag3"]
+    }
+  `;
+
+  try {
+    const response = await generateGeminiResponse(prompt, {
+      temperature: 0.85,
+      responseMimeType: "application/json",
+    });
+    const parsed = JSON.parse(
+      response.replace(/```json/gi, "").replace(/```/g, "").trim(),
+    );
+    const topic = String(parsed.topic || "").trim();
+
+    if (topic.length < 25 || isTopicTooSimilar(topic, recentBlogMeta)) {
+      if (attempt < 2) return generateStrategicTopic(recentBlogMeta, attempt + 1);
+      return null;
+    }
+
+    return topic;
+  } catch (error) {
+    console.warn("[TopicStrategist] Falling back to static topic pool.");
+    return null;
+  }
+}
+
 const EDITORIAL_GUIDELINES = `
 Act as a Senior AI Editorial Enhancement Engineer and Founder at Muhyo Tech. 
 Your goal is to produce blogs that feel human-written, conversational, and emotionally engaging.
+
+BRAND POSITIONING:
+${BRAND_POSITIONING}
+
+PROBLEM-SOLUTION EDITORIAL MODE:
+${PROBLEM_SOLUTION_EDITORIAL_MODE}
 
 MUHYO TECH VOICE:
 - You are a Senior Lead or Founder with real-world production experience.
 - Use a practical, "lessons learned" tone. Discuss tradeoffs, not just benefits.
 - Naturally use "we", "our team", or "At Muhyo Tech" but skip forced branding.
 - Avoid sounding like a marketing brochure; sound like an engineering post-mortem or deep dive.
+- Every article should quietly strengthen Muhyo Tech's professional image by showing how good engineering improves websites, web apps, AI workflows, SEO, performance, deployment, or reliability.
+- Make the article attractive and shareable through specificity, useful lessons, strong hooks, and founder-level clarity. Do not use clickbait.
+- Frequently use a "pain -> diagnosis -> engineering fix -> tradeoff -> business outcome" arc, but vary the structure so the blog archive does not feel templated.
 
 STRICT WRITING RULES:
 1. NO AI TROPES: Never use "In today's digital landscape", "Furthermore", "Moreover", "In conclusion", "Rapidly evolving", "Game changer", "Leveraging AI", "Additionally", "In the world of".
@@ -95,11 +259,34 @@ Include: Setting, human activity, focal point, lighting, mood, composition.
 Make it cinematic and clear so the image generator can create something UNIQUE and PROFESSIONAL.
 `;
 
+const IMAGE_REALISTIC_TECH_VISUAL_GUIDELINES = `
+Act as a Senior AI Creative Director and Technical Visual Architect for Muhyo Tech.
+Create premium blog-cover prompts that feel detailed, believable, and useful instead of obviously AI-generated.
+
+CORE DIRECTION:
+1. Start from the article's real lesson: what problem is being solved, what changes, and what business value appears?
+2. Use realistic technical storytelling: architecture diagrams, dashboard cards, pipeline stages, server racks, product screens, data-flow paths, monitoring panels, deployment consoles, or before/after workflow states when relevant.
+3. Short, crisp interface labels or status cards are allowed only when they clarify the scene. Avoid paragraphs, fake brand names, watermarks, gibberish, and random text.
+4. Avoid generic AI art: no neon cyberpunk, no floating code clouds, no glowing brains, no fantasy holograms, no over-polished plastic look.
+5. For transformation stories, prefer a left-to-right transition: messy/manual/risky state on one side, clean/automated/scalable outcome on the other.
+6. Keep the scene grounded: believable workspaces, infrastructure, product interfaces, engineering artifacts, hands-on human gestures, and real operational details.
+7. Make the cover attractive for founders and developers: clear focal point, strong contrast, professional color palette, clean negative space, and social-preview readability.
+
+OUTPUT:
+Write 1-2 detailed paragraphs for an image generator.
+Include setting, technical artifacts, foreground/background, focal point, lighting, mood, composition, and quality.
+The result should look like a premium engineering/product publication cover, not a stock photo and not generic AI art.
+`;
+
 const IMAGE_REVIEW_GUIDELINES = `
 Act as a Strict Editorial Visual Quality Auditor for Muhyo Tech.
 Your job is to ensure images are EDITORIAL QUALITY and ARTICLE-RELEVANT.
 
 CRITICAL REJECTION CRITERIA (ANY of these = FAIL):
+IMPORTANT OVERRIDE:
+- Do NOT fail useful short interface labels, status cards, charts, pipeline cards, or architecture/dashboard elements when they are readable and relevant.
+- Fail long text blocks, fake logos, fake brand names, gibberish, watermarks, unreadable labels, and cluttered UI.
+
 - ANY visible text (titles, labels, watermarks, fake screen text, logos, names)
 - UI elements (buttons, taskbars, windows, menus, code editors)
 - AI artifacts (weird proportions, distorted objects, unnatural blending)
@@ -151,6 +338,12 @@ async function generateEditorialContent(
     const prompt = `
     TASK: ${previousDraft ? "REFINE and IMPROVE" : "GENERATE"} a premium, human-written engineering blog post for Muhyo Tech.
     TOPIC: ${topic || "Realistic Technical Problem Solving"}
+
+    BRAND AND WEBSITE REPRESENTATION:
+    ${BRAND_POSITIONING}
+
+    PROBLEM-SOLUTION BLOG DIRECTION:
+    ${PROBLEM_SOLUTION_EDITORIAL_MODE}
     
     ${retryFeedback ? `CRITICAL FEEDBACK FROM CRITIC: "${retryFeedback}"` : ""}
     ${previousDraft ? `PREVIOUS DRAFT TO IMPROVE: \nTitle: ${previousDraft.title}\nContent: ${previousDraft.content}` : ""}
@@ -161,6 +354,11 @@ async function generateEditorialContent(
     - Include at least 5 meaningful <h2> sections and multiple <p> blocks.
     - Paragraphs MUST be 2-3 sentences max. No exceptions.
     - Voice should be Muhyo Tech centric (using "we", "our team").
+    - If the topic supports it, use a practical problem-solving arc: real pain, root cause, engineering decision, implementation approach, tradeoffs, business result.
+    - Connect the technical lesson to Muhyo Tech's practical work: websites, web apps, AI workflows, performance, SEO, deployment, automation, or scalable digital systems.
+    - Make the blog useful and attractive for both founders and developers so it can bring qualified attention to the website.
+    - Include 1-2 natural lines showing how this thinking shapes Muhyo Tech's work or standards, without sounding like an ad.
+    - Mention client/business outcomes naturally: faster launches, fewer bugs, better UX, less downtime, cleaner operations, stronger SEO, or easier scaling.
     - Avoid "AI-isms" and common tropes.
     - The Image Prompt must be REALISTIC and EDITORIAL (No neon, no cyberpunk).
 
@@ -253,7 +451,8 @@ async function generateAdvancedImagePrompt(blogData) {
     3. VISUAL METAPHOR (What visual concept represents this lesson?)
     4. SETTING TYPE (Should be realistic/authentic - startup office, engineering workspace, whiteboard session, debugging scene, etc.)
     5. HUMAN ELEMENTS (Are there people? What are they doing?)
-    6. LIGHT & MOOD (Cinematic, natural, warm, cool, professional, etc.)
+    6. LIGHT & MOOD (Natural, warm, cool, professional, product-lit, server-room, etc.)
+    7. TECHNICAL ARTIFACTS (What concrete visual details should appear: dashboards, pipeline cards, servers, charts, data flow, product screens, hands, devices?)
     
     OUTPUT FORMAT (JSON):
     {
@@ -262,14 +461,15 @@ async function generateAdvancedImagePrompt(blogData) {
       "visualMetaphor": "The core visual concept that represents this lesson",
       "settingType": "Specific, realistic setting description",
       "humanElements": "Description of human activity/presence",
-      "lightingMood": "Cinematic, lighting, and mood description"
+      "lightingMood": "Realistic lighting and mood description",
+      "technicalArtifacts": "Concrete technical details that should appear"
     }
   `;
 
   let narrativeAnalysis = null;
   try {
     const response = await generateGeminiResponse(narrativeAnalysisPrompt, {
-      systemInstruction: IMAGE_EDITORIAL_ARCHITECT_GUIDELINES,
+      systemInstruction: IMAGE_REALISTIC_TECH_VISUAL_GUIDELINES,
       temperature: 0.7,
       responseMimeType: "application/json",
     });
@@ -290,7 +490,8 @@ async function generateAdvancedImagePrompt(blogData) {
       visualMetaphor: "Problem-solving and technical excellence",
       settingType: "Modern engineering workspace or startup office",
       humanElements: "Engineers collaborating and working",
-      lightingMood: "Cinematic, professional, natural light",
+      lightingMood: "Professional, realistic, natural light",
+      technicalArtifacts: "Architecture cards, monitoring panels, server or product details, and clear workflow elements",
     };
   }
 
@@ -303,6 +504,7 @@ async function generateAdvancedImagePrompt(blogData) {
     Setting: ${narrativeAnalysis.settingType}
     Human Elements: ${narrativeAnalysis.humanElements}
     Lighting: ${narrativeAnalysis.lightingMood}
+    Technical Artifacts: ${narrativeAnalysis.technicalArtifacts || "Relevant dashboards, architecture cards, data flow, product screens, or infrastructure details"}
     
     ARTICLE:
     Title: "${blogData.title}"
@@ -311,28 +513,34 @@ async function generateAdvancedImagePrompt(blogData) {
     TASK: Generate a SPECIFIC, UNIQUE image concept that visually tells this article's story.
     
     CRITICAL REQUIREMENTS:
-    ✅ NO TEXT, NO LOGOS, NO WATERMARKS, NO UI ELEMENTS
-    ✅ Cinematic, editorial quality (Medium.com / Linear / Stripe blog style)
-    ✅ Authentic, realistic human-centered scene
-    ✅ Visually represents the article's KEY LESSON and emotional tone
-    ✅ Unique composition - different from generic tech imagery
-    ✅ Professional depth of field and lighting
-    ✅ No neon, cyberpunk, floating code, or AI art clichés
+    IMPORTANT OVERRIDE:
+    - Do not make this a plain cinematic stock scene. Make it a realistic, detailed technical/product publication cover.
+    - Clean UI/dashboard/pipeline/architecture elements are allowed when they explain the article.
+    - Short readable labels or status cards are allowed only when useful; avoid long text, fake logos, gibberish, and watermarks.
+    - For transformation stories, show contrast: messy/manual/risky state transitioning into clean/automated/scalable outcome.
+    - Avoid obvious AI-art cliches, fantasy holograms, excessive glow, floating code clouds, and plastic-looking scenes.
+
+    - Authentic, realistic technical scene with concrete engineering/product details
+    - Visually represents the article's KEY LESSON, emotional tone, and business benefit
+    - Unique composition, different from generic tech imagery
+    - Professional depth, lighting, and social-preview readability
+    - No neon, cyberpunk, floating code clouds, or obvious AI-art cliches
     
     COMPOSITION GUIDANCE:
     - Setting: ${narrativeAnalysis.settingType}
     - Focus: Show the ${narrativeAnalysis.visualMetaphor}
     - Humans: ${narrativeAnalysis.humanElements}
+    - Technical Details: ${narrativeAnalysis.technicalArtifacts || "specific product, infrastructure, workflow, or dashboard details"}
     - Mood: ${narrativeAnalysis.lightingMood}
-    - Style: Cinematic photography, professional editorial quality
+    - Style: Realistic premium technical/product publication cover
     
     OUTPUT: A detailed, specific image generation prompt (1-2 paragraphs).
-    Make it vivid and cinematic but NOT generic.
+    Make it vivid, detailed, and grounded. It should feel attractive and professional, not obviously AI-generated.
   `;
 
   try {
     const response = await generateGeminiResponse(refinedImagePrompt, {
-      systemInstruction: IMAGE_EDITORIAL_ARCHITECT_GUIDELINES,
+      systemInstruction: IMAGE_REALISTIC_TECH_VISUAL_GUIDELINES,
       temperature: 0.85,
     });
     const enhancedPrompt = response.trim();
@@ -350,7 +558,7 @@ async function generateAdvancedImagePrompt(blogData) {
     console.error("[Architect] Enhanced Prompt Generation Failed:", e);
 
     // Fallback: Create a basic prompt using narrative analysis
-    const fallbackPrompt = `A cinematic, professional ${narrativeAnalysis.emotionalTone} scene in a ${narrativeAnalysis.settingType}. ${narrativeAnalysis.humanElements}. Lighting: ${narrativeAnalysis.lightingMood}. Editorial photography style, no text or logos.`;
+    const fallbackPrompt = `A realistic premium technical editorial scene in a ${narrativeAnalysis.settingType}. ${narrativeAnalysis.humanElements}. Include concrete engineering details such as architecture cards, monitoring panels, server or product details, and clear workflow elements when relevant. Lighting: ${narrativeAnalysis.lightingMood}. Avoid fake logos, gibberish text, watermarks, and obvious AI-art cliches.`;
 
     return {
       enhancedPrompt: fallbackPrompt,
@@ -380,18 +588,22 @@ async function reviewGeneratedImage(imageUrl, blogData, attemptCount = 1) {
     Analyze this generated image for the blog "${blogData.title}".
     
     STRICT REJECTIONS:
-    ❌ ANY visible text (titles, logos, watermarks, fake screen text)
-    ❌ UI elements (buttons, taskbars, windows, menus)
-    ❌ AI artifacts (weird proportions, distorted objects, unnatural blending)
-    ❌ Generic/overused patterns (neon cyberpunk, floating code, stock photo feel)
-    ❌ Unrelated to article topic
+    IMPORTANT OVERRIDE:
+    - Short readable UI labels, status cards, charts, pipeline cards, and dashboard/architecture elements are acceptable when they clarify the article.
+    - Reject only long text blocks, fake logos, fake brand names, gibberish, watermarks, unreadable labels, cluttered UI, or irrelevant screenshots.
+
+    - Long text blocks, fake logos, watermarks, fake brand names, gibberish, or unreadable labels
+    - Cluttered or irrelevant UI that does not explain the article
+    - AI artifacts (weird proportions, distorted objects, unnatural blending)
+    - Generic/overused patterns (neon cyberpunk, floating code, stock photo feel)
+    - Unrelated to article topic
     
     QUALITY CHECKS:
-    ✅ Is it cinematic and professional editorial quality?
-    ✅ Does it visually represent the article's topic/lesson?
-    ✅ Is the composition unique and interesting?
-    ✅ Does the mood/tone match a ${blogData.category || "technology"} article?
-    ✅ Would this image increase click-through rate?
+    - Is it realistic, detailed, and professional technical editorial quality?
+    - Does it visually represent the article's topic/lesson?
+    - Is the composition unique and interesting?
+    - Does the mood/tone match a ${blogData.category || "technology"} article?
+    - Would this image increase click-through rate?
     
     OUTPUT FORMAT (STRICT JSON):
     {
@@ -461,6 +673,9 @@ async function runQualityReview(blogData) {
     - Human Tone: Sounds like a senior lead, not a bot.
     - Structure: Paragraphs are short (2-3 sentences).
     - Muhyo Tech Voice: Uses "we", "our team" naturally.
+    - Brand Representation: Shows how Muhyo Tech thinks about professional websites, web apps, AI workflows, SEO, performance, deployment, automation, or scalable systems.
+    - Reader Magnet: Offers a practical, specific angle that founders or developers would want to read and share.
+    - Problem-Solution Value: When appropriate, connects a real technical/business pain to a practical engineering fix and a clear business outcome.
     - Visuals: Image prompt is realistic/editorial (No neon/cyberpunk).
 
     REJECT ONLY IF:
@@ -487,7 +702,9 @@ async function runQualityReview(blogData) {
          "readability": 0-10,
          "humanTone": 0-10,
          "realism": 0-10,
-         "storytelling": 0-10
+         "storytelling": 0-10,
+         "brandFit": 0-10,
+         "businessValue": 0-10
       }
     }
   `;
@@ -544,28 +761,26 @@ export async function runBlogAutomationPipeline(
     // 0. Topic Selection / Persistence
     let selectedTopic = fixedTopic;
     let recentTitles = [];
+    let recentBlogMeta = [];
 
     if (!selectedTopic) {
       report("SELECTING_TOPIC", {
-        message: "Rotating topics for maximum diversity...",
+        message: "AI strategist is selecting a fresh Muhyo Tech topic...",
       });
       const recentBlogs = await Blog.find()
         .sort({ createdAt: -1 })
         .limit(10)
-        .select("title");
+        .select("title category tags");
+      recentBlogMeta = recentBlogs.map((blog) => ({
+        title: blog.title || "",
+        category: blog.category || "",
+        tags: Array.isArray(blog.tags) ? blog.tags : [],
+      }));
       recentTitles = recentBlogs.map((b) => b.title);
 
-      const availableTopics = TOPIC_POOL.filter(
-        (t) =>
-          !recentTitles.some((rt) =>
-            rt.toLowerCase().includes(t.toLowerCase().split(":")[0]),
-          ),
-      );
-
       selectedTopic =
-        availableTopics.length > 0
-          ? availableTopics[Math.floor(Math.random() * availableTopics.length)]
-          : TOPIC_POOL[Math.floor(Math.random() * TOPIC_POOL.length)];
+        (await generateStrategicTopic(recentBlogMeta)) ||
+        pickFallbackTopic(recentBlogMeta);
     }
 
     report(previousDraft ? "REFINING" : "GENERATING", {

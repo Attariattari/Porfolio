@@ -66,27 +66,26 @@ export const BlogController = {
                         .sort({ featuredOrder: 1, order: 1, featured: -1, createdAt: -1 })
                         .lean();
 
-                    const uploadedSlugs = new Set(dbBlogs.map((b) => b.slug));
-                    const fallbackBlogs = portfolioData.blogs
-                        .filter((b) => !uploadedSlugs.has(b.slug))
-                        .map((b) => ({
-                            title: b.title,
-                            slug: b.slug,
-                            summary: b.summary,
-                            image: b.image,
-                            category: b.category,
-                            tags: b.tags || [],
-                            date: b.date,
-                            featured: b.featured || false,
-                            featuredOrder: b.featuredOrder || undefined,
-                            author: b.author,
-                            readTime: b.readTime || "5 min read",
-                            _isFromDataJs: true,
-                            _dbId: null,
-                            publishStatus: "published",
-                        }));
+                    if (dbBlogs.length > 0) {
+                        return serializeDoc(dbBlogs);
+                    }
 
-                    return [...serializeDoc(dbBlogs), ...fallbackBlogs];
+                    return portfolioData.blogs.map((b) => ({
+                        title: b.title,
+                        slug: b.slug,
+                        summary: b.summary,
+                        image: b.image,
+                        category: b.category,
+                        tags: b.tags || [],
+                        date: b.date,
+                        featured: b.featured || false,
+                        featuredOrder: b.featuredOrder || undefined,
+                        author: b.author,
+                        readTime: b.readTime || "5 min read",
+                        _isFromDataJs: true,
+                        _dbId: null,
+                        publishStatus: "published",
+                    }));
                 },
                 300, ["blogs"],
             );

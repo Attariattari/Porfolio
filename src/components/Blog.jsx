@@ -342,72 +342,154 @@ const TrendingTabs = ({ activeTab, setActiveTab }) => {
 
 const ArticleCard = ({ blog, index, onImageClick }) => (
   <motion.div
-    initial={{ opacity: 0, scale: 0.95 }}
-    whileInView={{ opacity: 1, scale: 1 }}
-    viewport={{ once: true }}
-    transition={{ delay: index * 0.1, duration: 0.8 }}
+    initial={{ opacity: 0, y: 28 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "-80px" }}
+    transition={{ delay: index * 0.05, duration: 0.55 }}
     className="h-full group"
   >
-    <div className="relative h-full bg-card backdrop-blur-3xl border border-border/50 rounded-[2rem] overflow-hidden flex flex-col transition-all duration-500 hover:shadow-2xl hover:border-accent/30">
-      {/* Editorial Thumbnail */}
-      <div className="relative aspect-[16/11] overflow-hidden">
+    <article className="relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-border/60 bg-background/70 shadow-lg shadow-black/5 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-accent/40 hover:shadow-2xl hover:shadow-accent/10">
+      <button
+        type="button"
+        onClick={() => onImageClick(index)}
+        className="relative aspect-[16/10] overflow-hidden text-left"
+        aria-label={`Preview image for ${blog.title}`}
+      >
         <Image
-          src={blog.image}
+          src={blog.image || blog.featuredImage?.url || "/portfolio-hero.png"}
           alt={blog.title}
           fill
-          className="object-cover transition-transform duration-1000 group-hover:scale-110 cursor-zoom-in"
-          onClick={() => onImageClick(index)}
+          sizes="(max-width: 768px) 100vw, 33vw"
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-60" />
-
-        <div className="absolute top-6 left-6">
-          <span className="px-4 py-2 rounded-lg bg-accent text-accent-foreground text-[10px] font-bold tracking-normal shadow-xl">
-            {blog.category}
+        <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/10 to-transparent" />
+        <div className="absolute left-4 top-4 flex flex-wrap gap-2">
+          {blog.featured && (
+            <span className="rounded-full bg-accent px-3 py-1.5 text-[10px] font-bold text-accent-foreground shadow-lg shadow-accent/20">
+              Featured
+            </span>
+          )}
+          <span className="rounded-full border border-white/20 bg-background/75 px-3 py-1.5 text-[10px] font-bold text-foreground backdrop-blur-md">
+            {blog.category || "Insight"}
           </span>
         </div>
-      </div>
+      </button>
 
-      {/* Content Architecture */}
-      <div className="p-10 flex flex-col flex-grow">
-        <div className="flex items-center gap-4 text-[10px] font-semibold tracking-normal text-muted-foreground/60 mb-8">
-          <span>{blog.date}</span>
-          <span className="w-1.5 h-1.5 rounded-full bg-accent/20" />
-          <span className="text-muted-foreground/80">{blog.readTime}</span>
+      <div className="flex flex-1 flex-col p-6">
+        <div className="mb-4 flex flex-wrap items-center gap-3 text-[11px] font-semibold text-muted-foreground">
+          <span>{blog.date || "Recently published"}</span>
+          <span className="h-1 w-1 rounded-full bg-accent/40" />
+          <span className="inline-flex items-center gap-1.5">
+            <Clock className="h-3.5 w-3.5" />
+            {blog.readTime || "5 min read"}
+          </span>
         </div>
 
-        <Link href={`/blog/${blog.slug}`} className="block group/title mb-auto">
-          <h3 className="text-2xl font-bold text-foreground group-hover/title:text-accent transition-colors leading-tight tracking-tight mb-6 italic">
+        <Link href={`/blog/${blog.slug}`} className="block">
+          <h3 className="mb-3 text-xl font-bold leading-tight tracking-tight text-foreground transition-colors group-hover:text-accent">
             {blog.title}
           </h3>
-          <p className="text-muted-foreground/80 text-sm leading-relaxed line-clamp-3 font-medium italic opacity-80 border-l-2 border-accent/10 pl-6">
-            &quot;{blog.summary}&quot;
+          <p className="mb-0 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
+            {blog.summary}
           </p>
         </Link>
 
-        {/* Footer Architecture */}
-        <div className="mt-12 pt-8 border-t border-border/50 flex items-center justify-between">
-          <div className="flex flex-col gap-1">
-            <span className="text-[9px] font-semibold text-muted-foreground/60 tracking-normal">
-              Author
-            </span>
-            <span className="text-xs font-bold text-foreground tracking-normal">
-              {blog.author}
-            </span>
+        <div className="mt-auto flex items-center justify-between border-t border-border/50 pt-5">
+          <div className="min-w-0">
+            <p className="mb-0 text-[10px] font-semibold text-muted-foreground">
+              By {blog.author || "Muhyo Tech"}
+            </p>
           </div>
-
           <Link
             href={`/blog/${blog.slug}`}
-            className="flex items-center gap-4 text-[10px] font-bold tracking-normal text-foreground group/explore"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border/60 text-foreground transition-all group-hover:border-accent group-hover:bg-accent group-hover:text-accent-foreground"
+            aria-label={`Read ${blog.title}`}
           >
-            <div className="w-12 h-12 rounded-xl border border-border/50 flex items-center justify-center transition-all group-hover/explore:bg-accent group-hover/explore:border-accent group-hover/explore:text-accent-foreground shadow-xl">
-              <ArrowUpRight className="w-5 h-5 transition-transform group-hover/explore:translate-x-0.5 group-hover/explore:-translate-y-0.5" />
-            </div>
+            <ArrowUpRight className="h-4 w-4" />
           </Link>
         </div>
       </div>
-    </div>
+    </article>
   </motion.div>
 );
+
+const HomeArticleCard = ({ blog, index, onImageClick }) => {
+  const image = blog.image || blog.featuredImage?.url || "/portfolio-hero.png";
+  const isFeatured = !!blog.featured;
+
+  return (
+    <motion.article
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ delay: index * 0.08, duration: 0.55 }}
+      className="group h-full"
+    >
+      <div className="relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-border/60 bg-background/70 shadow-lg shadow-black/5 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-accent/40 hover:shadow-2xl hover:shadow-accent/10">
+        <button
+          type="button"
+          onClick={() => onImageClick(index)}
+          className="relative aspect-[16/10] w-full overflow-hidden text-left"
+          aria-label={`Preview image for ${blog.title}`}
+        >
+          <Image
+            src={image}
+            alt={blog.title}
+            fill
+            sizes="(max-width: 768px) 100vw, 33vw"
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-background/85 via-background/5 to-transparent" />
+          <div className="absolute left-4 top-4 flex flex-wrap gap-2">
+            {isFeatured && (
+              <span className="rounded-full bg-accent px-3 py-1.5 text-[10px] font-bold text-accent-foreground shadow-lg shadow-accent/20">
+                Featured
+              </span>
+            )}
+            <span className="rounded-full border border-white/20 bg-background/70 px-3 py-1.5 text-[10px] font-bold text-foreground backdrop-blur-md">
+              {blog.category || "Insight"}
+            </span>
+          </div>
+        </button>
+
+        <div className="flex flex-1 flex-col p-6">
+          <div className="mb-4 flex flex-wrap items-center gap-3 text-[11px] font-semibold text-muted-foreground">
+            <span>{blog.date || "Recently published"}</span>
+            <span className="h-1 w-1 rounded-full bg-accent/40" />
+            <span className="inline-flex items-center gap-1.5">
+              <Clock className="h-3.5 w-3.5" />
+              {blog.readTime || "5 min read"}
+            </span>
+          </div>
+
+          <Link href={`/blog/${blog.slug}`} className="block">
+            <h3 className="mb-3 text-xl font-bold leading-tight tracking-tight text-foreground transition-colors group-hover:text-accent">
+              {blog.title}
+            </h3>
+            <p className="mb-0 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
+              {blog.summary}
+            </p>
+          </Link>
+
+          <div className="mt-auto flex items-center justify-between border-t border-border/50 pt-5">
+            <div className="min-w-0">
+              <p className="mb-0 text-[10px] font-semibold text-muted-foreground">
+                By {blog.author || "Muhyo Tech"}
+              </p>
+            </div>
+            <Link
+              href={`/blog/${blog.slug}`}
+              className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border/60 text-foreground transition-all group-hover:border-accent group-hover:bg-accent group-hover:text-accent-foreground"
+              aria-label={`Read ${blog.title}`}
+            >
+              <ArrowUpRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      </div>
+    </motion.article>
+  );
+};
 
 const NewsletterCTA = () => {
   const [email, setEmail] = useState("");
@@ -540,43 +622,71 @@ export default function Blog({ data, isHomePage = false }) {
 
   if (!data) return null;
   if (isHomePage) {
-    const recentBlogs = data.slice(0, 3);
+    const homeBlogs = resolveFeaturedBlogs(data, portfolioData.blogs).slice(0, 3);
     return (
-      <SectionWrapper id="blog" title="Latest Articles" subtitle="My Blog">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {recentBlogs.map((blog, i) => (
-              <ArticleCard
-                key={blog.id || blog.slug || i}
-                blog={blog}
-                index={i}
-                onImageClick={(idx) => {
-                  setLightboxImages(recentBlogs.map((b) => b.image));
-                  setLightboxIndex(idx);
-                }}
-              />
-            ))}
-          </div>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="mt-16 flex justify-center"
-          >
-            <Link
-              href="/blog"
-              className="group relative px-10 py-5 bg-accent text-accent-foreground font-bold text-sm rounded-full overflow-hidden transition-all hover:pr-14"
+      <>
+        <SectionWrapper id="blog" title="Latest Articles" subtitle="My Blog">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+              <div>
+                <p className="mb-2 text-sm font-semibold text-accent">
+                  Featured writing
+                </p>
+                <h3 className="mb-0 max-w-2xl text-2xl font-bold tracking-tight text-foreground md:text-3xl">
+                  Selected articles from the portfolio journal.
+                </h3>
+              </div>
+              <p className="mb-0 max-w-md text-sm leading-relaxed text-muted-foreground">
+                Practical notes on development, product thinking, performance,
+                and the systems behind polished digital work.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-7">
+              {homeBlogs.map((blog, i) => (
+                <HomeArticleCard
+                  key={blog.id || blog.slug || i}
+                  blog={blog}
+                  index={i}
+                  onImageClick={(idx) => {
+                    setLightboxImages(
+                      homeBlogs.map(
+                        (b) =>
+                          b.image || b.featuredImage?.url || "/portfolio-hero.png",
+                      ),
+                    );
+                    setLightboxIndex(idx);
+                  }}
+                />
+              ))}
+            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="mt-16 flex justify-center"
             >
-              <span className="relative z-10 flex items-center gap-2">
-                View All Articles <ArrowRight className="w-4 h-4 ml-1" />
-              </span>
-              <div className="absolute top-0 -right-full w-full h-full bg-foreground/10 group-hover:right-0 transition-all duration-300" />
-              <ArrowRight className="absolute right-6 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 w-5 h-5" />
-            </Link>
-          </motion.div>
-        </div>
-      </SectionWrapper>
+              <Link
+                href="/blog"
+                className="group relative px-8 py-4 bg-accent text-accent-foreground font-bold text-sm rounded-2xl overflow-hidden transition-all hover:pr-12 shadow-lg shadow-accent/20"
+              >
+                <span className="relative z-10 flex items-center gap-2">
+                  View All Articles <ArrowRight className="w-4 h-4 ml-1" />
+                </span>
+                <div className="absolute top-0 -right-full w-full h-full bg-foreground/10 group-hover:right-0 transition-all duration-300" />
+                <ArrowRight className="absolute right-5 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 w-5 h-5" />
+              </Link>
+            </motion.div>
+          </div>
+        </SectionWrapper>
+        <ImageLightbox
+          isOpen={lightboxIndex !== null}
+          onClose={() => setLightboxIndex(null)}
+          images={lightboxImages}
+          initialIndex={lightboxIndex || 0}
+        />
+      </>
     );
   }
 

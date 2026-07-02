@@ -23,7 +23,7 @@ export function resolveFeaturedBlogs(dbBlogs = [], staticBlogs = []) {
 
     // 2. Filter for real DB blogs that are marked as 'featured' and 'published'
     const dbFeatured = realDbBlogs.filter(
-        (b) => !!b.featured && b.publishStatus === "published",
+        (b) => !!b.featured && (!b.publishStatus || b.publishStatus === "published"),
     );
 
     // 3. Priority 1: If DB has featured blogs, use ONLY those (sorted by featuredOrder)

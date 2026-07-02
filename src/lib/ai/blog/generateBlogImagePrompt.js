@@ -1,7 +1,7 @@
 import { generateGeminiResponse } from "@/lib/geminiService";
 
 const FALLBACK_NEGATIVE_PROMPT =
-  "No text, no logos, no watermarks, no fake screenshots, no copyrighted characters, no misleading claims, no cluttered UI.";
+  "No fake logos, no watermarks, no fake brand names, no gibberish text, no unreadable labels, no copyrighted characters, no misleading claims, no cluttered UI, no neon cyberpunk, no obvious AI-art cliches.";
 
 export function isProfessionalImagePromptReady(imagePrompt = {}) {
   const prompt = String(imagePrompt.prompt || "").trim();
@@ -28,10 +28,10 @@ export async function generateBlogImagePrompt(blog) {
   const contentExcerpt = excerptHtml(blog.content || "");
 
   const fallback = {
-    prompt: `Create a premium 16:9 editorial blog cover image for a Muhyo Tech article titled "${blog.title}". The image should communicate the article's core idea through a professional web-development visual narrative, not generic stock imagery. Use a clean SaaS/software-engineering environment with layered interface panels, architecture diagrams, code-inspired details, deployment or data-flow elements when relevant, and a polished founder-led technology publication feel. Composition: strong central focal point, balanced foreground and background depth, clear negative space for a blog header crop, no visible text inside the image. Lighting: soft cinematic key light with subtle contrast, crisp highlights, realistic shadows, high-end digital editorial finish. Palette: deep navy, slate, emerald, cyan accents, and restrained warm highlights. Style: premium realistic digital illustration or refined photoreal editorial render, sharp, clean, modern, trustworthy, high-resolution, suitable for a professional software agency blog. Avoid logos, fake screenshots, text labels, watermarks, clutter, cartoons, random robots, and anything that looks like a template.`,
+    prompt: `Create a premium 16:9 technical editorial blog cover image for a Muhyo Tech article titled "${blog.title}". Communicate the article's core idea through a realistic software-engineering visual narrative, not generic stock imagery. Use believable web-development and product-delivery artifacts: architecture cards, deployment pipelines, monitoring dashboards, server/product details, data-flow paths, or before/after workflow states when relevant. Short readable UI labels or status cards are allowed if they clarify the story; avoid fake logos, gibberish, watermarks, and long text. Composition: strong central focal point, balanced foreground/background depth, clean negative space for a blog header crop, attractive social-preview readability. Lighting: realistic professional product or office lighting with crisp detail and trustworthy contrast. Palette: deep navy, slate, emerald, cyan accents, and restrained warm highlights. Style: premium realistic technical/product publication cover, sharp, modern, grounded, high-resolution, suitable for a professional software agency blog. Avoid neon cyberpunk, floating code clouds, plastic AI gloss, clutter, cartoons, random robots, and template-like scenes.`,
     altText: `${blog.title} blog cover image`,
     visualDirection:
-      "Premium 16:9 SaaS editorial cover with a clear software-engineering narrative, layered UI/architecture elements, cinematic lighting, and clean negative space for blog use.",
+      "Premium 16:9 technical editorial cover with realistic software-engineering artifacts, clear problem-to-outcome narrative, and clean blog/social crop space.",
     negativePrompt: FALLBACK_NEGATIVE_PROMPT,
   };
 
@@ -55,13 +55,16 @@ export async function generateBlogImagePrompt(blog) {
       - The prompt must be production-ready for an AI image generator.
       - Prompt length: 850-1300 characters.
       - Include aspect ratio 16:9.
-      - Include subject, composition, foreground/background, mood, lighting, depth, palette, style, and quality.
+      - Include subject, composition, foreground/background, technical artifacts, mood, lighting, depth, palette, style, and quality.
       - Make it specific to this exact blog topic and content excerpt.
-      - Clean SaaS/web development feel, premium software-engineering publication style.
+      - Clean SaaS/web development feel, premium software-engineering/product publication style.
       - Suitable for a blog featured image and social preview crop.
+      - Prefer realistic technical storytelling: architecture cards, dashboard panels, data-flow paths, pipeline stages, product screens, servers, devices, or before/after transformation scenes when relevant.
+      - Short readable labels/status cards are allowed only when they clarify the technical story.
       - No random robots unless directly relevant
-      - No fake screenshots, no text-heavy design, no logos, no copyrighted characters
-      - Do not include instructions to add title text inside the image.
+      - No fake logos, no gibberish, no watermarks, no text-heavy design, no copyrighted characters
+      - Do not include instructions to add large title text inside the image.
+      - Avoid neon cyberpunk, floating code clouds, fantasy holograms, plastic AI gloss, and generic stock-photo scenes.
 
       OUTPUT STRICT JSON:
       {
