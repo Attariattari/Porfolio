@@ -7,7 +7,8 @@ export const metadata = {
   description: "Secure Registration for Muhyo Tech Control Center",
 };
 
-export default async function AdminSignupPage() {
+export default async function AdminSignupPage({ searchParams }) {
+    const resolvedSearchParams = await searchParams;
     const session = await getAuthSession();
 
     // If session exists, redirect to dashboard
@@ -16,5 +17,11 @@ export default async function AdminSignupPage() {
     }
 
     // Pass "setup" to initiate the signup flow
-    return <AuthContainer defaultView="setup" />;
+    return (
+        <AuthContainer
+            defaultView="setup"
+            callbackUrl="/admin/dashboard"
+            googleError={resolvedSearchParams?.googleError || ""}
+        />
+    );
 }

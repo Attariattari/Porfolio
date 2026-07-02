@@ -7,6 +7,18 @@ const UserSchema = new mongoose.Schema({
   role: { type: String, enum: ['user', 'admin', 'super-admin', 'root-super-admin'], default: 'user' },
   status: { type: String, enum: ['pending', 'approved', 'denied', 'removed'], default: 'pending' },
   permissions: { type: Object, default: {} },
+  authProviders: [{
+    provider: { type: String, enum: ['credentials', 'google'], required: true },
+    providerId: { type: String },
+    email: { type: String, lowercase: true },
+    linkedAt: { type: Date, default: Date.now },
+  }],
+  googleId: { type: String, index: true, sparse: true },
+  avatar: { type: String },
+  emailVerified: { type: Boolean, default: false },
+  provider: { type: String, enum: ['credentials', 'google'], default: 'credentials' },
+  lastLoginAt: { type: Date },
+  isOAuthUser: { type: Boolean, default: false },
   
   // ===== PASSWORD RESET SYSTEM (Enterprise-Grade) =====
   // Password reset token for secure credential changes
@@ -53,3 +65,23 @@ const PendingCodeSchema = new mongoose.Schema({
 PendingCodeSchema.index({ expiry: 1 }, { expireAfterSeconds: 0 });
 
 export const PendingCode = mongoose.models.PendingCode || mongoose.model('PendingCode', PendingCodeSchema);
+
+const GoogleOAuthLinkRequestSchema = new mongoose.Schema({
+  tokenHash: { type: String, required: true, unique: true, index: true },
+  email: { type: String, required: true, lowercase: true, index: true },
+  googleId: { type: String, required: true },
+  googleEmail: { type: String, required: true, lowercase: true },
+  name: { type: String },
+  avatar: { type: String },
+  callbackUrl: { type: String, default: "/admin/dashboard" },
+  status: { type: String, enum: ['pending', 'used', 'expired'], default: 'pending' },
+  expiresAt: { type: Date, required: true },
+  createdAt: { type: Date, default: Date.now },
+  usedAt: { type: Date },
+}, { strict: true });
+
+GoogleOAuthLinkRequestSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+
+export const GoogleOAuthLinkRequest =
+  mongoose.models.GoogleOAuthLinkRequest ||
+  mongoose.model('GoogleOAuthLinkRequest', GoogleOAuthLinkRequestSchema);

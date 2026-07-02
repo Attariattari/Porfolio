@@ -24,6 +24,15 @@ export async function GET(request) {
         if (!todayBlog) {
             console.log("[Cron] Starting Step 1: Text Generation");
             results.step1 = await runBlogAutomationPipeline();
+            if (results.step1?.success && results.step1.blogId) {
+                console.log("[Cron] Starting Step 1b: Image Ensure");
+                const imageResult = await finalizeBlogPipeline(results.step1.blogId);
+                results.step2.push({
+                    id: results.step1.blogId,
+                    success: imageResult.success,
+                    status: imageResult.status,
+                });
+            }
         } else {
             results.step1 = { success: true, message: "Blog for today already exists" };
         }

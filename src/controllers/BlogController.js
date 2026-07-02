@@ -18,8 +18,9 @@ import { revalidatePath } from "next/cache";
  */
 export const BlogController = {
     // 1. Get All Blogs - Optimized with lean() and field selection for list pages
-    async getAll(filterPublished = false) {
-        const cacheKey = `blogs_all_${filterPublished}`;
+    async getAll(filterPublished = false, options = {}) {
+        const includeContent = options.includeContent === true;
+        const cacheKey = `blogs_all_${filterPublished}_${includeContent}`;
 
         try {
             return await withCache(
@@ -32,15 +33,16 @@ export const BlogController = {
                         `[BlogController] Fetching blogs (Published Only: ${filterPublished})`,
                     );
 
-                    // P5 OPTIMIZATION: Select only needed fields for list pages
-                    // Exclude: content (large body), comments, metadata
-                    // Reduces payload by 80-90%
+                    // P5 OPTIMIZATION: Select only needed fields for list pages.
+                    // Admin edit screens can opt into content with includeContent.
                     const dbBlogs = await Blog.find(query)
                         .select([
                             "title",
                             "slug",
                             "summary",
+                            ...(includeContent ? ["content"] : []),
                             "image",
+                            "featuredImage",
                             "category",
                             "tags",
                             "date",
@@ -54,6 +56,11 @@ export const BlogController = {
                             "aiGenerated",
                             "imageStatus",
                             "imageGenerated",
+                            "imagePrompt",
+                            "image_prompt",
+                            "imageNegativePrompt",
+                            "imageGenerationAttempts",
+                            "manualImageUploadTokenId",
                             "_id",
                         ])
                         .sort({ featuredOrder: 1, order: 1, featured: -1, createdAt: -1 })

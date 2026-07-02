@@ -1,327 +1,253 @@
-# 🚀 Muhyo Tech | Professional Portfolio Website
+# Muhyo Tech
 
-A modern, high-performance portfolio website built with cutting-edge web technologies. Crafted to showcase professional services, projects, and expertise with an elegant, responsive design.
+Professional portfolio, content platform, and admin-managed software services website for Muhyo Tech, the personal software development brand of Pir Ghulam Muhyo Din.
 
----
+Live site: https://muhyo-tech.vercel.app  
+Founder: Pir Ghulam Muhyo Din  
+Location: Lahore, Pakistan  
+Phone: +92 322 4458481  
+WhatsApp: https://wa.me/923224458481  
+Business email: MuhyoTech@gmail.com  
+Resume/contact email: attariattari549@gmail.com  
+Last updated: July 2026
 
-## 📋 Table of Contents
+## Overview
 
-- [Overview](#overview)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Running the Application](#running-the-application)
-- [Project Structure](#project-structure)
-- [Available Scripts](#available-scripts)
-- [Deployment](#deployment)
-- [Contributing](#contributing)
-- [License](#license)
+Muhyo Tech is a full-stack portfolio and digital services platform built with Next.js, React, MongoDB, and a secure admin dashboard. It presents services, projects, blogs, resume data, goals, contact channels, and SEO/AI-friendly discovery files.
 
----
+The website is designed to represent Muhyo Tech professionally for clients, search engines, AI assistants, and technical reviewers.
 
-## 🎯 Overview
+## What Muhyo Tech Offers
 
-**Muhyo Tech** is a professional full-stack portfolio website designed to help senior software engineers, UX architects, and full-stack developers showcase their work. The platform features:
+- Performance-first web development
+- UI/UX design and responsive interfaces
+- SaaS dashboards and admin systems
+- API and backend system development
+- MongoDB-powered dynamic content
+- SEO and digital growth strategy
+- Cloud deployment and DevOps setup
+- Blog publishing and portfolio management
+- Secure admin authentication and approvals
+- AI/search discovery support with `/llms.txt`
 
-- **Dynamic Content Management** - Admin dashboard for managing blogs, projects, and services
-- **Real-time Notifications** - Event-driven architecture for instant updates
-- **Secure Authentication** - JWT-based authentication system with email verification
-- **Image Optimization** - Cloudinary integration for efficient media management
-- **SEO Optimized** - Server-side rendering with metadata optimization
-- **Responsive Design** - Mobile-first approach with smooth animations
-- **Dark/Light Theme** - Theme persistence with Tailwind CSS
+## Key Public Pages
 
----
+- Home: https://muhyo-tech.vercel.app
+- About: https://muhyo-tech.vercel.app/about
+- Services: https://muhyo-tech.vercel.app/services
+- Projects: https://muhyo-tech.vercel.app/projects
+- Blog: https://muhyo-tech.vercel.app/blog
+- Goals: https://muhyo-tech.vercel.app/goals
+- Skills: https://muhyo-tech.vercel.app/skills
+- Resume: https://muhyo-tech.vercel.app/resume
+- Contact: https://muhyo-tech.vercel.app/contact
+- AI profile: https://muhyo-tech.vercel.app/llms.txt
+- Sitemap: https://muhyo-tech.vercel.app/sitemap.xml
+- Robots: https://muhyo-tech.vercel.app/robots.txt
 
-## ✨ Features
+## Features
 
-### Frontend Features
-- **Hero Section** - Animated hero with typewriter effect and floating elements
-- **Portfolio Showcase** - Dynamic project portfolio with filtering and modal views
-- **Blog System** - Rich content blog with categories and search functionality
-- **Services Page** - Service offerings with detailed descriptions
-- **Admin Dashboard** - Comprehensive management system for content
-- **Contact Form** - Email-integrated contact system
-- **Social Integration** - WhatsApp business integration
-- **Performance Metrics** - Lazy loading and code splitting
+- Dynamic portfolio data for services, projects, blogs, goals, skills, and resume content
+- Admin dashboard for managing public content
+- Secure admin login with passkey-based authentication
+- Google OAuth account linking flow
+- Super Admin transfer and security controls
+- MongoDB/Mongoose data layer
+- SEO metadata, canonical URLs, sitemap, robots, and JSON-LD schema
+- Detailed `/llms.txt` file for AI assistants and answer engines
+- Contact form and WhatsApp project inquiry path
+- Blog automation and AI-assisted editorial tooling
+- Cloudinary image upload and media handling
+- Responsive public UI with animation and modern design
 
-### Backend Features
-- **RESTful API** - Complete REST API with Express.js
-- **Database** - MongoDB with Mongoose ORM
-- **Authentication** - JWT tokens with refresh mechanism
-- **Email System** - NodeMailer integration for email campaigns
-- **File Upload** - Cloudinary integration for media management
-- **Event Bus** - Real-time event handling and notifications
-- **Admin Approvals** - Content moderation system
-- **Security** - Environment-based secret management
+## Tech Stack
 
----
+### Core
 
-## 🛠️ Tech Stack
+- Next.js 16
+- React 19
+- Tailwind CSS 4
+- MongoDB
+- Mongoose
+- Node.js
 
-### Frontend
-- **Next.js 14+** - React framework with App Router
-- **React 18+** - UI library
-- **Tailwind CSS** - Utility-first CSS framework
-- **Framer Motion** - Animation library
-- **Lucide React** - Icon library
-- **Zustand** - State management
+### UI and State
 
-### Backend
-- **Node.js** - JavaScript runtime
-- **Express.js** - Web framework
-- **MongoDB** - NoSQL database
-- **Mongoose** - ODM for MongoDB
-- **NextAuth.js** - Authentication library
+- Framer Motion
+- Lucide React
+- Zustand
+- React Hook Form
+- TanStack Query
+- Sonner
+- Swiper
+- Recharts
 
-### Services & Tools
-- **Cloudinary** - Image management and optimization
-- **NodeMailer** - Email service
-- **Vercel** - Deployment platform
-- **NextAuth** - Authentication framework
+### Backend and Security
 
----
+- Next.js App Router API routes
+- JWT sessions with `jose`
+- bcrypt passkey hashing
+- Nodemailer email delivery
+- Rate limiting
+- Admin approval workflows
+- Google OAuth integration
 
-## 📦 Prerequisites
+### Media, Automation, and AI
 
-Before you begin, ensure you have the following installed:
+- Cloudinary
+- Google Generative AI package
+- Blog image generation helpers
+- SEO audit helpers
+- `/llms.txt` AI knowledge profile
 
-- **Node.js** (v18.17 or later)
-- **npm** (v9+) or **yarn** (v3+)
-- **MongoDB** (local or Atlas connection)
-- **Git**
+## Project Structure
 
-### Required Accounts
-- MongoDB Atlas (or local MongoDB)
-- Cloudinary account
-- Gmail account (for SMTP)
-
----
-
-## ⚙️ Installation
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/Attariattari/muhyo-tech.git
-cd muhyo-tech
+```txt
+muhyo-tech/
+├── public/                    Static assets and images
+├── src/
+│   ├── app/                   Next.js App Router pages and API routes
+│   │   ├── (main)/            Public website routes
+│   │   ├── (admin)/           Admin dashboard and auth routes
+│   │   ├── api/               Backend API endpoints
+│   │   ├── llms.txt/          AI profile route
+│   │   ├── robots.js          Robots configuration
+│   │   └── sitemap.js         Dynamic sitemap
+│   ├── components/            Public and admin UI components
+│   ├── controllers/           Business logic and data controllers
+│   ├── lib/                   Auth, SEO, config, data, mail, AI helpers
+│   └── models/                Mongoose models
+├── package.json
+├── next.config.mjs
+├── eslint.config.mjs
+└── README.md
 ```
 
-### 2. Install Dependencies
+## Environment Variables
+
+Create `.env.local` from `.env.sample` and configure the project secrets.
+
+Important variables include:
+
+```env
+APP_URL=https://muhyo-tech.vercel.app
+NEXT_PUBLIC_SITE_URL=https://muhyo-tech.vercel.app
+MONGODB_URI=your_mongodb_connection_string
+AUTH_SECRET=your_secure_auth_secret
+SESSION_SECRET=your_secure_session_secret
+SUPER_ADMIN_EMAIL=your_super_admin_email
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your_email
+SMTP_PASS=your_app_password
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+GOOGLE_REDIRECT_URI=https://muhyo-tech.vercel.app/api/auth/google/callback
+```
+
+For local development, the app can still run on `http://localhost:3000`, but public SEO and AI files should point to the production domain.
+
+## Getting Started
+
+Install dependencies:
 
 ```bash
 npm install
-# or
-yarn install
 ```
 
-### 3. Setup Environment Variables
-
-Create a `.env.local` file in the root directory using `.env.sample` as a template:
-
-```bash
-cp .env.sample .env.local
-```
-
-Configure the following variables in `.env.local`:
-
-```env
-# Database
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/database_name
-
-# Authentication
-AUTH_SECRET=your_secret_key_here_minimum_32_chars_long_!!!
-
-# Site Configuration
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
-
-# Cloudinary
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name
-NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=your_preset_name
-
-# SMTP (Email Service)
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your_email@gmail.com
-SMTP_PASS=your_app_password
-
-# Environment
-NODE_ENV=development
-```
-
----
-
-## 🚀 Running the Application
-
-### Development Server
-
-Start the development server with hot-reload:
+Run the development server:
 
 ```bash
 npm run dev
 ```
 
-The application will be available at `http://localhost:3000`
+Open:
 
-### Production Build
+```txt
+http://localhost:3000
+```
 
-Create an optimized production build:
+Build for production:
 
 ```bash
 npm run build
 ```
 
-Start the production server:
+Start production server:
 
 ```bash
 npm start
 ```
 
----
+Run linting:
 
-## 📂 Project Structure
-
-```
-muhyo-tech/
-├── src/
-│   ├── app/                    # Next.js App Router
-│   │   ├── (admin)/           # Admin dashboard routes
-│   │   ├── (main)/            # Public routes
-│   │   ├── api/               # API routes
-│   │   └── layout.jsx         # Root layout
-│   ├── components/            # React components
-│   │   ├── admin/             # Admin components
-│   │   └── ui/                # UI components
-│   ├── lib/                   # Utilities and helpers
-│   │   ├── auth.js            # Authentication logic
-│   │   ├── dbConnect.js       # Database connection
-│   │   ├── config.js          # Configuration
-│   │   └── data.js            # Static data
-│   ├── models/                # Database models
-│   ├── controllers/           # Business logic
-│   └── proxy.js               # Auth proxy configuration
-├── public/                    # Static assets
-├── .env.sample               # Environment variables template
-├── package.json              # Dependencies
-├── next.config.mjs           # Next.js configuration
-└── tailwind.config.js        # Tailwind CSS configuration
+```bash
+npm run lint
 ```
 
----
+## Available Scripts
 
-## 📝 Available Scripts
-
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Create production build |
-| `npm start` | Start production server |
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Start the local Next.js development server |
+| `npm run build` | Create a production build |
+| `npm start` | Start the production server |
 | `npm run lint` | Run ESLint |
-| `npm test` | Run tests (if configured) |
+| `npm run clean` | Remove the `.next` build folder on Windows |
 
----
+## SEO And AI Discovery
 
-## 🌐 Deployment
+Muhyo Tech includes a strong discovery setup:
 
-### Deploy on Vercel (Recommended)
+- `src/app/sitemap.js` generates public URLs for search engines.
+- `src/app/robots.js` allows public pages and blocks admin/API areas.
+- `src/components/schema/OrganizationSchema.jsx` adds Organization JSON-LD.
+- `src/app/(main)/about/page.jsx` adds Person JSON-LD for Pir Ghulam Muhyo Din.
+- `src/app/llms.txt/route.js` provides a detailed AI-readable brand profile.
 
-The easiest way to deploy is using Vercel:
+The `/llms.txt` route is intentionally configured to use the Vercel production URL so AI systems do not learn local development links.
 
-1. **Push to GitHub**
-```bash
-git add .
-git commit -m "Initial commit"
-git push origin main
-```
+## Admin And Security Notes
 
-2. **Connect to Vercel**
-   - Go to [Vercel](https://vercel.com)
-   - Click "New Project"
-   - Select your GitHub repository
-   - Configure environment variables in Vercel dashboard
+- Admin routes live under `/admin`.
+- API routes live under `/api`.
+- Private admin and API routes are excluded from public AI/source guidance.
+- Super Admin and Google OAuth account linking use extra verification rules.
+- Passkeys are hashed before storage.
+- Sensitive values must stay in environment variables, never in committed code.
 
-3. **Deploy**
-   - Click "Deploy"
-   - Your site will be live!
+## Deployment
 
-### Environment Variables on Vercel
+Recommended deployment platform: Vercel.
 
-Add all `.env.local` variables to Vercel project settings under "Environment Variables".
+Deployment checklist:
 
-### Deployment Checklist
+- Set `APP_URL` and `NEXT_PUBLIC_SITE_URL` to `https://muhyo-tech.vercel.app`
+- Add MongoDB credentials
+- Add auth/session secrets
+- Add SMTP credentials
+- Add Google OAuth credentials
+- Confirm `GOOGLE_REDIRECT_URI`
+- Run a production build
+- Verify `/sitemap.xml`, `/robots.txt`, and `/llms.txt`
 
-- [ ] All environment variables configured
-- [ ] Database connection verified
-- [ ] Cloudinary credentials set
-- [ ] SMTP email configuration tested
-- [ ] Build passes without errors
+## Contact
 
----
+For projects, collaboration, or technical inquiries:
 
-## 🤝 Contributing
+- Website: https://muhyo-tech.vercel.app/contact
+- WhatsApp: https://wa.me/923224458481
+- Phone: +92 322 4458481
+- Email: MuhyoTech@gmail.com
+- LinkedIn: https://www.linkedin.com/in/ghulam-muhyo-din-web-designer/
+- GitHub: https://github.com/Attariattari
+- X/Twitter: https://x.com/GhulamMuhyo
+- Facebook: https://www.facebook.com/MuhammadMuhyoDinAttari
 
-Contributions are welcome! To contribute:
+## License
 
-1. **Fork the repository**
-```bash
-git clone https://github.com/your-username/muhyo-tech.git
-```
+This project is private/proprietary unless a license file or repository setting states otherwise.
 
-2. **Create a feature branch**
-```bash
-git checkout -b feature/AmazingFeature
-```
+## Maintainer
 
-3. **Commit your changes**
-```bash
-git commit -m 'Add some AmazingFeature'
-```
-
-4. **Push to the branch**
-```bash
-git push origin feature/AmazingFeature
-```
-
-5. **Open a Pull Request**
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
----
-
-## 👤 About
-
-**Muhyo Tech** - Building amazing websites with modern technology, clean code, and secure architecture.
-
-### Get in Touch
-- **Email** - [attariattari549@gmail.com](mailto:attariattari549@gmail.com)
-- **LinkedIn** - [Ghulam Muhyo Din](https://www.linkedin.com/in/ghulam-muhyo-din-web-designer/)
-- **GitHub** - [Attariattari](https://github.com/Attariattari)
-- **Website** - [muhyo-tech.vercel.app](https://muhyo-tech.vercel.app)
-
----
-
-## 🙏 Acknowledgments
-
-- [Next.js](https://nextjs.org) - React framework
-- [Tailwind CSS](https://tailwindcss.com) - CSS framework
-- [Framer Motion](https://www.framer.com/motion) - Animation library
-- [MongoDB](https://www.mongodb.com) - Database
-- [Vercel](https://vercel.com) - Hosting platform
-
----
-
-<div align="center">
-
-**Made with ❤️ by Muhyo Tech**
-
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
-![Status](https://img.shields.io/badge/status-Active-brightgreen)
-
-</div>
+Maintained by Muhyo Tech and Pir Ghulam Muhyo Din.

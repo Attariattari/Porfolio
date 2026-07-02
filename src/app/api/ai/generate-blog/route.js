@@ -5,6 +5,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(request) {
     const { searchParams } = new URL(request.url);
+    const baseUrl = new URL(request.url).origin;
     const action = searchParams.get("action"); // 'init' or 'finalize'
     const blogId = searchParams.get("id");
     const generateImage = searchParams.get("generateImage") !== "false";
@@ -19,13 +20,42 @@ export async function GET(request) {
 
             try {
                 if (action === "finalize" && blogId) {
-                    await finalizeBlogPipeline(blogId, { generateImage }, (progress) => {
+                    const result = await finalizeBlogPipeline(blogId, { generateImage, baseUrl }, (progress) => {
                         sendUpdate(progress);
                     });
+                    sendUpdate({
+                        status: "COMPLETED",
+                        details: {
+                            message: result?.emailSent
+                                ? "Secure upload email sent to Super Admin."
+                                : result?.status === "generated"
+                                    ? "AI image generated and attached."
+                                    : "Image workflow finished. Manual upload may be required.",
+                            emailSent: !!result?.emailSent,
+                            workflowStatus: result?.status,
+                        },
+                    });
                 } else {
-                    await runBlogAutomationPipeline(0, (progress) => {
+                    const result = await runBlogAutomationPipeline(0, (progress) => {
                         sendUpdate(progress);
-                    }, { stopAtText: true });
+                    });
+                    if (result?.success && result.blogId) {
+                        const imageResult = await finalizeBlogPipeline(result.blogId, { generateImage, baseUrl }, (progress) => {
+                            sendUpdate(progress);
+                        });
+                        sendUpdate({
+                            status: "COMPLETED",
+                            details: {
+                                message: imageResult?.emailSent
+                                    ? "Blog saved and secure upload email sent to Super Admin."
+                                    : imageResult?.status === "generated"
+                                        ? "Blog saved with AI image attached."
+                                        : "Blog saved. Manual image upload may be required.",
+                                emailSent: !!imageResult?.emailSent,
+                                workflowStatus: imageResult?.status,
+                            },
+                        });
+                    }
                 }
                 
                 // Final close
@@ -45,4 +75,3 @@ export async function GET(request) {
         },
     });
 }
-

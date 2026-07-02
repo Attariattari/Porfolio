@@ -490,45 +490,62 @@ const Portfolio = ({ projects }) => {
                         </div>
                       </div>
 
-                      {/* Image Side: Elevated with 3D feel */}
+                      {/* Image Side: Cinematic Service-style Card */}
                       <div
                         className={`w-full lg:w-[calc(50%-6rem)] relative group/img-side ${
                           isReversed ? "lg:order-1" : "lg:order-2"
                         } mt-12 lg:mt-0`}
                       >
-                        <div className="absolute -inset-4 bg-accent/10 blur-3xl rounded-full scale-50 opacity-0 group-hover/img-side:opacity-100 transition-opacity duration-1000" />
+                        {/* Accent glow */}
+                        <div className="absolute bg-accent/20 blur-[40px] rounded-full scale-90 animate-pulse -z-10 inset-0" />
 
                         <motion.div
-                          whileHover={{
-                            scale: 1.02,
-                            rotateX: 2,
-                            rotateY: isReversed ? 2 : -2,
-                          }}
+                          whileHover={{ scale: 1.02 }}
                           transition={{
                             type: "spring",
                             stiffness: 200,
                             damping: 20,
                           }}
-                          className="relative p-2 rounded-[3.5rem] border border-white/5 bg-white/[0.03] backdrop-blur-3xl overflow-hidden shadow-2xl group-hover/img-side:border-accent/40 transition-colors cursor-pointer"
+                          className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-[0_40px_80px_-20px_rgba(0,0,0,0.6)] border border-white/10 bg-background cursor-pointer"
                           onClick={() => setSelectedProject(project)}
                         >
-                          <div className="relative rounded-[2.8rem] overflow-hidden aspect-[16/11] w-full">
-                            <img
-                              src={project.thumbnail}
-                              alt={project.title}
-                              className="w-full h-full object-cover transform transition-all duration-1000 group-hover/img-side:scale-110 group-hover/img-side:rotate-1"
-                            />
+                          {/* Background image with animated scale-in */}
+                          <motion.div
+                            initial={{ scale: 1.2, opacity: 0 }}
+                            whileInView={{ scale: 1, opacity: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 1.2, ease: "easeOut" }}
+                            className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover/img-side:scale-110"
+                            style={{
+                              backgroundImage: `url(${project.thumbnail})`,
+                            }}
+                          >
+                            {/* Dark gradient overlay — same as ServiceSlider */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+                            <div className="absolute inset-0 bg-black/20" />
+                          </motion.div>
 
-                            {/* Floating Metadata */}
-                            <div className="absolute top-8 left-8">
-                              <div className="px-4 py-2 bg-background/40 backdrop-blur-2xl border border-white/10 rounded-2xl flex items-center gap-3">
-                                <div className="w-2 h-2 rounded-full bg-accent" />
-                                <span className="text-[9px] font-bold text-white tracking-normal">
-                                  Production ready
-                                </span>
+                          {/* Overlay content at bottom */}
+                          <div className="absolute inset-0 p-8 md:p-10 flex flex-col justify-end pointer-events-none">
+                            <div className="relative z-10 pointer-events-auto">
+                              {/* Accent badge — same style as "Service N" in ServiceSlider */}
+                              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/90 backdrop-blur-sm text-white text-[10px] font-black uppercase tracking-[0.3em] mb-4 shadow-xl">
+                                <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+                                {project.category}
                               </div>
+                              {/* Project title */}
+                              <h3 className="text-2xl md:text-3xl font-black text-white mb-4 leading-[1.1] tracking-tighter drop-shadow-2xl">
+                                {project.title}
+                              </h3>
+                              {/* Subtle description — same italic border-l style */}
+                              <p className="text-white/70 text-xs md:text-sm line-clamp-2 italic font-medium border-l-2 border-accent/50 pl-3">
+                                "{project.description}"
+                              </p>
                             </div>
                           </div>
+
+                          {/* Glass reflection — same as hero cards */}
+                          <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none z-30" />
                         </motion.div>
                       </div>
                     </motion.div>

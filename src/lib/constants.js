@@ -8,31 +8,43 @@ export const THEME_COLORS = {
 
 export const NAVIGATION_LINKS = [
   { name: "Home", href: "/" },
-  { name: "About", href: "/about" },
   { name: "Services", href: "/services" },
-  { name: "Skills", href: "/skills" },
   { name: "Projects", href: "/projects" },
+  { name: "About", href: "/about" },
+  { name: "Goals", href: "/goals" },
   { name: "Blog", href: "/blog" },
-  { name: "Contact", href: "/contact" },
   { name: "Resume", href: "/resume" },
+  { name: "Skills", href: "/skills" },
+  { name: "Contact", href: "/contact" },
 ];
 
 export const ADMIN_NAVIGATION_LINKS = [
   { name: "Dashboard", href: "/admin/dashboard", icon: "LayoutDashboard" },
   { name: "Bookings", href: "/admin/bookings", icon: "Activity" },
   { name: "Messages", href: "/admin/messages", icon: "MessageSquare" },
-  { name: "Projects", href: "/admin/projects", icon: "Briefcase" },
+  { name: "Hero", href: "/admin/hero", icon: "Zap" },
+  { name: "About", href: "/admin/about", icon: "User" },
   { name: "Services", href: "/admin/services", icon: "Cpu" },
+  { name: "Projects", href: "/admin/projects", icon: "Briefcase" },
+  { name: "Skills", href: "/admin/skills", icon: "Code2" },
+  { name: "Goals", href: "/admin/goals", icon: "Target" },
   { name: "Blog", href: "/admin/blogs", icon: "FileText" },
+  { name: "Resume", href: "/admin/resume", icon: "FileText" },
   { name: "Subscribers", href: "/admin/subscribers", icon: "Users" },
   { name: "Social Links", href: "/admin/social-links", icon: "MessageSquare" },
-  { name: "About", href: "/admin/about", icon: "User" },
-  { name: "Hero", href: "/admin/hero", icon: "Zap" },
-  { name: "Skills", href: "/admin/skills", icon: "Code2" },
-  { name: "Resume", href: "/admin/resume", icon: "FileText" },
-  { name: "Notifications", href: "/admin/notifications", icon: "Bell", role: "super-admin" },
+  {
+    name: "Notifications",
+    href: "/admin/notifications",
+    icon: "Bell",
+    role: "super-admin",
+  },
   { name: "Users", href: "/admin/users", icon: "Users", role: "super-admin" },
-  { name: "Settings", href: "/admin/settings", icon: "Settings", role: "super-admin" },
+  {
+    name: "Settings",
+    href: "/admin/settings",
+    icon: "Settings",
+    role: "super-admin",
+  },
 ];
 export const SERVICE_OPTIONS = [
   { value: "web-development", label: "Web Development" },

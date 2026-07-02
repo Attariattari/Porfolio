@@ -32,6 +32,18 @@ export default function Footer({ data }) {
     legal: footerData.legal,
   };
 
+  const handleLinkClick = (e, href) => {
+    if (href.startsWith("/#")) {
+      const id = href.split("#")[1];
+      const element = document.getElementById(id);
+      if (element) {
+        e.preventDefault();
+        element.scrollIntoView({ behavior: "smooth" });
+        window.history.pushState(null, "", href);
+      }
+    }
+  };
+
   return (
     <footer className="relative border-t border-border/40 pt-24 pb-12 overflow-hidden">
       {/* Subtle Background Glow */}
@@ -77,6 +89,7 @@ export default function Footer({ data }) {
                 <li key={link.name}>
                   <Link
                     href={link.href}
+                    onClick={(e) => handleLinkClick(e, link.href)}
                     className="text-sm text-muted-foreground hover:text-accent transition-colors flex items-center group"
                   >
                     {link.name}
@@ -100,6 +113,7 @@ export default function Footer({ data }) {
                 <li key={link.name}>
                   <Link
                     href={link.href}
+                    onClick={(e) => handleLinkClick(e, link.href)}
                     className="text-sm text-muted-foreground hover:text-accent transition-colors flex items-center group"
                   >
                     {link.name}

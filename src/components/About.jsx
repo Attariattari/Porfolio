@@ -25,7 +25,6 @@ import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { portfolioData } from "@/lib/data";
-import useAdminStore from "@/lib/store/adminStore";
 import SocialLinks from "./SocialLinks";
 
 const resolveIcon = (icon) => {
@@ -76,9 +75,7 @@ export default function About({
   data: initialData = null,
   isHomePage = false,
 }) {
-  const { about: storeAbout } = useAdminStore();
-  // When rendering, we might get server-side initialData (which lacks static fields since it's from DB)
-  // Therefore, static fields must ALWAYS come from the static data.js explicitly
+  // Use only initialData prop - no admin store on public pages
   const staticData = portfolioData.about;
 
   // Extract strictly static data handles which are not part of the DB Schema
@@ -90,16 +87,12 @@ export default function About({
     contactInfo: staticData.contactInfo || [],
   };
 
-  // The base dynamic data can be DB SSR data (initialData), store DB data (storeAbout), or fallback to static data
-  // 🔍 DEBUG: Check where data is coming from in the component
-  // Priority logic for the final source
-  // Priority logic: Store Data (Real-time updates) > Initial Data (SSR) > Static Data (Fallback)
+  // Priority: Initial Data (SSR) > Static Data (Fallback)
+  // Remove store dependency completely
   const dynamicSource =
-    storeAbout && storeAbout.name
-      ? storeAbout
-      : initialData && initialData.name
-        ? initialData
-        : staticData;
+    initialData && initialData.name
+      ? initialData
+      : staticData;
 
   const activeAboutData = {
     // 1. Core Dynamic Profile Data (DB takes priority)
@@ -162,26 +155,8 @@ export default function About({
     delaySpeed: 2000,
   });
 
-  // 🚀 RELIABILITY FIX: If we are on client and data is still static, fetch from API
-  useEffect(() => {
-    const syncData = async () => {
-      if (typeof window !== "undefined") {
-        try {
-          const res = await fetch("/api/about");
-          const result = await res.json();
-          if (result.success && result.data && result.data.avatar) {
-            console.log("🚀 Relayed DB Data Sycned:", result.data.avatar);
-            // We don't necessarily need to set state if we use the store,
-            // but let's update the store to trigger re-render
-            useAdminStore.getState().fetchAbout();
-          }
-        } catch (e) {
-          console.error("Sync failed:", e);
-        }
-      }
-    };
-    syncData();
-  }, []);
+  // 🚀 REMOVED: No API sync needed on public pages
+  // Admin real-time updates only work in admin routes where MainDataProvider handles sync
 
   const {
     avatar,

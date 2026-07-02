@@ -24,19 +24,22 @@ import { ImageLightbox } from "./ImageLightbox";
 import { resolveFeaturedBlogs } from "@/lib/blogUtils";
 import { portfolioData } from "@/lib/data";
 import React from "react";
+import dynamic from "next/dynamic";
 import { Swiper, SwiperSlide } from "swiper/react";
-import {
-  FreeMode,
-  Autoplay,
-  Pagination,
-  EffectFade,
-  EffectCreative,
-} from "swiper/modules";
-import "swiper/css";
-import "swiper/css/free-mode";
-import "swiper/css/pagination";
-import "swiper/css/effect-fade";
-import "swiper/css/effect-creative";
+import { FreeMode } from "swiper/modules";
+
+// Lazy-load FeaturedBlogSlider to avoid bundling Swiper upfront
+const FeaturedBlogSlider = dynamic(
+  () => import("./FeaturedBlogSlider"),
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="relative aspect-[4/3] rounded-[2.5rem] bg-card/60 border border-border/40 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-accent animate-spin" />
+      </div>
+    ),
+  }
+);
 
 // --- SUB-COMPONENTS ---
 
@@ -48,8 +51,6 @@ const EditorialHeader = ({
   trendingTags,
   onImageClick,
 }) => {
-  const [activeFeaturedIndex, setActiveFeaturedIndex] = useState(0);
-
   return (
     <header className="relative py-10 px-6 overflow-hidden">
       {/* --- Premium Background Elements --- */}
@@ -170,152 +171,10 @@ const EditorialHeader = ({
               transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
             >
               {/* --- Featured Slider --- */}
-              <div className="relative">
-                <Swiper
-                  modules={[Autoplay, Pagination, EffectFade, EffectCreative]}
-                  autoplay={{
-                    delay: 5000,
-                    disableOnInteraction: false,
-                  }}
-                  pagination={{
-                    clickable: true,
-                    bulletClass:
-                      "swiper-pagination-bullet !bg-accent !opacity-20 !w-2 !h-2",
-                    bulletActiveClass:
-                      "!opacity-100 !w-6 !rounded-full transition-all",
-                  }}
-                  grabCursor={true}
-                  effect="creative"
-                  creativeEffect={{
-                    prev: {
-                      shadow: true,
-                      translate: ["-20%", 0, -1],
-                    },
-                    next: {
-                      translate: ["100%", 0, 0],
-                    },
-                  }}
-                  onSlideChange={(swiper) =>
-                    setActiveFeaturedIndex(swiper.realIndex)
-                  }
-                  className="featured-slider rounded-[2.5rem] overflow-hidden"
-                >
-                  {featuredBlogs?.map((blog, idx) => (
-                    <SwiperSlide key={blog.id}>
-                      {/* Main Featured Card */}
-                      <div className="relative bg-card/60 backdrop-blur-2xl border border-border/40 rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.15)] transition-all duration-700 hover:shadow-[0_40px_80px_rgba(0,0,0,0.2)] group-hover:border-accent/30">
-                        {/* Thumbnail Area */}
-                        <div className="relative aspect-[4/3] overflow-hidden">
-                          <Image
-                            src={blog.image}
-                            alt={blog.title}
-                            fill
-                            className="object-cover transition-transform duration-1000 group-hover:scale-110 cursor-zoom-in"
-                            onClick={() => onImageClick(idx)}
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent" />
-
-                          {/* Badge */}
-                          <div className="absolute top-8 left-8">
-                            <motion.span
-                              initial={{ opacity: 0, x: -20 }}
-                              animate={
-                                activeFeaturedIndex === idx
-                                  ? { opacity: 1, x: 0 }
-                                  : { opacity: 0, x: -20 }
-                              }
-                              transition={{ delay: 0.3 }}
-                              className="px-5 py-2.5 rounded-xl bg-accent text-accent-foreground text-xs font-bold tracking-normal shadow-2xl block"
-                            >
-                              FEATURED / {blog.category}
-                            </motion.span>
-                          </div>
-
-                          {/* Read Time on Image */}
-                          <div className="absolute bottom-8 right-8 flex items-center gap-2 text-white/90 text-xs font-semibold tracking-normal">
-                            <Clock className="w-4 h-4 text-accent" />
-                            {blog.readTime}
-                          </div>
-                        </div>
-
-                        {/* Content Area */}
-                        <div className="p-10 space-y-8">
-                          <div className="space-y-4">
-                            <Link href={`/blog/${blog.slug}`}>
-                              <motion.h2
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={
-                                  activeFeaturedIndex === idx
-                                    ? { opacity: 1, y: 0 }
-                                    : { opacity: 0, y: 20 }
-                                }
-                                transition={{
-                                  delay: 0.4,
-                                  duration: 0.8,
-                                  ease: [0.16, 1, 0.3, 1],
-                                }}
-                                className="text-3xl md:text-4xl font-bold text-foreground leading-tight tracking-tight italic hover:text-accent transition-colors"
-                              >
-                                {blog.title}
-                              </motion.h2>
-                            </Link>
-                          </div>
-
-                          <div className="flex items-center justify-between pt-6 border-t border-border/50">
-                            {/* Author */}
-                            <motion.div
-                              initial={{ opacity: 0 }}
-                              animate={
-                                activeFeaturedIndex === idx
-                                  ? { opacity: 1 }
-                                  : { opacity: 0 }
-                              }
-                              transition={{ delay: 0.5 }}
-                              className="flex items-center gap-4"
-                            >
-                              <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-accent/20 p-0.5">
-                                <Image
-                                  src="https://res.cloudinary.com/dg5gwixf1/image/upload/v1772736622/ChatGPT_Image_Mar_5_2026_11_36_42_AM_auw4uw.png"
-                                  alt="Author"
-                                  fill
-                                  className="object-cover rounded-full"
-                                />
-                              </div>
-                              <div className="flex flex-col">
-                                <span className="text-xs font-bold text-foreground tracking-normal">
-                                  {blog.author || "Pir Ghulam Muhyo Din"}
-                                </span>
-                                <span className="text-[10px] font-semibold text-muted-foreground opacity-70">
-                                  Written by
-                                </span>
-                              </div>
-                            </motion.div>
-
-                            {/* CTA */}
-                            <motion.div
-                              initial={{ opacity: 0, x: 20 }}
-                              animate={
-                                activeFeaturedIndex === idx
-                                  ? { opacity: 1, x: 0 }
-                                  : { opacity: 0, x: 20 }
-                              }
-                              transition={{ delay: 0.6 }}
-                            >
-                              <Link
-                                href={`/blog/${blog.slug}`}
-                                className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-foreground text-background text-[10px] font-bold tracking-normal transition-all hover:bg-accent hover:text-accent-foreground group/cta"
-                              >
-                                Read article
-                                <ArrowUpRight className="w-4 h-4 transition-transform group-hover/cta:translate-x-1 group-hover/cta:-translate-y-1" />
-                              </Link>
-                            </motion.div>
-                          </div>
-                        </div>
-                      </div>
-                    </SwiperSlide>
-                  ))}
-                </Swiper>
-              </div>
+              <FeaturedBlogSlider 
+                featuredBlogs={featuredBlogs}
+                onImageClick={onImageClick}
+              />
             </motion.div>
 
             {/* Decorative Elements around card */}

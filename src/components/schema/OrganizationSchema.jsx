@@ -6,6 +6,8 @@
 
 import { SiteConfig } from "@/models/Portfolio";
 import dbConnect from "@/lib/dbConnect";
+import { SITE_URL } from "@/lib/config";
+import { getSeoImage } from "@/lib/seo";
 
 export async function OrganizationSchema() {
   try {
@@ -29,30 +31,30 @@ export async function OrganizationSchema() {
 
     // Build social profiles array
     const sameAsProfiles = [
-      "https://www.linkedin.com/in/muhyo-din/",
+      "https://www.linkedin.com/in/ghulam-muhyo-din-web-designer/",
       "https://github.com/Attariattari",
-      "https://twitter.com/muhyotech",
-      "https://www.facebook.com/muhyo.tech",
-      "https://wa.me/923001234567",
+      "https://x.com/GhulamMuhyo",
+      "https://www.facebook.com/MuhammadMuhyoDinAttari",
+      "https://wa.me/923224458481",
     ].filter(Boolean);
 
     // Organization JSON-LD Structure
     const organizationSchema = {
       "@context": "https://schema.org",
       "@type": "Organization",
-      "@id": "https://muhyo-tech.vercel.app/#organization",
+      "@id": `${SITE_URL}/#organization`,
       name: config.siteTitle,
       alternateName: "Muhyo Tech",
-      url: "https://muhyo-tech.vercel.app",
-      logo: "https://muhyo-tech.vercel.app/logo.png",
-      image: "https://muhyo-tech.vercel.app/logo.png",
+      url: SITE_URL,
+      logo: getSeoImage("/logo.png"),
+      image: getSeoImage("/portfolio-hero.png"),
       description:
         config.seo?.description ||
         "Enterprise-grade full-stack web development and digital solutions",
       sameAs: sameAsProfiles,
       contactPoint: {
         "@type": "ContactPoint",
-        telephone: "+92-300-1234567",
+        telephone: "+92-322-4458481",
         contactType: "Customer Service",
         email: config.email,
         areaServed: "PK",
@@ -69,7 +71,7 @@ export async function OrganizationSchema() {
       founder: {
         "@type": "Person",
         name: config.adminName,
-        url: "https://muhyo-tech.vercel.app",
+        url: SITE_URL,
         jobTitle: "Founder & Lead Developer",
         email: config.email,
       },
@@ -126,11 +128,11 @@ export async function OrganizationSchema() {
             "@context": "https://schema.org",
             "@type": "Organization",
             name: "Muhyo Tech",
-            url: "https://muhyo-tech.vercel.app",
-            logo: "https://muhyo-tech.vercel.app/logo.png",
+            url: SITE_URL,
+            logo: getSeoImage("/logo.png"),
             contactPoint: {
               "@type": "ContactPoint",
-              telephone: "+92-300-1234567",
+              telephone: "+92-322-4458481",
               contactType: "Customer Service",
             },
           }),

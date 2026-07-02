@@ -6,6 +6,16 @@ import nodemailer from "nodemailer";
  */
 
 let transporter = null;
+const SEND_TIMEOUT_MS = Number(process.env.SMTP_SEND_TIMEOUT_MS || 8000);
+
+function withTimeout(promise, timeoutMs) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("SMTP send timed out.")), timeoutMs),
+    ),
+  ]);
+}
 
 const getTransporter = () => {
   if (transporter) return transporter;
@@ -18,10 +28,9 @@ const getTransporter = () => {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS,
     },
-    // Adding timeout settings to prevent hanging
-    connectionTimeout: 10000, // 10s
-    greetingTimeout: 10000,
-    socketTimeout: 30000,
+    connectionTimeout: Number(process.env.SMTP_CONNECTION_TIMEOUT_MS || 5000),
+    greetingTimeout: Number(process.env.SMTP_GREETING_TIMEOUT_MS || 5000),
+    socketTimeout: Number(process.env.SMTP_SOCKET_TIMEOUT_MS || 10000),
   };
 
   console.log(`[Mailer] Initializing transporter for ${config.host}:${config.port} (Secure: ${config.secure})`);
@@ -42,7 +51,7 @@ export const sendEmail = async ({ to, subject, html, text, fromName = "Muhyo Tec
     }
 
     const mailOptions = {
-      from: `"${fromName}" <${process.env.SMTP_USER}>`,
+      from: process.env.SMTP_FROM || `"${fromName}" <${process.env.SMTP_USER}>`,
       to,
       subject,
       html,
@@ -51,7 +60,10 @@ export const sendEmail = async ({ to, subject, html, text, fromName = "Muhyo Tec
 
     console.log(`[Mailer] Attempting to send email to: ${to} (Subject: ${subject})`);
     
-    const info = await getTransporter().sendMail(mailOptions);
+    const info = await withTimeout(
+      getTransporter().sendMail(mailOptions),
+      SEND_TIMEOUT_MS,
+    );
     
     console.log(`[Mailer] Success! MessageID: ${info.messageId}`);
     return { success: true, messageId: info.messageId };
@@ -62,10 +74,12 @@ export const sendEmail = async ({ to, subject, html, text, fromName = "Muhyo Tec
     let errorMessage = error.message;
     if (error.code === 'EAUTH') errorMessage = "Authentication failed. Check your SMTP_USER and SMTP_PASS (use App Password for Gmail).";
     if (error.code === 'ECONNECTION') errorMessage = "Could not connect to SMTP server. Check your SMTP_HOST and SMTP_PORT.";
-    if (error.code === 'ETIMEDOUT') errorMessage = "Connection to SMTP server timed out.";
+    if (error.code === 'ETIMEDOUT' || error.message === "SMTP send timed out.") {
+      errorMessage = "Email server is taking too long. Please try again.";
+    }
 
     // If it's a connection error, clear the transporter so it recreates next time
-    if (error.code === 'ECONNECTION' || error.code === 'ETIMEDOUT') {
+    if (error.code === 'ECONNECTION' || error.code === 'ETIMEDOUT' || error.message === "SMTP send timed out.") {
         transporter = null;
     }
     return { success: false, error: errorMessage };

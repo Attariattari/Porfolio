@@ -1,9 +1,13 @@
 import React from "react";
 import Contact from "@/components/Contact";
 import EditorialBackground from "@/components/ui/EditorialBackground";
+import { buildCanonical } from "@/lib/seo";
 
 export const metadata = {
-  title: "Contact",
+  title: "Contact Muhyo Tech | Start Your Web Development Project",
+  description:
+    "Contact Muhyo Tech for Next.js websites, SaaS dashboards, backend systems, SEO optimization, and professional web development services.",
+  alternates: { canonical: buildCanonical("/contact") },
 };
 
 /**

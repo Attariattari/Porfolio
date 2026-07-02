@@ -1,6 +1,11 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useReducedMotion,
+} from "framer-motion";
 import {
   ArrowRight,
   Terminal,
@@ -26,6 +31,8 @@ export default function Hero({ initialData = null }) {
   const data = initialData || portfolioData.siteConfig.hero;
   const containerRef = useRef(null);
   const { scrollY } = useScroll();
+  // PHASE 3: Respect prefers-reduced-motion
+  const shouldReduceMotion = useReducedMotion();
 
   // Icon mapping for feature icons
   const iconMap = {
@@ -156,17 +163,22 @@ export default function Hero({ initialData = null }) {
               opacity: 1,
               scale: 1,
               rotate: 0,
-              y: [0, -20, 0], // Auto floating animation
+              // PHASE 3: disable infinite float when reduced-motion is preferred
+              ...(shouldReduceMotion ? {} : { y: [0, -20, 0] }),
             }}
             transition={{
               duration: 1.2,
               delay: 0.4,
               ease: [0.16, 1, 0.3, 1],
-              y: {
-                duration: 6,
-                repeat: Infinity,
-                ease: "easeInOut",
-              },
+              ...(shouldReduceMotion
+                ? {}
+                : {
+                    y: {
+                      duration: 6,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    },
+                  }),
             }}
             className="relative hidden lg:block"
           >
@@ -186,23 +198,28 @@ export default function Hero({ initialData = null }) {
                 </div>
 
                 {/* Decorative Elements */}
+                {/* PHASE 3: Decorative blobs only animate when motion is allowed */}
                 <motion.div
-                  animate={{ y: [0, -15, 0] }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
+                  animate={shouldReduceMotion ? {} : { y: [0, -15, 0] }}
+                  transition={
+                    shouldReduceMotion
+                      ? { duration: 0 }
+                      : { duration: 4, repeat: Infinity, ease: "easeInOut" }
+                  }
                   className="absolute -top-10 -right-10 w-32 h-32 bg-accent/20 rounded-full blur-3xl"
                 />
                 <motion.div
-                  animate={{ y: [0, 15, 0] }}
-                  transition={{
-                    duration: 5,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: 1,
-                  }}
+                  animate={shouldReduceMotion ? {} : { y: [0, 15, 0] }}
+                  transition={
+                    shouldReduceMotion
+                      ? { duration: 0 }
+                      : {
+                          duration: 5,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                          delay: 1,
+                        }
+                  }
                   className="absolute -bottom-10 -left-10 w-40 h-40 bg-accent/20 rounded-full blur-3xl"
                 />
 

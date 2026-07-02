@@ -1,15 +1,11 @@
 /**
  * Rate limiting middleware for API routes
- * Simple in-memory rate limiter (can be upgraded to Redis in production)
+ * Hybrid implementation: Redis (if available) with in-memory fallback
  */
+import { cacheManager } from "@/lib/cache";
 
+// In-memory fallback map
 const requestLimits = new Map();
-
-/**
- * @typedef {Object} RateLimitOptions
- * @property {number} maxRequests - Max requests per window
- * @property {number} windowMs - Time window in milliseconds
- */
 
 const DEFAULT_OPTIONS = {
   maxRequests: 5,
@@ -22,19 +18,17 @@ const DEFAULT_OPTIONS = {
  * @returns {string} The client IP address
  */
 export function getClientIP(request) {
-  // Try to get IP from headers (works behind proxy)
-  const forwarded = request.headers.get('x-forwarded-for');
+  const forwarded = request.headers.get("x-forwarded-for");
   if (forwarded) {
-    return forwarded.split(',')[0].trim();
+    return forwarded.split(",")[0].trim();
   }
 
-  const realIP = request.headers.get('x-real-ip');
+  const realIP = request.headers.get("x-real-ip");
   if (realIP) {
     return realIP;
   }
 
-  // Fallback
-  return request.headers.get('cf-connecting-ip') || 'unknown';
+  return request.headers.get("cf-connecting-ip") || "unknown";
 }
 
 /**
@@ -43,17 +37,68 @@ export function getClientIP(request) {
  * @param {Partial<RateLimitOptions>} options - Rate limit options
  * @returns {{allowed: boolean, remaining: number, resetTime: number}} Rate limit status
  */
-export function checkRateLimit(
-  clientIP,
-  options = {},
-) {
+export async function checkRateLimit(clientIP, options = {}) {
   const opts = { ...DEFAULT_OPTIONS, ...options };
   const now = Date.now();
   const key = `rl:${clientIP}`;
 
+  if (global.redis && global.redisStatus && global.redisStatus.connected) {
+    try {
+      const redis = global.redis;
+      const current = await redis.get(key);
+
+      if (!current) {
+        const resetTime = now + opts.windowMs;
+        await redis.set(
+          key,
+          JSON.stringify({ count: 1, reset: resetTime }),
+          "PX",
+          opts.windowMs,
+        );
+        return {
+          allowed: true,
+          remaining: opts.maxRequests - 1,
+          resetTime,
+        };
+      }
+
+      const record = JSON.parse(current);
+
+      if (now > record.reset) {
+        const resetTime = now + opts.windowMs;
+        await redis.set(
+          key,
+          JSON.stringify({ count: 1, reset: resetTime }),
+          "PX",
+          opts.windowMs,
+        );
+        return {
+          allowed: true,
+          remaining: opts.maxRequests - 1,
+          resetTime,
+        };
+      }
+
+      record.count += 1;
+      const ttl = Math.max(1, record.reset - now);
+      await redis.set(key, JSON.stringify(record), "PX", ttl);
+
+      return {
+        allowed: record.count <= opts.maxRequests,
+        remaining: Math.max(0, opts.maxRequests - record.count),
+        resetTime: record.reset,
+      };
+    } catch (err) {
+      console.warn(
+        `[RateLimit] Redis unavailable, using memory fallback: ${err.message}`,
+      );
+      global.redisStatus.connected = false;
+    }
+  }
+
+  // Memory fallback
   let record = requestLimits.get(key);
 
-  // Create new record if doesn't exist
   if (!record) {
     record = {
       count: 1,
@@ -67,7 +112,6 @@ export function checkRateLimit(
     };
   }
 
-  // Check if window expired
   if (now > record.reset) {
     record = {
       count: 1,
@@ -81,7 +125,6 @@ export function checkRateLimit(
     };
   }
 
-  // Increment count
   record.count += 1;
 
   const allowed = record.count <= opts.maxRequests;

@@ -8,7 +8,10 @@
 import { NextResponse } from "next/server";
 import { authenticateAdminRequest } from "@/lib/adminAuth";
 import { TransferSuperAdminController } from "@/controllers/TransferSuperAdminController";
-import { getClientIPFromRequest, getUserAgentFromRequest } from "@/lib/transferUtils";
+import {
+  getClientIPFromRequest,
+  getUserAgentFromRequest,
+} from "@/lib/transferUtils";
 import { apiResponse } from "@/lib/apiResponse";
 import { checkRateLimit } from "@/lib/rateLimit";
 
@@ -28,7 +31,7 @@ export async function POST(request) {
 
     // 3. Rate limiting - max 5 transfer initiations per hour per IP
     const ipAddress = getClientIPFromRequest(request);
-    const rateLimitCheck = checkRateLimit(ipAddress, {
+    const rateLimitCheck = await checkRateLimit(ipAddress, {
       maxRequests: 5,
       windowMs: 60 * 60 * 1000, // 1 hour
     });
@@ -38,7 +41,7 @@ export async function POST(request) {
       return apiResponse.error(
         "Too many transfer attempts. Please try again later.",
         429,
-        { resetTime: rateLimitCheck.resetTime }
+        { resetTime: rateLimitCheck.resetTime },
       );
     }
 
@@ -50,7 +53,7 @@ export async function POST(request) {
       { newEmail: body.newEmail },
       auth.user,
       ipAddress,
-      userAgent
+      userAgent,
     );
 
     console.log("[Transfer/Start] Transfer initiated successfully");

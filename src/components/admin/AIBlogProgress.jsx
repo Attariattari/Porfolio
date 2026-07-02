@@ -12,6 +12,7 @@ import {
   Search,
   RefreshCcw,
 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function AIBlogProgress({
   isOpen,
@@ -19,6 +20,7 @@ export default function AIBlogProgress({
   onComplete,
   mode = "text",
   blogId = null,
+  autoGenerateImages = false,
 }) {
   const [steps, setSteps] = useState([]);
   const [currentStatus, setCurrentStatus] = useState("STARTING");
@@ -30,6 +32,7 @@ export default function AIBlogProgress({
 
   const startPipeline = (url) => {
     const eventSource = new EventSource(url);
+    let finished = false;
 
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -45,12 +48,25 @@ export default function AIBlogProgress({
       }
 
       if (data.status === "COMPLETED") {
+        finished = true;
         eventSource.close();
         if (data.details?.url) setImagePreview(data.details.url);
+        toast.dismiss();
+        if (data.details?.emailSent) {
+          toast.success("Secure upload email sent to Super Admin.");
+        } else if (data.details?.workflowStatus === "manual_required") {
+          toast.warning("Manual upload required. Email was not confirmed.");
+        } else {
+          toast.success(data.details?.message || "AI workflow completed.");
+        }
         setTimeout(() => {
           onComplete?.();
           onClose();
-        }, 3000);
+        }, 900);
+      }
+
+      if (data.status === "MANUAL_IMAGE_REQUIRED" && data.details?.emailSent) {
+        toast.success("Image email sent. Waiting for manual upload.");
       }
 
       if (data.status === "IMAGE_READY") {
@@ -73,6 +89,7 @@ export default function AIBlogProgress({
     };
 
     eventSource.onerror = () => {
+      if (finished) return;
       setError(
         "Connection lost. The pipeline might still be running in the background.",
       );
@@ -93,14 +110,15 @@ export default function AIBlogProgress({
       return;
     }
 
-    let url = "/api/ai/generate-blog?action=init";
+    const generateImage = autoGenerateImages ? "true" : "false";
+    let url = `/api/ai/generate-blog?action=init&generateImage=${generateImage}`;
     if (mode === "image" && blogId) {
-      url = `/api/ai/generate-blog?action=finalize&id=${blogId}&generateImage=true`;
+      url = `/api/ai/generate-blog?action=finalize&id=${blogId}&generateImage=${generateImage}`;
     }
 
     const es = startPipeline(url);
     return () => es.close();
-  }, [isOpen, mode, blogId]);
+  }, [isOpen, mode, blogId, autoGenerateImages]);
 
   const handleDecision = (generateImage) => {
     setPendingBlogId(null);

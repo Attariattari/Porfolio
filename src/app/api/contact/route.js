@@ -25,13 +25,14 @@ export async function GET() {
   return NextResponse.json(
     {
       success: true,
-      message: "Contact form API is operational (PUBLIC - No authentication required)",
+      message:
+        "Contact form API is operational (PUBLIC - No authentication required)",
       status: "ready",
     },
     {
       status: 200,
       headers: corsHeaders,
-    }
+    },
   );
 }
 
@@ -46,7 +47,7 @@ export async function POST(request) {
     const clientIP = getClientIP(request);
 
     // Check rate limit
-    const rateLimit = checkRateLimit(clientIP, {
+    const rateLimit = await checkRateLimit(clientIP, {
       maxRequests: 5,
       windowMs: 60 * 1000, // 1 minute
     });
@@ -58,10 +59,10 @@ export async function POST(request) {
           message: "Too many requests. Please try again later.",
           retryAfter: Math.ceil((rateLimit.resetTime - Date.now()) / 1000),
         },
-        { 
+        {
           status: 429,
           headers: corsHeaders,
-        }
+        },
       );
     }
 
@@ -84,13 +85,14 @@ export async function POST(request) {
     return NextResponse.json(
       {
         success: true,
-        message: "✅ Communication established successfully. We'll respond within 24 hours.",
+        message:
+          "✅ Communication established successfully. We'll respond within 24 hours.",
         data: message,
       },
-      { 
+      {
         status: 201,
         headers: corsHeaders,
-      }
+      },
     );
   } catch (error) {
     // Handle validation errors
@@ -104,10 +106,10 @@ export async function POST(request) {
             message: err.message,
           })),
         },
-        { 
+        {
           status: 400,
           headers: corsHeaders,
-        }
+        },
       );
     }
 
@@ -119,10 +121,10 @@ export async function POST(request) {
         message: "❌ Message submission failed. Please try again.",
         error: error.message,
       },
-      { 
+      {
         status: 500,
         headers: corsHeaders,
-      }
+      },
     );
   }
 }

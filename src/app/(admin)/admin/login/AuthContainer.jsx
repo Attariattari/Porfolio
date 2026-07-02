@@ -25,7 +25,24 @@ import EditorialBackground from "@/components/ui/EditorialBackground";
 const LOGIN_IMAGE = "/admin-auth-bg.png";
 const SIGNUP_IMAGE = "/admin-signup-bg.png";
 
-export default function AuthContainer({ defaultView = "login" }) {
+function GoogleIcon({ className = "w-4 h-4" }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
+      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+      <path fill="#FBBC05" d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l3.66-2.84z" />
+      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06L5.84 9.9C6.71 7.31 9.14 5.38 12 5.38z" />
+    </svg>
+  );
+}
+
+export default function AuthContainer({
+  defaultView = "login",
+  callbackUrl = "/admin/dashboard",
+  googleLinkToken = "",
+  googleLinkEmail = "",
+  googleError = "",
+}) {
   const [view, setView] = useState(defaultView); // login, setup, reset, verify, pending, success, denied, reverify
   const [email, setEmail] = useState("");
   const [passkey, setPasskey] = useState("");
@@ -35,6 +52,10 @@ export default function AuthContainer({ defaultView = "login" }) {
   const [error, setError] = useState("");
   const [newPasskey, setNewPasskey] = useState("");
   const [isDesktop, setIsDesktop] = useState(false);
+  const [linkToken, setLinkToken] = useState(googleLinkToken);
+  const [linkPasskey, setLinkPasskey] = useState("");
+  const [linkLoading, setLinkLoading] = useState(false);
+  const [linkError, setLinkError] = useState("");
   const router = useRouter();
 
   const isAltMode = view !== "login";
@@ -45,6 +66,25 @@ export default function AuthContainer({ defaultView = "login" }) {
     window.addEventListener("resize", checkDesktop);
     return () => window.removeEventListener("resize", checkDesktop);
   }, []);
+
+  useEffect(() => {
+    setLinkToken(googleLinkToken || "");
+    if (googleLinkEmail) setEmail(googleLinkEmail);
+  }, [googleLinkToken, googleLinkEmail]);
+
+  useEffect(() => {
+    if (!googleError) return;
+    const messages = {
+      "not-configured": "Google login is not configured yet.",
+      unverified: "This Google account is not verified.",
+      unauthorized: "Unauthorized Google login request.",
+      cancelled: "Google login was cancelled.",
+      "not-approved": "This account is not approved for admin access.",
+      "rate-limited": "Too many Google login attempts. Please wait a moment.",
+      failed: "Google login failed. Please try again.",
+    };
+    setError(messages[googleError] || "Google login failed. Please try again.");
+  }, [googleError]);
 
   useEffect(() => {
     if (view !== "pending" || !email) return;
@@ -155,7 +195,7 @@ export default function AuthContainer({ defaultView = "login" }) {
           localStorage.setItem("admin_token", data.token);
         }
         toast.success("Identity verified. Welcome to Admin Portal.");
-        router.push("/admin/dashboard");
+        router.push(callbackUrl || "/admin/dashboard");
       } else {
         if (data.code === "NOT_FOUND") setView("reverify");
         else setError(data.message || "Wrong email or passkey.");
@@ -164,6 +204,46 @@ export default function AuthContainer({ defaultView = "login" }) {
       setError("Login failed. Try again.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleAuth = () => {
+    setLoading(true);
+    const safeCallback =
+      callbackUrl && callbackUrl.startsWith("/") && !callbackUrl.startsWith("//")
+        ? callbackUrl
+        : "/admin/dashboard";
+    window.location.href = `/api/auth/google?callbackUrl=${encodeURIComponent(safeCallback)}`;
+  };
+
+  const handleLinkGoogle = async () => {
+    if (!linkPasskey) {
+      setLinkError("Passkey confirmation is required.");
+      return;
+    }
+
+    setLinkLoading(true);
+    setLinkError("");
+    try {
+      const res = await fetch("/api/auth/google/link", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: linkToken, passkey: linkPasskey }),
+      });
+      const data = await res.json();
+
+      if (!data.success) {
+        setLinkError(data.message || "Google account linking failed.");
+        return;
+      }
+
+      if (data.token) localStorage.setItem("admin_token", data.token);
+      toast.success("Google account linked successfully.");
+      window.location.href = data.redirectTo || callbackUrl || "/admin/dashboard";
+    } catch (e) {
+      setLinkError("Google account linking failed. Please try again.");
+    } finally {
+      setLinkLoading(false);
     }
   };
 
@@ -243,7 +323,7 @@ export default function AuthContainer({ defaultView = "login" }) {
                 initial={false}
                 animate={{ x: isAltMode && isDesktop ? "-100%" : "0%" }}
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className={`w-full lg:w-1/2 min-h-full flex flex-col items-center justify-center p-6 sm:p-12 md:p-16 lg:p-20 absolute right-0 bg-[#0a0f1c] z-10`}
+                className={`w-full ${linkToken ? "lg:w-full z-[80]" : "lg:w-1/2 z-10"} min-h-full flex flex-col items-center justify-center p-6 sm:p-12 md:p-16 lg:p-20 absolute right-0 bg-[#0a0f1c]`}
             >
                 {/* EditorialBackground anchored to Form Side */}
                 <div className="absolute inset-0 z-0 pointer-events-none">
@@ -341,6 +421,26 @@ export default function AuthContainer({ defaultView = "login" }) {
                                                 </>
                                             )}
                                         </button>
+                                        <div className="flex items-center gap-3">
+                                            <div className="h-px flex-1 bg-white/10" />
+                                            <span className="text-[9px] font-black uppercase tracking-[0.25em] text-slate-600">or continue with</span>
+                                            <div className="h-px flex-1 bg-white/10" />
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={handleGoogleAuth}
+                                            disabled={loading}
+                                            className="w-full py-4 lg:py-5 bg-white/[0.04] border border-white/10 text-white rounded-2xl lg:rounded-3xl font-black uppercase text-[10px] lg:text-xs tracking-[0.24em] hover:bg-white/10 hover:border-white/20 transition-all active:scale-95 shadow-xl flex items-center justify-center gap-3 disabled:opacity-50"
+                                        >
+                                            {loading ? (
+                                                <Loader2 className="w-5 h-5 animate-spin" />
+                                            ) : (
+                                                <>
+                                                    <GoogleIcon className="w-5 h-5" />
+                                                    Continue with Google
+                                                </>
+                                            )}
+                                        </button>
                                         <button 
                                             type="button"
                                             onClick={() => setView("setup")}
@@ -398,6 +498,26 @@ export default function AuthContainer({ defaultView = "login" }) {
                                             className="w-full py-4 lg:py-6 bg-accent text-[#030712] rounded-2xl lg:rounded-3xl font-black uppercase text-[10px] lg:text-xs tracking-[0.4em] hover:bg-white transition-all active:scale-95 shadow-2xl shadow-accent/20"
                                         >
                                             {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Initiate Verification"}
+                                        </button>
+                                        <div className="flex items-center gap-3">
+                                            <div className="h-px flex-1 bg-white/10" />
+                                            <span className="text-[9px] font-black uppercase tracking-[0.25em] text-slate-600">or continue with</span>
+                                            <div className="h-px flex-1 bg-white/10" />
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={handleGoogleAuth}
+                                            disabled={loading}
+                                            className="w-full py-4 lg:py-5 bg-white/[0.04] border border-white/10 text-white rounded-2xl lg:rounded-3xl font-black uppercase text-[10px] lg:text-xs tracking-[0.24em] hover:bg-white/10 hover:border-white/20 transition-all active:scale-95 shadow-xl flex items-center justify-center gap-3 disabled:opacity-50"
+                                        >
+                                            {loading ? (
+                                                <Loader2 className="w-5 h-5 animate-spin" />
+                                            ) : (
+                                                <>
+                                                    <GoogleIcon className="w-5 h-5" />
+                                                    Continue with Google
+                                                </>
+                                            )}
                                         </button>
                                         <button 
                                             type="button"
@@ -477,6 +597,102 @@ export default function AuthContainer({ defaultView = "login" }) {
                             </motion.div>
                         )}
 
+                    </AnimatePresence>
+
+                    <AnimatePresence>
+                        {linkToken && (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-md"
+                            >
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.94, y: 16 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.94, y: 16 }}
+                                    className="w-full max-w-md rounded-[2rem] border border-white/10 bg-[#0f172a] p-6 shadow-2xl"
+                                >
+                                    <div className="mb-6 flex items-center gap-4">
+                                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04]">
+                                            <GoogleIcon className="h-6 w-6" />
+                                        </div>
+                                        <div>
+                                            <h2 className="text-xl font-black uppercase italic tracking-tight text-white">
+                                                Account Already Exists
+                                            </h2>
+                                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-accent">
+                                                Secure linking required
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <p className="text-sm font-medium leading-relaxed text-slate-300">
+                                            We found an existing Muhyo Tech account using this email. You can securely link Google login to your existing account, or continue logging in with your password.
+                                        </p>
+                                        <p className="rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4 text-[11px] font-bold leading-relaxed text-amber-200">
+                                            For your safety, account linking requires passkey verification before Google login is connected.
+                                        </p>
+                                        {googleLinkEmail ? (
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                                                Email: <span className="text-white">{googleLinkEmail}</span>
+                                            </p>
+                                        ) : null}
+                                        <div className="space-y-2">
+                                            <label className="ml-1 text-[10px] font-black uppercase tracking-widest text-accent">
+                                                Confirm Existing Passkey
+                                            </label>
+                                            <input
+                                                type="password"
+                                                value={linkPasskey}
+                                                onChange={(e) => setLinkPasskey(e.target.value)}
+                                                placeholder="Enter your existing passkey"
+                                                className="w-full rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-sm font-mono text-white outline-none transition-all focus:border-accent/40 focus:bg-accent/5"
+                                            />
+                                        </div>
+                                        {linkError ? (
+                                            <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-4 text-[11px] font-black uppercase tracking-widest text-red-300">
+                                                {linkError}
+                                            </div>
+                                        ) : null}
+                                    </div>
+
+                                    <div className="mt-6 grid gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={handleLinkGoogle}
+                                            disabled={linkLoading}
+                                            className="flex w-full items-center justify-center gap-3 rounded-2xl bg-accent px-4 py-4 text-[10px] font-black uppercase tracking-[0.25em] text-[#030712] transition-all hover:bg-white disabled:opacity-50"
+                                        >
+                                            {linkLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <GoogleIcon className="h-4 w-4" />}
+                                            Link Google Account
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setLinkToken("");
+                                                setView("login");
+                                            }}
+                                            className="w-full rounded-2xl border border-white/10 px-4 py-4 text-[10px] font-black uppercase tracking-[0.25em] text-white transition-all hover:bg-white/10"
+                                        >
+                                            Login with Password
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setLinkToken("");
+                                                setLinkPasskey("");
+                                                setLinkError("");
+                                            }}
+                                            className="w-full px-4 py-2 text-[9px] font-black uppercase tracking-[0.25em] text-slate-600 transition-colors hover:text-slate-300"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            </motion.div>
+                        )}
                     </AnimatePresence>
 
                     {/* Footer for Mobile (Copyright/Version) */}

@@ -15,6 +15,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Sparkles,
+  Target,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { portfolioData } from "@/lib/data";
@@ -26,6 +27,7 @@ const IconMap = {
   Projects: Code2,
   Blogs: FileText,
   Resume: FileUser,
+  Goals: Target,
   Contact: Mail,
 };
 
@@ -38,6 +40,7 @@ const navLinks = [
   { name: "About", href: "/about", icon: "User" },
   { name: "Services", href: "/services", icon: "Cpu" },
   { name: "Projects", href: "/projects", icon: "Code2" },
+  { name: "Goals", href: "/goals", icon: "Target" },
   { name: "Blogs", href: "/blog", icon: "FileText" },
   { name: "Resume", href: "/resume", icon: "FileUser" },
   { name: "Contact", href: "/contact", icon: "Mail" },
@@ -69,7 +72,7 @@ export default function Sidebar({ data }) {
   return (
     <>
       {/* Mobile Glass Header */}
-      <div className="md:hidden fixed top-0 left-0 w-full h-16 bg-background/80 backdrop-blur-xl border-b border-border/50 z-[60] px-6 flex items-center justify-between">
+      <div className="site-sidebar-shell md:hidden fixed top-0 left-0 w-full h-16 bg-background/80 backdrop-blur-xl border-b border-border/50 z-[60] px-6 flex items-center justify-between">
         <Link href="/" className="group flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center overflow-hidden shadow-lg shadow-accent/20 transition-transform group-active:scale-95">
             <img
@@ -92,7 +95,7 @@ export default function Sidebar({ data }) {
 
       {/* Modern Desktop Sidebar */}
       <div
-        className={`fixed left-4 top-4 bottom-4 z-50 hidden md:flex flex-col transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${
+        className={`site-sidebar-shell fixed left-4 top-4 bottom-4 z-50 hidden md:flex flex-col transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${
           isCollapsed ? "w-20" : "w-64"
         }`}
       >

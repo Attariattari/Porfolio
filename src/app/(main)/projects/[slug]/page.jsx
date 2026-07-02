@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { ProjectController } from "@/controllers/ProjectController";
 import ProjectDetailView from "@/components/ProjectDetailView";
 import { serializeDoc } from "@/lib/mongooseHelper";
+import { SITE_URL } from "@/lib/config";
+import { buildCanonical, cleanSeoText, getSeoImage } from "@/lib/seo";
 
 // 1. Enable ISR (Revalidate every hour)
 export const revalidate = 3600;
@@ -20,31 +22,30 @@ export async function generateMetadata({ params }) {
 
   if (!project) return { title: "Project Not Found" };
 
-  const baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL || "https://muhyo-tech.vercel.app";
-  const canonicalUrl = baseUrl + "/projects/" + project.slug;
+  const canonicalUrl = buildCanonical(`/projects/${project.slug}`);
+  const description = cleanSeoText(project.description, 155);
+  const image = getSeoImage(project.image || project.thumbnail);
 
   return {
     title: `${project.title} | Muhyo Tech Project`,
-    description: project.description,
+    description,
     keywords:
       (project.techStack || []).join(", ") || "Web Development, Engineering",
-    canonical: canonicalUrl,
     alternates: {
       canonical: canonicalUrl,
     },
     openGraph: {
       title: project.title,
-      description: project.description,
-      images: [project.image || project.thumbnail],
+      description,
+      images: [{ url: image, width: 1200, height: 630, alt: project.title }],
       type: "website",
       url: canonicalUrl,
     },
     twitter: {
       card: "summary_large_image",
       title: project.title,
-      description: project.description,
-      images: [project.image || project.thumbnail],
+      description,
+      images: [image],
     },
   };
 }
@@ -58,16 +59,16 @@ export default async function ProjectPage({ params }) {
   }
 
   // P3 SEO: Add comprehensive JSON-LD schema for projects
-  const baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL || "https://muhyo-tech.vercel.app";
-  const canonicalUrl = baseUrl + "/projects/" + project.slug;
+  const baseUrl = SITE_URL;
+  const canonicalUrl = buildCanonical(`/projects/${project.slug}`);
+  const image = getSeoImage(project.image || project.thumbnail);
 
   const projectSchema = {
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
     name: project.title,
-    description: project.description,
-    image: project.image || project.thumbnail,
+    description: cleanSeoText(project.description, 155),
+    image,
     creator: {
       "@type": "Person",
       name: "Muhyo Tech",

@@ -3,6 +3,8 @@ import ServicesClient from "./ServicesClient";
 import { portfolioData } from "@/lib/data";
 import { ServiceController } from "@/controllers/ServiceController";
 import { serializeDoc } from "@/lib/mongooseHelper";
+import { SITE_URL } from "@/lib/config";
+import { buildCanonical, getSeoImage } from "@/lib/seo";
 
 // P1 OPTIMIZATION: Enable ISR (Incremental Static Regeneration)
 // Revalidate every 5 minutes for optimal performance
@@ -11,7 +13,16 @@ export const revalidate = 300;
 export const metadata = {
   title: "Professional Web Development Services | Muhyo Tech",
   description:
-    "Specialized engineering solutions for modern brands. From full-stack Next.js architecture to custom digital products.",
+    "Professional Next.js development, SaaS dashboards, backend APIs, UI/UX design, SEO optimization, cloud infrastructure, and custom digital products.",
+  alternates: { canonical: buildCanonical("/services") },
+  openGraph: {
+    title: "Muhyo Tech Services - Next.js, SaaS, Backend & SEO",
+    description:
+      "Professional Next.js development, SaaS dashboards, backend APIs, UI/UX design, SEO optimization, and custom digital products.",
+    url: buildCanonical("/services"),
+    images: [{ url: getSeoImage("/portfolio-hero.png"), width: 1200, height: 630, alt: "Muhyo Tech services" }],
+    type: "website",
+  },
 };
 
 const serviceSchema = {
@@ -19,9 +30,12 @@ const serviceSchema = {
   "@type": "Service",
   name: "Web Development Services",
   provider: {
-    "@type": "Person",
+    "@type": "Organization",
     name: "Muhyo Tech",
+    url: SITE_URL,
   },
+  url: buildCanonical("/services"),
+  image: getSeoImage("/portfolio-hero.png"),
   serviceType: "Software Engineering",
   areaServed: "Worldwide",
 };

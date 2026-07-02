@@ -51,7 +51,7 @@ export const Button = ({
   ...props
 }) => {
   const baseClass =
-    "group relative inline-flex items-center justify-center gap-3 px-8 py-4 overflow-hidden rounded-full font-bold text-sm tracking-normal transition-all duration-500 transform active:scale-95 z-10 w-fit";
+    "group relative inline-flex items-center justify-center gap-3 px-8 py-4 overflow-hidden rounded-full font-bold text-sm tracking-normal transition-all duration-500 transform active:scale-95 z-10 w-fit cursor-pointer";
 
   const variants = {
     primary:

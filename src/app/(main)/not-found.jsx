@@ -1,14 +1,26 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Home, ArrowLeft, Search, AlertCircle, MapPinOff } from "lucide-react";
 import { Button } from "@/components/ui";
 import EditorialBackground from "@/components/ui/EditorialBackground";
 
 export default function NotFound() {
+  useEffect(() => {
+    document.documentElement.classList.add("not-found-active");
+
+    return () => {
+      document.documentElement.classList.remove("not-found-active");
+    };
+  }, []);
+
   return (
-    <div className="relative min-h-[85vh] flex flex-col items-center justify-center px-6 py-20 overflow-hidden">
+    <div
+      data-not-found-page
+      className="fixed inset-0 z-[9999] bg-background flex flex-col items-center justify-center px-6 py-20 overflow-hidden"
+    >
       {/* High-End Dynamic Background */}
       <EditorialBackground text="404" />
 

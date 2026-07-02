@@ -12,7 +12,7 @@ import ImageUploader from "@/components/admin/ImageUploader";
 import { Controller } from "react-hook-form";
 import { AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
-import { Sparkles, CheckCircle2 } from "lucide-react";
+import { Sparkles, CheckCircle2, Mail, RefreshCcw, Copy } from "lucide-react";
 import AIBlogProgress from "@/components/admin/AIBlogProgress";
 
 const blogSchema = z.object({
@@ -39,11 +39,30 @@ export default function BlogsPage() {
   const [editingBlog, setEditingBlog] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [autoGenerateImages, setAutoGenerateImages] = useState(false);
 
   // Sync entries on mount
   useEffect(() => {
     fetchBlogs();
   }, [fetchBlogs]);
+
+  useEffect(() => {
+    const saved = window.localStorage.getItem("admin:autoGenerateBlogImages");
+    setAutoGenerateImages(saved === "true");
+  }, []);
+
+  const handleAutoImageToggle = () => {
+    setAutoGenerateImages((current) => {
+      const next = !current;
+      window.localStorage.setItem("admin:autoGenerateBlogImages", String(next));
+      toast.success(
+        next
+          ? "Auto image generation enabled."
+          : "Auto image generation off. Prompt email will be sent instead.",
+      );
+      return next;
+    });
+  };
 
   const columns = [
     {
@@ -141,12 +160,13 @@ export default function BlogsPage() {
       key: "ai_actions",
       label: "AI Status",
       render: (item) => (
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {item.aiGenerated &&
           (!item.imageStatus ||
             item.imageStatus === "failed" ||
+            item.imageStatus === "manual_required" ||
             item.imageStatus === "retry_pending" ||
-            !item.imageGenerated) ? (
+            (!item.image && !item.featuredImage?.url)) ? (
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -156,19 +176,87 @@ export default function BlogsPage() {
               className="px-3 py-1.5 bg-amber-500 text-black text-[9px] font-black uppercase tracking-tighter rounded-md hover:bg-amber-400 transition-all flex items-center gap-1 animate-pulse"
             >
               <Sparkles className="w-3 h-3" />
-              Gen Image
+              {autoGenerateImages ? "Gen Image" : "Send Prompt"}
             </button>
           ) : item.aiGenerated &&
-            item.imageStatus === "completed" &&
-            item.image ? (
+            ["completed", "generated", "uploaded"].includes(item.imageStatus) &&
+            (item.image || item.featuredImage?.url) ? (
             <div className="flex items-center gap-1 text-[9px] font-bold text-green-500 uppercase">
-              <CheckCircle2 className="w-3 h-3" /> AI Complete
+              <CheckCircle2 className="w-3 h-3" /> {item.imageStatus}
             </div>
           ) : (
             <span className="text-[9px] text-slate-600 font-bold uppercase">
               Manual
             </span>
           )}
+          {item.aiGenerated && item._id ? (
+            <>
+              {autoGenerateImages ? (
+                <button
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    const toastId = toast.loading("Regenerating blog image...");
+                    const res = await fetch(`/api/admin/blogs/${item._id}/image`, {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ action: "regenerate" }),
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                      toast.success(`Image workflow: ${data.status}`, {
+                        id: toastId,
+                      });
+                      fetchBlogs();
+                    } else {
+                      toast.error(data.message || "Image regeneration failed.", {
+                        id: toastId,
+                      });
+                    }
+                  }}
+                  className="p-1.5 rounded-md border border-white/10 text-slate-400 hover:text-white hover:bg-white/10"
+                  title="Regenerate AI image"
+                >
+                  <RefreshCcw className="w-3 h-3" />
+                </button>
+              ) : null}
+              <button
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  const toastId = toast.loading("Sending secure prompt email...");
+                  const res = await fetch(`/api/admin/blogs/${item._id}/image`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ action: "send_prompt_email" }),
+                  });
+                  const data = await res.json();
+                  if (data.success) {
+                    toast.success(data.message, { id: toastId });
+                  } else {
+                    toast.error(data.message || "Prompt email failed.", {
+                      id: toastId,
+                    });
+                  }
+                }}
+                className="p-1.5 rounded-md border border-white/10 text-slate-400 hover:text-white hover:bg-white/10"
+                title="Send prompt email"
+              >
+                <Mail className="w-3 h-3" />
+              </button>
+              {(item.imagePrompt || item.image_prompt) ? (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigator.clipboard.writeText(item.imagePrompt || item.image_prompt);
+                    toast.success("Image prompt copied.");
+                  }}
+                  className="p-1.5 rounded-md border border-white/10 text-slate-400 hover:text-white hover:bg-white/10"
+                  title="Copy image prompt"
+                >
+                  <Copy className="w-3 h-3" />
+                </button>
+              ) : null}
+            </>
+          ) : null}
         </div>
       ),
     },
@@ -332,14 +420,27 @@ export default function BlogsPage() {
     }
   };
 
-  const pendingImageBlog = blogs.find(
-    (b) =>
+  const pendingImageBlog = blogs.find((b) => {
+    const hasImage = !!(b.image || b.featuredImage?.url);
+    const imageStepStatus = b.imageStatus || "pending";
+    const canContinueImageStep = [
+      "pending",
+      "failed",
+      "retry_pending",
+      "manual_required",
+    ].includes(imageStepStatus);
+    const createdTime = new Date(b.generatedAt || b.createdAt || 0).getTime();
+    const isFreshAiBlog =
+      Number.isFinite(createdTime) && Date.now() - createdTime < 24 * 60 * 60 * 1000;
+
+    return (
       b.aiGenerated &&
-      (!b.imageStatus ||
-        b.imageStatus === "failed" ||
-        b.imageStatus === "retry_pending" ||
-        !b.imageGenerated),
-  );
+      isFreshAiBlog &&
+      !hasImage &&
+      b.publishStatus !== "published" &&
+      canContinueImageStep
+    );
+  });
   const hasPendingImage = !!pendingImageBlog;
 
   return (
@@ -357,26 +458,74 @@ export default function BlogsPage() {
           </p>
         </div>
 
-        <button
-          onClick={() => {
-            if (hasPendingImage) {
-              setSelectedBlogForImage(pendingImageBlog);
-            } else {
-              setSelectedBlogForImage(null);
-            }
-            setIsAIProgressOpen(true);
-          }}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest text-white shadow-lg transition-all hover:scale-105 active:scale-95 group ${
-            hasPendingImage
-              ? "bg-gradient-to-r from-amber-500 to-orange-600 shadow-amber-500/20 hover:shadow-amber-500/40"
-              : "bg-gradient-to-r from-accent to-blue-600 shadow-accent/20 hover:shadow-accent/40"
-          }`}
-        >
-          <Sparkles
-            className={`w-4 h-4 ${hasPendingImage ? "animate-bounce" : "group-hover:animate-spin"}`}
-          />
-          {hasPendingImage ? "Generate Blog Image" : "AI Start Blog Generate"}
-        </button>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <label
+            className={`flex h-10 cursor-pointer select-none items-center justify-between gap-3 rounded-lg border px-3 text-[10px] font-black uppercase tracking-widest transition-colors ${
+              autoGenerateImages
+                ? "border-accent/40 bg-accent/10 text-accent"
+                : "border-white/10 bg-white/5 text-slate-400 hover:text-slate-200"
+            }`}
+            title="Toggle automatic blog image generation"
+          >
+            <input
+              type="checkbox"
+              checked={autoGenerateImages}
+              onChange={handleAutoImageToggle}
+              className="sr-only"
+              aria-label="Toggle automatic blog image generation"
+            />
+            <span className="flex items-center gap-2">
+              {autoGenerateImages ? (
+                <Sparkles className="w-4 h-4" />
+              ) : (
+                <Mail className="w-4 h-4" />
+              )}
+              Auto Image
+            </span>
+            <span
+              className={`relative h-6 w-11 rounded-full p-0.5 transition-colors duration-200 ${
+                autoGenerateImages ? "bg-accent" : "bg-slate-700"
+              }`}
+            >
+              <span
+                className={`block h-5 w-5 rounded-full bg-white shadow-lg transition-transform duration-200 ease-out ${
+                  autoGenerateImages ? "translate-x-5" : "translate-x-0"
+                }`}
+              />
+            </span>
+          </label>
+
+          <button
+            onClick={() => {
+              if (hasPendingImage) {
+                setSelectedBlogForImage(pendingImageBlog);
+              } else {
+                setSelectedBlogForImage(null);
+              }
+              setIsAIProgressOpen(true);
+            }}
+            className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest text-white shadow-lg transition-all hover:scale-105 active:scale-95 group ${
+              hasPendingImage
+                ? autoGenerateImages
+                  ? "bg-gradient-to-r from-amber-500 to-orange-600 shadow-amber-500/20 hover:shadow-amber-500/40"
+                  : "bg-gradient-to-r from-emerald-500 to-teal-600 shadow-emerald-500/20 hover:shadow-emerald-500/40"
+                : "bg-gradient-to-r from-accent to-blue-600 shadow-accent/20 hover:shadow-accent/40"
+            }`}
+          >
+            {hasPendingImage && !autoGenerateImages ? (
+              <Mail className="w-4 h-4" />
+            ) : (
+              <Sparkles
+                className={`w-4 h-4 ${hasPendingImage ? "animate-bounce" : "group-hover:animate-spin"}`}
+              />
+            )}
+            {hasPendingImage
+              ? autoGenerateImages
+                ? "Generate Blog Image"
+                : "Send Image Prompt"
+              : "AI Start Blog Generate"}
+          </button>
+        </div>
       </div>
 
       <DataTable
@@ -436,6 +585,7 @@ export default function BlogsPage() {
             onComplete={() => fetchBlogs()}
             mode={selectedBlogForImage || pendingImageBlog ? "image" : "text"}
             blogId={selectedBlogForImage?._id || pendingImageBlog?._id}
+            autoGenerateImages={autoGenerateImages}
           />
         )}
       </AnimatePresence>

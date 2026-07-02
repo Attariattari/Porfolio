@@ -23,6 +23,7 @@
         "clsx": "^2.1.1",
         "date-fns": "^4.1.0",
         "framer-motion": "^12.34.4",
+        "ioredis": "^5.11.1",
         "jose": "^6.2.2",
         "lucide-react": "^0.576.0",
         "mongoose": "^9.3.1",

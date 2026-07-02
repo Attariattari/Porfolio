@@ -1,12 +1,37 @@
+import { SITE_URL } from "@/lib/config";
+
 export const defaultSeoData = {
-  title: "Muhyo Tech - Professional Portfolio",
+  title: "Muhyo Tech - Full Stack Web Development & Software Engineering",
   description:
-    "Innovative solutions for building high-quality web applications.",
-  keywords: "muhyo Tech, React, Next.js, Web Development, Portfolio, Projects",
-  author: "Muhyo Tech",
-  ogImage: "/og.png",
-  twitterHandle: "@muhyo-tech",
+    "Muhyo Tech builds fast, scalable Next.js websites, SaaS dashboards, backend systems, SEO-ready web apps, and premium digital products.",
+  keywords:
+    "Muhyo Tech, Full Stack Developer, Next.js Developer, React Developer, Node.js Developer, Web Development Pakistan, SaaS Dashboard, SEO Web Design",
+  author: "Pir Ghulam Muhyo Din",
+  ogImage: "/portfolio-hero.png",
+  twitterHandle: "@muhyotech",
 };
+
+export function absoluteUrl(path = "") {
+  if (!path) return SITE_URL;
+  if (/^https?:\/\//i.test(path)) return path;
+  return `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
+}
+
+export function cleanSeoText(value = "", maxLength = 155) {
+  return String(value)
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, maxLength);
+}
+
+export function buildCanonical(path = "") {
+  return absoluteUrl(path).replace(/\/$/, "");
+}
+
+export function getSeoImage(image) {
+  return absoluteUrl(image || defaultSeoData.ogImage);
+}
 
 export const generateMetadata = (pageTitle, pageDescription) => {
   return {
@@ -19,9 +44,9 @@ export const generateMetadata = (pageTitle, pageDescription) => {
       description: pageDescription || defaultSeoData.description,
       images: [
         {
-          url: defaultSeoData.ogImage,
-          width: 800,
-          height: 600,
+          url: getSeoImage(defaultSeoData.ogImage),
+          width: 1200,
+          height: 630,
           alt: "Muhyo Tech",
         },
       ],

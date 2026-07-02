@@ -2,6 +2,7 @@
 
 import AdminSidebar from "@/components/AdminSidebar";
 import Topbar from "@/components/admin/Topbar";
+import SocketRefresh from "@/components/SocketRefresh";
 import useAdminStore from "@/lib/store/adminStore";
 
 export default function ProtectedAdminLayout({ children }) {
@@ -9,6 +10,7 @@ export default function ProtectedAdminLayout({ children }) {
 
   return (
     <div className="flex min-h-screen bg-[#0a0f1c] selection:bg-accent selection:text-white overflow-x-hidden">
+      <SocketRefresh />
       <AdminSidebar />
       <div 
         className={`flex-grow flex flex-col transition-[padding] duration-300 min-w-0

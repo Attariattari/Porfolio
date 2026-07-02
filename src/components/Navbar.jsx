@@ -5,27 +5,35 @@ import { ThemeToggle } from "./ThemeToggle";
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import useAdminStore from "@/lib/store/adminStore";
 import { portfolioData } from "@/lib/data";
 
 export default function Navbar() {
-  const { settings } = useAdminStore();
   const [scrolled, setScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  // Fallback to static data if settings not loaded
+  // Use static data only - no admin store on public pages
   const logo = {
-    title: settings?.siteTitle || portfolioData?.siteConfig?.navbar?.logo?.title || "Muhyo",
-    accent: settings?.siteAccent || portfolioData?.siteConfig?.navbar?.logo?.accent || "Tech",
+    title: portfolioData?.siteConfig?.navbar?.logo?.title || "Muhyo",
+    accent: portfolioData?.siteConfig?.navbar?.logo?.accent || "Tech",
   };
 
   const navLinks = portfolioData.siteConfig?.navbar?.navLinks || [];
   const cta = portfolioData.siteConfig?.navbar?.cta || {};
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    let rafId = null;
+    const handleScroll = () => {
+      if (rafId) return; // skip if RAF already queued
+      rafId = requestAnimationFrame(() => {
+        setScrolled(window.scrollY > 20);
+        rafId = null;
+      });
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   return (
@@ -37,7 +45,11 @@ export default function Navbar() {
       }`}
     >
       <div className="container mx-auto px-6 flex justify-between items-center">
-        <Link href="/" prefetch={true} className="text-2xl font-bold text-foreground">
+        <Link
+          href="/"
+          prefetch={true}
+          className="text-2xl font-bold text-foreground"
+        >
           {logo.title}
           <span className="text-accent underline decoration-accent/30 underline-offset-4">
             {logo.accent}

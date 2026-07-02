@@ -6,18 +6,40 @@ import ScrollToTop from "@/components/ScrollToTop";
 import { Toaster } from "sonner";
 import VisitorTracker from "@/components/VisitorTracker";
 import NetworkListener from "@/components/NetworkListener";
-import SocketRefresh from "@/components/SocketRefresh";
 import { OrganizationSchema } from "@/components/schema/OrganizationSchema";
+import { SITE_URL } from "@/lib/config";
+import { getSeoImage } from "@/lib/seo";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "Muhyo Tech — Premium Software Engineering & Digital Solutions",
+    default: "Muhyo Tech - Premium Software Engineering & Digital Solutions",
     template: "%s | Muhyo Tech",
   },
   description:
-    "Architecting high-performance digital solutions with a focus on scalability, aesthetics, and user experience.",
+    "Muhyo Tech builds high-performance websites, SaaS dashboards, backend systems, SEO-ready web apps, and premium digital products.",
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
+  openGraph: {
+    title: "Muhyo Tech - Premium Software Engineering & Digital Solutions",
+    description:
+      "High-performance websites, SaaS dashboards, backend systems, SEO-ready web apps, and premium digital products.",
+    url: SITE_URL,
+    siteName: "Muhyo Tech",
+    images: [
+      {
+        url: getSeoImage("/portfolio-hero.png"),
+        width: 1200,
+        height: 630,
+        alt: "Muhyo Tech",
+      },
+    ],
+    type: "website",
+  },
 };
 
 export default function RootLayout({ children }) {
@@ -51,7 +73,6 @@ export default function RootLayout({ children }) {
       </head>
       <body className={inter.className} suppressHydrationWarning>
         <ThemeProvider>
-          <SocketRefresh />
           <NetworkListener />
           <VisitorTracker />
           <ScrollToTop />
@@ -74,3 +95,4 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
+

@@ -15,6 +15,7 @@ import { SectionWrapper, Card } from "./ui";
 import Link from "next/link";
 import React from "react";
 import { ImageLightbox } from "./ImageLightbox";
+import Image from "next/image";
 
 const icons = {
   1: Layout,
@@ -121,34 +122,60 @@ const ServiceRow = ({ service, index, onImageClick }) => {
         </div>
       </div>
 
-      {/* Image Side */}
+      {/* Image Side: Cinematic Slider-style — OPTIMIZED with Next/Image */}
       <div
-        className={`w-full lg:w-[calc(50%-4rem)] relative group ${isReversed ? "lg:order-1" : "lg:order-2"} mt-12 lg:mt-0`}
+        className={`w-full lg:w-[calc(50%-4rem)] relative group/img-side ${isReversed ? "lg:order-1" : "lg:order-2"} mt-12 lg:mt-0`}
       >
-        <div className="absolute inset-0 bg-accent/20 blur-3xl rounded-full scale-75 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+        {/* Accent glow */}
+        <div className="absolute inset-0 bg-accent/20 blur-[40px] rounded-full scale-90 animate-pulse -z-10" />
 
-        <Card className="relative p-2 md:p-3 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md overflow-hidden transform transition-all duration-700 group-hover:scale-[1.02] shadow-2xl">
-          <div className="relative rounded-2xl overflow-hidden aspect-[4/3] w-full">
-            <img
-              src={service.banner}
-              alt={service.title}
-              className="w-full h-full object-cover transform transition-transform duration-1000 group-hover:scale-110 cursor-zoom-in"
-              onClick={() => onImageClick(index)}
-            />
-            {/* Glossy Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-tr from-black/80 via-black/20 to-transparent" />
-            <div className="absolute inset-0 border border-white/10 rounded-2xl" />
+        <motion.div
+          whileHover={{ scale: 1.02 }}
+          transition={{ type: "spring", stiffness: 200, damping: 20 }}
+          className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-[0_40px_80px_-20px_rgba(0,0,0,0.6)] border border-white/10 bg-background cursor-pointer"
+          onClick={() => onImageClick(index)}
+        >
+          {/* PHASE 1: Next/Image replaces CSS background-image */}
+          <motion.div
+            initial={{ scale: 1.2, opacity: 0 }}
+            whileInView={{ scale: 1, opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
+            className="absolute inset-0"
+          >
+            {service.banner && (
+              <Image
+                src={service.banner}
+                alt={service.title}
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+                className="object-cover transition-transform duration-1000 group-hover/img-side:scale-110"
+                loading="lazy"
+              />
+            )}
+            {/* Dark gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10" />
+            <div className="absolute inset-0 bg-black/20 z-10" />
+          </motion.div>
 
-            <div
-              className={`absolute bottom-6 left-6 right-6 ${isReversed ? "" : "lg:text-right"}`}
-            >
-              <div
-                className={`flex gap-2 flex-wrap ${isReversed ? "" : "lg:justify-end"}`}
-              >
+          {/* Overlay content at bottom */}
+          <div className="absolute inset-0 p-8 md:p-10 flex flex-col justify-end pointer-events-none z-20">
+            <div className="relative z-10">
+              {/* Accent badge */}
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/90 backdrop-blur-sm text-white text-[10px] font-black uppercase tracking-[0.3em] mb-4 shadow-xl">
+                <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+                Phase 0{index + 1}
+              </div>
+              {/* Title */}
+              <h3 className="text-2xl md:text-3xl font-black text-white mb-3 leading-[1.1] tracking-tighter drop-shadow-2xl">
+                {service.title}
+              </h3>
+              {/* Tech stack tags */}
+              <div className="flex flex-wrap gap-2">
                 {service.techStack?.slice(0, 4).map((tech, i) => (
                   <span
                     key={i}
-                    className="px-3 py-1.5 bg-background/80 backdrop-blur-md rounded-md border border-white/10 text-[10px] font-semibold text-foreground tracking-normal"
+                    className="px-2.5 py-1 bg-background/50 backdrop-blur-md rounded-md border border-white/10 text-[10px] font-semibold text-white/80 tracking-normal"
                   >
                     {tech}
                   </span>
@@ -156,7 +183,10 @@ const ServiceRow = ({ service, index, onImageClick }) => {
               </div>
             </div>
           </div>
-        </Card>
+
+          {/* Glass reflection */}
+          <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none z-30" />
+        </motion.div>
       </div>
     </motion.div>
   );

@@ -9,6 +9,11 @@ export const metadata = {
     template: "%s - Muhyo Tech Control Center",
   },
   description: "Secure dashboard for managing Muhyo Tech content.",
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+  },
 };
 
 export default function AdminLayout({ children }) {

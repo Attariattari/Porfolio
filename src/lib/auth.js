@@ -17,6 +17,62 @@ const ROOT_ADMIN_EMAIL = (
     process.env.SUPER_ADMIN_EMAIL || "attariattari549@gmail.com"
 ).toLowerCase();
 
+function resolveSafeRole(user) {
+    const email = user.email?.toLowerCase();
+    if (email === ROOT_ADMIN_EMAIL) return "root-super-admin";
+    if (user.role === "root-super-admin") return "super-admin";
+    return user.role || "user";
+}
+
+export function getDefaultAuthRedirect(user, callbackUrl = "") {
+    if (callbackUrl && callbackUrl.startsWith("/") && !callbackUrl.startsWith("//")) {
+        return callbackUrl;
+    }
+    return "/admin/dashboard";
+}
+
+export async function createAdminSession(user, source = "credentials") {
+    const normalizedEmail = user.email.toLowerCase();
+    const finalRole = resolveSafeRole({ ...user, email: normalizedEmail });
+
+    const token = await new SignJWT({
+            role: finalRole,
+            email: normalizedEmail,
+            userId: user._id.toString(),
+            name: user.name,
+            authSource: source,
+        })
+        .setProtectedHeader({ alg: "HS256" })
+        .setIssuedAt()
+        .setExpirationTime("8h")
+        .sign(SECRET);
+
+    const cookieOptions = {
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 60 * 60 * 8,
+        path: "/",
+    };
+
+    (await cookies()).set("admin_auth_token", token, {
+        ...cookieOptions,
+        httpOnly: true,
+    });
+
+    (await cookies()).set("admin_token", token, {
+        ...cookieOptions,
+        httpOnly: false,
+    });
+
+    return {
+        success: true,
+        token,
+        email: normalizedEmail,
+        role: finalRole,
+        name: user.name,
+    };
+}
+
 /**
  * Parse JWT payload without verification (client-side helper)
  * Extracts exp and other claims safely

@@ -7,14 +7,29 @@ export const metadata = {
   description: "Secure Access to Muhyo Tech Control Center",
 };
 
-export default async function AdminLoginPage() {
+export default async function AdminLoginPage({ searchParams }) {
+    const resolvedSearchParams = await searchParams;
+    const rawCallbackUrl = resolvedSearchParams?.callbackUrl || "/admin/dashboard";
+    const callbackUrl =
+        typeof rawCallbackUrl === "string" &&
+        rawCallbackUrl.startsWith("/") &&
+        !rawCallbackUrl.startsWith("//")
+            ? rawCallbackUrl
+            : "/admin/dashboard";
     const session = await getAuthSession();
 
     // If session exists and is valid, redirect to the secure dashboard
     if (session) {
-        redirect("/admin/dashboard");
+        redirect(callbackUrl);
     }
 
     // Otherwise, present the secure authorization gateway
-    return <AuthContainer />;
+    return (
+        <AuthContainer
+            callbackUrl={callbackUrl}
+            googleLinkToken={resolvedSearchParams?.linkToken || ""}
+            googleLinkEmail={resolvedSearchParams?.oauthEmail || ""}
+            googleError={resolvedSearchParams?.googleError || ""}
+        />
+    );
 }

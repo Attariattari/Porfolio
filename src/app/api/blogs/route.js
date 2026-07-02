@@ -8,9 +8,19 @@ import { serializeDoc } from "@/lib/mongooseHelper";
 import { revalidatePath } from "next/cache";
 
 // GET ALL BLOGS - Returns merged: MongoDB + unused data.js items (Public)
-export async function GET() {
+export async function GET(request) {
   try {
-    const blogs = await BlogController.getAll();
+    const { searchParams } = new URL(request.url);
+    const includeContent = searchParams.get("includeContent") === "true";
+
+    if (includeContent) {
+      const session = await getAuthSession();
+      if (!checkPermission(session, "blogs", "edit")) {
+        return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+      }
+    }
+
+    const blogs = await BlogController.getAll(false, { includeContent });
     return NextResponse.json({ success: true, count: blogs.length, data: blogs });
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });

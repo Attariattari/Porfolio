@@ -64,6 +64,17 @@ const BlogSchema = new mongoose.Schema({
     category: { type: String },
     tags: [{ type: String }],
     image: { type: String },
+    featuredImage: {
+        url: { type: String },
+        publicId: { type: String },
+        alt: { type: String },
+        width: { type: Number },
+        height: { type: Number },
+        source: {
+            type: String,
+            enum: ["ai_generated", "manual_upload"],
+        },
+    },
     featured: { type: Boolean, default: false, index: true },
     featuredScore: { type: Number, default: 0 },
     featuredOrder: { type: Number, default: 0, index: true },
@@ -76,12 +87,32 @@ const BlogSchema = new mongoose.Schema({
     readTime: { type: String },
     order: { type: Number, default: 0, index: true },
     aiGenerated: { type: Boolean, default: false },
+    image_prompt: { type: String },
+    imagePrompt: { type: String },
+    imageNegativePrompt: { type: String },
     imageGenerated: { type: Boolean, default: false },
     imageStatus: {
         type: String,
-        enum: ["pending", "generating", "completed", "failed"],
+        enum: [
+            "pending",
+            "generating",
+            "completed",
+            "generated",
+            "manual_required",
+            "uploaded",
+            "failed",
+            "skipped",
+        ],
         default: "pending",
     },
+    imageGenerationAttempts: { type: Number, default: 0 },
+    imageGenerationError: { type: String },
+    manualImageUploadTokenId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "BlogImageUploadLink",
+    },
+    imageUploadedBy: { type: String },
+    imageUploadedAt: { type: Date },
     generatedAt: { type: Date },
     qualityStatus: {
         type: String,
@@ -423,6 +454,136 @@ ContactMessageSchema.index({ service: 1 });
 ContactMessageSchema.index({ status: 1 });
 ContactMessageSchema.index({ createdAt: -1 }); // For sorting latest first
 
+// 14. GOAL SCHEMA - Goals/Vision/Roadmap System
+const GoalSchema = new mongoose.Schema({
+    title: { type: String, required: true },
+    description: { type: String },
+    category: { type: String }, // e.g., "Technology", "Business", "Community", "Product"
+    status: {
+        type: String,
+        enum: ["planned", "in-progress", "completed", "paused", "cancelled"],
+        default: "planned",
+        index: true,
+    },
+    priority: {
+        type: String,
+        enum: ["low", "medium", "high", "critical"],
+        default: "medium",
+        index: true,
+    },
+    progress: { type: Number, min: 0, max: 100, default: 0 }, // Percentage
+    targetDate: { type: Date },
+    featured: { type: Boolean, default: false, index: true },
+    icon: { type: String }, // Lucide icon name
+    order: { type: Number, default: 0, index: true },
+    publishStatus: {
+        type: String,
+        enum: ["draft", "published"],
+        default: "draft",
+        index: true,
+    },
+    createdAt: { type: Date, default: Date.now, index: true },
+    updatedAt: { type: Date, default: Date.now },
+});
+
+// 15. ROADMAP ITEM SCHEMA
+const RoadmapItemSchema = new mongoose.Schema({
+    title: { type: String, required: true },
+    description: { type: String },
+    year: { type: Number, required: true },
+    quarter: { type: String, enum: ["Q1", "Q2", "Q3", "Q4"] },
+    status: {
+        type: String,
+        enum: ["upcoming", "in-progress", "completed", "delayed"],
+        default: "upcoming",
+        index: true,
+    },
+    order: { type: Number, default: 0, index: true },
+    publishStatus: {
+        type: String,
+        enum: ["draft", "published"],
+        default: "draft",
+        index: true,
+    },
+    createdAt: { type: Date, default: Date.now, index: true },
+    updatedAt: { type: Date, default: Date.now },
+});
+
+// 16. MILESTONE SCHEMA
+const MilestoneSchema = new mongoose.Schema({
+    title: { type: String, required: true },
+    description: { type: String },
+    date: { type: Date, required: true },
+    category: { type: String }, // e.g., "Product", "Team", "Market"
+    featured: { type: Boolean, default: false, index: true },
+    order: { type: Number, default: 0, index: true },
+    publishStatus: {
+        type: String,
+        enum: ["draft", "published"],
+        default: "draft",
+        index: true,
+    },
+    createdAt: { type: Date, default: Date.now, index: true },
+    updatedAt: { type: Date, default: Date.now },
+});
+
+// 17. GOALS VISION SCHEMA - Centralized vision/statement
+const GoalsVisionSchema = new mongoose.Schema({
+    missionStatement: { type: String },
+    visionStatement: { type: String },
+    founderMessage: { type: String },
+    aiInsights: {
+        type: mongoose.Schema.Types.Mixed,
+        default: {},
+    }, // Cached insights
+    lastAiRefresh: { type: Date },
+    updatedAt: { type: Date, default: Date.now },
+});
+
+// 18. GOAL ACTIVITY LOG SCHEMA
+const GoalActivityLogSchema = new mongoose.Schema({
+    action: { type: String, required: true }, // create, update, delete, complete, featured
+    entityType: {
+        type: String,
+        enum: ["goal", "roadmap", "milestone", "vision"],
+        required: true,
+    },
+    entityId: { type: String },
+    title: { type: String, required: true },
+    description: { type: String },
+    isPinned: { type: Boolean, default: false },
+    createdBy: { type: String, default: "Admin" },
+    createdAt: { type: Date, default: Date.now, index: true },
+});
+
+// 19. GOALS CONFIG SCHEMA (For overrides)
+const GoalsConfigSchema = new mongoose.Schema({
+    healthMode: { type: String, enum: ["auto", "manual"], default: "auto" },
+    manualHealthScore: { type: Number, min: 0, max: 100, default: 95 },
+    manualKpis: {
+        type: Map,
+        of: String,
+    }, // Store manual strings for KPIs
+    autoInsightsEnabled: { type: Boolean, default: true },
+    updatedAt: { type: Date, default: Date.now },
+});
+
+// 20. BLOG GENERATION LOG SCHEMA - Logs for AI blog generation pipeline
+const BlogGenerationLogSchema = new mongoose.Schema({
+    type: {
+        type: String,
+        enum: ['blog-created', 'image-fallback', 'image-retry', 'quality-check'],
+        required: true,
+    },
+    blogId: { type: mongoose.Schema.Types.ObjectId, ref: 'Blog', index: true },
+    blogTitle: { type: String },
+    message: { type: String },
+    reason: { type: String }, // Detailed reason for the log entry
+    fallbackImageUrl: { type: String }, // Used when falling back to default image
+    attemptCount: { type: Number, default: 1 },
+    createdAt: { type: Date, default: Date.now, index: true },
+});
+
 // Exporting all models
 export const Project =
     mongoose.models.Project || mongoose.model("Project", ProjectSchema);
@@ -450,6 +611,13 @@ if (process.env.NODE_ENV === "development") {
     delete mongoose.models.SiteConfig;
     delete mongoose.models.SuperAdminOTP;
     delete mongoose.models.SuperAdminTransferSession;
+    delete mongoose.models.Goal;
+    delete mongoose.models.RoadmapItem;
+    delete mongoose.models.Milestone;
+    delete mongoose.models.GoalsVision;
+    delete mongoose.models.GoalActivityLog;
+    delete mongoose.models.GoalsConfig;
+    delete mongoose.models.BlogGenerationLog;
 }
 export const ContactMessage =
     mongoose.models.ContactMessage ||
@@ -463,3 +631,21 @@ export const SuperAdminOTP =
 export const SuperAdminTransferSession =
     mongoose.models.SuperAdminTransferSession ||
     mongoose.model("SuperAdminTransferSession", SuperAdminTransferSessionSchema);
+export const Goal = mongoose.models.Goal || mongoose.model("Goal", GoalSchema);
+export const RoadmapItem =
+    mongoose.models.RoadmapItem ||
+    mongoose.model("RoadmapItem", RoadmapItemSchema);
+export const Milestone =
+    mongoose.models.Milestone || mongoose.model("Milestone", MilestoneSchema);
+export const GoalsVision =
+    mongoose.models.GoalsVision ||
+    mongoose.model("GoalsVision", GoalsVisionSchema);
+export const GoalActivityLog =
+    mongoose.models.GoalActivityLog ||
+    mongoose.model("GoalActivityLog", GoalActivityLogSchema);
+export const GoalsConfig =
+    mongoose.models.GoalsConfig ||
+    mongoose.model("GoalsConfig", GoalsConfigSchema);
+export const BlogGenerationLog =
+    mongoose.models.BlogGenerationLog ||
+    mongoose.model("BlogGenerationLog", BlogGenerationLogSchema);

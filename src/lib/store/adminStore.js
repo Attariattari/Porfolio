@@ -169,7 +169,7 @@ const useAdminStore = create((set, get) => ({
   // BLOGS
   fetchBlogs: async () => {
     try {
-      const res = await fetch("/api/blogs", { cache: "no-store" });
+      const res = await fetch("/api/blogs?includeContent=true", { cache: "no-store" });
       const result = await res.json();
       if (result.success && result.data?.length > 0) {
         set({ blogs: result.data });

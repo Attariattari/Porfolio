@@ -160,9 +160,11 @@ export default function BlogPostDetail({ blog }) {
 
               <div className="relative space-y-3">
                 {(() => {
-                  const productionUrl = "https://muhyo-tech.vercel.app";
                   const currentPath = `/blog/${blog.slug}`;
-                  const fullShareUrl = `${productionUrl}${currentPath}`;
+                  const fullShareUrl =
+                    typeof window !== "undefined"
+                      ? `${window.location.origin}${currentPath}`
+                      : currentPath;
 
                   const shareOptions = [
                     {

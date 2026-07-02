@@ -1,6 +1,8 @@
 import BlogPostDetail from "@/components/BlogPostDetail";
 import { BlogController } from "@/controllers/BlogController";
 import { notFound } from "next/navigation";
+import { SITE_URL } from "@/lib/config";
+import { buildCanonical, cleanSeoText, getSeoImage } from "@/lib/seo";
 
 // P7 OPTIMIZATION: ISR with static generation
 // Revalidate every hour to keep detail pages fresh
@@ -22,33 +24,33 @@ export async function generateMetadata({ params }) {
 
   if (!blog) return { title: "Blog Post Not Found" };
 
-  const baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL || "https://muhyo-tech.vercel.app";
-  const canonicalUrl = baseUrl + "/blog/" + blog.slug;
+  const canonicalUrl = buildCanonical(`/blog/${blog.slug}`);
+  const description = cleanSeoText(blog.summary || blog.content, 155);
+  const image = getSeoImage(blog.image || blog.featuredImage?.url);
 
   return {
     title: `${blog.title} | Muhyo Tech Blog`,
-    description: blog.summary,
+    description,
     keywords:
       blog.tags?.join(", ") || "Next.js, Web Development, Software Engineering",
-    canonical: canonicalUrl,
     alternates: {
       canonical: canonicalUrl,
     },
     openGraph: {
       title: blog.title,
-      description: blog.summary,
-      images: [blog.image],
+      description,
+      images: [{ url: image, width: 1200, height: 630, alt: blog.title }],
       type: "article",
       publishedTime: blog.createdAt || blog.date,
+      modifiedTime: blog.updatedAt || blog.createdAt || blog.date,
       authors: [blog.author || "Muhyo Tech"],
       url: canonicalUrl,
     },
     twitter: {
       card: "summary_large_image",
       title: blog.title,
-      description: blog.summary,
-      images: [blog.image],
+      description,
+      images: [image],
     },
   };
 }
@@ -64,17 +66,19 @@ export default async function BlogPostPage({ params }) {
     notFound();
   }
 
-  const baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL || "https://muhyo-tech.vercel.app";
-  const canonicalUrl = baseUrl + "/blog/" + blog.slug;
+  const baseUrl = SITE_URL;
+  const canonicalUrl = buildCanonical(`/blog/${blog.slug}`);
+  const image = getSeoImage(blog.image || blog.featuredImage?.url);
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: blog.title,
-    description: blog.summary,
+    description: cleanSeoText(blog.summary || blog.content, 155),
     image: {
       "@type": "ImageObject",
-      url: blog.image,
+      url: image,
+      width: 1200,
+      height: 630,
     },
     author: {
       "@type": "Person",
@@ -92,6 +96,10 @@ export default async function BlogPostPage({ params }) {
       "@type": "Organization",
       name: "Muhyo Tech",
       url: baseUrl,
+      logo: {
+        "@type": "ImageObject",
+        url: getSeoImage("/logo.png"),
+      },
     },
   };
 

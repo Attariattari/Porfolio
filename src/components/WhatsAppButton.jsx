@@ -46,7 +46,7 @@ const WhatsAppButton = () => {
   if (isModalOpen) return null;
 
   return (
-    <div className="fixed bottom-24 md:bottom-6 right-6 z-[9999] flex flex-col items-end gap-4">
+    <div className="site-floating-action fixed bottom-24 md:bottom-6 right-6 z-[9999] flex flex-col items-end gap-4">
       <AnimatePresence>
         {isOpen && (
           <motion.div

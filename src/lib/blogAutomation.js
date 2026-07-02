@@ -2,15 +2,10 @@ import {
     generateGeminiResponse,
     reviewContentWithGemini,
 } from "./geminiService.js";
-import { uploadToCloudinary } from "./cloudinary.js";
 import { Blog } from "../models/Portfolio.js";
 import dbConnect from "./dbConnect.js";
 import { cacheManager } from "./cache.js";
-import { sendNewsletterEmail } from "./newsletter.js";
-import {
-    updateFeaturedRankings,
-    triggerFeaturedUpdate,
-} from "./ai/featuredEngine.js";
+import { ensureBlogImage } from "./ai/blog/ensureBlogImage.js";
 import { revalidatePath } from "next/cache";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -162,6 +157,8 @@ async function generateEditorialContent(
     
     CRITIC ALIGNMENT (Follow these to pass first attempt):
     - Tone must be Senior Engineering/Founder level.
+    - Content must be a complete article, not a teaser. Target 900-1400 words.
+    - Include at least 5 meaningful <h2> sections and multiple <p> blocks.
     - Paragraphs MUST be 2-3 sentences max. No exceptions.
     - Voice should be Muhyo Tech centric (using "we", "our team").
     - Avoid "AI-isms" and common tropes.
@@ -177,7 +174,7 @@ async function generateEditorialContent(
       "summary": "Compelling editorial summary (150-160 chars).",
       "category": "Engineering | Design | Backend | SEO | Technology | Architecture | Culture | Security | Infrastructure",
       "tags": ["tag1", "tag2", "tag3"],
-      "content": "Full HTML content. 2-3 sentences per paragraph ONLY.",
+      "content": "Full HTML article body with <p>, <h2>, <ul>/<li> where useful. 900-1400 words. 2-3 sentences per paragraph ONLY.",
       "author": "Pir Ghulam Muhyo Din",
       "authorRole": "Founder",
       "readTime": "e.g. 7 min read",
@@ -196,7 +193,25 @@ async function generateEditorialContent(
       .replace(/```json/gi, "")
       .replace(/```/g, "")
       .trim();
-    return JSON.parse(cleaned);
+    const parsed = JSON.parse(cleaned);
+    const content = typeof parsed.content === "string" ? parsed.content.trim() : "";
+    const hasHtmlBlocks = /<(p|h2|h3|ul|ol|blockquote)\b/i.test(content);
+    const sectionCount = (content.match(/<h2\b/gi) || []).length;
+
+    if (content.length < 2500 || !hasHtmlBlocks || sectionCount < 3) {
+      if (retryCount < 2) {
+        return generateEditorialContent(
+          topic,
+          "The previous output did not include a complete Full Narrative Content body. Regenerate a full 900-1400 word HTML article with multiple <h2> sections and rich <p> paragraphs.",
+          retryCount + 1,
+          null,
+          recentTopics,
+        );
+      }
+      throw new Error("Generated blog content was incomplete or not valid HTML.");
+    }
+
+    return parsed;
   } catch (e) {
     console.error("[Creator] JSON Parse Failed. Retrying...");
     if (retryCount < 2)
@@ -589,6 +604,12 @@ export async function runBlogAutomationPipeline(
       );
     }
 
+    report("CONTENT_READY", {
+      message: "Full narrative content generated and passed quality review.",
+      title: blogData.title,
+      summary: blogData.summary,
+    });
+
     // 4. CHECK UNIQUENESS (Only if not a refinement of a known slug)
     const existing = await Blog.findOne({ slug: blogData.slug });
     if (existing && !previousDraft) {
@@ -615,7 +636,7 @@ export async function runBlogAutomationPipeline(
     await newBlog.save();
     await cacheManager.invalidateByTag("blogs");
 
-    report("COMPLETED", {
+    report("CONTENT_SAVED", {
       message: "Editorial-quality blog saved.",
       id: newBlog._id,
     });
@@ -652,342 +673,108 @@ export async function finalizeBlogPipeline(
 
     if (options.generateImage === false) {
       report("SKIPPING_IMAGE", {
-        message: "Publishing without AI image as requested...",
+        message: "AI image generation is off. Preparing secure upload email...",
       });
-      blog.imageStatus = "skipped";
-      blog.publishStatus = "published";
-      blog.imageGenerated = false;
-      await blog.save();
-
-      // Newsletter Transmission
-      sendNewsletterEmail("blog", blog).catch((err) => {
-        console.error("[Pipeline] Newsletter failure:", err);
+      const ensured = await ensureBlogImage(blogId, {
+        skipGeneration: true,
+        baseUrl: options.baseUrl,
       });
 
-      await triggerFeaturedUpdate(blog);
-      try {
-        revalidatePath("/");
-        revalidatePath("/blog");
-      } catch (e) {}
-      await cacheManager.invalidateByTag("blogs");
-
-      report("COMPLETED", {
-        message: "Blog published without image.",
-        url: "",
+      report("MANUAL_IMAGE_REQUIRED", {
+        message: ensured.emailSent
+          ? "Secure upload email sent to Super Admin."
+          : "Manual upload is required, but email could not be sent.",
+        emailSent: !!ensured.emailSent,
+        uploadLinkId: ensured.uploadLinkId,
       });
-      return { success: true, blog };
+
+      return ensured;
     }
 
-    report("STARTING_IMAGE", {
-      message: "Generating authentic engineering visual...",
+    const ensured = await ensureBlogImage(blogId, {
+      maxImageRetries: 1,
+      providerTimeoutMs: 12000,
+      baseUrl: options.baseUrl,
     });
+    report(
+      ensured.status === "generated" ? "IMAGE_COMPLETED" : "MANUAL_IMAGE_REQUIRED",
+      {
+        message:
+          ensured.status === "generated"
+            ? "AI image generated and attached to the blog."
+            : ensured.emailSent
+              ? "AI image failed. Secure upload email sent to Super Admin."
+              : "AI image failed. Manual upload is required, but email could not be sent.",
+        emailSent: !!ensured.emailSent,
+        uploadLinkId: ensured.uploadLinkId,
+      },
+    );
 
-    blog.imageStatus = "generating";
-    await blog.save();
+    return ensured;
 
-    let attempts = 0;
-    const maxAttempts = 5;
-    let finalImageUrl = null;
-    let imageAuditData = null;
-
-    // STEP 1: Analyze and Design visual concept
-    report("DESIGNING_VISUAL", {
-      message: "AI Architect is designing a unique, blog-specific concept...",
-    });
-
-    const architecturalDesign = await generateAdvancedImagePrompt(blog);
-
-    // STEP 2: Save the enhanced prompt to database for transparency
-    blog.imagePromptEnhanced = architecturalDesign.enhancedPrompt;
-    blog.imageNarrativeAnalysis = architecturalDesign.narrativeAnalysis;
-    await blog.save();
-
-    report("VISUAL_DESIGNED", {
-      message: `Concept: ${architecturalDesign.narrativeAnalysis.visualMetaphor}`,
-    });
-
-    // STEP 3: Generation with Intelligent Retry
-    let currentPrompt = architecturalDesign.enhancedPrompt;
-
-    while (attempts < maxAttempts) {
-      attempts++;
-      report("GENERATING_IMAGE", {
-        message: `Attempt ${attempts}/${maxAttempts}: Generating visual...`,
-      });
-
-      try {
-        const imageUrl = await generateAndUploadGeminiImage(currentPrompt);
-
-        // Quality Validation Step with enhanced auditor
-        report("VALIDATING_IMAGE", {
-          message:
-            "Auditor is checking relevance, quality, and technical standards...",
-        });
-
-        const audit = await reviewGeneratedImage(imageUrl, blog, attempts);
-        imageAuditData = audit;
-
-        if (audit.passed) {
-          console.log(
-            `[Pipeline] ✅ Image accepted on attempt ${attempts}. Score: ${audit.overallScore}/10`,
-          );
-          finalImageUrl = imageUrl;
-          break;
-        } else if (attempts === maxAttempts) {
-          // Last attempt - accept anyway to avoid complete failure
-          console.warn(
-            `[Pipeline] Final attempt (${attempts}/${maxAttempts}) failed audit but accepting to avoid block.`,
-          );
-          console.warn(`Issues: ${audit.specificIssues.join(", ")}`);
-          finalImageUrl = imageUrl;
-          break;
-        } else {
-          // Intermediate failure - regenerate prompt with specific guidance
-          report("REJECTED_IMAGE", {
-            message: `Image rejected (Score: ${audit.overallScore}/10). Regenerating prompt with specific guidance...`,
-          });
-
-          // Create a refinement prompt based on auditor feedback
-          const promptRefinementGuidance = `
-            FAILED IMAGE ANALYSIS:
-            Issues: ${audit.specificIssues.join(", ")}
-            Auditor Guidance: ${audit.regeneratePromptGuidance}
-            
-            ARTICLE CONTEXT:
-            Title: "${blog.title}"
-            Category: ${blog.category}
-            Original Concept: ${architecturalDesign.narrativeAnalysis.visualMetaphor}
-            
-            TASK: Regenerate the image prompt with these improvements:
-            - Address the specific issues mentioned
-            - Make the visual narrative even more clear and direct
-            - Ensure zero text, logos, or UI elements
-            - Emphasize the ${architecturalDesign.narrativeAnalysis.emotionalTone} tone
-            - Focus on showing the ${architecturalDesign.narrativeAnalysis.visualMetaphor}
-            
-            Keep the same setting and concept, but refine the description for clarity and uniqueness.
-            
-            OUTPUT: Updated image generation prompt (1-2 paragraphs)
-          `;
-
-          try {
-            const refinedPromptResponse = await generateGeminiResponse(
-              promptRefinementGuidance,
-              {
-                systemInstruction: IMAGE_EDITORIAL_ARCHITECT_GUIDELINES,
-                temperature: 0.75,
-              },
-            );
-            currentPrompt = refinedPromptResponse.trim();
-            console.log(
-              "[Pipeline] Prompt regenerated with specific guidance.",
-            );
-          } catch (e) {
-            console.error(
-              "[Pipeline] Prompt refinement failed, retrying with original prompt:",
-              e,
-            );
-            // Fall back to using architectural prompt again with slight variation
-          }
-        }
-      } catch (e) {
-        console.error(
-          `[Pipeline] Image attempt ${attempts} failed:`,
-          e.message,
-        );
-
-        if (e.message.includes("Rate limited")) {
-          throw e; // Rate limiting is fatal
-        }
-
-        if (attempts === maxAttempts) {
-          throw e; // Last attempt failed
-        }
-
-        // Continue to next attempt
-      }
-    }
-
-    if (finalImageUrl) {
-      // Save all audit data to database
-      console.log("[Pipeline] Saving image and audit data to database...");
-      await Blog.findByIdAndUpdate(
-        blogId,
-        {
-          image: finalImageUrl,
-          imageGenerated: true,
-          imageStatus: "completed",
-          publishStatus: "published",
-          imagePromptEnhanced: blog.imagePromptEnhanced,
-          imageNarrativeAnalysis: blog.imageNarrativeAnalysis,
-          imageAuditScore: imageAuditData?.overallScore || 7,
-          imageAuditVisualScore: imageAuditData?.visualScore || 7,
-          imageAuditRelevanceScore: imageAuditData?.relevanceScore || 7,
-          imageAuditCtrPotential: imageAuditData?.ctrPotential || false,
-          imageAuditAttempts: attempts,
-          updatedAt: new Date(),
-        },
-        { new: true },
-      );
-
-      report("IMAGE_COMPLETED", {
-        message: `Visual complete. Quality Score: ${imageAuditData?.overallScore || 7}/10 | Attempts: ${attempts}`,
-      });
-
-      // --- Newsletter + Featured Ranking + Revalidation ---
-      report("FINALIZING", {
-        message: "Synchronizing newsletter and featured rankings...",
-      });
-
-      const publishedBlog = await Blog.findById(blogId);
-
-      // Newsletter Transmission
-      sendNewsletterEmail("blog", publishedBlog).catch((err) => {
-        console.error("[Pipeline] Newsletter failure:", err);
-      });
-
-      // AI Featured Selection
-      await triggerFeaturedUpdate(publishedBlog);
-
-      // ISR Revalidation
-      try {
-        revalidatePath("/");
-        revalidatePath("/blog");
-      } catch (e) {
-        // Safe to ignore in some contexts
-      }
-
-      await cacheManager.invalidateByTag("blogs");
-
-      report("COMPLETED", {
-        message: "Blog is LIVE! Editorial visual published.",
-        url: finalImageUrl,
-        auditScore: imageAuditData?.overallScore,
-      });
-
-      return {
-        success: true,
-        url: finalImageUrl,
-        blog: publishedBlog,
-        audit: imageAuditData,
-      };
-    } else {
-      throw new Error(
-        "Failed to generate a high-quality visual after multiple attempts.",
-      );
-    }
   } catch (error) {
+    console.error("[Pipeline] Pipeline error:", error.message);
     console.log("[Pipeline] Updating blog with failure state...");
-    await Blog.findByIdAndUpdate(blogId, {
-      imageGenerated: false,
-      imageStatus: "retry_pending",
-      imageError: error.message,
-      $inc: { imageRetryCount: 1 },
-    });
+
+    try {
+      await Blog.findByIdAndUpdate(blogId, {
+        imageGenerated: false,
+        imageStatus: "failed",
+        imageError: error.message,
+        $inc: { imageRetryCount: 1 },
+      });
+    } catch (dbError) {
+      console.error("[Pipeline] Failed to update blog error state:", dbError);
+    }
+
     report("ERROR", { message: error.message });
     return { success: false, error: error.message };
   }
 }
 
-/**
- * Uses Gemini's free image generation via REST API.
- * Tries gemini-2.5-flash-image first, falls back to gemini-3.1-flash-image.
- * Both are confirmed available on the free tier for this API key.
- */
 async function generateAndUploadGeminiImage(prompt) {
-  const apiKey = process.env.GEMINI_API_KEY;
+  try {
+    console.log(
+      "[Image] Attempting professional AI generation via Pollinations...",
+    );
 
-  // Models available on the free tier.
-  // We use 2.5-flash-image as it's the most reliable for availability.
-  const imageModels = ["gemini-2.5-flash-image", "gemini-3.1-flash-image"];
+    // Clean prompt - Very simple to avoid 402
+    const cleanPrompt = encodeURIComponent(
+      prompt.split(".")[0].substring(0, 80).trim(),
+    );
+    const seed = Math.floor(Math.random() * 10000);
 
-  let lastError;
-  for (const model of imageModels) {
-    try {
-      console.log(`[Image] Trying model: ${model}...`);
-      const cloudinaryUrl = await callGeminiImageREST(apiKey, model, prompt);
-      return cloudinaryUrl;
-    } catch (e) {
-      console.warn(`[Image] Model ${model} failed: ${e.message}`);
-      lastError = e;
+    // Attempt 1: Simple Pollinations (No complex models to avoid 402)
+    const aiUrl = `https://image.pollinations.ai/prompt/${cleanPrompt}?nologo=true&seed=${seed}`;
 
-      if (
-        e.message.includes("429") ||
-        e.message.includes("503") ||
-        e.message.includes("retryDelay")
-      ) {
-        console.log(
-          `[Image] Rate limit hit. Throwing immediately to avoid freezing UI...`,
-        );
-        throw new Error(
-          "Rate limited by Gemini. Please try again after 1 minute.",
-        );
-      }
+    let response = await fetch(aiUrl);
+
+    // Fallback to LoremFlicker (Professional Stock Search) if Pollinations fails
+    if (!response.ok) {
+      console.log(
+        "[Image] AI Model restricted (402). Switching to Professional Stock Library...",
+      );
+      const searchTags = "technology,coding,minimalist,engineering,startup";
+      const stockUrl = `https://loremflickr.com/g/1200/800/${searchTags}/all`;
+      response = await fetch(stockUrl);
     }
-  }
 
-  throw new Error(
-    `All Gemini image models failed. Last error: ${lastError?.message}`,
-  );
+    if (!response.ok) throw new Error("All image sources failed.");
+
+    const imageBlob = await response.blob();
+    return await uploadBlobToCloudinary(imageBlob, "blog_header.png");
+  } catch (e) {
+    console.error("[Image] Visual sourcing failed:", e.message);
+    // Absolute safety fallback
+    return "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80";
+  }
 }
 
+/**
+ * Placeholder for legacy compatibility - now handled by generateAndUploadGeminiImage
+ */
 async function callGeminiImageREST(apiKey, model, prompt) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-
-  console.log("[Image] Calling Gemini image generation REST API...");
-
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 60000);
-  let res;
-  try {
-    res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      signal: controller.signal,
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { responseModalities: ["IMAGE", "TEXT"] },
-      }),
-    });
-  } finally {
-    clearTimeout(timer);
-  }
-
-  if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(`Gemini REST API error ${res.status}: ${errText}`);
-  }
-
-  const json = await res.json();
-
-  // Extract the inline image from the response
-  let imagePart = null;
-  for (const candidate of json.candidates || []) {
-    for (const part of candidate.content?.parts || []) {
-      if (part.inlineData?.data) {
-        imagePart = part.inlineData;
-        break;
-      }
-    }
-    if (imagePart) break;
-  }
-
-  if (!imagePart) {
-    const textPart = json.candidates?.[0]?.content?.parts?.[0]?.text;
-    throw new Error(
-      `Gemini returned no image data. Response text: ${textPart || JSON.stringify(json).substring(0, 200)}`,
-    );
-  }
-
-  console.log(
-    `[Image] Gemini returned inline image (${imagePart.mimeType}), uploading to Cloudinary...`,
-  );
-
-  // Use Buffer (Node.js server-side) to decode base64
-  const buffer = Buffer.from(imagePart.data, "base64");
-  const blob = new Blob([buffer], { type: imagePart.mimeType || "image/png" });
-
-  return await uploadBlobToCloudinary(blob);
+  return await generateAndUploadGeminiImage(prompt);
 }
 
 /**

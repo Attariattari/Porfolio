@@ -24,6 +24,7 @@ import {
   Phone,
   Mail,
   Newspaper,
+  Target,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -60,6 +61,7 @@ const ICON_MAP = {
   Phone,
   Mail,
   Newspaper,
+  Target,
 };
 
 export default function AdminSidebar() {
@@ -173,6 +175,7 @@ export default function AdminSidebar() {
           "Blog",
           "Skills",
           "Resume",
+          "Goals",
           "Social Links",
         ].includes(l.name),
       ),

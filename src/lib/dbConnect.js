@@ -1,4 +1,14 @@
 import mongoose from "mongoose";
+import dns from "dns";
+
+// Force DNS resolution to use Google's DNS servers to prevent querySrv ECONNREFUSED issues
+if (dns && typeof dns.setServers === "function") {
+  try {
+    dns.setServers(["8.8.8.8", "8.8.4.4"]);
+  } catch (err) {
+    console.warn("⚠️ [Mongoose/DNS] Failed to set Google DNS servers:", err.message);
+  }
+}
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
