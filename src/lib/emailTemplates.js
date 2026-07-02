@@ -167,7 +167,7 @@ const GlobalLayout = ({ title, preheader, contentHtml, unsubscribeEmail = null }
                 <td class="footer">
                     <p><b>Muhyo Tech Intelligence Network</b></p>
                     <p>Innovating Digital Ecosystems with Precision.</p>
-                    <p style="margin-top: 24px;">You are receiving this because you subscribed to updates at <a href="${SITE_URL}" style="color: ${BRAND_ACCENT}; text-decoration: none;">muhyo-tech.vercel.app</a></p>
+                    <p style="margin-top: 24px;">You are receiving this because you subscribed to updates at <a href="${SITE_URL}" style="color: ${BRAND_ACCENT}; text-decoration: none;">porfolio-three-bice.vercel.app</a></p>
                     ${unsubscribeEmail ? `
                         <p><a href="${SITE_URL}/api/unsubscribe?email=${encodeURIComponent(unsubscribeEmail)}" style="color: ${BRAND_ACCENT}; text-decoration: underline;">Unsubscribe from this list</a></p>
                     ` : ''}

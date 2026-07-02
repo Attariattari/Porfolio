@@ -902,7 +902,7 @@ export const portfolioData = {
                 "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&q=80&w=1200",
             ],
             gitLink: "https://github.com/Attariattari/muhyo-tech",
-            liveLink: "https://muhyo-tech.vercel.app",
+            liveLink: "https://porfolio-three-bice.vercel.app",
         },
         {
             id: 7,
@@ -919,7 +919,7 @@ export const portfolioData = {
                 "https://images.unsplash.com/photo-1542744094-24638eff58bb?auto=format&fit=crop&q=80&w=1200",
             ],
             gitLink: "https://github.com/Attariattari/muhyo-tech",
-            liveLink: "https://muhyo-tech.vercel.app/admin",
+            liveLink: "https://porfolio-three-bice.vercel.app/admin",
         },
     ],
     blogs: [{

@@ -7,10 +7,10 @@ export const dynamic = "force-static";
 const LLM_SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ||
   process.env.APP_URL ||
-  "https://muhyo-tech.vercel.app"
+  "https://porfolio-three-bice.vercel.app"
 )
-  .replace(/^http:\/\/localhost:\d+/i, "https://muhyo-tech.vercel.app")
-  .replace(/^http:\/\/127\.0\.0\.1:\d+/i, "https://muhyo-tech.vercel.app")
+  .replace(/^http:\/\/localhost:\d+/i, "https://porfolio-three-bice.vercel.app")
+  .replace(/^http:\/\/127\.0\.0\.1:\d+/i, "https://porfolio-three-bice.vercel.app")
   .replace(/\/$/, "");
 
 function cleanText(value = "") {

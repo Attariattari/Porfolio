@@ -2,7 +2,7 @@
 
 Professional portfolio, content platform, and admin-managed software services website for Muhyo Tech, the personal software development brand of Pir Ghulam Muhyo Din.
 
-Live site: https://muhyo-tech.vercel.app  
+Live site: https://porfolio-three-bice.vercel.app  
 Founder: Pir Ghulam Muhyo Din  
 Location: Lahore, Pakistan  
 Phone: +92 322 4458481  
@@ -32,18 +32,18 @@ The website is designed to represent Muhyo Tech professionally for clients, sear
 
 ## Key Public Pages
 
-- Home: https://muhyo-tech.vercel.app
-- About: https://muhyo-tech.vercel.app/about
-- Services: https://muhyo-tech.vercel.app/services
-- Projects: https://muhyo-tech.vercel.app/projects
-- Blog: https://muhyo-tech.vercel.app/blog
-- Goals: https://muhyo-tech.vercel.app/goals
-- Skills: https://muhyo-tech.vercel.app/skills
-- Resume: https://muhyo-tech.vercel.app/resume
-- Contact: https://muhyo-tech.vercel.app/contact
-- AI profile: https://muhyo-tech.vercel.app/llms.txt
-- Sitemap: https://muhyo-tech.vercel.app/sitemap.xml
-- Robots: https://muhyo-tech.vercel.app/robots.txt
+- Home: https://porfolio-three-bice.vercel.app
+- About: https://porfolio-three-bice.vercel.app/about
+- Services: https://porfolio-three-bice.vercel.app/services
+- Projects: https://porfolio-three-bice.vercel.app/projects
+- Blog: https://porfolio-three-bice.vercel.app/blog
+- Goals: https://porfolio-three-bice.vercel.app/goals
+- Skills: https://porfolio-three-bice.vercel.app/skills
+- Resume: https://porfolio-three-bice.vercel.app/resume
+- Contact: https://porfolio-three-bice.vercel.app/contact
+- AI profile: https://porfolio-three-bice.vercel.app/llms.txt
+- Sitemap: https://porfolio-three-bice.vercel.app/sitemap.xml
+- Robots: https://porfolio-three-bice.vercel.app/robots.txt
 
 ## Features
 
@@ -130,8 +130,8 @@ Create `.env.local` from `.env.sample` and configure the project secrets.
 Important variables include:
 
 ```env
-APP_URL=https://muhyo-tech.vercel.app
-NEXT_PUBLIC_SITE_URL=https://muhyo-tech.vercel.app
+APP_URL=https://porfolio-three-bice.vercel.app
+NEXT_PUBLIC_SITE_URL=https://porfolio-three-bice.vercel.app
 MONGODB_URI=your_mongodb_connection_string
 AUTH_SECRET=your_secure_auth_secret
 SESSION_SECRET=your_secure_session_secret
@@ -142,7 +142,7 @@ SMTP_USER=your_email
 SMTP_PASS=your_app_password
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
-GOOGLE_REDIRECT_URI=https://muhyo-tech.vercel.app/api/auth/google/callback
+GOOGLE_REDIRECT_URI=https://porfolio-three-bice.vercel.app/api/auth/google/callback
 ```
 
 For local development, the app can still run on `http://localhost:3000`, but public SEO and AI files should point to the production domain.
@@ -222,7 +222,7 @@ Recommended deployment platform: Vercel.
 
 Deployment checklist:
 
-- Set `APP_URL` and `NEXT_PUBLIC_SITE_URL` to `https://muhyo-tech.vercel.app`
+- Set `APP_URL` and `NEXT_PUBLIC_SITE_URL` to `https://porfolio-three-bice.vercel.app`
 - Add MongoDB credentials
 - Add auth/session secrets
 - Add SMTP credentials
@@ -235,7 +235,7 @@ Deployment checklist:
 
 For projects, collaboration, or technical inquiries:
 
-- Website: https://muhyo-tech.vercel.app/contact
+- Website: https://porfolio-three-bice.vercel.app/contact
 - WhatsApp: https://wa.me/923224458481
 - Phone: +92 322 4458481
 - Email: MuhyoTech@gmail.com

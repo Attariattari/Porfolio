@@ -278,8 +278,7 @@ export const withCache = async (key, fetchFn, ttl = DEFAULT_TTL, tags = []) => {
     cacheMetrics.errors++;
     cacheMetrics.lastErrorMessage = `withCache error: ${error.message}`;
     console.error(`[Cache] ✗ withCache error for ${key}:`, error.message);
-    // Fallback: try to return fresh data despite caching error.
-    // If the fetch also fails, propagate the error so callers can handle it.
-    return await fetchFn();
+    // Fallback: try to return fresh data despite caching error
+    return await fetchFn().catch(() => null);
   }
 };

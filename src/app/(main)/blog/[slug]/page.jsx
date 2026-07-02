@@ -9,15 +9,10 @@ import { buildCanonical, cleanSeoText, getSeoImage } from "@/lib/seo";
 export const revalidate = 3600;
 
 export async function generateStaticParams() {
-  try {
-    const blogs = await BlogController.getAll(true);
-    return (blogs || []).map((blog) => ({
-      slug: blog.slug,
-    }));
-  } catch (error) {
-    console.error("[BlogPage] generateStaticParams failed:", error.message);
-    return [];
-  }
+  const blogs = await BlogController.getAll(true);
+  return blogs.map((blog) => ({
+    slug: blog.slug,
+  }));
 }
 
 export async function generateMetadata({ params }) {
