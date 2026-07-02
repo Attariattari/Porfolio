@@ -10,10 +10,15 @@ export const revalidate = 3600;
 
 // 2. Pre-render all existing projects at build time
 export async function generateStaticParams() {
-  const projects = await ProjectController.getAll(true);
-  return projects.map((project) => ({
-    slug: project.slug,
-  }));
+  try {
+    const projects = await ProjectController.getAll(true);
+    return (projects || []).map((project) => ({
+      slug: project.slug,
+    }));
+  } catch (error) {
+    console.error("[ProjectPage] generateStaticParams failed:", error.message);
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }) {
