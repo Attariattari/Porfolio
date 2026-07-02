@@ -12,6 +12,21 @@ const nextConfig = {
     experimental: {
         optimizePackageImports: ["lucide-react", "framer-motion"],
     },
+    async redirects() {
+        return [
+            {
+                source: "/:path*",
+                has: [
+                    {
+                        type: "host",
+                        value: "portfolio-three-bice.vercel.app",
+                    },
+                ],
+                destination: "https://www.muhyotech.com/:path*",
+                permanent: true,
+            },
+        ];
+    },
 };
 
 export default nextConfig;
