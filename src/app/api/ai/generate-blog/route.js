@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { runBlogAutomationPipeline, finalizeBlogPipeline } from "@/lib/blogAutomation";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 300; // Vercel Pro: 300 seconds max (5 minutes)
 
 export async function GET(request) {
     const { searchParams } = new URL(request.url);

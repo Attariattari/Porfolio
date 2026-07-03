@@ -26,8 +26,50 @@ const icons = {
   6: TrendingUp,
 };
 
+const serviceCopy = {
+  "web-development": {
+    description:
+      "Fast, conversion-focused websites with clean architecture, strong SEO foundations, and polished user journeys that turn visitors into business leads.",
+    problemSolved:
+      "Slow, outdated websites lose trust quickly. We build premium web experiences that load fast, explain your offer clearly, and guide visitors toward action.",
+  },
+  "ui-ux-design": {
+    description:
+      "Elegant, easy-to-understand interfaces that make your product feel premium, reduce confusion, and help users move naturally from interest to action.",
+    problemSolved:
+      "When a product feels confusing, users leave. We simplify flows, improve visual hierarchy, and create experiences people can trust within seconds.",
+  },
+  "api-development": {
+    description:
+      "Secure APIs, databases, admin systems, and automation flows that keep your product reliable as your users, content, and operations grow.",
+    problemSolved:
+      "Manual processes and fragile backends slow teams down. We build dependable systems that reduce errors, protect data, and support growth.",
+  },
+  "mobile-app-development": {
+    description:
+      "Smooth iOS and Android app experiences with modern cross-platform technology, practical features, and flows that keep users engaged on the go.",
+    problemSolved:
+      "Customers expect mobile experiences to feel instant and simple. We help your brand stay accessible with apps that are fast, useful, and easy to return to.",
+  },
+  "cloud-devops": {
+    description:
+      "Secure cloud infrastructure, automated deployments, monitoring, and scaling workflows so your application can launch confidently and stay stable.",
+    problemSolved:
+      "Unstable deployments and server issues damage trust. We reduce release risk, improve uptime, and make your infrastructure easier to manage.",
+  },
+  "seo-digital-growth": {
+    description:
+      "Technical SEO, content structure, analytics, and conversion improvements that help the right customers find your brand and understand your value faster.",
+    problemSolved:
+      "Good businesses stay invisible when their site is not search-ready. We fix the technical and content gaps that block organic growth.",
+  },
+};
+
 const ServiceRow = ({ service, index, onImageClick }) => {
   const Icon = icons[service.id] || Layout;
+  const copy = serviceCopy[service.slug] || {};
+  const description = copy.description || service.description;
+  const problemSolved = copy.problemSolved || service.problemSolved;
   // Even index: Text Left, Image Right. Odd index: Image Left, Text Right
   const isReversed = index % 2 !== 0;
 
@@ -70,7 +112,7 @@ const ServiceRow = ({ service, index, onImageClick }) => {
         <p
           className={`text-muted-foreground text-sm md:text-lg leading-relaxed ${isReversed ? "" : "lg:ml-auto"}`}
         >
-          {service.description}
+          {description}
         </p>
 
         {/* Challenge Box */}
@@ -84,7 +126,7 @@ const ServiceRow = ({ service, index, onImageClick }) => {
             The challenge
           </span>
           <p className="text-sm italic text-foreground/80 leading-relaxed">
-            "{service.problemSolved}"
+            "{problemSolved}"
           </p>
         </div>
 

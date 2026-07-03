@@ -34,7 +34,24 @@ export default function AIBlogProgress({
     const eventSource = new EventSource(url);
     let finished = false;
 
+    // Set connection timeout - close if no message in 30 seconds
+    let timeoutId = setTimeout(() => {
+      if (!finished) {
+        console.warn("Connection timeout - no update received in 30s");
+        eventSource.close();
+        toast.warning("Connection paused. Process continues on server (max 5 minutes)");
+      }
+    }, 30000);
+
     eventSource.onmessage = (event) => {
+      clearTimeout(timeoutId); // Reset timeout on each message
+      timeoutId = setTimeout(() => {
+        if (!finished) {
+          console.warn("Connection timeout - no update received in 30s");
+          eventSource.close();
+        }
+      }, 30000);
+
       const data = JSON.parse(event.data);
       console.log("AI Progress:", data);
 
@@ -90,9 +107,16 @@ export default function AIBlogProgress({
 
     eventSource.onerror = () => {
       if (finished) return;
-      setError(
-        "Connection lost. The pipeline might still be running in the background.",
-      );
+      clearTimeout(timeoutId);
+      console.error("EventSource error:", eventSource.readyState);
+      
+      // ReadyState 2 = CLOSED, 0 = CONNECTING
+      if (eventSource.readyState === 2) {
+        setError(
+          "⏳ Connection lost. The pipeline might still be running in the background. Check back in 1-2 minutes.",
+        );
+        toast.info("✅ Your blog generation is still processing on our servers.");
+      }
       eventSource.close();
     };
 

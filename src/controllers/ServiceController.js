@@ -50,6 +50,10 @@ export const ServiceController = {
 
     // 2. Get One Service (ID or SLUG) - Optimized with lean()
     async getOne(identifier) {
+        const fallbackService = portfolioData.services.find(
+            (s) => s.id?.toString() === identifier || s.slug === identifier,
+        );
+
         try {
             await dbConnect();
 
@@ -66,8 +70,19 @@ export const ServiceController = {
             if (service) return serializeDoc(service);
 
             // Fallback to static data
-            const fallbackService = portfolioData.services.find(
-                (s) => s.id ? .toString() === identifier || s.slug === identifier,
+            if (fallbackService) {
+                return {
+                    ...fallbackService,
+                    _isFromDataJs: true,
+                    publishStatus: "published",
+                };
+            }
+
+            return null;
+        } catch (error) {
+            console.error(
+                `[ServiceController.getOne] Error for ${identifier}:`,
+                error.message,
             );
 
             if (fallbackService) {
@@ -79,10 +94,6 @@ export const ServiceController = {
             }
 
             return null;
-        } catch (error) {
-            throw new Error(
-                `Failed to fetch service ${identifier}: ${error.message}`,
-            );
         }
     },
 
