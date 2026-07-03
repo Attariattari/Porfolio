@@ -257,7 +257,7 @@ const Portfolio = ({ projects }) => {
           </div>
 
           {/* Clean 3-Column Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {featuredProjects.map((project, idx) => (
               <motion.div
                 key={project.id}
@@ -265,53 +265,85 @@ const Portfolio = ({ projects }) => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1, duration: 0.5 }}
-                className="group relative"
+                className="group relative h-full"
               >
-                {/* Modern Project Card */}
                 <div
-                  className="h-full bg-card/30 backdrop-blur-xl border border-border/50 rounded-3xl overflow-hidden hover:border-accent/30 hover:shadow-2xl transition-all duration-500 cursor-pointer"
+                  className="relative flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-border/60 bg-card/55 shadow-sm backdrop-blur-xl transition-all duration-500 hover:-translate-y-1 hover:border-accent/35 hover:shadow-2xl hover:shadow-black/10"
                   onClick={() => setSelectedProject(project)}
                 >
-                  {/* Top: Image Area */}
-                  <div className="relative aspect-video overflow-hidden">
+                  <div className="flex items-center justify-between gap-4 border-b border-border/50 px-5 py-4">
+                    <div className="min-w-0">
+                      <span className="text-[9px] font-black uppercase tracking-[0.22em] text-accent">
+                        Project 0{idx + 1}
+                      </span>
+                      <p className="mt-1 truncate text-[11px] font-semibold text-muted-foreground">
+                        {project.category}
+                      </p>
+                    </div>
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-accent/20 bg-accent/10 text-accent transition-colors group-hover:bg-accent group-hover:text-accent-foreground">
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                    </div>
+                  </div>
+
+                  <div className="relative m-5 mb-0 aspect-[16/10] overflow-hidden rounded-xl border border-white/10 bg-background">
                     <img
                       src={project.thumbnail}
                       alt={project.title}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-60" />
-
-                    {/* Hover Glow */}
-                    <div className="absolute inset-0 bg-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-80" />
+                    <div className="absolute left-4 top-4 rounded-lg border border-white/10 bg-black/35 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.16em] text-white/85 backdrop-blur-md">
+                      Featured
+                    </div>
                   </div>
 
-                  {/* Bottom: Content Area */}
-                  <div className="p-8 flex flex-col h-full">
-                    <div className="flex flex-wrap gap-2 mb-4">
+                  <div className="flex flex-1 flex-col p-5">
+                    <h3 className="text-xl font-bold leading-tight tracking-tight text-foreground transition-colors group-hover:text-accent">
+                      {project.title}
+                    </h3>
+
+                    <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
+                      {project.description}
+                    </p>
+
+                    <div className="mt-5 flex flex-wrap gap-2">
                       {project.techStack.slice(0, 3).map((tech, i) => (
                         <span
                           key={i}
-                          className="px-2.5 py-1 rounded-lg bg-accent/5 border border-accent/10 text-[8px] font-bold text-accent tracking-normal"
+                          className="rounded-lg border border-border/70 bg-background/70 px-2.5 py-1.5 text-[10px] font-bold text-foreground/70 transition-colors group-hover:border-accent/25"
                         >
                           {tech}
                         </span>
                       ))}
                     </div>
 
-                    <h3 className="text-2xl font-bold text-foreground mb-3 tracking-tight group-hover:text-accent transition-colors leading-tight italic">
-                      {project.title}
-                    </h3>
-
-                    <p className="text-muted-foreground text-sm line-clamp-2 mb-8 font-medium italic opacity-80">
-                      "{project.description}"
-                    </p>
-
-                    <div className="mt-auto flex items-center justify-between">
-                      <span className="text-[9px] font-bold tracking-normal text-foreground group-hover:text-accent transition-colors">
-                        View details
-                      </span>
-                      <div className="w-8 h-8 rounded-lg bg-accent/10 border border-accent/20 flex items-center justify-center text-accent group-hover:bg-accent group-hover:text-accent-foreground transition-all">
-                        <Plus className="w-4 h-4" />
+                    <div className="mt-auto pt-6">
+                      <div className="flex items-center justify-between border-t border-border/60 pt-4">
+                        <span className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground transition-colors group-hover:text-accent">
+                          View case study
+                        </span>
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                          {project.demoLink && (
+                            <Link
+                              href={project.demoLink}
+                              target="_blank"
+                              onClick={(event) => event.stopPropagation()}
+                              className="flex h-8 w-8 items-center justify-center rounded-lg border border-border/70 bg-background/60 transition-colors hover:border-accent/40 hover:text-accent"
+                            >
+                              <ExternalLink className="h-3.5 w-3.5" />
+                            </Link>
+                          )}
+                          {project.githubLink && (
+                            <Link
+                              href={project.githubLink}
+                              target="_blank"
+                              onClick={(event) => event.stopPropagation()}
+                              className="flex h-8 w-8 items-center justify-center rounded-lg border border-border/70 bg-background/60 transition-colors hover:border-accent/40 hover:text-accent"
+                            >
+                              <Github className="h-3.5 w-3.5" />
+                            </Link>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>

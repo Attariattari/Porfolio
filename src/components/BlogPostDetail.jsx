@@ -217,23 +217,24 @@ export default function BlogPostDetail({ blog, shareUrl }) {
           </motion.div>
 
           {/* Sidebar */}
-          <aside className="lg:col-span-4 space-y-8">
+          <aside className="lg:sticky lg:top-6 lg:col-span-4 lg:h-fit lg:self-start">
+            <div className="space-y-5">
             {/* Share Box - Premium Card */}
             <motion.div 
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
-              className="relative p-8 rounded-[2.5rem] border border-white/5 bg-[#0A0A0B]/60 backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden group"
+              className="relative overflow-hidden rounded-[2rem] border border-white/5 bg-[#0A0A0B]/60 p-6 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-2xl group lg:p-5"
             >
               {/* Decorative Gradient Orb */}
               <div className="absolute -top-24 -right-24 w-48 h-48 bg-accent/10 blur-[80px] rounded-full group-hover:bg-accent/20 transition-colors duration-700" />
               
-              <h4 className="relative flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.25em] text-accent mb-8">
+              <h4 className="relative mb-5 flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.25em] text-accent">
                 <div className="w-8 h-[1px] bg-accent/30" />
                 Share Insights
               </h4>
 
-              <div className="relative space-y-3">
+              <div className="relative space-y-2.5">
                 {shareOptions.map((option) => (
                   <a
                     key={option.name}
@@ -241,10 +242,10 @@ export default function BlogPostDetail({ blog, shareUrl }) {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={`${option.name}: ${blog.title}`}
-                    className={`group/item flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-white/82 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-black/25 ${option.hoverClass}`}
+                    className={`group/item flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-white/82 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-black/25 lg:px-4 lg:py-3 ${option.hoverClass}`}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/7 transition-colors group-hover/item:bg-white/15">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/7 transition-colors group-hover/item:bg-white/15 lg:h-9 lg:w-9">
                         {option.icon}
                       </div>
                       <div>
@@ -263,10 +264,10 @@ export default function BlogPostDetail({ blog, shareUrl }) {
                 <button
                   type="button"
                   onClick={copyShareUrl}
-                  className="group/copy flex w-full cursor-pointer items-center justify-between rounded-2xl border border-accent/25 bg-accent/10 p-4 text-accent transition-all duration-300 hover:-translate-y-0.5 hover:bg-accent hover:text-white hover:shadow-xl hover:shadow-accent/10"
+                  className="group/copy flex w-full cursor-pointer items-center justify-between rounded-2xl border border-accent/25 bg-accent/10 p-4 text-accent transition-all duration-300 hover:-translate-y-0.5 hover:bg-accent hover:text-white hover:shadow-xl hover:shadow-accent/10 lg:px-4 lg:py-3"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10 transition-colors group-hover/copy:bg-white/20">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent/10 transition-colors group-hover/copy:bg-white/20 lg:h-9 lg:w-9">
                       <Share2 className="w-4 h-4" />
                     </div>
                     <div className="text-left">
@@ -288,13 +289,13 @@ export default function BlogPostDetail({ blog, shareUrl }) {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4 }}
-              className="p-8 rounded-[2.5rem] border border-white/5 bg-[#0A0A0B]/40 backdrop-blur-xl relative overflow-hidden"
+              className="relative overflow-hidden rounded-[2rem] border border-white/5 bg-[#0A0A0B]/40 p-6 backdrop-blur-xl lg:p-5"
             >
-              <h4 className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground/60 mb-8">
+              <h4 className="mb-5 flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground/60">
                 <div className="w-8 h-[1px] bg-white/10" />
                 Trending Now
               </h4>
-              <div className="space-y-8">
+              <div className="space-y-5">
                 {[1, 2].map((i) => (
                   <div key={i} className="group relative cursor-pointer flex gap-4">
                     <span className="text-2xl font-black text-white/5 group-hover:text-accent/20 transition-colors duration-500 tabular-nums">
@@ -313,13 +314,14 @@ export default function BlogPostDetail({ blog, shareUrl }) {
                 ))}
               </div>
               
-              <div className="mt-10 pt-6 border-t border-white/5">
+              <div className="mt-6 border-t border-white/5 pt-5">
                 <Link href="/blog" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 hover:text-accent transition-colors flex items-center justify-between group">
                   Discover more insights
                   <ArrowRight className="w-4 h-4 -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all" />
                 </Link>
               </div>
             </motion.div>
+            </div>
           </aside>
         </div>
       </SectionWrapper>

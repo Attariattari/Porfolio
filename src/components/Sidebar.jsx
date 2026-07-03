@@ -46,10 +46,20 @@ const navLinks = [
   { name: "Contact", href: "/contact", icon: "Mail" },
 ];
 
+const SIDEBAR_STORAGE_KEY = "muhyo:sidebar-collapsed";
+
 export default function Sidebar({ data }) {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const about = data || portfolioData.about;
+
+  useEffect(() => {
+    try {
+      const savedState = window.localStorage.getItem(SIDEBAR_STORAGE_KEY);
+      if (savedState === "true") setIsCollapsed(true);
+      if (savedState === "false") setIsCollapsed(false);
+    } catch {}
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -67,7 +77,17 @@ export default function Sidebar({ data }) {
     return () => window.removeEventListener("resize", handleResize);
   }, [isCollapsed]);
 
-  const toggleSidebar = () => setIsCollapsed(!isCollapsed);
+  const toggleSidebar = () => {
+    setIsCollapsed((current) => {
+      const next = !current;
+
+      try {
+        window.localStorage.setItem(SIDEBAR_STORAGE_KEY, String(next));
+      } catch {}
+
+      return next;
+    });
+  };
 
   return (
     <>

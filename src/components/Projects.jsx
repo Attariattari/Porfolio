@@ -115,51 +115,52 @@ const ProjectRow = ({ project, index, setSelectedProject }) => {
         </div>
       </div>
 
-      {/* Image Side: Elevated with 3D feel */}
+      {/* Image Side: Service-style card */}
       <div
-        className={`w-full lg:w-[calc(50%-6rem)] relative group/img-side ${
+        className={`w-full lg:w-[calc(50%-4rem)] relative group/img-side ${
           isReversed ? "lg:order-1" : "lg:order-2"
         } mt-12 lg:mt-0`}
       >
-        <div className="absolute -inset-4 bg-accent/10 blur-3xl rounded-full scale-50 opacity-0 group-hover/img-side:opacity-100 transition-opacity duration-1000" />
+        <div className="absolute inset-0 bg-accent/20 blur-[40px] rounded-full scale-90 opacity-70 -z-10" />
 
         <motion.div
-          whileHover={{
-            scale: 1.02,
-            rotateX: 2,
-            rotateY: isReversed ? 2 : -2,
-          }}
-          onClick={() => setSelectedProject(project)}
+          whileHover={{ scale: 1.02 }}
           transition={{ type: "spring", stiffness: 200, damping: 20 }}
-          className="relative p-2 rounded-[3.5rem] border border-white/5 bg-white/[0.03] backdrop-blur-3xl overflow-hidden shadow-2xl group-hover/img-side:border-accent/40 transition-colors cursor-pointer"
+          onClick={() => setSelectedProject(project)}
+          className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-[0_40px_80px_-20px_rgba(0,0,0,0.6)] border border-white/10 bg-background cursor-pointer"
         >
-          <div className="relative rounded-[2.8rem] overflow-hidden aspect-[16/11] w-full">
-            <img
-              src={project.thumbnail}
-              alt={project.title}
-              className="w-full h-full object-cover transform transition-all duration-1000 group-hover/img-side:scale-110 group-hover/img-side:rotate-1"
-            />
-            {/* Cinematic Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-tr from-background/90 via-transparent to-transparent opacity-80" />
+          <img
+            src={project.thumbnail}
+            alt={project.title}
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover/img-side:scale-110"
+          />
 
-            {/* Hover Indicator */}
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/img-side:opacity-100 transition-opacity bg-accent/10 backdrop-blur-[4px]">
-              <div className="px-8 py-3 rounded-full bg-white text-accent flex items-center gap-3 shadow-[0_20px_50px_rgba(0,0,0,0.3)] scale-50 group-hover/img-side:scale-100 transition-transform duration-500">
-                <span className="text-xs font-bold tracking-normal">View case study</span>
-                <ArrowRight className="w-4 h-4" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10" />
+          <div className="absolute inset-0 bg-black/20 z-10" />
+
+          <div className="absolute inset-0 p-8 md:p-10 flex flex-col justify-end pointer-events-none z-20">
+            <div className="relative z-10">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/90 backdrop-blur-sm text-white text-[10px] font-black uppercase tracking-[0.3em] mb-4 shadow-xl">
+                <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+                Project 0{index + 1}
               </div>
-            </div>
-
-            {/* Floating Metadata */}
-            <div className="absolute top-8 left-8">
-              <div className="px-4 py-2 bg-background/40 backdrop-blur-2xl border border-white/10 rounded-2xl flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-accent" />
-                <span className="text-[10px] font-semibold text-white tracking-normal">
-                  Production ready
-                </span>
+              <h3 className="text-2xl md:text-3xl font-black text-white mb-3 leading-[1.1] tracking-tight drop-shadow-2xl">
+                {project.title}
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {project.techStack?.slice(0, 4).map((tech, i) => (
+                  <span
+                    key={i}
+                    className="px-2.5 py-1 bg-background/50 backdrop-blur-md rounded-md border border-white/10 text-[10px] font-semibold text-white/80 tracking-normal"
+                  >
+                    {tech}
+                  </span>
+                ))}
               </div>
             </div>
           </div>
+
+          <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none z-30" />
         </motion.div>
       </div>
     </motion.div>
