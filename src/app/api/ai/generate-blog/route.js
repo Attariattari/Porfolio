@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { runBlogAutomationPipeline, finalizeBlogPipeline } from "@/lib/blogAutomation";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 300; // Vercel Pro: 300 seconds max (5 minutes)
+// Hobby plan max: 60s. For longer operations, use background jobs or upgrade to Pro
 
 export async function GET(request) {
     const { searchParams } = new URL(request.url);
@@ -21,41 +21,60 @@ export async function GET(request) {
 
             try {
                 if (action === "finalize" && blogId) {
-                    const result = await finalizeBlogPipeline(blogId, { generateImage, baseUrl }, (progress) => {
-                        sendUpdate(progress);
-                    });
+                    // Fast path: Don't wait for image generation
+                    // Send blog completion immediately, image can be generated in background
+                    const result = await finalizeBlogPipeline(
+                        blogId,
+                        { generateImage: false, baseUrl }, // Skip image here
+                        (progress) => {
+                            sendUpdate(progress);
+                        }
+                    );
+                    
                     sendUpdate({
                         status: "COMPLETED",
                         details: {
-                            message: result?.emailSent
-                                ? "Secure upload email sent to Super Admin."
-                                : result?.status === "generated"
-                                    ? "AI image generated and attached."
-                                    : "Image workflow finished. Manual upload may be required.",
-                            emailSent: !!result?.emailSent,
-                            workflowStatus: result?.status,
+                            message: "Blog saved successfully. Image generation starting...",
+                            emailSent: false,
+                            workflowStatus: "blog_completed",
                         },
                     });
+
+                    // Generate image in background (don't await)
+                    if (generateImage) {
+                        setTimeout(() => {
+                            finalizeBlogPipeline(
+                                blogId,
+                                { generateImage: true, baseUrl },
+                                (progress) => console.log("[Background] Image progress:", progress)
+                            ).catch(err => console.error("[Background] Image generation error:", err));
+                        }, 100);
+                    }
                 } else {
                     const result = await runBlogAutomationPipeline(0, (progress) => {
                         sendUpdate(progress);
                     });
+                    
                     if (result?.success && result.blogId) {
-                        const imageResult = await finalizeBlogPipeline(result.blogId, { generateImage, baseUrl }, (progress) => {
-                            sendUpdate(progress);
-                        });
                         sendUpdate({
                             status: "COMPLETED",
                             details: {
-                                message: imageResult?.emailSent
-                                    ? "Blog saved and secure upload email sent to Super Admin."
-                                    : imageResult?.status === "generated"
-                                        ? "Blog saved with AI image attached."
-                                        : "Blog saved. Manual image upload may be required.",
-                                emailSent: !!imageResult?.emailSent,
-                                workflowStatus: imageResult?.status,
+                                message: "Blog content created. Image generation starting in background...",
+                                emailSent: false,
+                                workflowStatus: "blog_completed",
                             },
                         });
+
+                        // Generate image in background (don't await)
+                        if (generateImage) {
+                            setTimeout(() => {
+                                finalizeBlogPipeline(
+                                    result.blogId,
+                                    { generateImage: true, baseUrl },
+                                    (progress) => console.log("[Background] Image progress:", progress)
+                                ).catch(err => console.error("[Background] Image generation error:", err));
+                            }, 100);
+                        }
                     }
                 }
                 

@@ -69,13 +69,18 @@ export default function AIBlogProgress({
         eventSource.close();
         if (data.details?.url) setImagePreview(data.details.url);
         toast.dismiss();
-        if (data.details?.emailSent) {
+        
+        // Check if image is being generated in background
+        if (data.details?.workflowStatus === "blog_completed") {
+          toast.success("✅ Blog created! Image generating in background (~2 min)");
+        } else if (data.details?.emailSent) {
           toast.success("Secure upload email sent to Super Admin.");
         } else if (data.details?.workflowStatus === "manual_required") {
           toast.warning("Manual upload required. Email was not confirmed.");
         } else {
           toast.success(data.details?.message || "AI workflow completed.");
         }
+        
         setTimeout(() => {
           onComplete?.();
           onClose();
