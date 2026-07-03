@@ -125,7 +125,7 @@ const Portfolio = ({ projects }) => {
 
             {/* RIGHT SIDE: Elevated Visual Showcase */}
             <div
-              className="relative h-[600px] hidden lg:flex items-center justify-center"
+              className="relative hidden h-[680px] items-center justify-center lg:flex"
               style={{ perspective: "2000px" }}
             >
               <div className="relative w-full h-full flex items-center justify-center">
@@ -141,12 +141,12 @@ const Portfolio = ({ projects }) => {
                       initial={{ opacity: 0, x: 200, rotateY: 30 }}
                       animate={{
                         opacity: isActive ? 1 : 0.4 / (position + 1),
-                        x: position * 45,
-                        y: position * -25,
-                        z: position * -100,
-                        rotateY: -20 + position * 5,
+                        x: position * 58,
+                        y: position * -34,
+                        z: position * -120,
+                        rotateY: -18 + position * 4,
                         rotateX: position * 2,
-                        scale: 1 - position * 0.05,
+                        scale: 1 - position * 0.06,
                         zIndex: 10 - position,
                       }}
                       transition={{
@@ -155,52 +155,74 @@ const Portfolio = ({ projects }) => {
                         damping: 20,
                         mass: 1.2,
                       }}
-                      className={`absolute w-[500px] h-[320px] rounded-[2.5rem] overflow-hidden border bg-card shadow-[0_40px_100px_rgba(0,0,0,0.4)] transition-all cursor-pointer ${
+                      className={`absolute h-[430px] w-[660px] overflow-hidden rounded-2xl border bg-card shadow-[0_44px_110px_rgba(0,0,0,0.45)] transition-all cursor-pointer ${
                         isActive
-                          ? "border-accent/50 ring-1 ring-accent/20"
+                          ? "border-accent/55 ring-1 ring-accent/25"
                           : "border-border/40"
                       }`}
                       onClick={() => setSelectedProject(project)}
                     >
                       {/* Browser Frame Mockup Effect */}
-                      <div className="absolute top-0 inset-x-0 h-10 bg-muted/20 backdrop-blur-xl border-b border-border/10 flex items-center px-6 gap-2 z-20">
+                      <div className="absolute inset-x-0 top-0 z-20 flex h-12 items-center gap-3 border-b border-white/10 bg-background/70 px-5 backdrop-blur-xl">
                         <div className="flex gap-1.5">
-                          <div className="w-2 h-2 rounded-full bg-red-500/20" />
-                          <div className="w-2 h-2 rounded-full bg-amber-500/20" />
-                          <div className="w-2 h-2 rounded-full bg-green-500/20" />
+                          <div className="h-2.5 w-2.5 rounded-full bg-red-400/70" />
+                          <div className="h-2.5 w-2.5 rounded-full bg-amber-400/70" />
+                          <div className="h-2.5 w-2.5 rounded-full bg-emerald-400/70" />
                         </div>
-                        <div className="flex-1" />
-                        <div className="w-24 h-4 rounded-md bg-white/5 border border-white/5" />
-                        <div className="flex-1" />
+                        <div className="ml-3 flex h-6 flex-1 items-center rounded-lg border border-white/10 bg-white/[0.04] px-3">
+                          <span className="truncate text-[10px] font-semibold text-muted-foreground">
+                            muhyotech.com/projects/{project.slug || project.id}
+                          </span>
+                        </div>
+                        <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-accent/20 bg-accent/10 text-accent">
+                          <ExternalLink className="h-3.5 w-3.5" />
+                        </div>
                       </div>
 
-                      <div className="relative w-full h-full pt-10">
+                      <div className="relative h-full w-full pt-12">
                         <img
                           src={project.thumbnail}
                           alt={project.title}
-                          className={`w-full h-full object-cover transition-all duration-[2s] ${
+                          className={`h-full w-full object-cover transition-all duration-[2s] ${
                             isActive
                               ? "grayscale-0 scale-100"
                               : "grayscale scale-110 opacity-50"
                           }`}
                         />
                         {/* Overlay Gradient */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-60" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-transparent opacity-90" />
+                        <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-transparent opacity-70" />
 
                         {/* Card Info Overlay */}
                         <div
-                          className={`absolute inset-0 p-10 flex flex-col justify-end transition-opacity duration-700 ${
+                          className={`absolute inset-0 flex flex-col justify-end p-8 transition-opacity duration-700 ${
                             isActive ? "opacity-100" : "opacity-0"
                           }`}
                         >
-                          <div className="flex items-center gap-3 mb-2">
-                            <span className="text-[9px] font-bold tracking-normal text-accent bg-accent/10 px-3 py-1 rounded-full border border-accent/20">
+                          <div className="mb-4 flex items-center gap-3">
+                            <span className="rounded-lg border border-accent/25 bg-accent/15 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-accent backdrop-blur-md">
                               {project.category}
                             </span>
+                            <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/55">
+                              Featured build
+                            </span>
                           </div>
-                          <h3 className="text-2xl font-bold text-white tracking-tight leading-none italic">
+                          <h3 className="max-w-xl text-4xl font-black leading-[1.02] tracking-tight text-white drop-shadow-2xl">
                             {project.title}
                           </h3>
+                          <p className="mt-4 max-w-lg line-clamp-2 text-sm font-medium leading-relaxed text-white/72">
+                            {project.description}
+                          </p>
+                          <div className="mt-5 flex flex-wrap gap-2">
+                            {project.techStack?.slice(0, 4).map((tech, i) => (
+                              <span
+                                key={i}
+                                className="rounded-md border border-white/10 bg-white/10 px-2.5 py-1 text-[10px] font-bold text-white/80 backdrop-blur-md"
+                              >
+                                {tech}
+                              </span>
+                            ))}
+                          </div>
                         </div>
                       </div>
 
