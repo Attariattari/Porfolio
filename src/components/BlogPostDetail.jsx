@@ -3,16 +3,12 @@
 import { motion } from "framer-motion";
 import {
   Calendar,
-  User,
   Clock,
   Tag,
   Share2,
-  Twitter,
   Linkedin,
   Facebook,
   ArrowLeft,
-  MessageCircle,
-  TrendingUp,
   ArrowUpRight,
   ArrowRight,
 } from "lucide-react";
@@ -20,78 +16,157 @@ import Link from "next/link";
 import Image from "next/image";
 import { SectionWrapper, Button } from "@/components/ui";
 
-export default function BlogPostDetail({ blog }) {
+export default function BlogPostDetail({ blog, shareUrl }) {
   if (!blog) return null;
 
-  const shareUrl = typeof window !== "undefined" ? window.location.href : "";
+  const coverImage = blog.image || blog.featuredImage?.url || "/portfolio-hero.png";
+  const blogPath = `/blog/${blog.slug}`;
+  const fullShareUrl =
+    shareUrl ||
+    (typeof window !== "undefined"
+      ? `${window.location.origin}${blogPath}`
+      : blogPath);
+  const encodedShareUrl = encodeURIComponent(fullShareUrl);
+  const encodedShareTitle = encodeURIComponent(blog.title || "Muhyo Tech Blog");
+  const shareOptions = [
+    {
+      name: "Share on X",
+      label: "X",
+      icon: (
+        <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" aria-hidden="true">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+        </svg>
+      ),
+      href: `https://twitter.com/intent/tweet?text=${encodedShareTitle}&url=${encodedShareUrl}`,
+      hoverClass: "hover:border-white hover:bg-white hover:text-black",
+    },
+    {
+      name: "Share on LinkedIn",
+      label: "LinkedIn",
+      icon: <Linkedin className="w-4 h-4" />,
+      href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedShareUrl}`,
+      hoverClass: "hover:border-[#0077b5] hover:bg-[#0077b5] hover:text-white",
+    },
+    {
+      name: "Share on Facebook",
+      label: "Facebook",
+      icon: <Facebook className="w-4 h-4" />,
+      href: `https://www.facebook.com/sharer/sharer.php?u=${encodedShareUrl}`,
+      hoverClass: "hover:border-[#1877f2] hover:bg-[#1877f2] hover:text-white",
+    },
+  ];
+
+  const copyShareUrl = async () => {
+    const { toast } = await import("sonner");
+
+    try {
+      await navigator.clipboard.writeText(fullShareUrl);
+      toast.success("Blog link copied.");
+    } catch {
+      toast.error("Link copy nahi hua. Please manually copy karein.");
+    }
+  };
 
   return (
     <div className="min-h-screen pb-20">
-      {/* Hero Header */}
-      <div className="relative w-full h-[60vh] md:h-[70vh] overflow-hidden">
-        <Image
-          src={blog.image}
-          alt={blog.title}
-          fill
-          className="object-cover"
-          priority
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent"></div>
-
-        <div className="absolute inset-0 flex flex-col justify-end px-4 md:px-8 lg:px-12 pb-16 max-w-7xl mx-auto w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
+      {/* Article Header */}
+      <header className="relative overflow-hidden border-b border-white/10 ">
+        <div className="absolute inset-0 " />
+        <div className="relative mx-auto max-w-7xl px-4 pt-12 pb-10 md:px-8 md:pt-12 md:pb-14 lg:px-12">
+          <div className="mb-8 flex items-center justify-between">
             <Link
               href="/blog"
-              className="inline-flex items-center gap-2 text-accent text-xs font-semibold tracking-normal mb-8 hover:translate-x-[-4px] transition-transform"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold text-white/85 backdrop-blur-md transition-transform hover:translate-x-[-4px] hover:text-white"
             >
               <ArrowLeft className="w-4 h-4" /> Back to insights
             </Link>
+          </div>
 
-            <div className="flex flex-wrap items-center gap-4 mb-6">
-              <span className="px-4 py-1.5 rounded-full bg-accent text-accent-foreground text-[10px] font-bold tracking-normal flex items-center gap-2">
-                <Tag className="w-3 h-3" /> {blog.category}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.75 }}
+            className="relative z-10"
+          >
+            <div className="mb-5 flex flex-wrap items-center gap-3">
+              <span className="inline-flex items-center gap-2 rounded-full bg-accent px-3.5 py-2 text-[10px] font-bold text-accent-foreground shadow-lg shadow-accent/20">
+                <Tag className="h-3 w-3" /> {blog.category}
               </span>
-              <span className="text-white/60 text-xs font-medium flex items-center gap-2">
-                <Clock className="w-3 h-3" /> {blog.readTime}
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3.5 py-2 text-xs font-medium text-white/70">
+                <Clock className="h-3 w-3" /> {blog.readTime}
               </span>
-              <span className="text-white/60 text-xs font-medium flex items-center gap-2">
-                <Calendar className="w-3 h-3" /> {blog.date}
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3.5 py-2 text-xs font-medium text-white/70">
+                <Calendar className="h-3 w-3" /> {blog.date}
               </span>
             </div>
 
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-8 leading-[1.1] tracking-tight max-w-5xl">
+            <p className="mb-4 text-[10px] font-black uppercase tracking-[0.28em] text-accent">
+              Muhyo Tech Insight
+            </p>
+            <h1 className="max-w-6xl text-4xl font-bold leading-[1.04] tracking-tight text-white md:text-6xl lg:text-7xl">
               {blog.title}
             </h1>
 
-            <div className="flex items-center gap-4 py-6 border-t border-white/10 max-w-fit">
-              <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-accent/20">
-                <Image
-                  src="https://res.cloudinary.com/dg5gwixf1/image/upload/v1772736622/ChatGPT_Image_Mar_5_2026_11_36_42_AM_auw4uw.png"
-                  alt={blog.author}
-                  width={48}
-                  height={48}
-                  className="object-cover"
-                />
-              </div>
-              <div>
-                <p className="text-white font-bold tracking-normal text-xs">
-                  {blog.author}
+            <div className="mt-7 grid gap-6 border-t border-white/10 pt-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-end">
+              {blog.summary ? (
+                <p className="max-w-3xl text-base leading-relaxed text-white/68 md:text-lg">
+                  {blog.summary}
                 </p>
-                <p className="text-white/40 text-[10px] tracking-normal">
-                  {blog.authorRole}
-                </p>
+              ) : <span />}
+
+              <div className="flex items-center gap-4 lg:justify-end">
+                <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full border-2 border-accent/30">
+                  <Image
+                    src="https://res.cloudinary.com/dg5gwixf1/image/upload/v1772736622/ChatGPT_Image_Mar_5_2026_11_36_42_AM_auw4uw.png"
+                    alt={blog.author}
+                    width={48}
+                    height={48}
+                    className="object-cover"
+                  />
+                </div>
+                <div>
+                  <p className="text-xs font-bold tracking-normal text-white">
+                    {blog.author}
+                  </p>
+                  <p className="text-[10px] tracking-normal text-white/45">
+                    {blog.authorRole}
+                  </p>
+                </div>
               </div>
             </div>
           </motion.div>
+
+          <motion.figure
+            initial={{ opacity: 0, y: 28 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.08 }}
+            className="relative mt-10"
+          >
+            <div className="absolute -inset-3 rounded-[2rem] bg-accent/10 blur-2xl" />
+            <div className="relative overflow-hidden rounded-[1.75rem] border border-white/12 bg-white/5 shadow-2xl shadow-black/45">
+              <div className="relative aspect-[16/8.4] min-h-[260px] md:min-h-[430px]">
+                <Image
+                  src={coverImage}
+                  alt={blog.title}
+                  fill
+                  className="object-cover"
+                  priority
+                  sizes="(min-width: 1280px) 1184px, calc(100vw - 32px)"
+                />
+              </div>
+              <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-4 border-t border-white/10 bg-black/34 px-5 py-4 backdrop-blur-xl">
+                <span className="text-[10px] font-black uppercase tracking-[0.22em] text-white/58">
+                  Featured Cover
+                </span>
+                <span className="h-2 w-2 rounded-full bg-accent shadow-[0_0_18px_rgba(20,184,166,0.9)]" />
+              </div>
+            </div>
+          </motion.figure>
         </div>
-      </div>
+      </header>
 
       {/* Content Area */}
-      <SectionWrapper className="pt-16">
+      <SectionWrapper className="pt-12 md:pt-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 max-w-7xl mx-auto">
           {/* Main Content */}
           <motion.div
@@ -129,7 +204,7 @@ export default function BlogPostDetail({ blog }) {
               <div className="text-left">
                 <h3 className="text-2xl font-bold mb-4">Enjoyed this post?</h3>
                 <p className="text-muted-foreground italic">
-                  Let's discuss how we can implement these technologies for your
+                  Let&apos;s discuss how we can implement these technologies for your
                   next project.
                 </p>
               </div>
@@ -159,78 +234,52 @@ export default function BlogPostDetail({ blog }) {
               </h4>
 
               <div className="relative space-y-3">
-                {(() => {
-                  const currentPath = `/blog/${blog.slug}`;
-                  const fullShareUrl =
-                    typeof window !== "undefined"
-                      ? `${window.location.origin}${currentPath}`
-                      : currentPath;
+                {shareOptions.map((option) => (
+                  <a
+                    key={option.name}
+                    href={option.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`${option.name}: ${blog.title}`}
+                    className={`group/item flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-white/82 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-black/25 ${option.hoverClass}`}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/7 transition-colors group-hover/item:bg-white/15">
+                        {option.icon}
+                      </div>
+                      <div>
+                        <span className="block text-xs font-bold tracking-tight">
+                          {option.label}
+                        </span>
+                        <span className="mt-1 block text-[10px] font-medium text-current/55">
+                          Post blog link
+                        </span>
+                      </div>
+                    </div>
+                    <ArrowUpRight className="w-4 h-4 opacity-60 transition-all group-hover/item:translate-x-0.5 group-hover/item:-translate-y-0.5 group-hover/item:opacity-100" />
+                  </a>
+                ))}
 
-                  const shareOptions = [
-                    {
-                      name: "Share on X",
-                      icon: (
-                        <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">
-                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                        </svg>
-                      ),
-                      href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(blog.title)}&url=${encodeURIComponent(fullShareUrl)}`,
-                      hoverClass: "hover:bg-foreground hover:text-background",
-                    },
-                    {
-                      name: "LinkedIn Insight",
-                      icon: <Linkedin className="w-4 h-4" />,
-                      href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(fullShareUrl)}`,
-                      hoverClass: "hover:bg-[#0077b5] hover:text-white",
-                    },
-                    {
-                      name: "Facebook Post",
-                      icon: <Facebook className="w-4 h-4" />,
-                      href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(fullShareUrl)}`,
-                      hoverClass: "hover:bg-[#1877f2] hover:text-white",
-                    }
-                  ];
-
-                  return (
-                    <>
-                      {shareOptions.map((option) => (
-                        <a
-                          key={option.name}
-                          href={option.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={`flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5 transition-all duration-500 group/item ${option.hoverClass}`}
-                        >
-                          <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center group-hover/item:bg-white/10 transition-colors">
-                              {option.icon}
-                            </div>
-                            <span className="text-xs font-bold tracking-tight">{option.name}</span>
-                          </div>
-                          <ArrowUpRight className="w-4 h-4 opacity-0 group-hover/item:opacity-100 transition-all -translate-x-2 group-hover/item:translate-x-0" />
-                        </a>
-                      ))}
-
-                      <button
-                        onClick={() => {
-                          navigator.clipboard.writeText(fullShareUrl);
-                          import('sonner').then(({ toast }) => toast.success("Link copied to clipboard!"));
-                        }}
-                        className="w-full flex items-center justify-between p-4 rounded-2xl bg-accent/10 border border-accent/20 text-accent hover:bg-accent hover:text-white transition-all duration-500 group/copy cursor-pointer"
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center group-hover/copy:bg-white/20 transition-colors">
-                            <Share2 className="w-4 h-4" />
-                          </div>
-                          <span className="text-xs font-bold tracking-tight">Copy Direct Link</span>
-                        </div>
-                        <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center group-hover/copy:bg-white/20 transition-colors">
-                          <ArrowUpRight className="w-4 h-4" />
-                        </div>
-                      </button>
-                    </>
-                  );
-                })()}
+                <button
+                  type="button"
+                  onClick={copyShareUrl}
+                  className="group/copy flex w-full cursor-pointer items-center justify-between rounded-2xl border border-accent/25 bg-accent/10 p-4 text-accent transition-all duration-300 hover:-translate-y-0.5 hover:bg-accent hover:text-white hover:shadow-xl hover:shadow-accent/10"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10 transition-colors group-hover/copy:bg-white/20">
+                      <Share2 className="w-4 h-4" />
+                    </div>
+                    <div className="text-left">
+                      <span className="block text-xs font-bold tracking-tight">
+                        Copy Link
+                      </span>
+                      <span className="mt-1 block text-[10px] font-medium text-current/65">
+                        Direct blog URL
+                      </span>
+                    </div>
+                  </div>
+                  <ArrowUpRight className="w-4 h-4 opacity-70 transition-all group-hover/copy:translate-x-0.5 group-hover/copy:-translate-y-0.5 group-hover/copy:opacity-100" />
+                </button>
               </div>
             </motion.div>
 

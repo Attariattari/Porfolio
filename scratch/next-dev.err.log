@@ -1,0 +1,14 @@
+[Mongoose/DNS] SRV lookup failed. Retrying MongoDB with direct shard hosts.
+SocialController.get() error: Error: querySrv ECONNREFUSED _mongodb._tcp.muhyotech.o4rgaq0.mongodb.net
+    at ignore-listed frames {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.muhyotech.o4rgaq0.mongodb.net'
+}
+[OrganizationSchema] Error: querySrv ECONNREFUSED _mongodb._tcp.muhyotech.o4rgaq0.mongodb.net
+[BlogController.getOne] Database connection timeout or failure for content-update-bottleneck-headless-cms-engineering-marketing-agility: querySrv ECONNREFUSED _mongodb._tcp.muhyotech.o4rgaq0.mongodb.net
+[BlogController.getOne] Database connection timeout or failure for content-update-bottleneck-headless-cms-engineering-marketing-agility: querySrv ECONNREFUSED _mongodb._tcp.muhyotech.o4rgaq0.mongodb.net
+[OrganizationSchema] Error: querySrv ECONNREFUSED _mongodb._tcp.muhyotech.o4rgaq0.mongodb.net
+[BlogController.getOne] Database connection timeout or failure for content-update-bottleneck-headless-cms-engineering-marketing-agility: querySrv ECONNREFUSED _mongodb._tcp.muhyotech.o4rgaq0.mongodb.net
+[BlogController.getOne] Database connection timeout or failure for content-update-bottleneck-headless-cms-engineering-marketing-agility: querySrv ECONNREFUSED _mongodb._tcp.muhyotech.o4rgaq0.mongodb.net

@@ -101,6 +101,10 @@ export const BlogController = {
 
     // 2. Get One Blog - Optimized with lean()
     async getOne(identifier) {
+        const fallbackBlog = portfolioData.blogs.find(
+            (b) => b.slug === identifier || b._id === identifier,
+        );
+
         try {
             await dbConnect();
             const isObjectId = mongoose.Types.ObjectId.isValid(identifier);
@@ -116,9 +120,6 @@ export const BlogController = {
             if (blog) return serializeDoc(blog);
 
             // Fallback to static data
-            const fallbackBlog = portfolioData.blogs.find(
-                (b) => b.slug === identifier,
-            );
             if (fallbackBlog) {
                 return {
                     ...fallbackBlog,
@@ -129,7 +130,20 @@ export const BlogController = {
 
             return null;
         } catch (error) {
-            throw new Error(`Failed to fetch blog ${identifier}: ${error.message}`);
+            console.error(
+                `[BlogController.getOne] Database connection timeout or failure for ${identifier}:`,
+                error.message,
+            );
+
+            if (fallbackBlog) {
+                return {
+                    ...fallbackBlog,
+                    _isFromDataJs: true,
+                    publishStatus: "published",
+                };
+            }
+
+            return null;
         }
     },
 

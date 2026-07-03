@@ -109,7 +109,7 @@ export default async function BlogPostPage({ params }) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
-      <BlogPostDetail blog={blog} />
+      <BlogPostDetail blog={blog} shareUrl={canonicalUrl} />
     </>
   );
 }

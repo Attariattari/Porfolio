@@ -29,6 +29,47 @@ if (!cached) {
   cached = global.mongoose = { conn: null, promise: null };
 }
 
+async function buildDirectMongoUri(uri) {
+  if (!uri?.startsWith("mongodb+srv://")) return null;
+
+  const parsed = new URL(uri);
+  const srvRecords = await dns.promises.resolveSrv(`_mongodb._tcp.${parsed.hostname}`);
+  const txtRecords = await dns.promises.resolveTxt(parsed.hostname).catch(() => []);
+  const txtParams = new URLSearchParams(txtRecords.flat().join("&"));
+  const params = new URLSearchParams(parsed.search);
+
+  txtParams.forEach((value, key) => {
+    if (!params.has(key)) params.set(key, value);
+  });
+
+  if (!params.has("tls")) params.set("tls", "true");
+
+  const auth = parsed.username
+    ? `${parsed.username}${parsed.password ? `:${parsed.password}` : ""}@`
+    : "";
+  const hosts = srvRecords
+    .map((record) => `${record.name}:${record.port}`)
+    .join(",");
+
+  return `mongodb://${auth}${hosts}${parsed.pathname}?${params.toString()}`;
+}
+
+async function connectWithDnsFallback(opts) {
+  try {
+    return await mongoose.connect(MONGODB_URI, opts);
+  } catch (error) {
+    if (!String(error.message || "").includes("querySrv")) throw error;
+
+    console.warn(
+      "[Mongoose/DNS] SRV lookup failed. Retrying MongoDB with direct shard hosts.",
+    );
+    const directUri = await buildDirectMongoUri(MONGODB_URI);
+    if (!directUri) throw error;
+
+    return mongoose.connect(directUri, opts);
+  }
+}
+
 async function dbConnect() {
   if (cached.conn) {
     return cached.conn;
@@ -41,7 +82,7 @@ async function dbConnect() {
       serverSelectionTimeoutMS: 5000, // Fail fast if unreachable (e.g. whitelist issues)
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+    cached.promise = connectWithDnsFallback(opts).then((mongoose) => {
       if (process.env.NODE_ENV === "development") {
         console.log(
           "✅ [Muhyo Tech Security] Authority Database Synchronized (MongoDB Connected)",
