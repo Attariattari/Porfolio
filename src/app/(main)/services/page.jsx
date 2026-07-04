@@ -11,7 +11,7 @@ import { buildCanonical, getSeoImage } from "@/lib/seo";
 export const revalidate = 300;
 
 export const metadata = {
-  title: "Professional Web Development Services | Muhyo Tech",
+  title: "Services | Muhyo Tech",
   description:
     "Professional Next.js development, SaaS dashboards, backend APIs, UI/UX design, SEO optimization, cloud infrastructure, and custom digital products.",
   alternates: { canonical: buildCanonical("/services") },

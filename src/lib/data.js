@@ -1,3 +1,5 @@
+import { servicesSeedData } from "@/data/services.seed";
+
 export const SOCIAL_LINKS = {
     whatsapp: {
         name: "WhatsApp",
@@ -1618,3 +1620,5 @@ export const portfolioData = {
         },
     ],
 };
+
+portfolioData.services = servicesSeedData;

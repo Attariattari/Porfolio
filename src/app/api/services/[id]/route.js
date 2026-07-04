@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { ServiceController } from "@/controllers/ServiceController";
 import { ActivityController } from "@/controllers/ActivityController";
 import { getAuthSession, checkPermission } from "@/lib/auth";
+import { revalidatePath } from "next/cache";
 
 // GET SERVICE BY ID (Public)
 export async function GET(request, { params }) {
@@ -27,6 +28,9 @@ export async function PATCH(request, { params }) {
     const body = await request.json();
     const updatedService = await ServiceController.update(id, body);
     if (!updatedService) return NextResponse.json({ success: false, error: "Service not found" }, { status: 404 });
+    revalidatePath("/");
+    revalidatePath("/services");
+    revalidatePath(`/services/${updatedService.slug || id}`);
     
     // Log activity
     await ActivityController.logFromSession(session, {
@@ -53,6 +57,8 @@ export async function DELETE(request, { params }) {
     const { id } = await params;
     const deletedService = await ServiceController.deleteOne(id);
     if (!deletedService) return NextResponse.json({ success: false, error: "Service not found" }, { status: 404 });
+    revalidatePath("/");
+    revalidatePath("/services");
     
     // Log activity
     await ActivityController.logFromSession(session, {

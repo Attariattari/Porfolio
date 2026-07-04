@@ -85,10 +85,12 @@ const ServiceSlider = ({ services }) => {
               transition={{ duration: 1.2, ease: "easeOut" }}
               className="absolute inset-0"
             >
-              {(services[currentIndex].banner ||
+              {(services[currentIndex].heroImage ||
+                services[currentIndex].banner ||
                 services[currentIndex].image) && (
                 <Image
                   src={
+                    services[currentIndex].heroImage ||
                     services[currentIndex].banner ||
                     services[currentIndex].image
                   }
@@ -127,7 +129,7 @@ const ServiceSlider = ({ services }) => {
                 </h3>
                 {/* Description — same italic border-l style as Portfolio */}
                 <p className="text-white/70 text-xs md:text-sm line-clamp-2 italic font-medium border-l-2 border-accent/50 pl-3 mb-6">
-                  "{services[currentIndex].description}"
+                  "{services[currentIndex].shortDescription || services[currentIndex].description}"
                 </p>
                 <Link
                   href={`/services/${services[currentIndex].slug || services[currentIndex]._id}`}

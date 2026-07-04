@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { ServiceController } from "@/controllers/ServiceController";
 import { ActivityController } from "@/controllers/ActivityController";
 import { getAuthSession, checkPermission } from "@/lib/auth";
+import { revalidatePath } from "next/cache";
 
 // GET ALL SERVICES - Returns merged: MongoDB + unused data.js items (Public)
 export async function GET() {
@@ -23,6 +24,8 @@ export async function POST(request) {
 
     const body = await request.json();
     const newService = await ServiceController.create(body);
+    revalidatePath("/");
+    revalidatePath("/services");
     
     // Log activity
     await ActivityController.logFromSession(session, {
@@ -47,6 +50,8 @@ export async function DELETE() {
     }
 
     const result = await ServiceController.deleteAll();
+    revalidatePath("/");
+    revalidatePath("/services");
     
     // Log activity
     await ActivityController.logFromSession(session, {

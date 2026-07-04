@@ -65,11 +65,19 @@ const serviceCopy = {
   },
 };
 
+const itemLabel = (item) =>
+  typeof item === "string" ? item : item?.title || item?.name || "";
+
 const ServiceRow = ({ service, index, onImageClick }) => {
   const Icon = icons[service.id] || Layout;
   const copy = serviceCopy[service.slug] || {};
-  const description = copy.description || service.description;
+  const description = copy.description || service.shortDescription || service.description;
   const problemSolved = copy.problemSolved || service.problemSolved;
+  const image = service.heroImage || service.banner || service.image;
+  const benefits = Array.isArray(service.benefits) ? service.benefits : [];
+  const techStack = Array.isArray(service.techStack) && service.techStack.length
+    ? service.techStack
+    : service.technologies || [];
   // Even index: Text Left, Image Right. Odd index: Image Left, Text Right
   const isReversed = index % 2 !== 0;
 
@@ -137,12 +145,12 @@ const ServiceRow = ({ service, index, onImageClick }) => {
           <div
             className={`flex flex-wrap gap-2 ${isReversed ? "" : "lg:justify-end"}`}
           >
-            {service.benefits.map((b, i) => (
+            {benefits.map((b, i) => (
               <span
                 key={i}
                 className="px-3 py-1.5 md:px-4 md:py-2 rounded-lg bg-background border border-border hover:border-accent/40 text-[10px] md:text-xs font-bold text-foreground/80 transition-colors shadow-sm"
               >
-                {b}
+                {itemLabel(b)}
               </span>
             ))}
           </div>
@@ -185,9 +193,9 @@ const ServiceRow = ({ service, index, onImageClick }) => {
             transition={{ duration: 1.2, ease: "easeOut" }}
             className="absolute inset-0"
           >
-            {service.banner && (
+            {image && (
               <Image
-                src={service.banner}
+                src={image}
                 alt={service.title}
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
@@ -214,12 +222,12 @@ const ServiceRow = ({ service, index, onImageClick }) => {
               </h3>
               {/* Tech stack tags */}
               <div className="flex flex-wrap gap-2">
-                {service.techStack?.slice(0, 4).map((tech, i) => (
+                {techStack.slice(0, 4).map((tech, i) => (
                   <span
                     key={i}
                     className="px-2.5 py-1 bg-background/50 backdrop-blur-md rounded-md border border-white/10 text-[10px] font-semibold text-white/80 tracking-normal"
                   >
-                    {tech}
+                    {itemLabel(tech)}
                   </span>
                 ))}
               </div>
@@ -240,7 +248,7 @@ export default function Services({ data, showViewAll = false }) {
   if (!data) return null;
 
   const displayData = showViewAll ? data.slice(0, 3) : data;
-  const galleryImages = displayData.map((s) => s.banner);
+  const galleryImages = displayData.map((s) => s.heroImage || s.banner || s.image).filter(Boolean);
 
   return (
     <SectionWrapper
@@ -256,7 +264,7 @@ export default function Services({ data, showViewAll = false }) {
         <div className="flex flex-col gap-12 md:gap-12 relative z-10 w-full overflow-hidden lg:overflow-visible pb-10">
           {displayData.map((service, index) => (
             <ServiceRow
-              key={service.id}
+              key={service._id || service.slug || service.id}
               service={service}
               index={index}
               onImageClick={(idx) => setLightboxIndex(idx)}

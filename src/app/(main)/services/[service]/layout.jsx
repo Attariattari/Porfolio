@@ -3,6 +3,13 @@ import { notFound } from "next/navigation";
 import { buildCanonical, cleanSeoText, getSeoImage } from "@/lib/seo";
 import { SITE_URL } from "@/lib/config";
 
+const keywordList = (value) =>
+  Array.isArray(value)
+    ? value
+        .map((item) => (typeof item === "string" ? item : item?.name || item?.title || ""))
+        .filter(Boolean)
+    : [];
+
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;
   const serviceSlug = resolvedParams.service;
@@ -11,12 +18,19 @@ export async function generateMetadata({ params }) {
 
   if (!service) return { title: "Service Not Found" };
   const canonicalUrl = buildCanonical(`/services/${service.slug || serviceSlug}`);
-  const description = cleanSeoText(service.description, 155);
-  const image = getSeoImage(service.image);
+  const description = cleanSeoText(
+    service.seoDescription || service.shortDescription || service.description,
+    155,
+  );
+  const image = getSeoImage(service.heroImage || service.banner || service.image);
 
   return {
-    title: `${service.title} | Muhyo Tech Services`,
+    title: service.seoTitle || `${service.title} | Muhyo Tech`,
     description,
+    keywords:
+      Array.isArray(service.keywords) && service.keywords.length
+        ? service.keywords.join(", ")
+        : keywordList(service.techStack || service.technologies).join(", "),
     alternates: {
       canonical: canonicalUrl,
     },
@@ -50,9 +64,9 @@ export default async function ServiceLayout({ children, params }) {
     "@context": "https://schema.org",
     "@type": "Service",
     "name": service.title,
-    "description": cleanSeoText(service.description, 155),
+    "description": cleanSeoText(service.seoDescription || service.description, 155),
     "url": buildCanonical(`/services/${service.slug || serviceSlug}`),
-    "image": getSeoImage(service.image),
+    "image": getSeoImage(service.heroImage || service.banner || service.image),
     "provider": {
       "@type": "Organization",
       "name": "Muhyo Tech",

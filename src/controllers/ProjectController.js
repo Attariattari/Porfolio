@@ -72,7 +72,7 @@ export const ProjectController = {
             // Fallback to static data
             const fallbackProject = portfolioData.projects.find(
                 (p) =>
-                p.id ? .toString() === identifier ||
+                p.id?.toString() === identifier ||
                 p.slug === identifier ||
                 p.title.toLowerCase().replace(/\s+/g, "-") === identifier,
             );

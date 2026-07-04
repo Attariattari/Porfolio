@@ -166,6 +166,26 @@ const useAdminStore = create((set, get) => ({
     }
   },
 
+  importServices: async (mode = "safe") => {
+    const res = await fetch("/api/admin/services/import", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mode }),
+    });
+    const result = await res.json();
+    if (result.success) {
+      const summary = result.summary || {};
+      toast.success(
+        `Services imported successfully. ${summary.created || 0} created, ${summary.updated || 0} updated.`,
+      );
+      await get().fetchServices();
+      return { success: true, summary };
+    }
+
+    toast.error(result.error || "Service import failed.");
+    return { success: false, error: result.error };
+  },
+
   // BLOGS
   fetchBlogs: async () => {
     try {
