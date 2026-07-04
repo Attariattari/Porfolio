@@ -32,18 +32,18 @@ export default function SmartImage({
   };
 
   return (
-    <div className={cn("relative overflow-hidden bg-slate-800/50", className)}>
+    <div className={cn("relative overflow-hidden bg-muted/50", className)}>
       {/* Loading Skeleton */}
       {isLoading && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-900 animate-pulse">
-          <div className="w-full h-full bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-[-20deg] animate-[shimmer_2s_infinite]" />
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-muted animate-pulse">
+          <div className="w-full h-full bg-gradient-to-r from-transparent via-foreground/5 to-transparent skew-x-[-20deg] animate-[shimmer_2s_infinite]" />
         </div>
       )}
 
       {/* Error State Icon (Subtle) */}
       {error && (
-        <div className="absolute inset-0 z-0 flex items-center justify-center bg-slate-900/80">
-          <ImageIcon className="w-8 h-8 text-slate-700 opacity-20" />
+        <div className="absolute inset-0 z-0 flex items-center justify-center bg-muted/80">
+          <ImageIcon className="w-8 h-8 text-muted-foreground opacity-20" />
         </div>
       )}
 

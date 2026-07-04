@@ -408,10 +408,10 @@ export default function ServiceDetailClient({ service, relatedProjects = [] }) {
             sizes="100vw"
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-black/18 backdrop-blur-[1.5px]" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-black/25" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_45%,rgba(255,255,255,0.08),transparent_34%)]" />
-          <div className="absolute inset-y-0 left-0 w-[62%] bg-[radial-gradient(ellipse_at_center,rgba(5,12,24,0.58),rgba(5,12,24,0.24)_48%,transparent_72%)] backdrop-blur-[2px]" />
+          <div className="absolute inset-0 bg-background/80 dark:bg-black/18 backdrop-blur-[1.5px]" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-background/30 to-background/50 dark:from-black/40 dark:via-black/10 dark:to-black/25" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_45%,rgba(0,0,0,0.05),transparent_34%)] dark:bg-[radial-gradient(circle_at_30%_45%,rgba(255,255,255,0.08),transparent_34%)]" />
+          <div className="absolute inset-y-0 left-0 w-full md:w-[62%] bg-[radial-gradient(ellipse_at_center,var(--background)_0%,transparent_100%)] opacity-80 dark:opacity-100 dark:bg-[radial-gradient(ellipse_at_center,rgba(5,12,24,0.58),rgba(5,12,24,0.24)_48%,transparent_72%)] backdrop-blur-[2px]" />
         </div>
 
         <div className="relative mx-auto grid min-h-[100svh] max-w-7xl grid-cols-1 items-center gap-12 px-6 py-24 lg:grid-cols-[minmax(0,1fr)_420px] lg:py-28">
@@ -419,25 +419,25 @@ export default function ServiceDetailClient({ service, relatedProjects = [] }) {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
-            className="relative rounded-3xl border border-white/10 bg-black/18 p-5 shadow-[0_24px_80px_rgba(0,0,0,0.35)] backdrop-blur-[2px] md:bg-black/10 md:p-6 lg:-ml-6 lg:max-w-4xl"
+            className="relative rounded-3xl border border-border/50 dark:border-white/10 bg-card/60 dark:bg-black/18 p-5 shadow-xl dark:shadow-[0_24px_80px_rgba(0,0,0,0.35)] backdrop-blur-md md:bg-card/40 md:dark:bg-black/10 md:p-6 lg:-ml-6 lg:max-w-4xl"
           >
             <Link
               href="/services"
-              className="mb-8 inline-flex items-center gap-2 rounded-xl border border-white/15 bg-black/30 px-4 py-2 text-xs font-bold text-white/80 shadow-lg backdrop-blur-xl transition-colors hover:border-accent/50 hover:text-white"
+              className="mb-8 inline-flex items-center gap-2 rounded-xl border border-border/50 dark:border-white/15 bg-background/60 dark:bg-black/30 px-4 py-2 text-xs font-bold text-foreground/80 dark:text-white/80 shadow-lg backdrop-blur-xl transition-colors hover:border-accent/50 hover:text-foreground dark:hover:text-white"
             >
               <ArrowLeft className="h-4 w-4" />
               Back to services
             </Link>
 
-            <div className="mb-5 inline-flex items-center gap-2 rounded-lg border border-accent/40 bg-black/35 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-accent shadow-lg backdrop-blur-xl">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-lg border border-accent/40 bg-accent/5 dark:bg-black/35 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-accent shadow-lg backdrop-blur-xl">
               <Sparkles className="h-3.5 w-3.5" />
               {category}
             </div>
 
-            <h1 className="max-w-5xl text-5xl font-black leading-[0.98] tracking-tight text-white drop-shadow-[0_8px_28px_rgba(0,0,0,0.65)] md:text-7xl">
+            <h1 className="max-w-5xl text-5xl font-black leading-[0.98] tracking-tight text-foreground dark:text-white drop-shadow-sm dark:drop-shadow-[0_8px_28px_rgba(0,0,0,0.65)] md:text-7xl">
               {service.title}
             </h1>
-            <p className="mt-7 max-w-3xl text-lg font-medium leading-relaxed text-white/78 drop-shadow-[0_4px_18px_rgba(0,0,0,0.7)] md:text-xl">
+            <p className="mt-7 max-w-3xl text-lg font-medium leading-relaxed text-muted-foreground dark:text-white/78 drop-shadow-none dark:drop-shadow-[0_4px_18px_rgba(0,0,0,0.7)] md:text-xl">
               {description}
             </p>
 
@@ -445,7 +445,7 @@ export default function ServiceDetailClient({ service, relatedProjects = [] }) {
               {highlights.map((item) => (
                 <span
                   key={item}
-                  className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-black/45 px-4 py-2 text-xs font-bold text-white shadow-[0_10px_30px_rgba(0,0,0,0.35)] backdrop-blur-2xl"
+                  className="inline-flex items-center gap-2 rounded-full border border-border/50 dark:border-white/25 bg-background/50 dark:bg-black/45 px-4 py-2 text-xs font-bold text-foreground/90 dark:text-white shadow-sm dark:shadow-[0_10px_30px_rgba(0,0,0,0.35)] backdrop-blur-2xl"
                 >
                   <CheckCircle2 className="h-4 w-4 text-accent" />
                   {item}
@@ -463,13 +463,13 @@ export default function ServiceDetailClient({ service, relatedProjects = [] }) {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Button variant="outline" className="border-accent/70 bg-black/35 text-accent shadow-[0_14px_36px_rgba(0,0,0,0.35)] backdrop-blur-2xl hover:bg-accent/10 hover:text-accent">
+                <Button variant="outline" className="border-accent/70 bg-background/50 dark:bg-black/35 text-accent shadow-sm dark:shadow-[0_14px_36px_rgba(0,0,0,0.35)] backdrop-blur-2xl hover:bg-accent/10 hover:text-accent">
                   Send Message
                   <MessageSquare className="h-4 w-4" />
                 </Button>
               </Link>
               <Link href="/projects">
-                <Button variant="secondary" className="border border-white/15 bg-black/45 text-white shadow-[0_14px_36px_rgba(0,0,0,0.35)] backdrop-blur-2xl hover:bg-white/15">View Related Work</Button>
+                <Button variant="secondary" className="border border-border/50 dark:border-white/15 bg-background/50 dark:bg-black/45 text-foreground dark:text-white shadow-sm dark:shadow-[0_14px_36px_rgba(0,0,0,0.35)] backdrop-blur-2xl hover:bg-background/80 dark:hover:bg-white/15">View Related Work</Button>
               </Link>
             </div>
           </motion.div>
@@ -478,7 +478,7 @@ export default function ServiceDetailClient({ service, relatedProjects = [] }) {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }}
-            className="rounded-2xl border border-white/10 bg-card/70 p-6 shadow-2xl backdrop-blur-2xl"
+            className="rounded-2xl border border-border/50 dark:border-white/10 bg-card/70 p-6 shadow-2xl backdrop-blur-2xl"
           >
             <div className="flex items-center gap-3 border-b border-border/60 pb-5">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent text-accent-foreground">

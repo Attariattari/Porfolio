@@ -9,7 +9,7 @@ export default function ProtectedAdminLayout({ children }) {
   const { sidebarCollapsed } = useAdminStore();
 
   return (
-    <div className="flex min-h-screen bg-[#0a0f1c] selection:bg-accent selection:text-white overflow-x-hidden">
+    <div className="flex min-h-screen bg-background text-foreground selection:bg-accent selection:text-accent-foreground overflow-x-hidden">
       <SocketRefresh />
       <AdminSidebar />
       <div 

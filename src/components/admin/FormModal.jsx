@@ -42,7 +42,7 @@ export default function FormModal({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/80 backdrop-blur-xl" 
+        className="fixed inset-0 bg-background/80 backdrop-blur-xl" 
         onClick={onClose} 
       />
       
@@ -50,23 +50,23 @@ export default function FormModal({
         initial={{ scale: 0.95, opacity: 0, y: 50 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.95, opacity: 0, y: 50 }}
-        className="w-full max-w-4xl bg-[#0a0f1c] border border-white/10 rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 relative z-10 shadow-3xl overflow-hidden"
+        className="w-full max-w-4xl bg-card border border-border rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 relative z-10 shadow-3xl overflow-hidden"
       >
         {/* Decorative background element */}
         <div className="absolute -top-32 -right-32 w-64 h-64 bg-accent/10 rounded-full blur-[100px] pointer-events-none" />
         
-        <div className="flex justify-between items-center mb-6 md:mb-10 border-b border-white/10 pb-6 md:pb-8 relative z-10">
+        <div className="flex justify-between items-center mb-6 md:mb-10 border-b border-border pb-6 md:pb-8 relative z-10">
           <div>
-            <h2 className="text-xl md:text-3xl font-black text-white italic uppercase tracking-tighter flex items-center gap-3 md:gap-4 leading-tight">
+            <h2 className="text-xl md:text-3xl font-black text-foreground italic uppercase tracking-tighter flex items-center gap-3 md:gap-4 leading-tight">
               <LayoutTemplate className="w-6 h-6 md:w-8 md:h-8 text-accent" />
               {title}
             </h2>
-            <p className="text-[10px] md:text-sm text-slate-500 mt-2 font-medium">Please fill in the required fields to save changes.</p>
+            <p className="text-[10px] md:text-sm text-muted-foreground mt-2 font-medium">Please fill in the required fields to save changes.</p>
           </div>
           <button 
             type="button"
             onClick={onClose}
-            className="p-2 md:p-3 rounded-xl md:rounded-2xl hover:bg-white/5 text-slate-500 hover:text-white transition-all border border-white/5 hover:border-white/10"
+            className="p-2 md:p-3 rounded-xl md:rounded-2xl hover:bg-muted text-muted-foreground hover:text-foreground transition-all border border-border hover:border-accent/30"
           >
             <X className="w-5 h-5 md:w-6 md:h-6" />
           </button>
@@ -85,16 +85,16 @@ export default function FormModal({
                   <textarea
                     {...register(field.name)}
                     placeholder={field.placeholder}
-                    className="w-full h-32 p-4 md:p-5 bg-white/[0.03] border border-white/10 rounded-xl md:rounded-2xl text-xs md:text-sm focus:outline-none focus:ring-4 focus:ring-accent/10 focus:border-accent/40 transition-all font-medium resize-none placeholder:text-muted-foreground/30 focus:bg-white/[0.05]"
+                    className="w-full h-32 p-4 md:p-5 bg-background/60 border border-input rounded-xl md:rounded-2xl text-xs md:text-sm text-foreground focus:outline-none focus:ring-4 focus:ring-ring/10 focus:border-accent/40 transition-all font-medium resize-none placeholder:text-muted-foreground/50 focus:bg-background"
                   />
                 ) : field.type === 'select' ? (
                   <select
                     {...register(field.name)}
-                    className="w-full p-4 md:p-5 bg-white/[0.03] border border-white/10 rounded-xl md:rounded-2xl text-xs md:text-sm focus:outline-none focus:ring-4 focus:ring-accent/10 focus:border-accent/40 transition-all font-medium appearance-none cursor-pointer focus:bg-white/[0.05]"
+                    className="w-full p-4 md:p-5 bg-background/60 border border-input rounded-xl md:rounded-2xl text-xs md:text-sm text-foreground focus:outline-none focus:ring-4 focus:ring-ring/10 focus:border-accent/40 transition-all font-medium appearance-none cursor-pointer focus:bg-background"
                   >
-                    <option value="" className="bg-[#0a0f1c]">Select {field.label}</option>
+                    <option value="" className="bg-background">Select {field.label}</option>
                     {field.options?.map(opt => (
-                      <option key={opt.value} value={opt.value} className="bg-[#0a0f1c]">
+                      <option key={opt.value} value={opt.value} className="bg-background">
                           {opt.label}
                       </option>
                     ))}
@@ -106,12 +106,12 @@ export default function FormModal({
                     type={field.type || 'text'}
                     {...register(field.name)}
                     placeholder={field.placeholder}
-                    className="w-full p-4 md:p-5 bg-white/[0.03] border border-white/10 rounded-xl md:rounded-2xl text-xs md:text-sm focus:outline-none focus:ring-4 focus:ring-accent/10 focus:border-accent/40 transition-all font-medium placeholder:text-muted-foreground/30 focus:bg-white/[0.05]"
+                    className="w-full p-4 md:p-5 bg-background/60 border border-input rounded-xl md:rounded-2xl text-xs md:text-sm text-foreground focus:outline-none focus:ring-4 focus:ring-ring/10 focus:border-accent/40 transition-all font-medium placeholder:text-muted-foreground/50 focus:bg-background"
                   />
                 )}
                 
                 {errors[field.name] && (
-                  <p className="text-[9px] md:text-[10px] text-red-400 font-bold uppercase tracking-wider pl-4 pt-1 opacity-90 italic">
+                  <p className="text-[9px] md:text-[10px] text-destructive font-bold uppercase tracking-wider pl-4 pt-1 opacity-90 italic">
                       &times; {errors[field.name].message}
                   </p>
                 )}
@@ -119,11 +119,11 @@ export default function FormModal({
             ))}
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 pt-6 md:pt-10 mt-6 md:mt-10 border-t border-white/10">
+          <div className="flex flex-col sm:flex-row gap-4 pt-6 md:pt-10 mt-6 md:mt-10 border-t border-border">
             <button 
               type="button" 
               onClick={() => reset()}
-              className="px-6 md:px-8 py-4 md:py-5 rounded-xl md:rounded-2xl border border-white/10 hover:bg-white/5 font-black uppercase text-[10px] md:text-xs tracking-[0.2em] text-slate-500 transition-all flex items-center justify-center gap-3 active:scale-95 group"
+              className="px-6 md:px-8 py-4 md:py-5 rounded-xl md:rounded-2xl border border-border hover:bg-muted font-black uppercase text-[10px] md:text-xs tracking-[0.2em] text-muted-foreground transition-all flex items-center justify-center gap-3 active:scale-95 group"
             >
               <RefreshCcw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-700" />
               Reset Form
@@ -131,11 +131,11 @@ export default function FormModal({
             <button 
               type="submit" 
               disabled={isSubmitting}
-              className="flex-1 py-4 md:py-5 rounded-xl md:rounded-2xl bg-accent text-black font-black uppercase text-[10px] md:text-xs tracking-[0.2em] hover:bg-accent/90 transition-all shadow-xl shadow-accent/20 flex items-center justify-center gap-3 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed group"
+              className="flex-1 py-4 md:py-5 rounded-xl md:rounded-2xl bg-accent text-accent-foreground font-black uppercase text-[10px] md:text-xs tracking-[0.2em] hover:bg-accent/90 transition-all shadow-xl shadow-accent/20 flex items-center justify-center gap-3 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed group"
             >
               {isSubmitting ? (
                  <>
-                  <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 border-accent-foreground/30 border-t-accent-foreground rounded-full animate-spin" />
                   Processing...
                  </>
               ) : (

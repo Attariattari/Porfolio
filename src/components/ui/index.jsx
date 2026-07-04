@@ -55,13 +55,13 @@ export const Button = ({
 
   const variants = {
     primary:
-      "bg-accent text-white shadow-xl shadow-accent/20 border border-accent/40 hover:-translate-y-1 hover:shadow-2xl hover:shadow-accent/40",
+      "bg-accent text-accent-foreground shadow-xl shadow-accent/20 border border-accent/40 hover:-translate-y-1 hover:shadow-2xl hover:shadow-accent/40",
     secondary:
       "bg-card/40 backdrop-blur-md text-foreground border border-border/50 hover:border-accent/30 hover:bg-card/80 hover:-translate-y-1 hover:shadow-xl hover:shadow-accent/10",
     outline:
-      "bg-transparent text-accent border border-accent/50 hover:bg-accent hover:text-white hover:-translate-y-1 hover:shadow-lg hover:shadow-accent/30",
+      "bg-transparent text-accent border border-accent/50 hover:bg-accent hover:text-accent-foreground hover:-translate-y-1 hover:shadow-lg hover:shadow-accent/30",
     danger:
-      "bg-red-500 text-white shadow-lg shadow-red-500/20 border border-red-400 hover:-translate-y-1 hover:bg-red-600 hover:shadow-xl hover:shadow-red-500/40",
+      "bg-destructive text-destructive-foreground shadow-lg shadow-destructive/20 border border-destructive/40 hover:-translate-y-1 hover:bg-destructive/90 hover:shadow-xl hover:shadow-destructive/40",
   };
 
   return (

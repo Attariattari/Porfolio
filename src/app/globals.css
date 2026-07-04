@@ -12,6 +12,10 @@
         --card: #ffffff;
         --card-foreground: #020617;
         --border: #e2e8f0;
+        --input: #e2e8f0;
+        --ring: #3b82f6;
+        --destructive: #dc2626;
+        --destructive-foreground: #ffffff;
         --muted: #f1f5f9;
         --muted-foreground: #475569;
     }
@@ -29,6 +33,10 @@
         /* Glass Blue */
         --card-foreground: #f8fafc;
         --border: rgba(255, 255, 255, 0.1);
+        --input: rgba(255, 255, 255, 0.12);
+        --ring: #0ea5e9;
+        --destructive: #ef4444;
+        --destructive-foreground: #ffffff;
         --muted: #1e293b;
         --muted-foreground: #94a3b8;
     }
@@ -44,6 +52,10 @@
     --color-card: var(--card);
     --color-card-foreground: var(--card-foreground);
     --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
     --color-muted: var(--muted);
     --color-muted-foreground: var(--muted-foreground);
     --radius-xl: 1rem;

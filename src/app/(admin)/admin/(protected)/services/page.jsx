@@ -13,6 +13,7 @@ import { Controller } from "react-hook-form";
 import { useFieldArray } from "react-hook-form";
 import { AnimatePresence } from "framer-motion";
 import { Download, Plus, Trash2 } from "lucide-react";
+import StatusBadge from "@/components/ui/StatusBadge";
 
 const serviceSchema = z.object({
   title: z.string().min(5, "Title is too short"),
@@ -58,7 +59,7 @@ const RepeaterField = ({ control, register, name, label, template, fields }) => 
   const fieldArray = useFieldArray({ control, name });
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-4">
+    <div className="rounded-2xl border border-border bg-card/40 p-4 space-y-4">
       <div className="flex items-center justify-between gap-3">
         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-accent/80">
           {label}
@@ -79,20 +80,20 @@ const RepeaterField = ({ control, register, name, label, template, fields }) => 
 
       <div className="space-y-3">
         {fieldArray.fields.map((item, index) => (
-          <div key={item.id} className="grid grid-cols-1 gap-3 rounded-xl border border-white/10 bg-black/20 p-3 md:grid-cols-2">
+          <div key={item.id} className="grid grid-cols-1 gap-3 rounded-xl border border-border bg-background/40 p-3 md:grid-cols-2">
             {fields.map((field) => (
               <input
                 key={field.name}
                 type={field.type || "text"}
                 placeholder={field.placeholder || field.label}
                 {...register(`${name}.${index}.${field.name}`)}
-                className={`${field.fullWidth ? "md:col-span-2" : ""} w-full rounded-xl border border-white/10 bg-white/[0.03] p-3 text-xs outline-none focus:border-accent/40`}
+                className={`${field.fullWidth ? "md:col-span-2" : ""} w-full rounded-xl border border-input bg-background/60 p-3 text-xs text-foreground outline-none placeholder:text-muted-foreground/50 focus:border-accent/40`}
               />
             ))}
             <button
               type="button"
               onClick={() => fieldArray.remove(index)}
-              className="inline-flex items-center justify-center gap-2 rounded-xl border border-red-500/20 px-3 py-2 text-[10px] font-black uppercase tracking-widest text-red-400 hover:bg-red-500/10 md:col-span-2"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-destructive/20 px-3 py-2 text-[10px] font-black uppercase tracking-widest text-destructive hover:bg-destructive/10 md:col-span-2"
             >
               <Trash2 className="h-3.5 w-3.5" />
               Remove
@@ -155,18 +156,14 @@ export default function ServicesPage() {
         >
           {!item._isFromDataJs && (
             <div className="flex items-center gap-1.5">
-              <div className="w-2 h-2 rounded-full bg-green-500 shadow-lg shadow-green-500/50" />
-              <span className="text-[9px] font-black text-green-400 uppercase tracking-tighter">
-                Uploaded
-              </span>
+              <div className="w-2 h-2 rounded-full bg-accent shadow-lg shadow-accent/50" />
+              <StatusBadge status="uploaded">Uploaded</StatusBadge>
             </div>
           )}
           {item._isFromDataJs && (
             <div className="flex items-center gap-1.5">
-              <div className="w-2 h-2 rounded-full border border-slate-500" />
-              <span className="text-[9px] font-bold text-slate-500 uppercase tracking-tighter">
-                Template
-              </span>
+              <div className="w-2 h-2 rounded-full border border-border" />
+              <StatusBadge status="template">Template</StatusBadge>
             </div>
           )}
         </div>
@@ -178,15 +175,11 @@ export default function ServicesPage() {
       render: (item) => (
         <div className="flex flex-col gap-1 text-[10px] font-black uppercase tracking-widest">
           {item._isFromDataJs ? (
-            <span className="text-slate-500">Template</span>
+            <StatusBadge status="template">Template</StatusBadge>
           ) : (
-            <span className={
-              (item.status || item.publishStatus) === "published" ? "text-green-500" :
-              (item.status || item.publishStatus) === "pending" ? "text-amber-500" :
-              "text-slate-400"
-            }>
+            <StatusBadge status={item.status || item.publishStatus || "draft"}>
               {item.status || item.publishStatus || "draft"}
-            </span>
+            </StatusBadge>
           )}
         </div>
       ),
@@ -216,7 +209,7 @@ export default function ServicesPage() {
             .map((tech) => (
               <span
                 key={typeof tech === "string" ? tech : tech?.name || tech?.title}
-                className="text-[9px] px-1.5 py-0.5 bg-blue-500/10 text-blue-400 rounded-md border border-blue-500/20 font-bold uppercase tracking-tighter"
+                className="text-[9px] px-1.5 py-0.5 bg-accent/10 text-accent rounded-md border border-accent/20 font-bold uppercase tracking-tighter"
               >
                 {typeof tech === "string" ? tech : tech?.name || tech?.title}
               </span>
@@ -228,11 +221,9 @@ export default function ServicesPage() {
       key: "featured",
       label: "Featured",
       render: (item) => (
-        <span
-          className={`px-2 py-1 rounded text-[8px] font-black uppercase ${(item.featured || item.isFeatured) ? "bg-amber-500/10 text-amber-500" : "bg-slate-500/10 text-slate-500"}`}
-        >
+        <StatusBadge status={(item.featured || item.isFeatured) ? "featured" : "standard"}>
           {(item.featured || item.isFeatured) ? "Featured" : "Standard"}
-        </span>
+        </StatusBadge>
       ),
     },
   ];
@@ -741,17 +732,17 @@ export default function ServicesPage() {
               className="absolute inset-0 bg-black/80 backdrop-blur-sm"
               onClick={() => !isImporting && setIsImportOpen(false)}
             />
-            <div className="relative z-10 w-full max-w-lg rounded-3xl border border-white/10 bg-[#0d1526] p-8 shadow-2xl">
-              <h2 className="text-2xl font-black uppercase tracking-tight text-white">
+            <div className="relative z-10 w-full max-w-lg rounded-3xl border border-border bg-card p-8 shadow-2xl">
+              <h2 className="text-2xl font-black uppercase tracking-tight text-foreground">
                 Import Services
               </h2>
-              <p className="mt-4 text-sm leading-relaxed text-slate-400">
+              <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
                 This will import or update services from the local seed data.
                 Existing services with the same slug will be updated, not duplicated.
               </p>
 
               <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <label className={`cursor-pointer rounded-2xl border p-4 ${importMode === "safe" ? "border-accent bg-accent/10" : "border-white/10 bg-white/[0.03]"}`}>
+                <label className={`cursor-pointer rounded-2xl border p-4 ${importMode === "safe" ? "border-accent bg-accent/10" : "border-border bg-background/40"}`}>
                   <input
                     type="radio"
                     name="importMode"
@@ -760,14 +751,14 @@ export default function ServicesPage() {
                     onChange={() => setImportMode("safe")}
                     className="sr-only"
                   />
-                  <span className="block text-xs font-black uppercase tracking-widest text-white">
+                  <span className="block text-xs font-black uppercase tracking-widest text-foreground">
                     Safe Merge
                   </span>
-                  <span className="mt-2 block text-xs leading-relaxed text-slate-400">
+                  <span className="mt-2 block text-xs leading-relaxed text-muted-foreground">
                     Add missing fields and preserve admin edits.
                   </span>
                 </label>
-                <label className={`cursor-pointer rounded-2xl border p-4 ${importMode === "force" ? "border-accent bg-accent/10" : "border-white/10 bg-white/[0.03]"}`}>
+                <label className={`cursor-pointer rounded-2xl border p-4 ${importMode === "force" ? "border-accent bg-accent/10" : "border-border bg-background/40"}`}>
                   <input
                     type="radio"
                     name="importMode"
@@ -776,22 +767,22 @@ export default function ServicesPage() {
                     onChange={() => setImportMode("force")}
                     className="sr-only"
                   />
-                  <span className="block text-xs font-black uppercase tracking-widest text-white">
+                  <span className="block text-xs font-black uppercase tracking-widest text-foreground">
                     Force Update
                   </span>
-                  <span className="mt-2 block text-xs leading-relaxed text-slate-400">
+                  <span className="mt-2 block text-xs leading-relaxed text-muted-foreground">
                     Replace service content from seed data.
                   </span>
                 </label>
               </div>
 
               {importSummary && (
-                <div className="mt-6 rounded-2xl border border-green-500/20 bg-green-500/10 p-4 text-sm text-green-300">
+                <div className="mt-6 rounded-2xl border border-accent/20 bg-accent/10 p-4 text-sm text-accent">
                   Services imported successfully. {importSummary.created || 0} created,{" "}
                   {importSummary.updated || 0} updated, {importSummary.skipped || 0} skipped,{" "}
                   {importSummary.errors || 0} errors.
                   {importSummary.items?.some((item) => item.status === "error") && (
-                    <div className="mt-4 max-h-36 space-y-2 overflow-y-auto rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-xs text-red-200">
+                    <div className="mt-4 max-h-36 space-y-2 overflow-y-auto rounded-xl border border-destructive/20 bg-destructive/10 p-3 text-xs text-destructive">
                       {importSummary.items
                         .filter((item) => item.status === "error")
                         .map((item) => (
@@ -810,7 +801,7 @@ export default function ServicesPage() {
                   type="button"
                   onClick={() => setIsImportOpen(false)}
                   disabled={isImporting}
-                  className="flex-1 rounded-2xl border border-white/10 px-5 py-4 text-xs font-black uppercase tracking-widest text-slate-400 hover:bg-white/5 disabled:opacity-50"
+                  className="flex-1 rounded-2xl border border-border px-5 py-4 text-xs font-black uppercase tracking-widest text-muted-foreground hover:bg-muted disabled:opacity-50"
                 >
                   Cancel
                 </button>
@@ -826,7 +817,7 @@ export default function ServicesPage() {
                       setIsImportOpen(false);
                     }
                   }}
-                  className="flex-1 rounded-2xl bg-accent px-5 py-4 text-xs font-black uppercase tracking-widest text-black hover:bg-accent/90 disabled:opacity-60"
+                  className="flex-1 rounded-2xl bg-accent px-5 py-4 text-xs font-black uppercase tracking-widest text-accent-foreground hover:bg-accent/90 disabled:opacity-60"
                 >
                   {isImporting ? "Importing..." : "Confirm Import"}
                 </button>
