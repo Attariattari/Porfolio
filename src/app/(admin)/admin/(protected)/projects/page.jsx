@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import useAdminStore from "@/lib/store/adminStore";
 import DataTable from "@/components/admin/DataTable";
 import FormModal from "@/components/admin/FormModal";
@@ -14,18 +15,57 @@ import { AnimatePresence } from "framer-motion";
 
 const projectSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
-  description: z.string().min(10, "Description must be at least 10 characters"),
-  category: z.string().min(2, "Category is required"),
-  purpose: z.string().min(2, "Purpose is required"),
-  impact: z.string().min(5, "Impact description is required"),
-  images: z.array(z.any()).min(1, "At least one image is required"),
+  slug: z.string().optional(),
+  description: z.string().optional(),
+  shortDescription: z.string().optional(),
+  longDescription: z.string().optional(),
+  category: z.string().optional(),
+  projectType: z.string().optional(),
+  purpose: z.string().optional(),
+  impact: z.string().optional(),
+  images: z.array(z.any()).optional(),
   techStack: z
     .string()
-    .transform((val) => (val ? val.split(",").map((s) => s.trim()) : [])),
-  details: z.string().min(20, "Detailed description is required"),
+    .optional()
+    .transform((val) => (val ? val.split(",").map((s) => s.trim()).filter(Boolean) : [])),
+  details: z.string().optional(),
+  overview: z.string().optional(),
+  problem: z.string().optional(),
+  goals: z.string().optional(),
+  role: z.string().optional(),
+  responsibilities: z
+    .string()
+    .optional()
+    .transform((val) => (val ? val.split(",").map((s) => s.trim()).filter(Boolean) : [])),
+  clientType: z.string().optional(),
+  duration: z.string().optional(),
+  year: z.string().optional(),
+  liveUrl: z.string().optional(),
+  githubUrl: z.string().optional(),
+  features: z.string().optional(),
+  modules: z.string().optional(),
+  technologies: z.string().optional(),
+  processSteps: z.string().optional(),
+  challenges: z.string().optional(),
+  results: z.string().optional(),
+  relatedServices: z.string().optional(),
+  seoTitle: z.string().optional(),
+  seoDescription: z.string().optional(),
+  keywords: z.string().optional(),
+  sortOrder: z.coerce.number().optional(),
   publishStatus: z.enum(["draft", "pending", "published"]).default("draft"),
   featured: z.boolean().default(false),
 });
+
+const parseJsonField = (value, fallback) => {
+  if (!value || typeof value !== "string") return fallback;
+  try {
+    return JSON.parse(value);
+  } catch {
+    toast.error("One advanced project field contains invalid JSON.");
+    throw new Error("Invalid JSON in advanced project fields");
+  }
+};
 
 export default function ProjectsPage() {
   const { projects, fetchProjects, addProject, updateProject, deleteProject, reorderProjects } =
@@ -35,6 +75,7 @@ export default function ProjectsPage() {
   const [editingProject, setEditingProject] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
 
   // Sync with DB on mount
   useEffect(() => {
@@ -95,15 +136,23 @@ export default function ProjectsPage() {
     {
       key: "thumbnail",
       label: "Preview",
-      render: (item) => (
-        <div className="w-16 h-10 rounded-lg overflow-hidden border border-white/10 bg-white/5 flex items-center justify-center">
-          <img
-            src={item.thumbnail || item.gallery?.[0] || item.images?.[0]}
-            alt={item.title}
-            className="w-full h-full object-cover"
-          />
-        </div>
-      ),
+      render: (item) => {
+        const preview = item.thumbnail || item.thumbnailImage || item.heroImage || item.gallery?.[0] || item.images?.[0];
+
+        return (
+          <div className="relative w-16 h-10 rounded-lg overflow-hidden border border-white/10 bg-white/5 flex items-center justify-center">
+            {preview && (
+              <Image
+                src={preview}
+                alt={item.title}
+                fill
+                sizes="64px"
+                className="object-cover"
+              />
+            )}
+          </div>
+        );
+      },
     },
     { key: "title", label: "Project Title" },
     { key: "category", label: "Category" },
@@ -152,16 +201,24 @@ export default function ProjectsPage() {
       required: true,
     },
     {
+      name: "slug",
+      label: "Project Slug",
+      placeholder: "muhyo-tech-portfolio",
+    },
+    {
       name: "category",
       label: "Category",
       placeholder: "e.g. Web, Mobile, UI/UX",
-      required: true,
+    },
+    {
+      name: "projectType",
+      label: "Project Type",
+      placeholder: "e.g. Admin Dashboard, Portfolio, SaaS",
     },
     {
       name: "purpose",
       label: "Purpose",
       placeholder: "e.g. Fintech, Healthcare",
-      required: true,
     },
     {
       name: "images",
@@ -186,28 +243,125 @@ export default function ProjectsPage() {
       label: "Tech Stack (comma separated)",
       placeholder: "React, Next.js, Node.js",
       fullWidth: true,
-      required: true,
+    },
+    {
+      name: "shortDescription",
+      label: "Short Description",
+      type: "textarea",
+      fullWidth: true,
     },
     {
       name: "description",
       label: "Brief Description",
       type: "textarea",
       fullWidth: true,
-      required: true,
     },
     {
       name: "impact",
       label: "Project Impact",
-      placeholder: "e.g. Increased conversion by 35%",
+      placeholder: "e.g. Improved content management workflow",
       fullWidth: true,
-      required: true,
     },
     {
       name: "details",
       label: "Full Details / Case Study",
       type: "textarea",
       fullWidth: true,
-      required: true,
+    },
+    {
+      name: "overview",
+      label: "Project Overview",
+      type: "textarea",
+      fullWidth: true,
+    },
+    {
+      name: "problem",
+      label: "Problem / Goal",
+      type: "textarea",
+      fullWidth: true,
+    },
+    {
+      name: "goals",
+      label: "Goals (JSON array)",
+      type: "textarea",
+      fullWidth: true,
+      placeholder: "[\"Goal one\", \"Goal two\"]",
+    },
+    {
+      name: "role",
+      label: "My Role",
+      type: "textarea",
+      fullWidth: true,
+    },
+    {
+      name: "responsibilities",
+      label: "Responsibilities (comma separated)",
+      fullWidth: true,
+    },
+    { name: "clientType", label: "Client Type" },
+    { name: "duration", label: "Duration" },
+    { name: "year", label: "Year" },
+    { name: "liveUrl", label: "Live URL", fullWidth: true },
+    { name: "githubUrl", label: "GitHub URL", fullWidth: true },
+    {
+      name: "features",
+      label: "Features (JSON array)",
+      type: "textarea",
+      fullWidth: true,
+      placeholder: "[{\"title\":\"Feature\",\"description\":\"...\",\"icon\":\"Sparkles\"}]",
+    },
+    {
+      name: "modules",
+      label: "Modules / Pages (JSON array)",
+      type: "textarea",
+      fullWidth: true,
+    },
+    {
+      name: "technologies",
+      label: "Grouped Technologies (JSON object)",
+      type: "textarea",
+      fullWidth: true,
+      placeholder: "{\"frontend\":[\"Next.js\"],\"backend\":[],\"database\":[],\"tools\":[]}",
+    },
+    {
+      name: "processSteps",
+      label: "Process Steps (JSON array)",
+      type: "textarea",
+      fullWidth: true,
+    },
+    {
+      name: "challenges",
+      label: "Challenges & Solutions (JSON array)",
+      type: "textarea",
+      fullWidth: true,
+    },
+    {
+      name: "results",
+      label: "Results / Impact (JSON array)",
+      type: "textarea",
+      fullWidth: true,
+    },
+    {
+      name: "relatedServices",
+      label: "Related Service Slugs (comma separated)",
+      fullWidth: true,
+    },
+    { name: "seoTitle", label: "SEO Title", fullWidth: true },
+    {
+      name: "seoDescription",
+      label: "SEO Description",
+      type: "textarea",
+      fullWidth: true,
+    },
+    {
+      name: "keywords",
+      label: "SEO Keywords (comma separated)",
+      fullWidth: true,
+    },
+    {
+      name: "sortOrder",
+      label: "Sort Order",
+      type: "number",
     },
     { 
       name: "publishStatus", 
@@ -234,6 +388,36 @@ export default function ProjectsPage() {
       techStack: Array.isArray(project.techStack)
         ? project.techStack.join(", ")
         : project.techStack,
+      goals: Array.isArray(project.goals)
+        ? JSON.stringify(project.goals, null, 2)
+        : project.goals,
+      features: Array.isArray(project.features)
+        ? JSON.stringify(project.features, null, 2)
+        : project.features,
+      modules: Array.isArray(project.modules)
+        ? JSON.stringify(project.modules, null, 2)
+        : project.modules,
+      technologies: project.technologies
+        ? JSON.stringify(project.technologies, null, 2)
+        : "",
+      processSteps: Array.isArray(project.processSteps)
+        ? JSON.stringify(project.processSteps, null, 2)
+        : project.processSteps,
+      challenges: Array.isArray(project.challenges)
+        ? JSON.stringify(project.challenges, null, 2)
+        : project.challenges,
+      results: Array.isArray(project.results)
+        ? JSON.stringify(project.results, null, 2)
+        : project.results,
+      responsibilities: Array.isArray(project.responsibilities)
+        ? project.responsibilities.join(", ")
+        : project.responsibilities,
+      relatedServices: Array.isArray(project.relatedServices)
+        ? project.relatedServices.join(", ")
+        : project.relatedServices,
+      keywords: Array.isArray(project.keywords)
+        ? project.keywords.join(", ")
+        : project.keywords,
       images: project.gallery || project.images || [project.thumbnail || ""],
     };
     setEditingProject(formattedProject);
@@ -267,12 +451,32 @@ export default function ProjectsPage() {
         toast.loading("Updating records to global index...");
       }
       
-      const finalImageUrls = await uploadPendingImages(data.images);
+      const finalImageUrls = await uploadPendingImages(data.images || []);
 
       const submissionData = {
         ...data,
         gallery: finalImageUrls,
         thumbnail: finalImageUrls[0] || "",
+        thumbnailImage: finalImageUrls[0] || data.thumbnailImage || "",
+        heroImage: finalImageUrls[0] || data.heroImage || "",
+        goals: parseJsonField(data.goals, []),
+        features: parseJsonField(data.features, []),
+        modules: parseJsonField(data.modules, []),
+        technologies: parseJsonField(data.technologies, {}),
+        processSteps: parseJsonField(data.processSteps, []),
+        challenges: parseJsonField(data.challenges, []),
+        results: parseJsonField(data.results, []),
+        galleryImages: finalImageUrls.map((url, index) => ({
+          url,
+          alt: `${data.title} screenshot ${index + 1}`,
+          caption: index === 0 ? "Project preview" : `Screenshot ${index + 1}`,
+        })),
+        relatedServices: data.relatedServices
+          ? data.relatedServices.split(",").map((item) => item.trim()).filter(Boolean)
+          : [],
+        keywords: data.keywords
+          ? data.keywords.split(",").map((item) => item.trim()).filter(Boolean)
+          : [],
       };
 
       let res;
@@ -291,6 +495,32 @@ export default function ProjectsPage() {
     }
   };
 
+  const handleImportProjects = async (mode = "safe") => {
+    if (mode === "force" && !window.confirm("Force update will overwrite existing project fields from data.js. Continue?")) {
+      return;
+    }
+
+    setIsImporting(true);
+    try {
+      const res = await fetch("/api/admin/projects/import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode }),
+      });
+      const result = await res.json();
+      if (!result.success) throw new Error(result.error || "Import failed");
+      const summary = result.summary || {};
+      toast.success(
+        `Projects imported. ${summary.created || 0} created, ${summary.updated || 0} updated, ${summary.skipped || 0} skipped.`,
+      );
+      await fetchProjects();
+    } catch (error) {
+      toast.error(error.message || "Project import failed.");
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
   return (
     <div className="space-y-8 pb-20">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-4">
@@ -301,6 +531,24 @@ export default function ProjectsPage() {
           <p className="text-[10px] md:text-sm text-slate-500 mt-2 font-medium uppercase tracking-widest">
             Manage and showcase your engineering masterpieces.
           </p>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          <button
+            type="button"
+            onClick={() => handleImportProjects("safe")}
+            disabled={isImporting}
+            className="rounded-2xl border border-accent/30 bg-accent/10 px-5 py-3 text-xs font-black uppercase tracking-widest text-accent transition-all hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
+          >
+            {isImporting ? "Importing..." : "Import Projects"}
+          </button>
+          <button
+            type="button"
+            onClick={() => handleImportProjects("force")}
+            disabled={isImporting}
+            className="rounded-2xl border border-red-400/30 bg-red-400/10 px-5 py-3 text-xs font-black uppercase tracking-widest text-red-300 transition-all hover:bg-red-400 hover:text-white disabled:opacity-50"
+          >
+            Force Update
+          </button>
         </div>
       </div>
 

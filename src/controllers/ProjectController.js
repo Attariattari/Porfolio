@@ -5,7 +5,77 @@ import { portfolioData } from "@/lib/data";
 import { serializeDoc } from "@/lib/mongooseHelper";
 import { sendNewsletterEmail } from "@/lib/newsletter";
 import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socket";
-import { withCache } from "@/lib/cache";
+import { cacheManager, withCache } from "@/lib/cache";
+
+const detailFields = [
+    "shortDescription",
+    "longDescription",
+    "overview",
+    "projectType",
+    "thumbnailImage",
+    "heroImage",
+    "galleryImages",
+    "year",
+    "duration",
+    "clientType",
+    "role",
+    "responsibilities",
+    "problem",
+    "goals",
+    "features",
+    "modules",
+    "technologies",
+    "processSteps",
+    "challenges",
+    "results",
+    "relatedServices",
+    "seoTitle",
+    "seoDescription",
+    "keywords",
+];
+
+const isEmptyProjectValue = (value) => {
+    if (value === undefined || value === null || value === "") return true;
+    if (Array.isArray(value)) return value.length === 0;
+    if (typeof value === "object") return Object.keys(value).length === 0;
+    return false;
+};
+
+const isThinText = (value, project) => {
+    if (typeof value !== "string") return false;
+    const normalized = value.trim().toLowerCase();
+    return (
+        normalized.length < 45 ||
+        normalized === project?.purpose?.trim?.().toLowerCase() ||
+        normalized === project?.category?.trim?.().toLowerCase()
+    );
+};
+
+const findSeedProject = (project) =>
+    portfolioData.projects.find(
+        (item) =>
+            item.slug === project?.slug ||
+            item.id?.toString() === project?.id?.toString() ||
+            item.title?.toLowerCase() === project?.title?.toLowerCase(),
+    );
+
+const mergeWithSeedCaseStudy = (project) => {
+    const seedProject = findSeedProject(project);
+    if (!seedProject) return project;
+
+    const merged = { ...seedProject, ...project };
+
+    detailFields.forEach((field) => {
+        if (
+            isEmptyProjectValue(project[field]) ||
+            (["overview", "problem", "longDescription"].includes(field) && isThinText(project[field], project))
+        ) {
+            merged[field] = seedProject[field];
+        }
+    });
+
+    return merged;
+};
 
 /**
  * ProjectController
@@ -14,7 +84,7 @@ import { withCache } from "@/lib/cache";
 export const ProjectController = {
     // 1. Get All Projects - Optimized with lean(), caching, and efficient merge
     async getAll(filterPublished = false) {
-        const cacheKey = `projects_all_${filterPublished}`;
+        const cacheKey = `projects_all_${filterPublished}_case_study_v2`;
         
         try {
             return await withCache(
@@ -40,8 +110,10 @@ export const ProjectController = {
                             publishStatus: "published",
                         }));
 
+                    const mergedDbProjects = serializeDoc(dbProjects).map(mergeWithSeedCaseStudy);
+
                     // Combine and return serialized results
-                    return [...serializeDoc(dbProjects), ...fallbackProjects];
+                    return [...mergedDbProjects, ...fallbackProjects];
                 },
                 300, // 5 minute cache
                 ["projects"]
@@ -54,43 +126,52 @@ export const ProjectController = {
 
     // 2. Get One Project By SLUG or ID - Optimized with lean()
     async getOne(identifier) {
-        try {
-            await dbConnect();
+        const cacheKey = `project_one_${identifier}_case_study_v2`;
 
-            const isObjectId = mongoose.Types.ObjectId.isValid(identifier);
-            const query = {
-                $or: [
-                    { slug: identifier },
-                    ...(isObjectId ? [{ _id: identifier }] : []),
-                ],
-            };
+        return await withCache(
+            cacheKey,
+            async () => {
+                try {
+                    await dbConnect();
 
-            const project = await Project.findOne(query).lean();
+                    const isObjectId = mongoose.Types.ObjectId.isValid(identifier);
+                    const query = {
+                        $or: [
+                            { slug: identifier },
+                            ...(isObjectId ? [{ _id: identifier }] : []),
+                        ],
+                    };
 
-            if (project) return serializeDoc(project);
+                    const project = await Project.findOne(query).lean();
 
-            // Fallback to static data
-            const fallbackProject = portfolioData.projects.find(
-                (p) =>
-                p.id?.toString() === identifier ||
-                p.slug === identifier ||
-                p.title.toLowerCase().replace(/\s+/g, "-") === identifier,
-            );
+                    if (project) return mergeWithSeedCaseStudy(serializeDoc(project));
 
-            if (fallbackProject) {
-                return {
-                    ...fallbackProject,
-                    _isFromDataJs: true,
-                    publishStatus: "published",
-                };
-            }
+                    // Fallback to static data
+                    const fallbackProject = portfolioData.projects.find(
+                        (p) =>
+                        p.id?.toString() === identifier ||
+                        p.slug === identifier ||
+                        p.title.toLowerCase().replace(/\s+/g, "-") === identifier,
+                    );
 
-            return null;
-        } catch (error) {
-            throw new Error(
-                `Failed to fetch project ${identifier}: ${error.message}`,
-            );
-        }
+                    if (fallbackProject) {
+                        return {
+                            ...fallbackProject,
+                            _isFromDataJs: true,
+                            publishStatus: "published",
+                        };
+                    }
+
+                    return null;
+                } catch (error) {
+                    throw new Error(
+                        `Failed to fetch project ${identifier}: ${error.message}`,
+                    );
+                }
+            },
+            900,
+            ["projects"],
+        );
     },
 
     // 3. Create New Project
@@ -115,6 +196,7 @@ export const ProjectController = {
             sendNewsletterEmail("project", savedProject).catch(() => {});
             emitSocketEvent(SOCKET_EVENTS.NEW_PROJECT, serialized);
             emitSocketEvent(SOCKET_EVENTS.STATS_UPDATED);
+            await cacheManager.invalidateByTag("projects");
 
             return serialized;
         } catch (error) {
@@ -134,6 +216,7 @@ export const ProjectController = {
             if (!updatedProject) return null;
 
             emitSocketEvent(SOCKET_EVENTS.STATS_UPDATED);
+            await cacheManager.invalidateByTag("projects");
             return serializeDoc(updatedProject);
         } catch (error) {
             throw new Error(`Failed to update project: ${error.message}`);
@@ -147,6 +230,7 @@ export const ProjectController = {
             const deletedProject = await Project.findByIdAndDelete(id).lean();
             if (deletedProject) {
                 emitSocketEvent(SOCKET_EVENTS.STATS_UPDATED);
+                await cacheManager.invalidateByTag("projects");
             }
             return deletedProject;
         } catch (error) {
@@ -160,6 +244,7 @@ export const ProjectController = {
             await dbConnect();
             const result = await Project.deleteMany({});
             emitSocketEvent(SOCKET_EVENTS.STATS_UPDATED);
+            await cacheManager.invalidateByTag("projects");
             return result;
         } catch (error) {
             throw new Error(`Failed to clear projects: ${error.message}`);
@@ -187,9 +272,13 @@ export const ProjectController = {
 
             emitSocketEvent(SOCKET_EVENTS.PROJECTS_REORDERED);
             emitSocketEvent(SOCKET_EVENTS.STATS_UPDATED);
+            await cacheManager.invalidateByTag("projects");
             return true;
         } catch (error) {
             throw new Error(`Failed to reorder projects: ${error.message}`);
         }
+    },
+    async getById(id) {
+        return this.getOne(id);
     },
 };

@@ -23,6 +23,7 @@ import {
 import ImageUploader from "@/components/admin/ImageUploader";
 import { uploadPendingImages } from "@/lib/uploadHelper";
 import useAdminStore from "@/lib/store/adminStore";
+import { aboutData } from "@/lib/data";
 
 // Comprehensive validation schema
 const aboutSchema = z.object({
@@ -78,6 +79,8 @@ const SectionHeader = ({ icon: Icon, title, desc }) => (
 export default function AboutForm() {
   const { about, updateAbout, addNotification, fetchAbout } = useAdminStore();
   const [isSaving, setIsSaving] = useState(false);
+  const [sectionJson, setSectionJson] = useState({});
+  const [jsonError, setJsonError] = useState("");
   const searchParams = useSearchParams();
   const highlightId = searchParams.get("highlight");
   const [isHighlighted, setIsHighlighted] = useState(false);
@@ -110,16 +113,30 @@ export default function AboutForm() {
 
   useEffect(() => {
     if (about && Object.keys(about).length > 0) {
+      const source = { ...aboutData, ...about };
       reset({
-        ...about,
-        avatar: about.avatar ? [about.avatar] : [],
-        typewriterWords: about.typewriterWords || [],
-        experiences: (about.experiences || []).map((exp) => ({
+        ...source,
+        avatar: source.avatar ? [source.avatar] : [],
+        typewriterWords: source.typewriterWords || [],
+        experiences: (source.experiences || []).map((exp) => ({
           ...exp,
           milestones: Array.isArray(exp.milestones)
             ? exp.milestones.join(", ")
             : exp.milestones || "",
         })),
+      });
+      setSectionJson({
+        hero: JSON.stringify(source.hero || aboutData.hero, null, 2),
+        story: JSON.stringify(source.story || aboutData.story, null, 2),
+        whatIBuild: JSON.stringify(source.whatIBuild || aboutData.whatIBuild, null, 2),
+        skills: JSON.stringify(source.skills || aboutData.skills, null, 2),
+        education: JSON.stringify(source.education || aboutData.education, null, 2),
+        approach: JSON.stringify(source.approach || aboutData.approach, null, 2),
+        whyChoose: JSON.stringify(source.whyChoose || aboutData.whyChoose, null, 2),
+        values: JSON.stringify(source.values || aboutData.values, null, 2),
+        availability: JSON.stringify(source.availability || aboutData.availability, null, 2),
+        finalCTA: JSON.stringify(source.finalCTA || aboutData.finalCTA, null, 2),
+        keywords: JSON.stringify(source.keywords || aboutData.keywords, null, 2),
       });
     }
   }, [about, reset]);
@@ -136,7 +153,13 @@ export default function AboutForm() {
 
   const onSubmit = async (data) => {
     setIsSaving(true);
+    setJsonError("");
     try {
+      const parsedSections = {};
+      for (const [key, value] of Object.entries(sectionJson)) {
+        parsedSections[key] = value?.trim() ? JSON.parse(value) : key === "keywords" ? [] : {};
+      }
+
       // Upload avatar if changed
       const avatarUrls = await uploadPendingImages(data.avatar);
       const finalAvatar = avatarUrls[0] || about?.avatar || "";
@@ -156,8 +179,21 @@ export default function AboutForm() {
 
       const formattedData = {
         ...data,
+        ...parsedSections,
         avatar: finalAvatar,
         experiences: formattedExperiences,
+        hero: {
+          ...(parsedSections.hero || {}),
+          image: parsedSections.hero?.image || finalAvatar,
+        },
+        availability: {
+          ...(parsedSections.availability || {}),
+          email: parsedSections.availability?.email || data.email,
+          phone: parsedSections.availability?.phone || data.phone,
+          location: parsedSections.availability?.location || data.location,
+          workingHours:
+            parsedSections.availability?.workingHours || data.workingHours,
+        },
       };
 
       const res = await updateAbout(formattedData);
@@ -178,6 +214,9 @@ export default function AboutForm() {
       }
     } catch (error) {
       console.error("Error:", error);
+      if (error instanceof SyntaxError) {
+        setJsonError("One of the structured section editors contains invalid JSON.");
+      }
       toast.error(error.message || "Error saving profile");
     } finally {
       setIsSaving(false);
@@ -482,6 +521,53 @@ export default function AboutForm() {
             {expFields.length === 0 && (
               <p className="text-center text-muted-foreground text-sm py-6">No experiences added yet</p>
             )}
+          </div>
+        </div>
+
+        {/* ====== STRUCTURED ABOUT PAGE SECTIONS ====== */}
+        <div className="bg-white/[0.01] border border-white/5 p-10 rounded-[3rem]">
+          <SectionHeader
+            icon={Target}
+            title="Structured About Page Sections"
+            desc="Manage hero, story, cards, skills, education, CTA, and SEO fallback content"
+          />
+          {jsonError && (
+            <div className="mb-6 p-4 rounded-2xl border border-red-500/20 bg-red-500/10 text-red-300 text-sm font-bold">
+              {jsonError}
+            </div>
+          )}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative z-10">
+            {[
+              ["hero", "Hero / Professional Identity"],
+              ["story", "Short Professional Story"],
+              ["whatIBuild", "What I Build Cards"],
+              ["skills", "Skills & Technologies"],
+              ["education", "Education"],
+              ["approach", "Development Approach"],
+              ["whyChoose", "Why Choose Muhyo Tech"],
+              ["values", "Values / Work Principles"],
+              ["availability", "Availability / Contact Highlight"],
+              ["finalCTA", "Final CTA"],
+              ["keywords", "SEO Keywords"],
+            ].map(([key, label]) => (
+              <div key={key} className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-accent/80 block">
+                  {label}
+                </label>
+                <textarea
+                  value={sectionJson[key] || ""}
+                  onChange={(event) =>
+                    setSectionJson((current) => ({
+                      ...current,
+                      [key]: event.target.value,
+                    }))
+                  }
+                  rows={key === "hero" || key === "whatIBuild" ? 12 : 8}
+                  spellCheck={false}
+                  className="w-full p-4 bg-white/5 border border-white/10 rounded-xl text-xs font-mono leading-relaxed focus:ring-2 focus:ring-accent/20 focus:border-accent/40 outline-none resize-y transition-all"
+                />
+              </div>
+            ))}
           </div>
         </div>
 

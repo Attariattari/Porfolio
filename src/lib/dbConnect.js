@@ -87,8 +87,8 @@ async function dbConnect() {
         console.log(
           "✅ [Muhyo Tech Security] Authority Database Synchronized (MongoDB Connected)",
         );
-        mongoose.set("debug", true);
-        console.log("🛠️ [Mongoose] Debug mode enabled");
+        if (process.env.MONGOOSE_DEBUG === "true") mongoose.set("debug", true);
+        if (process.env.MONGOOSE_DEBUG === "true") console.log("🛠️ [Mongoose] Debug mode enabled");
       }
       return mongoose;
     });

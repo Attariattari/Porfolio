@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { SectionWrapper, Button } from "./ui";
 import { MapPin, Clock, ArrowRight, MessageSquare } from "lucide-react";
-import { portfolioData } from "@/lib/data";
+import { homeData, portfolioData } from "@/lib/data";
 import SocialLinks from "./SocialLinks";
 import { toast } from "sonner";
 import {
@@ -265,6 +265,33 @@ const Contact = ({ isHomePage = false }) => {
               </p>
               <SocialLinks buttonClassName="w-12 h-12 bg-card rounded-2xl flex items-center justify-center text-muted-foreground transition-all duration-300 border border-border/50 shadow-lg" />
             </div>
+
+            {isHomePage && (
+              <motion.div
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="glass rounded-[2rem] border border-accent/20 p-6"
+              >
+                <h3 className="text-xl font-bold text-foreground mb-3">
+                  {homeData.contactCTA.title}
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-5">
+                  {homeData.contactCTA.description}
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  {homeData.contactCTA.buttons.map((button) => (
+                    <Link
+                      key={button.href}
+                      href={button.href}
+                      className="rounded-xl border border-border/60 bg-card/60 px-4 py-3 text-xs font-bold text-foreground transition-all hover:border-accent/40 hover:text-accent"
+                    >
+                      {button.label}
+                    </Link>
+                  ))}
+                </div>
+              </motion.div>
+            )}
           </div>
 
           {/* Right Column: Premium Form */}

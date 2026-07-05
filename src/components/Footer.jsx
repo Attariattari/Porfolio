@@ -89,11 +89,11 @@ export default function Footer({ data }) {
   };
 
   return (
-    <footer className="relative border-t border-border/35 pt-12 pb-8 overflow-hidden">
+    <footer className="relative border-t border-border/35 px-6 pt-12 pb-8 overflow-hidden">
       <div className="absolute top-0 left-10 h-24 w-24 rounded-full border border-accent/10 pointer-events-none" />
       <div className="absolute top-0 right-0 w-[460px] h-[460px] bg-accent/5 blur-[120px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
 
-      <div className="container mx-auto px-6 lg:px-24 relative z-10">
+      <div className="container mx-auto relative z-10">
         <div className="overflow-hidden rounded-[28px] border border-border/60 bg-background/55 backdrop-blur-sm">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.65fr]">
             <div className="border-b border-border/60 p-6 sm:p-7 lg:border-b-0 lg:border-r">

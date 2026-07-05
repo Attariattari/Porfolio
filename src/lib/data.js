@@ -54,6 +54,214 @@ export const SOCIAL_LINKS = {
  */
 export const SOCIAL_LINKS_ARRAY = Object.values(SOCIAL_LINKS);
 
+export const homeData = {
+    hero: {
+        badge: "Available for selected projects",
+        title: "Building modern websites, dashboards, and full-stack applications",
+        highlightedWord: "applications",
+        description: "Muhyo Tech builds modern websites, dashboards, and full-stack applications for businesses, startups, and personal brands using Next.js, MERN Stack, and clean conversion-focused UI.",
+        heroImage: "/hero-visual.png",
+        ctas: [
+            { label: "Book a Call", href: "/contact?intent=book-call", variant: "primary" },
+            { label: "View Projects", href: "/projects", variant: "outline" },
+            { label: "Explore Services", href: "/services", variant: "secondary" },
+        ],
+        highlights: [
+            "Next.js & MERN stack",
+            "Admin dashboards",
+            "SEO-ready websites",
+            "Responsive delivery",
+        ],
+    },
+    contactCTA: {
+        title: "Ready to discuss your project?",
+        description: "Send a message, book a call, or browse the services and projects to see how Muhyo Tech can help.",
+        buttons: [
+            { label: "Book a Call", href: "/contact?intent=book-call" },
+            { label: "View Services", href: "/services" },
+            { label: "View Projects", href: "/projects" },
+        ],
+    },
+    expertise: {
+        title: "Expertise built around practical delivery",
+        categories: ["Frontend", "Backend", "Database", "Tools", "Deployment", "Integrations"],
+    },
+    finalCTA: {
+        badge: "Start your project",
+        title: "Ready to Build Something Professional?",
+        description: "Let's discuss your website, web app, dashboard, or business idea and turn it into a modern digital solution.",
+        buttons: [
+            { label: "Book a Call", href: "/contact?intent=book-call", variant: "primary" },
+            { label: "Contact Me", href: "/contact", variant: "outline" },
+            { label: "View Projects", href: "/projects", variant: "secondary" },
+        ],
+    },
+};
+export const aboutData = {
+    name: "Pir Ghulam Muhyo Din",
+    company: "Muhyo Tech",
+    role: "Full-Stack Web Developer | Next.js & MERN Stack",
+    avatar: "https://res.cloudinary.com/dg5gwixf1/image/upload/v1772736622/ChatGPT_Image_Mar_5_2026_11_36_42_AM_auw4uw.png",
+    bio: "Muhyo Tech is the professional portfolio of Pir Ghulam Muhyo Din, focused on modern websites, full-stack web applications, dashboards, and scalable digital solutions.",
+    longDescription: "Muhyo Tech is the professional portfolio of Pir Ghulam Muhyo Din, a Full-Stack Web Developer based in Lahore, Pakistan. I build modern, responsive, SEO-friendly, and scalable websites and web applications using Next.js, React, Node.js, Express, MongoDB, and Tailwind CSS. My work combines clean UI thinking with secure backend structure so businesses can launch digital products that look polished and work reliably.",
+    mission: "To build practical, modern, and scalable web solutions for businesses, startups, professionals, and personal brands.",
+    email: "MuhyoTech@gmail.com",
+    phone: "+92 322 4458481",
+    location: "Chung, Lahore, Pakistan",
+    workingHours: "Mon - Sat: 9:00 AM - 6:00 PM",
+    typewriterWords: [
+        "Full-Stack Developer",
+        "Next.js Engineer",
+        "MERN Stack Builder",
+        "Dashboard Developer",
+    ],
+    hero: {
+        badge: "About Muhyo Tech",
+        title: "Muhyo Tech",
+        headline: "Full-Stack Web Developer | Next.js & MERN Stack",
+        description: "I help businesses, startups, professionals, and personal brands turn ideas into modern websites, web apps, dashboards, and digital systems that feel premium, load fast, and stay easy to manage.",
+        image: "https://res.cloudinary.com/dg5gwixf1/image/upload/v1772736622/ChatGPT_Image_Mar_5_2026_11_36_42_AM_auw4uw.png",
+        highlights: [
+            "Next.js & MERN stack",
+            "SEO-friendly structure",
+            "Admin dashboard experience",
+            "Responsive UI delivery",
+        ],
+        ctas: [
+            { label: "Book a Call", href: "/contact?intent=book-call", variant: "primary" },
+            { label: "View Projects", href: "/projects", variant: "secondary" },
+            { label: "Contact Me", href: "/contact", variant: "outline" },
+        ],
+        socialLinks: SOCIAL_LINKS_ARRAY,
+    },
+    story: {
+        title: "A practical full-stack partner for modern web products",
+        paragraphs: [
+            "Muhyo Tech is the professional portfolio of Pir Ghulam Muhyo Din, a Full-Stack Web Developer focused on building modern, responsive, SEO-friendly, and scalable websites and web applications using Next.js, React, Node.js, Express, MongoDB, and Tailwind CSS.",
+            "Based in Lahore, Pakistan, I focus on business-focused digital products that combine clean UI, secure backend thinking, and maintainable architecture. The goal is simple: help clients launch polished web solutions that support real work, growth, and trust.",
+        ],
+    },
+    whatIBuild: [
+        { icon: "Globe", title: "Custom Websites", description: "Premium responsive websites built around your brand, offer, and conversion goals.", link: "/services/web-development" },
+        { icon: "Layers", title: "Full-Stack Web Applications", description: "Modern app experiences with frontend, backend, database, and deployment handled together.", link: "/services/mern-stack-development" },
+        { icon: "LayoutDashboard", title: "Admin Dashboards", description: "Secure management panels for content, users, services, analytics, and business workflows.", link: "/services/admin-dashboard-development" },
+        { icon: "User", title: "Portfolio Websites", description: "Personal brand and professional portfolio sites that present work clearly and attract opportunities.", link: "/projects" },
+        { icon: "Building2", title: "Business Websites", description: "Trust-building websites for companies, local businesses, service providers, and startups.", link: "/services" },
+        { icon: "Database", title: "API & Database Integration", description: "REST APIs, MongoDB models, authentication, uploads, email flows, and third-party integrations.", link: "/services/api-development" },
+        { icon: "RefreshCw", title: "Website Redesign", description: "Modern redesigns that improve structure, responsiveness, speed, and visual credibility.", link: "/contact" },
+        { icon: "Search", title: "SEO-Friendly Web Setup", description: "Clean metadata, semantic sections, fast pages, and scalable structure for better discoverability.", link: "/services/seo-optimization" },
+    ],
+    skills: {
+        frontend: ["Next.js", "React.js", "Tailwind CSS", "Framer Motion"],
+        backend: ["Node.js", "Express.js", "REST APIs", "Authentication / JWT"],
+        database: ["MongoDB", "Mongoose"],
+        tools: ["Git", "GitHub", "Vercel"],
+        integrations: ["Cloudinary", "Nodemailer", "Socket.io"],
+    },
+    experiences: [
+        {
+            year: "2023 - Present",
+            period: "2023 - Present",
+            role: "Freelance Full-Stack Web Developer",
+            company: "Self-Employed / Muhyo Tech",
+            duration: "Present",
+            description: "Building websites, dashboards, APIs, admin systems, and full-stack web apps for modern business needs.",
+            highlights: ["Next.js websites", "MERN stack apps", "Admin systems", "API integrations"],
+            milestones: ["Next.js websites", "MERN stack apps", "Admin systems", "API integrations"],
+        },
+        {
+            year: "2025 - Jan 2026",
+            period: "2025 - Jan 2026",
+            role: "Project Manager & Computer Operator",
+            company: "Society Office",
+            duration: "Professional role",
+            description: "Worked on project handling, computer operations, communication, documentation, and office management.",
+            highlights: ["Project handling", "Digital records", "Office communication"],
+            milestones: ["Project handling", "Digital records", "Office communication"],
+        },
+        {
+            year: "2020 - 2022",
+            period: "2020 - 2022",
+            role: "Sales Manager",
+            company: "Theme Park Society Head Office",
+            duration: "2 Years",
+            description: "Handled customer communication, business coordination, sales operations, and management responsibilities.",
+            highlights: ["Client communication", "Business handling", "Team coordination"],
+            milestones: ["Client communication", "Business handling", "Team coordination"],
+        },
+    ],
+    education: [
+        {
+            degree: "BSCS",
+            institute: "Virtual University of Pakistan",
+            period: "In Progress",
+            status: "Continues",
+            description: "Focused on computer science fundamentals, software engineering, and continuous technical growth.",
+        },
+        {
+            degree: "Intermediate",
+            institute: "BISE Sahiwal",
+            period: "2020 - 2021",
+            status: "Completed",
+            description: "Academic foundation before moving deeper into software development and professional work.",
+        },
+        {
+            degree: "Matric",
+            institute: "BISE Sahiwal",
+            period: "2018 - 2019",
+            status: "Completed",
+            description: "Early academic foundation with a continued focus on learning and practical skills.",
+        },
+    ],
+    approach: [
+        { icon: "MessageSquare", title: "Requirement Understanding", description: "I start by clarifying goals, audience, features, content needs, and the business outcome behind the project." },
+        { icon: "Sparkles", title: "Clean UI/UX Planning", description: "Layouts are planned for clarity, trust, responsiveness, and easy visitor action instead of decoration alone." },
+        { icon: "Code2", title: "Responsive Development", description: "The build is structured for mobile, tablet, and desktop with clean components and maintainable styling." },
+        { icon: "Shield", title: "Secure Backend Structure", description: "Backend flows are planned with validation, authentication, database structure, and stable API behavior in mind." },
+        { icon: "Gauge", title: "Testing & Optimization", description: "I check loading, layout, content flow, forms, empty states, and common user paths before launch." },
+        { icon: "Rocket", title: "Deployment Support", description: "I help move the project from development to live deployment with the right hosting and production setup." },
+    ],
+    whyChoose: [
+        { icon: "Code2", title: "Modern Full-Stack Development", description: "Frontend, backend, database, and deployment decisions are handled together for a smoother final product." },
+        { icon: "Target", title: "Business-Focused Solutions", description: "Muhyo Tech focuses on practical web solutions for businesses, startups, professionals, and personal brands." },
+        { icon: "MonitorSmartphone", title: "Clean Responsive Design", description: "Interfaces are built to feel polished and usable across phone, tablet, laptop, and desktop screens." },
+        { icon: "Search", title: "SEO-Friendly Structure", description: "Pages are organized with clean content hierarchy, metadata, performance, and semantic structure in mind." },
+        { icon: "Layers", title: "Scalable Codebase", description: "Projects are built with maintainable components and patterns so future updates stay manageable." },
+        { icon: "LayoutDashboard", title: "Admin Dashboard Experience", description: "I build practical CMS and admin tools that help clients manage content and operations confidently." },
+        { icon: "MessagesSquare", title: "Professional Communication", description: "Clear updates, realistic scope, and practical guidance keep projects moving in the right direction." },
+        { icon: "LifeBuoy", title: "Support Mindset", description: "I think beyond launch with maintainability, handoff, and long-term improvements in mind." },
+    ],
+    values: [
+        { icon: "Award", title: "Quality Work", description: "Clean implementation, polished details, and stable behavior matter in every project." },
+        { icon: "MessagesSquare", title: "Clear Communication", description: "Clients should always understand progress, decisions, and next steps." },
+        { icon: "Zap", title: "Fast & Reliable Delivery", description: "The goal is dependable execution without sacrificing quality or responsiveness." },
+        { icon: "Cpu", title: "Future-Ready Solutions", description: "I choose practical tools and structures that can grow with the project." },
+        { icon: "Users", title: "User-Centric Design", description: "Interfaces should be easy for real visitors and admins to understand." },
+        { icon: "LifeBuoy", title: "Long-Term Support Mindset", description: "A good website should stay maintainable after the first launch." },
+    ],
+    availability: {
+        title: "Ready to discuss your project?",
+        description: "Share your website, web app, dashboard, or business idea and I will help you shape the right digital solution.",
+        email: "MuhyoTech@gmail.com",
+        phone: "+92 322 4458481",
+        location: "Chung, Lahore, Pakistan",
+        workingHours: "Mon - Sat: 9:00 AM - 6:00 PM",
+        status: "Available for selected projects",
+        socialLinks: SOCIAL_LINKS_ARRAY,
+    },
+    finalCTA: {
+        badge: "Start the conversation",
+        title: "Ready to Build Something Professional?",
+        description: "Let's discuss your website, web app, dashboard, or business idea and turn it into a modern digital solution.",
+        primaryButton: { label: "Book a Call", href: "/contact?intent=book-call" },
+        secondaryButton: { label: "View Projects", href: "/projects" },
+        tertiaryButton: { label: "Contact Me", href: "/contact" },
+    },
+    seoTitle: "About | Muhyo Tech",
+    seoDescription: "Learn more about Muhyo Tech and Pir Ghulam Muhyo Din, a Full-Stack Web Developer building modern websites, web applications, dashboards, and scalable digital solutions with Next.js and MERN stack.",
+    keywords: ["Muhyo Tech", "Pir Ghulam Muhyo Din", "Full-Stack Web Developer", "Next.js Developer", "MERN Stack Developer", "Lahore Web Developer"],
+};
+
 /**
  * Default Social Links Data
  * Used as fallback when no database data exists
@@ -1621,4 +1829,458 @@ export const portfolioData = {
     ],
 };
 
+const slugifyProject = (value = "") =>
+    value
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, "")
+        .replace(/[\s_-]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+
+const groupTechnologies = (techStack = []) => ({
+    frontend: techStack.filter((tech) =>
+        /next|react|tailwind|framer|three|d3|typescript/i.test(tech),
+    ),
+    backend: techStack.filter((tech) =>
+        /node|express|api|fastapi|go|prisma/i.test(tech),
+    ),
+    database: techStack.filter((tech) =>
+        /mongo|mongoose|postgres|redis|firebase/i.test(tech),
+    ),
+    tools: techStack.filter((tech) =>
+        /vercel|aws|docker|github|vs code/i.test(tech),
+    ),
+    integrations: techStack.filter((tech) =>
+        /cloudinary|stripe|socket|web3|solidity|biometrics|google|maps|nodemailer|analytics|search console/i.test(tech),
+    ),
+});
+
+const projectCaseStudyDetails = {
+    "apex-e-commerce-ecosystem": {
+        shortDescription: "A conversion-focused retail platform for product discovery, checkout, and operational growth.",
+        longDescription: "Apex E-Commerce Ecosystem is a modern retail experience built around fast browsing, clear merchandising, secure checkout, and scalable catalog management. The project presents a premium shopping journey with strong product storytelling, cart flow, and business-ready structure.",
+        overview: "Apex E-Commerce Ecosystem is a full retail platform concept designed for brands that need more than a simple product grid. It combines storefront presentation, product detail flows, checkout readiness, inventory-friendly structure, and conversion-focused UI patterns so customers can discover products quickly and move toward purchase with confidence.",
+        projectType: "E-Commerce Platform",
+        duration: "4-6 weeks",
+        clientType: "Retail and DTC brand",
+        role: "Full-Stack Developer, UI/UX Implementer, Commerce Flow Architect",
+        responsibilities: [
+            "Mapped the storefront and checkout journey",
+            "Designed reusable product, category, and promotion sections",
+            "Structured catalog, cart, and order-ready data patterns",
+            "Implemented responsive commerce UI components",
+            "Prepared SEO-friendly product and category presentation",
+        ],
+        problem: "Retail websites often lose buyers when product discovery is slow, checkout feels unclear, or promotional content is disconnected from the catalog. This project solves that by combining a fast storefront, focused product hierarchy, and conversion-friendly interaction flow.",
+        goals: [
+            "Create a premium storefront that builds product trust",
+            "Make product browsing, filtering, and cart actions feel simple",
+            "Support scalable catalog and campaign presentation",
+            "Prepare clean routes and metadata for search visibility",
+            "Keep the experience fast and responsive across devices",
+        ],
+        features: [
+            { title: "Product Discovery", description: "Organized catalog browsing with clear category, product, and promotional sections.", icon: "Search" },
+            { title: "Checkout Flow", description: "Cart and checkout-ready structure focused on fewer distractions and higher completion confidence.", icon: "CheckCircle2" },
+            { title: "Retail CMS Structure", description: "Reusable content zones for products, campaigns, banners, and featured collections.", icon: "Layers" },
+            { title: "Performance First UI", description: "Image-led shopping experience planned around responsive layouts and fast rendering.", icon: "Rocket" },
+        ],
+        modules: [
+            { title: "Home Storefront", description: "Featured collections, promotions, trust points, and brand storytelling.", type: "Public" },
+            { title: "Product Listing", description: "Category browsing, product cards, and structured product discovery.", type: "Catalog" },
+            { title: "Product Detail", description: "Focused product information, imagery, pricing, and purchase actions.", type: "Commerce" },
+            { title: "Cart / Checkout", description: "Order review and checkout-ready user flow.", type: "Conversion" },
+            { title: "Admin Catalog", description: "Management-ready structure for product and collection updates.", type: "Admin" },
+        ],
+        technologies: {
+            frontend: ["Next.js", "TypeScript", "Tailwind CSS"],
+            backend: ["Next.js API Routes"],
+            database: ["PostgreSQL"],
+            tools: ["Git", "GitHub", "Vercel"],
+            integrations: ["Stripe"],
+        },
+        processSteps: [
+            { step: 1, title: "Commerce Planning", description: "Defined product hierarchy, user flow, and purchase touchpoints." },
+            { step: 2, title: "UI Direction", description: "Created a premium retail visual system for catalog and product pages." },
+            { step: 3, title: "Frontend Build", description: "Built reusable storefront, product, and checkout-ready components." },
+            { step: 4, title: "Commerce Structure", description: "Prepared catalog data, cart patterns, and payment integration points." },
+            { step: 5, title: "SEO and Polish", description: "Improved metadata, image presentation, responsiveness, and conversion clarity." },
+        ],
+        challenges: [
+            { title: "Balancing visuals and speed", problem: "Retail pages need rich imagery but slow media can hurt browsing and conversion.", solution: "Used stable image ratios, optimized media presentation, and component-level hierarchy to keep the shopping experience smooth." },
+            { title: "Keeping checkout focused", problem: "Checkout flows can become noisy when promotions, totals, and product details compete for attention.", solution: "Separated discovery content from purchase actions and kept cart/checkout messaging direct." },
+        ],
+        results: [
+            { title: "Stronger product presentation", description: "The storefront communicates product value clearly with better hierarchy and visual trust." },
+            { title: "Conversion-ready foundation", description: "Catalog, cart, and checkout sections are organized for future payment and order management growth." },
+        ],
+        relatedServices: ["e-commerce-development", "custom-website-development", "seo-friendly-website-setup"],
+    },
+    "nova-real-estate-muhyo-tech": {
+        shortDescription: "A property platform concept for listings, immersive previews, maps, and lead generation.",
+        overview: "Nova Real Estate Muhyo Tech helps real estate teams present properties with strong visuals, structured listing details, map context, and clear inquiry actions. The experience is designed for buyers and renters who need to compare properties quickly while still feeling the premium quality of each listing.",
+        projectType: "Real Estate Platform",
+        duration: "4-5 weeks",
+        clientType: "Real estate agency",
+        role: "Frontend Developer, UI/UX Implementer, Listing Experience Architect",
+        responsibilities: ["Designed the property browsing and detail experience", "Structured listing cards, gallery sections, and map-ready content", "Built responsive pages for property discovery", "Prepared lead capture and inquiry pathways", "Organized content for premium property presentation"],
+        problem: "Many property websites show listings as static cards without enough visual context, comparison support, or inquiry clarity. This project solves that by making property browsing more visual, structured, and action-oriented.",
+        goals: ["Present properties with premium visuals and useful details", "Make location and listing comparison easier", "Support immersive media such as walkthroughs or rich galleries", "Create clear inquiry paths for serious leads", "Keep the layout responsive for mobile property search"],
+        features: [
+            { title: "Property Listings", description: "Structured cards for price, location, property type, and key highlights.", icon: "Layers" },
+            { title: "Immersive Gallery", description: "Image-led property detail pages prepared for tours and visual previews.", icon: "MonitorSmartphone" },
+            { title: "Map Context", description: "Location-ready layout for nearby context and property discovery.", icon: "Target" },
+            { title: "Lead Flow", description: "Clear inquiry actions for booking visits, asking questions, or requesting details.", icon: "Rocket" },
+        ],
+        modules: [
+            { title: "Listings Page", description: "Searchable property cards and category-driven discovery.", type: "Public" },
+            { title: "Property Detail", description: "Gallery, features, location, pricing, and inquiry content.", type: "Public" },
+            { title: "Map View", description: "Location context and geographic browsing support.", type: "Feature" },
+            { title: "Inquiry Flow", description: "Contact pathway for property questions and visit requests.", type: "Conversion" },
+        ],
+        technologies: { frontend: ["React", "Three.js"], backend: ["Node.js"], database: ["MongoDB"], tools: ["Git", "GitHub"], integrations: ["Google Maps API"] },
+        processSteps: [
+            { step: 1, title: "Listing Strategy", description: "Defined the property information architecture and lead flow." },
+            { step: 2, title: "Visual System", description: "Planned card, gallery, and detail layouts for premium property presentation." },
+            { step: 3, title: "Frontend Build", description: "Implemented responsive listing and property detail sections." },
+            { step: 4, title: "Map and Media Planning", description: "Prepared the structure for maps, galleries, and immersive previews." },
+            { step: 5, title: "Lead Polish", description: "Refined inquiry actions and mobile behavior for better conversion clarity." },
+        ],
+        challenges: [
+            { title: "Presenting many details cleanly", problem: "Property pages require price, features, location, media, and contact actions without feeling crowded.", solution: "Grouped content into scannable sections and used strong visual hierarchy for the most important details." },
+            { title: "Supporting visual media", problem: "Real estate experiences depend on images and previews that can become heavy.", solution: "Used structured gallery presentation and responsive media sizing to keep the interface stable." },
+        ],
+        results: [
+            { title: "More polished property discovery", description: "Listings feel easier to scan, compare, and understand." },
+            { title: "Better lead readiness", description: "The project gives visitors clearer paths to request information or schedule a viewing." },
+        ],
+        relatedServices: ["custom-website-development", "full-stack-web-app-development", "ui-ux-design"],
+    },
+    "pulse-health-ai": {
+        shortDescription: "A healthcare analytics dashboard concept for monitoring signals, trends, and patient-facing insights.",
+        overview: "Pulse Health AI focuses on presenting health data in a calm, readable, and decision-supportive dashboard. It organizes vitals, trend charts, alerts, and patient context so care teams can scan information faster while avoiding unnecessary interface noise.",
+        projectType: "HealthTech Dashboard",
+        duration: "5-7 weeks",
+        clientType: "Healthcare technology team",
+        role: "Dashboard UI Developer, Data Visualization Implementer, API Integration Developer",
+        responsibilities: ["Planned dashboard information hierarchy", "Built reusable chart and insight sections", "Structured patient and metric views", "Prepared secure API integration patterns", "Improved responsive readability for dense data"],
+        problem: "Healthcare teams often work with complex data spread across multiple views. The challenge was to make patient signals, trends, and alerts easier to scan without overstating automated recommendations.",
+        goals: ["Create a clear dashboard for patient signal review", "Visualize trends in a readable and responsible way", "Support secure data flow and API-ready architecture", "Reduce visual noise in high-density healthcare screens", "Keep the interface responsive for clinical review contexts"],
+        features: [
+            { title: "Vitals Dashboard", description: "Metric cards and trend sections for reviewing patient health signals.", icon: "MonitorSmartphone" },
+            { title: "Data Visualization", description: "Charts and insight panels designed for quick scanning and careful interpretation.", icon: "Search" },
+            { title: "Alert Structure", description: "Priority-ready messaging for notable changes and follow-up indicators.", icon: "Shield" },
+            { title: "Secure API Pattern", description: "Backend-ready structure for controlled healthcare data exchange.", icon: "Code2" },
+        ],
+        modules: [
+            { title: "Overview Dashboard", description: "High-level vitals, alerts, and care summary sections.", type: "Dashboard" },
+            { title: "Patient Profile", description: "Patient context, timeline, and metric history.", type: "Data" },
+            { title: "Trend Analytics", description: "Charts for changes over time and comparative review.", type: "Analytics" },
+            { title: "Alerts", description: "Structured notifications for flagged readings or follow-up needs.", type: "Workflow" },
+        ],
+        technologies: { frontend: ["React", "D3.js"], backend: ["Python", "FastAPI"], database: [], tools: ["Git", "AWS"], integrations: ["FHIR-ready API structure"] },
+        processSteps: [
+            { step: 1, title: "Data Model Review", description: "Identified the core health signals and dashboard priorities." },
+            { step: 2, title: "Dashboard Wireframe", description: "Organized dense information into readable cards, charts, and panels." },
+            { step: 3, title: "Chart Implementation", description: "Built visualization components for trend and metric display." },
+            { step: 4, title: "API Planning", description: "Prepared backend routes and secure data exchange assumptions." },
+            { step: 5, title: "Accessibility Review", description: "Refined contrast, labels, spacing, and responsive behavior for readability." },
+        ],
+        challenges: [
+            { title: "Avoiding data overload", problem: "Healthcare dashboards can become difficult to read when every metric competes for attention.", solution: "Created a prioritized layout with summary cards, focused charts, and clear section grouping." },
+            { title: "Presenting AI responsibly", problem: "Automated insight labels must not imply unsupported medical certainty.", solution: "Used careful wording around trends, flags, and review support instead of definitive claims." },
+        ],
+        results: [
+            { title: "Clearer clinical dashboard structure", description: "The interface makes dense health information easier to scan and explain." },
+            { title: "API-ready analytics foundation", description: "The project is organized for future secure integrations and richer health data workflows." },
+        ],
+        relatedServices: ["full-stack-web-app-development", "api-integration-development", "admin-dashboard-development"],
+    },
+    "vault-crypto-wallet": {
+        shortDescription: "A security-first wallet interface for multi-chain balances, transfers, and protected access.",
+        overview: "Vault Crypto Wallet brings together portfolio visibility, account protection, transaction review, and multi-chain wallet interactions in a clean mobile experience. The project emphasizes trust, clarity, and careful confirmation moments across sensitive financial actions.",
+        projectType: "FinTech Mobile App",
+        duration: "5-6 weeks",
+        clientType: "FinTech product team",
+        role: "Mobile UI Developer, Web3 Flow Designer, Security-Focused UX Implementer",
+        responsibilities: ["Designed secure onboarding and wallet access flows", "Structured asset balance and transaction review screens", "Prepared multi-chain interaction patterns", "Implemented responsive mobile-first UI concepts", "Planned careful confirmation states for sensitive actions"],
+        problem: "Crypto wallet users need strong security and clear transaction context, but many wallet interfaces make balances, network state, and confirmation steps hard to understand. This project focuses on trust-building wallet UX.",
+        goals: ["Make wallet access feel secure and understandable", "Present balances and transactions with clear hierarchy", "Support multi-chain wallet concepts", "Reduce mistakes during transfer confirmation", "Keep sensitive actions visually distinct and deliberate"],
+        features: [
+            { title: "Secure Access", description: "Authentication-ready flows with biometric and protected session patterns.", icon: "Shield" },
+            { title: "Asset Portfolio", description: "Clear wallet overview for balances, networks, and recent activity.", icon: "Layers" },
+            { title: "Transaction Review", description: "Confirmation screens that clarify amount, address, network, and fees.", icon: "CheckCircle2" },
+            { title: "Multi-Chain Ready", description: "Structure prepared for assets across Ethereum, Solana, Bitcoin, and similar networks.", icon: "Code2" },
+        ],
+        modules: [
+            { title: "Onboarding", description: "Wallet setup, access protection, and recovery education.", type: "Mobile" },
+            { title: "Portfolio", description: "Balance overview, asset list, and market-friendly summaries.", type: "Dashboard" },
+            { title: "Send / Receive", description: "Guided transfer flow with address and fee review.", type: "Wallet" },
+            { title: "Security Settings", description: "Biometric access, session control, and recovery guidance.", type: "Security" },
+        ],
+        technologies: { frontend: ["React Native"], backend: [], database: ["Firebase"], tools: ["Git", "GitHub"], integrations: ["Web3.js", "Solidity", "Biometrics"] },
+        processSteps: [
+            { step: 1, title: "Wallet Flow Mapping", description: "Mapped onboarding, portfolio, transfer, and security screens." },
+            { step: 2, title: "Trust UI Direction", description: "Defined visual states for warnings, confirmations, and protected actions." },
+            { step: 3, title: "Mobile Component Build", description: "Created reusable cards, lists, and transaction review layouts." },
+            { step: 4, title: "Web3 Interaction Planning", description: "Prepared wallet connection and chain-aware interface assumptions." },
+            { step: 5, title: "Security Polish", description: "Reviewed confirmation copy, sensitive states, and mobile usability." },
+        ],
+        challenges: [
+            { title: "Reducing transaction mistakes", problem: "Wallet users can lose trust quickly if transfer details are unclear.", solution: "Separated transaction review into clear fields and emphasized confirmation states before sensitive actions." },
+            { title: "Explaining security without friction", problem: "Security steps can feel complicated when onboarding is too technical.", solution: "Used plain UI labels, progressive steps, and familiar mobile security patterns." },
+        ],
+        results: [
+            { title: "Trust-focused wallet experience", description: "Sensitive wallet flows feel clearer, calmer, and easier to verify." },
+            { title: "Mobile-first product foundation", description: "The screen structure supports future wallet integrations and account protection features." },
+        ],
+        relatedServices: ["mobile-app-development", "full-stack-web-app-development", "api-integration-development"],
+    },
+    "zenith-saas-dashboard": {
+        shortDescription: "A SaaS operations dashboard for logistics visibility, workflows, and team coordination.",
+        overview: "Zenith SaaS Dashboard organizes operational data into a practical interface for teams managing shipments, tasks, statuses, and exceptions. It is designed as a scalable SaaS dashboard with clear navigation, reusable modules, and data-heavy screens that remain readable.",
+        projectType: "SaaS Dashboard",
+        duration: "5-7 weeks",
+        clientType: "Operations and logistics team",
+        role: "Full-Stack Developer, Dashboard Architect, Backend Workflow Implementer",
+        responsibilities: ["Designed dashboard navigation and operational modules", "Built reusable data cards, tables, and status components", "Structured backend-ready workflows and API patterns", "Prepared role-friendly views for team operations", "Improved responsiveness for dense SaaS screens"],
+        problem: "Logistics teams need status visibility and workflow consistency, but scattered spreadsheets and manual tracking create delays and missed updates. This dashboard centralizes operational information into a cleaner SaaS workflow.",
+        goals: ["Create a clear operations dashboard for daily workflows", "Support status tracking, records, and task visibility", "Prepare scalable modules for future SaaS features", "Keep dense information readable and action-oriented", "Build a foundation for automation and API integrations"],
+        features: [
+            { title: "Operations Dashboard", description: "Summary cards, status panels, and key workflow views for team visibility.", icon: "MonitorSmartphone" },
+            { title: "Workflow Tracking", description: "Structured records and status states for shipments, tasks, or operational items.", icon: "CheckCircle2" },
+            { title: "Team Modules", description: "Role-ready sections for repeated internal operations.", icon: "Layers" },
+            { title: "Scalable Backend Pattern", description: "API and data structure prepared for automation, caching, and integrations.", icon: "Code2" },
+        ],
+        modules: [
+            { title: "Dashboard Overview", description: "KPIs, statuses, recent activity, and operational summaries.", type: "Dashboard" },
+            { title: "Shipment / Task Records", description: "Table-based workflow management with filters and status labels.", type: "Operations" },
+            { title: "Team Workspace", description: "Assignment and coordination-ready sections.", type: "Collaboration" },
+            { title: "Reports", description: "Performance summaries and export-ready operational insights.", type: "Analytics" },
+            { title: "Admin Settings", description: "Configuration structure for users, statuses, and permissions.", type: "Admin" },
+        ],
+        technologies: { frontend: ["Next.js"], backend: ["Go", "Prisma"], database: ["Redis"], tools: ["Docker", "GitHub", "Vercel"], integrations: [] },
+        processSteps: [
+            { step: 1, title: "Workflow Audit", description: "Identified the key records, statuses, and team actions." },
+            { step: 2, title: "Dashboard Architecture", description: "Planned navigation, table structure, filters, and summary panels." },
+            { step: 3, title: "UI Implementation", description: "Built dense dashboard sections with stable spacing and clear states." },
+            { step: 4, title: "Backend Planning", description: "Prepared API-ready workflow and caching assumptions." },
+            { step: 5, title: "Operational Polish", description: "Refined table readability, responsive behavior, and empty states." },
+        ],
+        challenges: [
+            { title: "Making dense data readable", problem: "SaaS dashboards can feel overwhelming when tables, metrics, and actions share one screen.", solution: "Separated the page into summary, workflow, and detail areas with clear status language." },
+            { title: "Preparing for scale", problem: "Operational dashboards often grow quickly as teams add reports and automations.", solution: "Used modular data sections and backend-ready patterns so new workflows can be added without reshaping the whole interface." },
+        ],
+        results: [
+            { title: "Centralized operations view", description: "The dashboard gives teams a clearer place to review statuses and coordinate work." },
+            { title: "Scalable SaaS structure", description: "Modules, records, and settings are prepared for future automation and reporting." },
+        ],
+        relatedServices: ["admin-dashboard-development", "full-stack-web-app-development", "api-integration-development"],
+    },
+    "muhyo-tech-portfolio-elite-edition": {
+        shortDescription: "A premium full-stack developer portfolio with dynamic sections, admin management, and conversion-focused pages.",
+        longDescription: "Muhyo Tech Portfolio is a premium full-stack developer portfolio built to showcase services, projects, blogs, resume, contact inquiries, and business communication in one modern digital platform. The project is designed with a dark futuristic interface, dynamic content sections, admin management, SEO-ready structure, and professional conversion-focused pages.",
+        overview: "Muhyo Tech Portfolio is a premium full-stack developer portfolio built to showcase services, projects, blogs, resume, contact inquiries, and business communication in one modern digital platform. The project is designed with a dark futuristic interface, dynamic content sections, admin management, SEO-ready structure, and professional conversion-focused pages.",
+        projectType: "Full-Stack Portfolio CMS",
+        duration: "6-8 weeks",
+        clientType: "Personal brand / technology studio",
+        role: "Full-Stack Developer, UI/UX Implementer, Backend/API Developer, Admin Dashboard Developer",
+        responsibilities: ["Designed and developed the frontend interface", "Built reusable UI sections and cards", "Created service, project, and blog pages", "Integrated contact and booking flows", "Structured admin dashboard modules", "Added SEO metadata and responsive layouts", "Handled deployment-ready architecture"],
+        problem: "Traditional portfolio websites often only show static information and do not support real business workflows like service management, project updates, blog publishing, contact messages, booking requests, and content control from an admin dashboard.",
+        goals: ["Build a premium developer portfolio with a professional brand identity", "Showcase services, projects, blogs, skills, and experience", "Add dynamic admin-managed content", "Improve client inquiry and booking flow", "Create SEO-ready pages for services, projects, and blogs", "Maintain fast performance and responsive design"],
+        features: [
+            { title: "Dynamic Services Showcase", description: "Service pages and cards explain offers with clear conversion paths.", icon: "Layers" },
+            { title: "Project Portfolio System", description: "Project listing and case-study pages present work in a detailed professional format.", icon: "MonitorSmartphone" },
+            { title: "Blog / Article Section", description: "Content publishing structure for articles, SEO, and thought leadership.", icon: "Search" },
+            { title: "Contact & Booking Flow", description: "Contact forms and booking calls help turn visitors into qualified inquiries.", icon: "Rocket" },
+            { title: "Admin Content Management", description: "Protected dashboard modules manage content, messages, bookings, and settings.", icon: "Shield" },
+            { title: "Responsive Dark Premium Design", description: "Consistent dark UI, animation, cards, and visual hierarchy across pages.", icon: "Sparkles" },
+        ],
+        modules: [
+            { title: "Home Page", description: "Hero, services, featured work, skills, contact prompts, and final CTA.", type: "Public" },
+            { title: "About Page", description: "Founder story, experience, values, process, and professional credibility.", type: "Public" },
+            { title: "Services Pages", description: "Services index and detail pages with SEO-ready explanations.", type: "Public" },
+            { title: "Projects Pages", description: "Project grid and detailed case-study pages.", type: "Public" },
+            { title: "Blog Pages", description: "Article listing and detail pages for publishing content.", type: "Content" },
+            { title: "Contact / Booking", description: "Lead capture and consultation request flows.", type: "Conversion" },
+            { title: "Admin Dashboard", description: "Protected content, messages, bookings, analytics, and management modules.", type: "Admin" },
+        ],
+        technologies: { frontend: ["Next.js", "React.js", "Tailwind CSS", "Framer Motion"], backend: ["Node.js", "Next.js API Routes"], database: ["MongoDB", "Mongoose"], tools: ["Git", "GitHub", "Vercel", "VS Code"], integrations: ["Cloudinary", "Nodemailer", "Socket.io"] },
+        processSteps: [
+            { step: 1, title: "Requirement Planning", description: "Defined the portfolio goals, pages, admin workflows, and conversion points." },
+            { step: 2, title: "UI/UX Direction", description: "Created a dark premium style with reusable sections and consistent motion." },
+            { step: 3, title: "Frontend Development", description: "Built responsive public pages, cards, CTAs, and animation patterns." },
+            { step: 4, title: "Dynamic Content Structure", description: "Mapped services, projects, blogs, resume, and profile data into reusable structures." },
+            { step: 5, title: "Admin Dashboard Integration", description: "Connected protected dashboard modules for content and communication management." },
+            { step: 6, title: "SEO and Performance Setup", description: "Added metadata, canonical URLs, responsive images, and route-ready content." },
+            { step: 7, title: "Testing and Deployment", description: "Reviewed routes, empty states, responsiveness, and deployment readiness." },
+        ],
+        challenges: [
+            { title: "Creating a portfolio that works like a business system", problem: "The portfolio needed more than static sections; it needed service, project, blog, booking, and contact flows.", solution: "Structured the project with dynamic data, reusable components, and admin-ready modules." },
+            { title: "Maintaining premium design consistency", problem: "Multiple pages and sections needed to feel part of the same brand.", solution: "Used shared theme styles, reusable cards, and consistent spacing, gradients, and animations." },
+            { title: "Keeping data editable without breaking pages", problem: "Admin-managed fields can be incomplete while public pages still need to look polished.", solution: "Added complete defaults, optional rendering, and safe field fallbacks across project detail pages." },
+        ],
+        results: [
+            { title: "Professional portfolio presentation", description: "The website now communicates services, projects, skills, and founder credibility with a premium interface." },
+            { title: "Better service and project visibility", description: "Project and service routes support detailed SEO-friendly pages instead of shallow previews." },
+            { title: "Improved contact and booking flow", description: "Visitors have clearer paths to message, book a call, or explore services." },
+            { title: "Admin-managed content workflow", description: "The content model supports future updates from a protected dashboard and import flow." },
+        ],
+        relatedServices: ["custom-website-development", "next-js-website-development", "full-stack-web-app-development", "admin-dashboard-development", "seo-friendly-website-setup"],
+    },
+    "muhyo-tech-admin-console": {
+        shortDescription: "A protected admin console for managing portfolio content, communication, security, and operational visibility.",
+        overview: "Muhyo Tech Admin Console turns the portfolio into an actively managed business platform. It supports protected access, content management, communication workflows, analytics visibility, and operational tools so the public website can evolve without manual code edits for every update.",
+        projectType: "Admin Dashboard / CMS",
+        duration: "5-7 weeks",
+        clientType: "Internal operations and content team",
+        role: "Admin Dashboard Developer, Backend/API Developer, Security Workflow Implementer",
+        responsibilities: ["Built protected admin modules and dashboard layouts", "Structured CRUD workflows for services, projects, blogs, and profile content", "Integrated validation and API response patterns", "Prepared real-time refresh and notification behavior", "Improved cache invalidation and import workflows"],
+        problem: "A portfolio with dynamic services, blogs, projects, bookings, and messages becomes hard to manage when every update requires code changes. The admin console solves this by centralizing content and communication workflows.",
+        goals: ["Manage portfolio content from a protected dashboard", "Support project, service, blog, and about updates", "Centralize messages, bookings, and operational feedback", "Improve safety with validation, permissions, and audit logging", "Keep public pages fresh through cache invalidation and sync flows"],
+        features: [
+            { title: "Protected CMS", description: "Admin-only modules for services, projects, blogs, about data, and settings.", icon: "Shield" },
+            { title: "Project Import Flow", description: "Seed data can update MongoDB projects by slug without duplicate records.", icon: "Layers" },
+            { title: "Real-Time Updates", description: "Socket-ready events help dashboard and public data stay synchronized.", icon: "Rocket" },
+            { title: "Validation and Audit Trail", description: "Structured forms, API responses, and activity logging improve operational confidence.", icon: "CheckCircle2" },
+        ],
+        modules: [
+            { title: "Dashboard Overview", description: "Stats, charts, recent activity, and operational snapshot.", type: "Admin" },
+            { title: "Projects Management", description: "Create, edit, import, reorder, and publish project case-study data.", type: "CMS" },
+            { title: "Services Management", description: "Manage service offers, descriptions, SEO fields, and ordering.", type: "CMS" },
+            { title: "Blogs Management", description: "Publish and edit articles with media and metadata.", type: "CMS" },
+            { title: "Messages and Bookings", description: "Review visitor messages and call requests.", type: "Communication" },
+            { title: "Security and Settings", description: "Admin profile, verification, and operational settings.", type: "Security" },
+        ],
+        technologies: { frontend: ["Next.js", "React Query", "Zod"], backend: ["Next.js API Routes"], database: ["MongoDB", "Mongoose"], tools: ["Git", "GitHub", "Vercel"], integrations: ["Socket.io", "Cloudinary", "Nodemailer"] },
+        processSteps: [
+            { step: 1, title: "Admin Workflow Planning", description: "Mapped content, communication, and dashboard management needs." },
+            { step: 2, title: "Protected Layout Build", description: "Created dashboard screens, tables, forms, modals, and management states." },
+            { step: 3, title: "API and Validation Setup", description: "Connected CRUD routes, schema validation, and consistent responses." },
+            { step: 4, title: "Import and Cache Logic", description: "Added data sync, upsert behavior, revalidation, and cache invalidation." },
+            { step: 5, title: "Operational Polish", description: "Reviewed permissions, audit logging, empty states, and responsive dashboard behavior." },
+        ],
+        challenges: [
+            { title: "Supporting many content types safely", problem: "Projects, services, blogs, messages, and bookings all need different fields and workflows.", solution: "Kept forms modular and added flexible model fields with optional frontend rendering." },
+            { title: "Avoiding duplicate imported projects", problem: "Seed imports can create duplicates if they do not match existing records reliably.", solution: "Used slug-based upsert logic with cache invalidation and summary reporting." },
+            { title: "Keeping public pages current", problem: "Admin edits need to appear on public pages without stale cached content.", solution: "Revalidated key routes and invalidated project cache after write operations." },
+        ],
+        results: [
+            { title: "Centralized content operations", description: "The admin console gives one place to manage public website content and communication workflows." },
+            { title: "Safer project data updates", description: "Project import and edit flows support richer case-study fields while avoiding duplicates." },
+            { title: "Scalable dashboard foundation", description: "The module structure can grow into analytics, newsletters, security tools, and advanced CMS features." },
+        ],
+        relatedServices: ["admin-dashboard-development", "full-stack-web-app-development", "api-integration-development"],
+    },
+};
+
+const uniqueGalleryImages = (items = []) => {
+    const seen = new Set();
+    return items
+        .map((item) => (typeof item === "string" ? { url: item } : item))
+        .filter((item) => {
+            const url = item?.url;
+            if (!url || seen.has(url)) return false;
+            seen.add(url);
+            return true;
+        });
+};
+
+const buildProjectCaseStudy = (project, index) => {
+    const slug = project.slug || slugifyProject(project.title);
+    const caseStudy = projectCaseStudyDetails[slug] || {};
+    const techStack = Array.isArray(project.techStack) ? project.techStack : [];
+    const galleryImages = uniqueGalleryImages([
+        ...(project.thumbnail ? [{ url: project.thumbnail, alt: project.title, caption: "Project preview" }] : []),
+        ...(project.gallery || []).map((url, imageIndex) => ({
+            url,
+            alt: `${project.title} screenshot ${imageIndex + 1}`,
+            caption: `Project screenshot ${imageIndex + 1}`,
+        })),
+        ...(caseStudy.galleryImages || []),
+    ]);
+
+    return {
+        ...project,
+        ...caseStudy,
+        slug,
+        shortDescription: caseStudy.shortDescription || project.shortDescription || project.description,
+        longDescription: caseStudy.longDescription || project.longDescription || project.details || project.description,
+        overview: caseStudy.overview || project.overview || project.details || project.description,
+        projectType: caseStudy.projectType || project.projectType || project.purpose || project.category,
+        status: project.status || project.publishStatus || "published",
+        publishStatus: project.publishStatus || project.status || "published",
+        isFeatured: project.isFeatured ?? project.featured ?? index < 3,
+        featured: project.featured ?? project.isFeatured ?? index < 3,
+        thumbnailImage: project.thumbnailImage || project.thumbnail,
+        heroImage: project.heroImage || project.thumbnail,
+        galleryImages,
+        liveUrl: project.liveUrl || project.liveLink || project.demoLink || "",
+        githubUrl: project.githubUrl || project.gitLink || project.githubLink || "",
+        year: caseStudy.year || project.year || "2026",
+        duration: caseStudy.duration || project.duration || "",
+        clientType: caseStudy.clientType || project.clientType || project.purpose || "Digital product",
+        role: caseStudy.role || project.role || "Full-stack development, UI implementation, project structure, and deployment-ready setup.",
+        responsibilities: caseStudy.responsibilities || project.responsibilities || [
+            "UI/UX implementation",
+            "Frontend development",
+            "Backend/API structure",
+            "Responsive experience",
+            "SEO-ready page structure",
+        ],
+        problem: caseStudy.problem || project.problem || project.problemSolved || `Build a professional ${project.purpose || project.category} experience with clear structure, reliable performance, and a polished user journey.`,
+        goals: caseStudy.goals || project.goals || [
+            "Create a modern responsive interface",
+            "Present core functionality clearly",
+            "Build a maintainable foundation",
+            "Support future content and feature growth",
+        ],
+        features: caseStudy.features || project.features || [
+            { title: "Responsive experience", description: "Designed to work cleanly across mobile, tablet, and desktop screens.", icon: "MonitorSmartphone" },
+            { title: "Modern interface", description: "Premium UI structure with clear hierarchy and purposeful user flow.", icon: "Sparkles" },
+            { title: "Scalable foundation", description: "Organized project structure prepared for future feature expansion.", icon: "Layers" },
+            { title: "SEO-ready structure", description: "Content and metadata prepared for professional sharing and discovery.", icon: "Search" },
+        ],
+        modules: caseStudy.modules || project.modules || [
+            { title: "Public experience", description: "Visitor-facing pages and project presentation.", type: "Public" },
+            { title: "Content structure", description: "Organized content areas for project details, images, and calls to action.", type: "Content" },
+            { title: "Contact flow", description: "Clear paths for visitors to ask for similar work.", type: "Conversion" },
+        ],
+        technologies: caseStudy.technologies || project.technologies || groupTechnologies(techStack),
+        processSteps: caseStudy.processSteps || project.processSteps || [
+            { step: 1, title: "Requirement understanding", description: "Clarified project goals, target users, and core functionality." },
+            { step: 2, title: "Structure planning", description: "Mapped content hierarchy, pages, modules, and reusable components." },
+            { step: 3, title: "UI development", description: "Built responsive interface sections using the project visual system." },
+            { step: 4, title: "Integration", description: "Connected data, media, links, and interaction flows where needed." },
+            { step: 5, title: "Testing and polish", description: "Reviewed layout behavior, responsiveness, and missing-field fallbacks." },
+        ],
+        challenges: caseStudy.challenges || project.challenges || [
+            {
+                title: "Clear project presentation",
+                problem: "The project needed enough detail to explain value without overwhelming visitors.",
+                solution: "Structured the case study into overview, goals, features, technologies, process, and CTA sections.",
+            },
+            {
+                title: "Responsive premium UI",
+                problem: "The design needed to stay polished across screen sizes.",
+                solution: "Used consistent cards, grids, media ratios, and responsive spacing from the existing theme.",
+            },
+        ],
+        results: caseStudy.results || project.results || [
+            { title: "Professional online presence", description: project.impact || "Created a polished, shareable project presentation." },
+            { title: "Scalable content foundation", description: "Project details can be expanded with modules, gallery items, technologies, and SEO fields." },
+        ],
+        relatedServices: caseStudy.relatedServices || project.relatedServices || ["web-development", "api-development", "seo-digital-growth"],
+        seoTitle: project.seoTitle || `${project.title} | Muhyo Tech`,
+        seoDescription: project.seoDescription || caseStudy.shortDescription || project.description,
+        keywords: project.keywords || [project.title, project.category, project.purpose, ...techStack].filter(Boolean),
+        sortOrder: project.sortOrder ?? project.order ?? index,
+    };
+};
+
+export const projectsData = portfolioData.projects.map(buildProjectCaseStudy);
+
+portfolioData.projects = projectsData;
+portfolioData.about = aboutData;
+portfolioData.home = homeData;
 portfolioData.services = servicesSeedData;

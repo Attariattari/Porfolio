@@ -156,17 +156,28 @@ const ServiceRow = ({ service, index, onImageClick }) => {
           </div>
         </div>
 
-        <div className={`mt-2 ${isReversed ? "" : "lg:flex lg:justify-end"}`}>
+        <div
+          className={`mt-2 flex flex-col sm:flex-row gap-3 ${isReversed ? "" : "lg:justify-end"}`}
+        >
           <Link href={`/services/${service.slug || service.id}`}>
             <motion.button
               whileHover={{ x: isReversed ? 5 : -5 }}
               whileTap={{ scale: 0.95 }}
               className={`inline-flex items-center gap-3 text-sm font-bold text-accent-foreground bg-accent hover:bg-accent/90 px-6 py-4 rounded-xl transition-all shadow-xl shadow-accent/20 cursor-pointer ${isReversed ? "" : "lg:flex-row-reverse"}`}
             >
-              Explore strategy{" "}
+              Explore Service{" "}
               <ArrowRight
                 className={`w-4 h-4 ${isReversed ? "" : "lg:rotate-180"}`}
               />
+            </motion.button>
+          </Link>
+          <Link href="/contact?intent=book-call">
+            <motion.button
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.95 }}
+              className="inline-flex items-center gap-3 rounded-xl border border-accent/40 bg-card/50 px-6 py-4 text-sm font-bold text-accent transition-all hover:bg-accent hover:text-accent-foreground"
+            >
+              Book a Call
             </motion.button>
           </Link>
         </div>

@@ -17,6 +17,10 @@ export async function GET() {
 export async function PATCH(request) {
   try {
     const session = await getAuthSession();
+    if (!["super-admin", "root-super-admin"].includes(session?.role)) {
+      return NextResponse.json({ success: false, error: "Access Denied: About page management is limited to Super Admin users." }, { status: 403 });
+    }
+
     if (!checkPermission(session, "about", "edit")) {
       return NextResponse.json({ success: false, error: "Access Denied: You do not have 'edit' permission for the profile." }, { status: 403 });
     }

@@ -1,19 +1,28 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Github,
   ExternalLink,
   Code,
   ArrowRight,
-  Plus,
 } from "lucide-react";
 import { SectionWrapper } from "./ui";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import ProjectModal from "./ProjectModal";
+import Image from "next/image";
 
 const ProjectRow = ({ project, index, setSelectedProject }) => {
+  const router = useRouter();
   const isReversed = index % 2 !== 0;
+  const openProjectDetail = () => {
+    if (project.slug) {
+      router.push(`/projects/${project.slug}`);
+      return;
+    }
+    setSelectedProject(project);
+  };
 
   return (
     <motion.div
@@ -65,7 +74,7 @@ const ProjectRow = ({ project, index, setSelectedProject }) => {
               isReversed ? "" : "lg:ml-auto"
             }`}
           >
-            "{project.description}"
+            &ldquo;{project.description}&rdquo;
           </p>
 
           {/* Tech Minimalist View */}
@@ -86,18 +95,46 @@ const ProjectRow = ({ project, index, setSelectedProject }) => {
 
           {/* Refined Actions */}
           <div
-            className={`flex items-center gap-8 ${
+            className={`flex flex-wrap items-center gap-3 ${
               isReversed ? "" : "lg:flex-row-reverse"
             }`}
           >
-            <button
-              onClick={() => setSelectedProject(project)}
-              className="group/link relative flex items-center gap-3 px-6 py-4 rounded-2xl bg-foreground/5 dark:bg-white/5 border border-foreground/10 dark:border-white/10 text-xs font-bold tracking-normal text-foreground hover:text-accent hover:border-accent/40 transition-all cursor-pointer overflow-hidden"
-            >
-              <span className="relative z-10">Case study</span>
-              <ArrowRight className="relative z-10 w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
-              <div className="absolute inset-0 bg-accent translate-y-full group-hover:translate-y-0 transition-transform duration-300 opacity-[0.05]" />
-            </button>
+            {project.slug ? (
+              <Link
+                href={`/projects/${project.slug}`}
+                className="group/link relative flex items-center gap-3 px-6 py-4 rounded-2xl bg-accent text-accent-foreground border border-accent/40 text-xs font-bold tracking-normal transition-all cursor-pointer overflow-hidden hover:-translate-y-0.5"
+              >
+                <span className="relative z-10">View Project</span>
+                <ArrowRight className="relative z-10 w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
+              </Link>
+            ) : (
+              <button
+                onClick={() => setSelectedProject(project)}
+                className="group/link relative flex items-center gap-3 px-6 py-4 rounded-2xl bg-accent text-accent-foreground border border-accent/40 text-xs font-bold tracking-normal transition-all cursor-pointer overflow-hidden hover:-translate-y-0.5"
+              >
+                <span className="relative z-10">View Project</span>
+                <ArrowRight className="relative z-10 w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
+              </button>
+            )}
+            {project.slug ? (
+              <Link
+                href={`/projects/${project.slug}`}
+                className="group/link relative flex items-center gap-3 px-6 py-4 rounded-2xl bg-foreground/5 dark:bg-white/5 border border-foreground/10 dark:border-white/10 text-xs font-bold tracking-normal text-foreground hover:text-accent hover:border-accent/40 transition-all cursor-pointer overflow-hidden"
+              >
+                <span className="relative z-10">Case study</span>
+                <ArrowRight className="relative z-10 w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
+                <div className="absolute inset-0 bg-accent translate-y-full group-hover:translate-y-0 transition-transform duration-300 opacity-[0.05]" />
+              </Link>
+            ) : (
+              <button
+                onClick={() => setSelectedProject(project)}
+                className="group/link relative flex items-center gap-3 px-6 py-4 rounded-2xl bg-foreground/5 dark:bg-white/5 border border-foreground/10 dark:border-white/10 text-xs font-bold tracking-normal text-foreground hover:text-accent hover:border-accent/40 transition-all cursor-pointer overflow-hidden"
+              >
+                <span className="relative z-10">Case study</span>
+                <ArrowRight className="relative z-10 w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
+                <div className="absolute inset-0 bg-accent translate-y-full group-hover:translate-y-0 transition-transform duration-300 opacity-[0.05]" />
+              </button>
+            )}
             <div className="w-px h-6 bg-border/20" />
             <div className="flex gap-4">
               {project.demoLink && (
@@ -126,13 +163,17 @@ const ProjectRow = ({ project, index, setSelectedProject }) => {
         <motion.div
           whileHover={{ scale: 1.02 }}
           transition={{ type: "spring", stiffness: 200, damping: 20 }}
-          onClick={() => setSelectedProject(project)}
+          onClick={openProjectDetail}
           className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-[0_40px_80px_-20px_rgba(0,0,0,0.6)] border border-white/10 bg-background cursor-pointer"
         >
-          <img
+          <Image
             src={project.thumbnail}
             alt={project.title}
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover/img-side:scale-110"
+            fill
+            unoptimized
+            priority={index < 2}
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            className="object-cover transition-transform duration-1000 group-hover/img-side:scale-110"
           />
 
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10" />
@@ -168,12 +209,24 @@ const ProjectRow = ({ project, index, setSelectedProject }) => {
 };
 
 export default function Projects({ data, showViewAll = false }) {
+  const router = useRouter();
   const [selectedProject, setSelectedProject] = useState(null);
-  
-  if (!data) return null;
 
   // For the home page, we show 4 projects in the tree
-  const displayData = showViewAll ? data.slice(0, 4) : data;
+  const displayData = useMemo(
+    () => (data ? (showViewAll ? data.slice(0, 4) : data) : []),
+    [data, showViewAll],
+  );
+
+  useEffect(() => {
+    displayData
+      .filter((project) => project.slug)
+      .forEach((project) => {
+        router.prefetch(`/projects/${project.slug}`);
+      });
+  }, [displayData, router]);
+  
+  if (!data) return null;
 
   return (
     <SectionWrapper id="projects" title="Featured Work" subtitle="My Portfolio">
@@ -186,7 +239,7 @@ export default function Projects({ data, showViewAll = false }) {
           <AnimatePresence mode="popLayout">
             {displayData.map((project, index) => (
               <ProjectRow
-                key={project.id}
+                key={project._id || project.slug || project.id}
                 project={project}
                 index={index}
                 setSelectedProject={setSelectedProject}

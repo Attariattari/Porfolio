@@ -65,16 +65,14 @@ export async function GET(request) {
                             },
                         });
 
-                        // Generate image in background (don't await)
-                        if (generateImage) {
-                            setTimeout(() => {
-                                finalizeBlogPipeline(
-                                    result.blogId,
-                                    { generateImage: true, baseUrl },
-                                    (progress) => console.log("[Background] Image progress:", progress)
-                                ).catch(err => console.error("[Background] Image generation error:", err));
-                            }, 100);
-                        }
+                        // Generate image in background (don't await) or send manual upload email if off
+                        setTimeout(() => {
+                            finalizeBlogPipeline(
+                                result.blogId,
+                                { generateImage, baseUrl },
+                                (progress) => console.log("[Background] Image/Email progress:", progress)
+                            ).catch(err => console.error("[Background] Image/Email generation error:", err));
+                        }, 100);
                     }
                 }
                 

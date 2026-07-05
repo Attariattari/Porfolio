@@ -28,6 +28,7 @@ export async function POST(request) {
     // Trigger ISR Revalidation
     revalidatePath("/");
     revalidatePath("/projects");
+    revalidatePath(`/projects/${newProject.slug}`);
 
     // Log activity
     await ActivityController.logFromSession(session, {

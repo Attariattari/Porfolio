@@ -4,6 +4,7 @@ import ProjectDetailView from "@/components/ProjectDetailView";
 import { serializeDoc } from "@/lib/mongooseHelper";
 import { SITE_URL } from "@/lib/config";
 import { buildCanonical, cleanSeoText, getSeoImage } from "@/lib/seo";
+import { portfolioData } from "@/lib/data";
 
 // 1. Enable ISR (Revalidate every hour)
 export const revalidate = 3600;
@@ -20,17 +21,19 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   const project = await ProjectController.getOne(slug);
 
-  if (!project) return { title: "Project Not Found" };
+  if (!project || !["published", undefined, null].includes(project.publishStatus || project.status)) {
+    return { title: "Project Not Found" };
+  }
 
   const canonicalUrl = buildCanonical(`/projects/${project.slug}`);
-  const description = cleanSeoText(project.description, 155);
-  const image = getSeoImage(project.image || project.thumbnail);
+  const description = cleanSeoText(project.seoDescription || project.shortDescription || project.description, 155);
+  const image = getSeoImage(project.heroImage || project.thumbnailImage || project.image || project.thumbnail);
 
   return {
-    title: `${project.title} | Muhyo Tech Project`,
+    title: project.seoTitle || `${project.title} | Muhyo Tech`,
     description,
     keywords:
-      (project.techStack || []).join(", ") || "Web Development, Engineering",
+      (project.keywords || project.techStack || []).join(", ") || "Web Development, Engineering",
     alternates: {
       canonical: canonicalUrl,
     },
@@ -54,20 +57,31 @@ export default async function ProjectPage({ params }) {
   const { slug } = await params;
   const project = await ProjectController.getOne(slug);
 
-  if (!project) {
+  if (!project || !["published", undefined, null].includes(project.publishStatus || project.status)) {
     notFound();
   }
+
+  const allProjects = await ProjectController.getAll(true).catch(() => []);
+  const serializedProjects = serializeDoc(allProjects || []);
+  const relatedProjects = serializedProjects
+    .filter((item) => item.slug && item.slug !== project.slug)
+    .filter((item) => item.category === project.category || (item.techStack || []).some((tech) => (project.techStack || []).includes(tech)))
+    .slice(0, 3);
+
+  const relatedServices = (portfolioData.services || [])
+    .filter((service) => (project.relatedServices || []).includes(service.slug))
+    .slice(0, 3);
 
   // P3 SEO: Add comprehensive JSON-LD schema for projects
   const baseUrl = SITE_URL;
   const canonicalUrl = buildCanonical(`/projects/${project.slug}`);
-  const image = getSeoImage(project.image || project.thumbnail);
+  const image = getSeoImage(project.heroImage || project.thumbnailImage || project.image || project.thumbnail);
 
   const projectSchema = {
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
     name: project.title,
-    description: cleanSeoText(project.description, 155),
+    description: cleanSeoText(project.seoDescription || project.shortDescription || project.description, 155),
     image,
     creator: {
       "@type": "Person",
@@ -88,7 +102,11 @@ export default async function ProjectPage({ params }) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(projectSchema) }}
       />
-      <ProjectDetailView project={project} />
+      <ProjectDetailView
+        project={project}
+        relatedProjects={relatedProjects}
+        relatedServices={relatedServices}
+      />
     </>
   );
 }

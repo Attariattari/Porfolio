@@ -14,21 +14,37 @@ import {
   Zap,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import ProjectModal from "./ProjectModal";
 import { SectionWrapper, Button } from "./ui";
 import EditorialBackground from "./ui/EditorialBackground";
 
 const Portfolio = ({ projects }) => {
+  const router = useRouter();
   const categories = useMemo(
     () => ["All", ...new Set(projects.map((p) => p.category))],
     [projects],
   );
   const [activeCategory, setActiveCategory] = useState("All");
   const [selectedProject, setSelectedProject] = useState(null);
-  const [filteredProjects, setFilteredProjects] = useState(projects);
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const featuredProjects = projects.slice(0, 3); // Changed from slice(0, 3) to use all projects
+  const filteredProjects = useMemo(
+    () =>
+      activeCategory === "All"
+        ? projects
+        : projects.filter((project) => project.category === activeCategory),
+    [activeCategory, projects],
+  );
+  const projectHref = (project) => `/projects/${project.slug || project.id}`;
+  const openProjectDetail = (project) => {
+    if (project.slug) {
+      router.push(projectHref(project));
+      return;
+    }
+    setSelectedProject(project);
+  };
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -39,14 +55,13 @@ const Portfolio = ({ projects }) => {
   }, [featuredProjects.length]);
 
   useEffect(() => {
-    if (activeCategory === "All") {
-      setFilteredProjects(projects);
-    } else {
-      setFilteredProjects(
-        projects.filter((p) => p.category === activeCategory),
-      );
-    }
-  }, [activeCategory, projects]);
+    projects
+      .filter((project) => project.slug)
+      .slice(0, 8)
+      .forEach((project) => {
+        router.prefetch(projectHref(project));
+      });
+  }, [projects, router]);
 
   const scrollToProjects = () => {
     document
@@ -137,7 +152,7 @@ const Portfolio = ({ projects }) => {
 
                   return (
                     <motion.div
-                      key={project.id}
+                      key={project._id || project.slug || project.id}
                       initial={{ opacity: 0, x: 200, rotateY: 30 }}
                       animate={{
                         opacity: isActive ? 1 : 0.4 / (position + 1),
@@ -160,7 +175,7 @@ const Portfolio = ({ projects }) => {
                           ? "border-accent/55 ring-1 ring-accent/25"
                           : "border-border/40"
                       }`}
-                      onClick={() => setSelectedProject(project)}
+                      onClick={() => openProjectDetail(project)}
                     >
                       {/* Browser Frame Mockup Effect */}
                       <div className="absolute inset-x-0 top-0 z-20 flex h-12 items-center gap-3 border-b border-white/10 bg-background/70 px-5 backdrop-blur-xl">
@@ -183,6 +198,7 @@ const Portfolio = ({ projects }) => {
                         <img
                           src={project.thumbnail}
                           alt={project.title}
+                          loading={idx === currentSlide ? "eager" : "lazy"}
                           className={`h-full w-full object-cover transition-all duration-[2s] ${
                             isActive
                               ? "grayscale-0 scale-100"
@@ -282,7 +298,7 @@ const Portfolio = ({ projects }) => {
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {featuredProjects.map((project, idx) => (
               <motion.div
-                key={project.id}
+                key={project._id || project.slug || project.id}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -291,7 +307,7 @@ const Portfolio = ({ projects }) => {
               >
                 <div
                   className="relative flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-border/60 bg-card/55 shadow-sm backdrop-blur-xl transition-all duration-500 hover:-translate-y-1 hover:border-accent/35 hover:shadow-2xl hover:shadow-black/10"
-                  onClick={() => setSelectedProject(project)}
+                  onClick={() => openProjectDetail(project)}
                 >
                   <div className="flex items-center justify-between gap-4 border-b border-border/50 px-5 py-4">
                     <div className="min-w-0">
@@ -311,6 +327,7 @@ const Portfolio = ({ projects }) => {
                     <img
                       src={project.thumbnail}
                       alt={project.title}
+                      loading={idx === 0 ? "eager" : "lazy"}
                       className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-80" />
@@ -342,7 +359,7 @@ const Portfolio = ({ projects }) => {
                     <div className="mt-auto pt-6">
                       <div className="flex items-center justify-between border-t border-border/60 pt-4">
                         <span className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground transition-colors group-hover:text-accent">
-                          View case study
+                        View project
                         </span>
                         <div className="flex items-center gap-2 text-muted-foreground">
                           {project.demoLink && (
@@ -450,7 +467,7 @@ const Portfolio = ({ projects }) => {
 
                   return (
                     <motion.div
-                      key={project.id}
+                      key={project._id || project.slug || project.id}
                       layout
                       initial={{ opacity: 0, scale: 0.95, y: 30 }}
                       whileInView={{ opacity: 1, scale: 1, y: 0 }}
@@ -503,7 +520,7 @@ const Portfolio = ({ projects }) => {
                               isReversed ? "" : "lg:ml-auto"
                             }`}
                           >
-                            "{project.description}"
+                            &ldquo;{project.description}&rdquo;
                           </p>
 
                           {/* Tech Minimalist View */}
@@ -529,16 +546,32 @@ const Portfolio = ({ projects }) => {
                             }`}
                           >
                             <button
-                              onClick={() => setSelectedProject(project)}
+                              onClick={() => openProjectDetail(project)}
                               className="group/link flex items-center gap-3 text-[11px] font-bold tracking-normal text-foreground hover:text-accent transition-all"
                             >
-                              Case study
+                              View Details
                               <ArrowRight className="w-4 h-4 group-hover/link:translate-x-1.5 transition-transform" />
                             </button>
                             <div className="w-px h-6 bg-border/20" />
                             <div className="flex gap-4">
-                              <ExternalLink className="w-4 h-4 text-muted-foreground hover:text-accent cursor-pointer transition-colors" />
-                              <Github className="w-4 h-4 text-muted-foreground hover:text-accent cursor-pointer transition-colors" />
+                              {(project.liveUrl || project.liveLink || project.demoLink) && (
+                                <Link
+                                  href={project.liveUrl || project.liveLink || project.demoLink}
+                                  target="_blank"
+                                  onClick={(event) => event.stopPropagation()}
+                                >
+                                  <ExternalLink className="w-4 h-4 text-muted-foreground hover:text-accent cursor-pointer transition-colors" />
+                                </Link>
+                              )}
+                              {(project.githubUrl || project.gitLink || project.githubLink) && (
+                                <Link
+                                  href={project.githubUrl || project.gitLink || project.githubLink}
+                                  target="_blank"
+                                  onClick={(event) => event.stopPropagation()}
+                                >
+                                  <Github className="w-4 h-4 text-muted-foreground hover:text-accent cursor-pointer transition-colors" />
+                                </Link>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -561,7 +594,7 @@ const Portfolio = ({ projects }) => {
                             damping: 20,
                           }}
                           className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-[0_40px_80px_-20px_rgba(0,0,0,0.6)] border border-white/10 bg-background cursor-pointer"
-                          onClick={() => setSelectedProject(project)}
+                          onClick={() => openProjectDetail(project)}
                         >
                           {/* Background image with animated scale-in */}
                           <motion.div
@@ -593,7 +626,7 @@ const Portfolio = ({ projects }) => {
                               </h3>
                               {/* Subtle description — same italic border-l style */}
                               <p className="text-white/70 text-xs md:text-sm line-clamp-2 italic font-medium border-l-2 border-accent/50 pl-3">
-                                "{project.description}"
+                                &ldquo;{project.description}&rdquo;
                               </p>
                             </div>
                           </div>
@@ -755,7 +788,7 @@ const Portfolio = ({ projects }) => {
               <span className="text-accent">digital product?</span>
             </h2>
             <p className="text-muted-foreground text-xl mb-12 max-w-2xl mx-auto italic font-medium opacity-80">
-              Let's build a high-performance web platform or SaaS experience
+              Let&apos;s build a high-performance web platform or SaaS experience
               that helps you reach your targets faster.
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">

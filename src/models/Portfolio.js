@@ -5,14 +5,41 @@ const ProjectSchema = new mongoose.Schema({
     title: { type: String, required: true },
     slug: { type: String, required: true, unique: true },
     description: { type: String },
+    shortDescription: { type: String },
+    longDescription: { type: String },
+    overview: { type: String },
     techStack: [{ type: String }],
     category: { type: String },
+    projectType: { type: String },
     purpose: { type: String },
+    problem: { type: String },
+    goals: [{ type: String }],
     impact: { type: String },
     details: { type: String },
+    role: { type: String },
+    responsibilities: [{ type: String }],
+    clientType: { type: String },
+    duration: { type: String },
+    year: { type: String },
     thumbnail: { type: String },
+    thumbnailImage: { type: String },
+    heroImage: { type: String },
     gallery: [{ type: String }],
+    galleryImages: [{ type: mongoose.Schema.Types.Mixed }],
+    liveUrl: { type: String },
+    githubUrl: { type: String },
+    features: [{ type: mongoose.Schema.Types.Mixed }],
+    modules: [{ type: mongoose.Schema.Types.Mixed }],
+    technologies: { type: mongoose.Schema.Types.Mixed, default: {} },
+    processSteps: [{ type: mongoose.Schema.Types.Mixed }],
+    challenges: [{ type: mongoose.Schema.Types.Mixed }],
+    results: [{ type: mongoose.Schema.Types.Mixed }],
+    relatedServices: [{ type: String }],
+    seoTitle: { type: String },
+    seoDescription: { type: String },
+    keywords: [{ type: String }],
     featured: { type: Boolean, default: false, index: true },
+    isFeatured: { type: Boolean, default: false, index: true },
     publishStatus: {
         type: String,
         enum: ["draft", "pending", "published"],
@@ -20,8 +47,9 @@ const ProjectSchema = new mongoose.Schema({
         index: true,
     },
     order: { type: Number, default: 0, index: true },
+    sortOrder: { type: Number, default: 0, index: true },
     createdAt: { type: Date, default: Date.now, index: true },
-});
+}, { strict: false });
 
 // 2. SERVICE SCHEMA
 const ServiceSchema = new mongoose.Schema({
@@ -218,16 +246,34 @@ const AboutSchema = new mongoose.Schema({
     // ==== WORK EXPERIENCE ====
     experiences: [{
         year: String,
+        period: String,
         role: String,
         company: String,
         duration: String,
         description: String,
+        highlights: [String],
         milestones: [String],
     }, ],
 
+    // ==== STRUCTURED ABOUT PAGE CONTENT ====
+    hero: { type: mongoose.Schema.Types.Mixed, default: {} },
+    story: { type: mongoose.Schema.Types.Mixed, default: {} },
+    whatIBuild: [{ type: mongoose.Schema.Types.Mixed }],
+    skills: { type: mongoose.Schema.Types.Mixed, default: {} },
+    education: [{ type: mongoose.Schema.Types.Mixed }],
+    approach: [{ type: mongoose.Schema.Types.Mixed }],
+    whyChoose: [{ type: mongoose.Schema.Types.Mixed }],
+    values: [{ type: mongoose.Schema.Types.Mixed }],
+    availability: { type: mongoose.Schema.Types.Mixed, default: {} },
+    finalCTA: { type: mongoose.Schema.Types.Mixed, default: {} },
+    seoTitle: { type: String },
+    seoDescription: { type: String },
+    keywords: [{ type: String }],
+    updatedBy: { type: mongoose.Schema.Types.Mixed },
+
     // ==== METADATA ====
     updatedAt: { type: Date, default: Date.now },
-});
+}, { strict: false });
 
 // 6. RESUME SCHEMA
 const ResumeSchema = new mongoose.Schema({

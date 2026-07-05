@@ -32,6 +32,7 @@ export async function PATCH(request, { params }) {
     // Trigger ISR Revalidation
     revalidatePath("/");
     revalidatePath("/projects");
+    revalidatePath(`/projects/${updatedProject.slug}`);
 
     // Log activity
     await ActivityController.logFromSession(session, {
@@ -62,6 +63,7 @@ export async function DELETE(request, { params }) {
     // Trigger ISR Revalidation
     revalidatePath("/");
     revalidatePath("/projects");
+    revalidatePath(`/projects/${deletedProject.slug}`);
 
     // Log activity
     await ActivityController.logFromSession(session, {

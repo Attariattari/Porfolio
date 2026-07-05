@@ -1,7 +1,7 @@
 import dbConnect from "@/lib/dbConnect";
 import { About } from "@/models/Portfolio";
 import { serializeDoc } from "@/lib/mongooseHelper";
-import { withCache } from "@/lib/cache";
+import { cacheManager, withCache } from "@/lib/cache";
 
 // P2/P3 OPTIMIZATION: Implement aggressive caching
 // About data changes rarely - cache for 1 hour
@@ -29,6 +29,7 @@ export const AboutController = {
             upsert: true,
             runValidators: true,
         }).lean();
+        await cacheManager.invalidateByTag("about");
         return serializeDoc(updated);
     },
 };

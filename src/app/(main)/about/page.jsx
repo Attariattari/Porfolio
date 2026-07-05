@@ -4,11 +4,12 @@ import { AboutController } from "@/controllers/AboutController";
 import { serializeDoc } from "@/lib/mongooseHelper";
 import { SITE_URL } from "@/lib/config";
 import { buildCanonical, getSeoImage } from "@/lib/seo";
+import { getAboutPageData } from "@/lib/content/getAboutPageData";
 
 export const metadata = {
-  title: "About Me | Muhyo Tech - Software Engineer",
+  title: "About | Muhyo Tech",
   description:
-    "Learn about the mission, expertise, and journey of Muhyo Tech, a dedicated full-stack developer building impactful digital products.",
+    "Learn more about Muhyo Tech and Pir Ghulam Muhyo Din, a Full-Stack Web Developer building modern websites, web applications, dashboards, and scalable digital solutions with Next.js and MERN stack.",
   alternates: { canonical: buildCanonical("/about") },
 };
 
@@ -40,7 +41,7 @@ export default async function AboutPage() {
   // Professional Hybrid Fetching - IMPORTANT: Serialize Mongoose docs
   const dbAbout = await AboutController.get().catch(() => null);
   const serializedAbout = dbAbout ? serializeDoc(dbAbout) : null;
-  const about = serializedAbout || portfolioData.about;
+  const about = getAboutPageData(serializedAbout || portfolioData.about);
 
   return (
     <div className="">

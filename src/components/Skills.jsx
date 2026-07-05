@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { SectionWrapper, Card } from "./ui";
+import { SectionWrapper } from "./ui";
+import { homeData } from "@/lib/data";
 
 const SkillBar = ({ name, level, category, index }) => (
   <motion.div
@@ -36,9 +37,27 @@ const SkillBar = ({ name, level, category, index }) => (
 
 export default function Skills({ data }) {
   if (!data) return null;
+  const categories = homeData.expertise?.categories || [];
 
   return (
     <SectionWrapper id="skills" title="My Expertise" subtitle="What I Can Do">
+      {categories.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-10 flex flex-wrap justify-center gap-3"
+        >
+          {categories.map((category) => (
+            <span
+              key={category}
+              className="rounded-full border border-border/60 bg-card/50 px-4 py-2 text-xs font-bold text-foreground/80"
+            >
+              {category}
+            </span>
+          ))}
+        </motion.div>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-6">
         {data.map((skill, index) => (
           <SkillBar key={skill.name} {...skill} index={index} />

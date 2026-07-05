@@ -259,9 +259,9 @@ export const cacheManager = {
 };
 
 export const withCache = async (key, fetchFn, ttl = DEFAULT_TTL, tags = []) => {
-  // Bypass cache completely in development to ensure Real-Time sync between Local and Vercel
-  if (process.env.NODE_ENV === "development") {
-    console.log(`[Cache] 🚀 DEV MODE: Bypassing cache for ${key}`);
+  // Keep cache active by default; disable only when explicitly requested.
+  if (process.env.DISABLE_APP_CACHE === "true") {
+    console.log(`[Cache] Disabled by DISABLE_APP_CACHE for ${key}`);
     return await fetchFn();
   }
 

@@ -9,14 +9,14 @@ import { buildCanonical, getSeoImage } from "@/lib/seo";
 export const revalidate = 300;
 
 export const metadata = {
-  title: "Engineering Portfolio | Featured Projects by Muhyo Tech",
+  title: "Projects | Muhyo Tech",
   description:
-    "Explore Muhyo Tech projects including high-performance websites, SaaS dashboards, admin systems, real estate platforms, and custom web applications.",
+    "Explore Muhyo Tech projects including modern websites, full-stack web applications, admin dashboards, and scalable digital solutions built with Next.js, React, Node.js, and MongoDB.",
   alternates: { canonical: buildCanonical("/projects") },
   openGraph: {
-    title: "Muhyo Tech Projects - Web Apps, SaaS Dashboards & Platforms",
+    title: "Projects | Muhyo Tech",
     description:
-      "A curated portfolio of high-performance websites, SaaS dashboards, admin systems, and custom web applications.",
+      "Modern websites, full-stack web applications, admin dashboards, and scalable digital solutions built by Muhyo Tech.",
     url: buildCanonical("/projects"),
     images: [{ url: getSeoImage("/portfolio-hero.png"), width: 1200, height: 630, alt: "Muhyo Tech projects" }],
     type: "website",

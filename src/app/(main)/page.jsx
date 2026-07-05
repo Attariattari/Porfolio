@@ -5,6 +5,7 @@ import Skills from "@/components/Skills";
 import Projects from "@/components/Projects";
 import Blog from "@/components/Blog";
 import Contact from "@/components/Contact";
+import HomeFinalCTA from "@/components/HomeFinalCTA";
 import { portfolioData } from "@/lib/data";
 import { serializeDoc } from "@/lib/mongooseHelper";
 
@@ -22,9 +23,9 @@ import { buildCanonical, getSeoImage } from "@/lib/seo";
 export const revalidate = 3600;
 
 export const metadata = {
-  title: "Full Stack Web Developer & Next.js Engineer | Muhyo Tech",
+  title: "Muhyo Tech | Full-Stack Web Developer",
   description:
-    "Muhyo Tech builds scalable Next.js websites, SaaS dashboards, backend systems, SEO-ready web apps, and premium digital experiences.",
+    "Muhyo Tech is the professional portfolio of Pir Ghulam Muhyo Din, building modern websites, full-stack web applications, admin dashboards, and scalable digital solutions with Next.js and MERN Stack.",
   alternates: {
     canonical: buildCanonical("/"),
   },
@@ -97,6 +98,7 @@ export default async function HomePage() {
       <Projects data={projects} showViewAll={true} />
       <Blog data={blogs} isHomePage={true} />
       <Contact isHomePage={true} about={about} />
+      <HomeFinalCTA />
     </>
   );
 }
