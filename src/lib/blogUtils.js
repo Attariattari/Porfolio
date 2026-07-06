@@ -17,13 +17,16 @@
  * @returns {Array} - The resolved list of featured blogs
  */
 export function resolveFeaturedBlogs(dbBlogs = [], staticBlogs = []) {
+    const safeDbBlogs = Array.isArray(dbBlogs) ? dbBlogs : [];
+    const safeStaticBlogs = Array.isArray(staticBlogs) ? staticBlogs : [];
+
     // 1. Separate real DB blogs from fallback blogs
     // Real DB blogs do not have the _isFromDataJs flag
-    const realDbBlogs = dbBlogs.filter((b) => !b._isFromDataJs);
+    const realDbBlogs = safeDbBlogs.filter((b) => b && !b._isFromDataJs);
 
     // 2. Filter for real DB blogs that are marked as 'featured' and 'published'
     const dbFeatured = realDbBlogs.filter(
-        (b) => !!b.featured && (!b.publishStatus || b.publishStatus === "published"),
+        (b) => b && !!b.featured && (!b.publishStatus || b.publishStatus === "published"),
     );
 
     // 3. Priority 1: If DB has featured blogs, use ONLY those (sorted by featuredOrder)
@@ -43,9 +46,9 @@ export function resolveFeaturedBlogs(dbBlogs = [], staticBlogs = []) {
     }
 
     // 5. Priority 3: Fallback to data.js featured blogs if DB is empty
-    const staticFeatured = staticBlogs.filter((b) => !!b.featured);
+    const staticFeatured = safeStaticBlogs.filter((b) => b && !!b.featured);
     if (staticFeatured.length > 0) return staticFeatured;
 
     // 6. Final Fallback: First 3 items from whatever list we have
-    return dbBlogs.slice(0, 3);
+    return safeDbBlogs.slice(0, 3);
 }
