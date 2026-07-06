@@ -208,8 +208,8 @@ const Contact = ({ isHomePage = false }) => {
               className="space-y-6"
             >
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-semibold tracking-normal">
-                <Clock className="w-3 h-3" /> Quick response:{" "}
-                <span className="text-foreground ml-1">
+                <Clock className="w-3 h-3" />
+                <span className="text-foreground">
                   {data.quickResponse}
                 </span>
               </div>
@@ -217,8 +217,8 @@ const Contact = ({ isHomePage = false }) => {
                 Let's connect
               </h1>
               <p className="text-muted-foreground text-lg font-medium leading-relaxed max-w-md">
-                Have an idea? We are here to help you build it. Send us a
-                message and let's talk about your project.
+                Have an idea or project requirement? Share the details and I'll
+                review your message to guide you with the right solution.
               </p>
             </motion.div>
 
@@ -606,7 +606,7 @@ const Contact = ({ isHomePage = false }) => {
                         ? "Sending..."
                         : submitted
                           ? "Message Sent!"
-                          : "Send to our team"}
+                          : "Submit Project Inquiry"}
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                     </Button>
                   </motion.div>
@@ -716,7 +716,7 @@ const Contact = ({ isHomePage = false }) => {
               className="mt-12 relative h-[500px] glass p-2 rounded-[3.5rem] overflow-hidden group shadow-2xl"
             >
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13615.111956555135!2d74.1950337!3d31.4284542!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3918ff06c9a3d767%3A0xe67195449552b75a!2sChung%2C%20Lahore%2C%20Punjab%2C%20Pakistan!5e0!3m2!1sen!2s!4v1709800000000!5m2!1sen!2s"
+                src="https://www.google.com/maps?q=Lahore,+Pakistan&output=embed"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}

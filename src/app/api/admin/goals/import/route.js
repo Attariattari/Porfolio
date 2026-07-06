@@ -19,7 +19,7 @@ export async function POST(request) {
     await ActivityController.logFromSession(session, {
       action: "CREATE",
       module: "GOALS",
-      details: `Imported default goals data: ${result.imported.goalsCount} goals, ${result.imported.roadmapCount} roadmap items, ${result.imported.milestonesCount} milestones`,
+      details: `Imported default goals data: ${result.goals} goals, ${result.roadmap} roadmap items, ${result.milestones} milestones`,
     }).catch(() => {});
 
     return NextResponse.json(

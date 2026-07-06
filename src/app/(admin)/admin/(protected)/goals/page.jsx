@@ -24,6 +24,7 @@ export default function GoalsAdminPage() {
   const [goals, setGoals] = useState([]);
   const [roadmap, setRoadmap] = useState([]);
   const [milestones, setMilestones] = useState([]);
+  const [progressUpdates, setProgressUpdates] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
@@ -48,6 +49,14 @@ export default function GoalsAdminPage() {
     icon: "Target",
     order: 0,
   });
+  const [progressForm, setProgressForm] = useState({
+    title: "",
+    description: "",
+    category: "Feature",
+    publishStatus: "published",
+    createdAt: new Date().toISOString().split("T")[0],
+  });
+  const [editingProgress, setEditingProgress] = useState(null);
 
   // Fetch data on mount
   useEffect(() => {
@@ -57,10 +66,11 @@ export default function GoalsAdminPage() {
   const fetchData = async () => {
     try {
       setIsLoading(true);
-      const [goalsRes, roadmapRes, milestonesRes] = await Promise.all([
+      const [goalsRes, roadmapRes, milestonesRes, progressRes] = await Promise.all([
         fetch("/api/admin/goals"),
         fetch("/api/admin/goals/roadmap"),
         fetch("/api/admin/goals/milestones"),
+        fetch("/api/admin/goals/progress"),
       ]);
 
       if (goalsRes.ok) {
@@ -78,6 +88,10 @@ export default function GoalsAdminPage() {
       if (milestonesRes.ok) {
         const data = await milestonesRes.json();
         setMilestones(data.data || []);
+      }
+      if (progressRes.ok) {
+        const data = await progressRes.json();
+        setProgressUpdates(data.data || []);
       }
 
       // Fetch Config & Insights
@@ -111,7 +125,7 @@ export default function GoalsAdminPage() {
 
       if (data.success) {
         toast.success(
-          `Imported ${data.imported.goalsCount} goals, ${data.imported.roadmapCount} roadmap items, ${data.imported.milestonesCount} milestones`,
+          `Imported ${data.goals || 0} goals, ${data.roadmap || 0} roadmap items, ${data.milestones || 0} milestones`,
         );
         setShowImportPrompt(false);
         fetchData();
@@ -240,6 +254,86 @@ export default function GoalsAdminPage() {
     }
   };
 
+  const resetProgressForm = () => {
+    setEditingProgress(null);
+    setProgressForm({
+      title: "",
+      description: "",
+      category: "Feature",
+      publishStatus: "published",
+      createdAt: new Date().toISOString().split("T")[0],
+    });
+  };
+
+  const handleSaveProgress = async () => {
+    if (!progressForm.title.trim()) {
+      toast.error("Progress title is required");
+      return;
+    }
+
+    try {
+      const isFallback = editingProgress?._isFromDataJs;
+      const url =
+        editingProgress && !isFallback
+          ? `/api/admin/goals/progress/${editingProgress._id}`
+          : "/api/admin/goals/progress";
+      const method = editingProgress && !isFallback ? "PATCH" : "POST";
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(progressForm),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        toast.success(editingProgress && !isFallback ? "Progress updated" : "Progress added");
+        resetProgressForm();
+        fetchData();
+      } else {
+        toast.error(data.error || "Failed to save progress");
+      }
+    } catch (error) {
+      toast.error("Failed to save progress");
+      console.error(error);
+    }
+  };
+
+  const handleEditProgress = (item) => {
+    setEditingProgress(item);
+    setProgressForm({
+      title: item.title || "",
+      description: item.description || "",
+      category: item.category || "Feature",
+      publishStatus: item.publishStatus || "published",
+      createdAt: item.createdAt
+        ? new Date(item.createdAt).toISOString().split("T")[0]
+        : new Date().toISOString().split("T")[0],
+    });
+    setActiveTab("progress");
+  };
+
+  const handleDeleteProgress = async (id) => {
+    if (!confirm("Delete this progress update?")) return;
+
+    try {
+      const res = await fetch(`/api/admin/goals/progress/${id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        toast.success("Progress deleted");
+        fetchData();
+      } else {
+        toast.error(data.error || "Failed to delete progress");
+      }
+    } catch (error) {
+      toast.error("Failed to delete progress");
+      console.error(error);
+    }
+  };
+
   const handleRegenerateInsights = async () => {
     try {
       setIsUpdatingConfig(true);
@@ -274,6 +368,7 @@ export default function GoalsAdminPage() {
   const dbGoals = goals.filter((g) => !g._isFromDataJs);
   const dbRoadmap = roadmap.filter((r) => !r._isFromDataJs);
   const dbMilestones = milestones.filter((m) => !m._isFromDataJs);
+  const dbProgressUpdates = progressUpdates.filter((p) => !p._isFromDataJs);
 
   return (
     <div className="min-h-screen bg-background p-6">
@@ -355,7 +450,7 @@ export default function GoalsAdminPage() {
 
         {/* Tabs */}
         <div className="flex gap-4 mb-6 border-b border-white/10 overflow-x-auto">
-          {["goals", "roadmap", "milestones", "strategic-deck"].map((tab) => (
+          {["goals", "roadmap", "milestones", "progress", "strategic-deck"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -537,6 +632,195 @@ export default function GoalsAdminPage() {
                     ))}
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Recent Progress Tab */}
+            {activeTab === "progress" && (
+              <div className="grid grid-cols-1 lg:grid-cols-[0.85fr_1.15fr] gap-8">
+                <div className="p-6 rounded-2xl bg-white/5 border border-white/10 h-fit">
+                  <h2 className="text-2xl font-bold mb-2">
+                    {editingProgress ? "Edit Progress" : "Add Progress"}
+                  </h2>
+                  <p className="text-sm text-foreground/60 mb-6">
+                    Add real design, feature, content, or roadmap updates shown on the public Goals page.
+                  </p>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-semibold mb-1">
+                        Title *
+                      </label>
+                      <input
+                        type="text"
+                        value={progressForm.title}
+                        onChange={(e) =>
+                          setProgressForm({
+                            ...progressForm,
+                            title: e.target.value,
+                          })
+                        }
+                        placeholder="e.g., Updated Goals page design"
+                        className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-foreground"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold mb-1">
+                        Description
+                      </label>
+                      <textarea
+                        value={progressForm.description}
+                        onChange={(e) =>
+                          setProgressForm({
+                            ...progressForm,
+                            description: e.target.value,
+                          })
+                        }
+                        placeholder="Short public note about what changed"
+                        className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-foreground h-24"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-semibold mb-1">
+                          Type
+                        </label>
+                        <select
+                          value={progressForm.category}
+                          onChange={(e) =>
+                            setProgressForm({
+                              ...progressForm,
+                              category: e.target.value,
+                            })
+                          }
+                          className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-foreground"
+                        >
+                          <option value="Feature">Feature</option>
+                          <option value="Design">Design</option>
+                          <option value="Content">Content</option>
+                          <option value="Roadmap">Roadmap</option>
+                          <option value="Fix">Fix</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-semibold mb-1">
+                          Visibility
+                        </label>
+                        <select
+                          value={progressForm.publishStatus}
+                          onChange={(e) =>
+                            setProgressForm({
+                              ...progressForm,
+                              publishStatus: e.target.value,
+                            })
+                          }
+                          className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-foreground"
+                        >
+                          <option value="published">Published</option>
+                          <option value="draft">Draft</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold mb-1">
+                        Date
+                      </label>
+                      <input
+                        type="date"
+                        value={progressForm.createdAt}
+                        onChange={(e) =>
+                          setProgressForm({
+                            ...progressForm,
+                            createdAt: e.target.value,
+                          })
+                        }
+                        className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-foreground"
+                      />
+                    </div>
+
+                    <div className="flex gap-2 pt-2">
+                      <button
+                        onClick={handleSaveProgress}
+                        className="flex-1 px-4 py-2 rounded-lg bg-accent text-accent-foreground font-semibold hover:opacity-90"
+                      >
+                        {editingProgress ? "Update Progress" : "Add Progress"}
+                      </button>
+                      {editingProgress && (
+                        <button
+                          onClick={resetProgressForm}
+                          className="px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-foreground font-semibold hover:bg-white/20"
+                        >
+                          Cancel
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h2 className="text-2xl font-bold mb-6">
+                    Recent Progress Updates
+                  </h2>
+                  {dbProgressUpdates.length === 0 ? (
+                    <div className="text-center py-12 rounded-2xl bg-white/5 border border-white/10">
+                      <CheckCircle2 className="w-12 h-12 text-foreground/40 mx-auto mb-3" />
+                      <p className="text-foreground/60">
+                        No manual progress updates yet
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {dbProgressUpdates.map((item) => (
+                        <div
+                          key={item._id}
+                          className="p-4 rounded-lg bg-white/10 border border-white/20 hover:border-white/40 transition-all flex items-start justify-between gap-4"
+                        >
+                          <div className="flex-1">
+                            <div className="flex flex-wrap items-center gap-2 mb-2">
+                              <h3 className="font-semibold text-foreground">
+                                {item.title}
+                              </h3>
+                              <span className="text-xs px-2 py-1 rounded bg-accent/20 text-accent">
+                                {item.category}
+                              </span>
+                              <span className="text-xs px-2 py-1 rounded bg-white/10 text-foreground/70">
+                                {item.publishStatus}
+                              </span>
+                            </div>
+                            {item.description && (
+                              <p className="text-sm text-foreground/60">
+                                {item.description}
+                              </p>
+                            )}
+                            <div className="mt-2 text-xs text-foreground/40">
+                              {item.createdAt
+                                ? new Date(item.createdAt).toLocaleDateString()
+                                : "No date"}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => handleEditProgress(item)}
+                              className="p-2 hover:bg-white/10 rounded transition-colors"
+                            >
+                              <Edit2 className="w-4 h-4 text-foreground/60" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteProgress(item._id)}
+                              className="p-2 hover:bg-red-500/10 rounded transition-colors"
+                            >
+                              <Trash2 className="w-4 h-4 text-red-400" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 

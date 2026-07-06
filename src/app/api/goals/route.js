@@ -13,6 +13,7 @@ export async function GET() {
             health,
             insights,
             changelog,
+            recentProgress,
         ] = await Promise.all([
             GoalController.getAllGoals(true), // Only published
             GoalController.getAllRoadmap(true), // Only published
@@ -22,7 +23,13 @@ export async function GET() {
             GoalController.getCompanyHealth(),
             GoalController.generateStrategicInsights(),
             GoalController.getPublicChangelog(20),
+            GoalController.getRecentProgress(true),
         ]);
+
+        const pageData = {
+            ...GoalController.getGoalsPageData(),
+            recentProgress,
+        };
 
         return NextResponse.json({
             success: true,
@@ -35,6 +42,7 @@ export async function GET() {
                 health,
                 insights,
                 changelog,
+                pageData,
             },
         });
     } catch (error) {

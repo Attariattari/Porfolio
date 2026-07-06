@@ -634,12 +634,20 @@ const GoalActivityLogSchema = new mongoose.Schema({
     action: { type: String, required: true }, // create, update, delete, complete, featured
     entityType: {
         type: String,
-        enum: ["goal", "roadmap", "milestone", "vision"],
+        enum: ["goal", "roadmap", "milestone", "vision", "progress"],
         required: true,
     },
     entityId: { type: String },
     title: { type: String, required: true },
     description: { type: String },
+    category: { type: String, default: "Content" },
+    publishStatus: {
+        type: String,
+        enum: ["draft", "published"],
+        default: "published",
+        index: true,
+    },
+    order: { type: Number, default: 0, index: true },
     isPinned: { type: Boolean, default: false },
     createdBy: { type: String, default: "Admin" },
     createdAt: { type: Date, default: Date.now, index: true },

@@ -6,16 +6,16 @@ import { serializeDoc } from "@/lib/mongooseHelper";
 export const revalidate = 300; // ISR: Revalidate every 5 minutes
 
 export const metadata = {
-  title: "Goals & Vision | Muhyo Tech",
+  title: "Goals & Roadmap | Muhyo Tech",
   description:
-    "Explore our strategic goals, roadmap, and vision for the future. See how we're building the next generation of digital solutions.",
+    "Explore Muhyo Tech goals, roadmap, real active projects, SiteCraft AI development, QR Profile Connect, LeadFlow AI, and future digital product direction.",
 };
 
 const schemaData = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "Muhyo Tech",
-  description: "Goals and Vision for Digital Excellence",
+  description: "Goals and Roadmap for Muhyo Tech digital products",
 };
 
 export default async function GoalsPage() {
@@ -29,6 +29,7 @@ export default async function GoalsPage() {
     health,
     insights,
     changelog,
+    recentProgress,
   ] = await Promise.all([
     GoalController.getAllGoals(true).catch(() => []),
     GoalController.getAllRoadmap(true).catch(() => []),
@@ -38,7 +39,13 @@ export default async function GoalsPage() {
     GoalController.getCompanyHealth().catch(() => ({})),
     GoalController.generateStrategicInsights().catch(() => ({})),
     GoalController.getPublicChangelog(20).catch(() => []),
+    GoalController.getRecentProgress(true).catch(() => []),
   ]);
+
+  const pageData = {
+    ...GoalController.getGoalsPageData(),
+    recentProgress,
+  };
 
   return (
     <>
@@ -55,6 +62,7 @@ export default async function GoalsPage() {
         initialHealth={health || {}}
         initialInsights={insights || {}}
         initialChangelog={changelog || []}
+        initialPageData={pageData}
       />
     </>
   );

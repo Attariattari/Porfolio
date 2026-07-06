@@ -17,6 +17,15 @@ import { serializeDoc } from "@/lib/mongooseHelper";
 import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socket";
 import { withCache } from "@/lib/cache";
 
+const goalsPageData = portfolioData.goalsData || {};
+const fallbackGoalsData = Array.isArray(goalsPageData) ?
+    goalsPageData :
+    goalsPageData.goals || [];
+const fallbackRoadmapData = Array.isArray(portfolioData.roadmapData) && portfolioData.roadmapData.length > 0 ?
+    portfolioData.roadmapData :
+    goalsPageData.roadmap || [];
+const fallbackMilestonesData = portfolioData.milestonesData || [];
+
 /**
  * GoalController
  * Optimized for production with DB + fallback logic, caching, and real-time updates
@@ -24,13 +33,17 @@ import { withCache } from "@/lib/cache";
 export const GoalController = {
     // ===== INTERNAL HELPERS =====
 
+    getGoalsPageData() {
+        return Array.isArray(portfolioData.goalsData) ? {} : portfolioData.goalsData || {};
+    },
+
     // Helper to log activities
     async _logActivity(action, entityType, entityId, title, description = "") {
         try {
             await GoalActivityLog.create({
                 action,
                 entityType,
-                entityId: entityId ? .toString(),
+                entityId: entityId?.toString(),
                 title,
                 description,
                 createdAt: new Date(),
@@ -66,7 +79,7 @@ export const GoalController = {
                         .lean();
 
                     const uploadedTitles = new Set(dbGoals.map((g) => g.title));
-                    const fallbackGoals = (portfolioData.goalsData || [])
+                    const fallbackGoals = fallbackGoalsData
                         .filter((g) => !uploadedTitles.has(g.title))
                         .map((g) => ({
                             ...g,
@@ -82,7 +95,7 @@ export const GoalController = {
             );
         } catch (error) {
             console.error("[GoalController.getAllGoals] Error:", error);
-            return (portfolioData.goalsData || []).map((g) => ({
+            return fallbackGoalsData.map((g) => ({
                 ...g,
                 _id: `fallback_${g.id}`,
                 _isFromDataJs: true,
@@ -106,8 +119,8 @@ export const GoalController = {
             if (goal) return serializeDoc(goal);
 
             // Fallback
-            const fallbackGoal = (portfolioData.goalsData || []).find(
-                (g) => g.id ? .toString() === identifier || g.title === identifier,
+            const fallbackGoal = fallbackGoalsData.find(
+                (g) => g.id?.toString() === identifier || g.title === identifier,
             );
             if (fallbackGoal) {
                 return {
@@ -288,7 +301,7 @@ export const GoalController = {
                         .lean();
 
                     const dbTitles = new Set(dbRoadmap.map((r) => r.title));
-                    const fallbackRoadmap = (portfolioData.roadmapData || [])
+                    const fallbackRoadmap = fallbackRoadmapData
                         .filter((r) => !dbTitles.has(r.title))
                         .map((r) => ({
                             ...r,
@@ -314,7 +327,7 @@ export const GoalController = {
             );
         } catch (error) {
             console.error("[GoalController.getAllRoadmap] Error:", error);
-            return (portfolioData.roadmapData || []).map((r) => ({
+            return fallbackRoadmapData.map((r) => ({
                 ...r,
                 _id: `fallback_${r.id}`,
                 _isFromDataJs: true,
@@ -396,7 +409,7 @@ export const GoalController = {
                     "delete",
                     "roadmap",
                     id,
-                    item ? .title || "Deleted Roadmap Item",
+                    item?.title || "Deleted Roadmap Item",
                     "Roadmap item removed.",
                 );
 
@@ -431,7 +444,7 @@ export const GoalController = {
                         .lean();
 
                     const dbTitles = new Set(dbMilestones.map((m) => m.title));
-                    const fallbackMilestones = (portfolioData.milestonesData || [])
+                    const fallbackMilestones = fallbackMilestonesData
                         .filter((m) => !dbTitles.has(m.title))
                         .map((m) => ({
                             ...m,
@@ -457,7 +470,7 @@ export const GoalController = {
             );
         } catch (error) {
             console.error("[GoalController.getAllMilestones] Error:", error);
-            return (portfolioData.milestonesData || []).map((m) => ({
+            return fallbackMilestonesData.map((m) => ({
                 ...m,
                 _id: `fallback_${m.id}`,
                 _isFromDataJs: true,
@@ -539,7 +552,7 @@ export const GoalController = {
                     "delete",
                     "milestone",
                     id,
-                    milestone ? .title || "Deleted Milestone",
+                    milestone?.title || "Deleted Milestone",
                     "Milestone record archived.",
                 );
 
@@ -573,9 +586,9 @@ export const GoalController = {
 
                     // Return fallback
                     return {
-                        missionStatement: portfolioData.goalsVision ? .missionStatement || "",
-                        visionStatement: portfolioData.goalsVision ? .visionStatement || "",
-                        founderMessage: portfolioData.goalsVision ? .founderMessage || "",
+                        missionStatement: portfolioData.goalsVision?.missionStatement || "",
+                        visionStatement: portfolioData.goalsVision?.visionStatement || "",
+                        founderMessage: portfolioData.goalsVision?.founderMessage || "",
                         _isFromDataJs: true,
                     };
                 },
@@ -585,9 +598,9 @@ export const GoalController = {
         } catch (error) {
             console.error("[GoalController.getVision] Error:", error);
             return {
-                missionStatement: portfolioData.goalsVision ? .missionStatement || "",
-                visionStatement: portfolioData.goalsVision ? .visionStatement || "",
-                founderMessage: portfolioData.goalsVision ? .founderMessage || "",
+                missionStatement: portfolioData.goalsVision?.missionStatement || "",
+                visionStatement: portfolioData.goalsVision?.visionStatement || "",
+                founderMessage: portfolioData.goalsVision?.founderMessage || "",
                 _isFromDataJs: true,
             };
         }
@@ -701,8 +714,8 @@ export const GoalController = {
 
             // Check cache
             if (!forceRegenerate &&
-                visionDoc ? .aiInsights &&
-                visionDoc ? .lastAiRefresh
+                visionDoc?.aiInsights &&
+                visionDoc?.lastAiRefresh
             ) {
                 const ageInHours =
                     (new Date() - visionDoc.lastAiRefresh) / (1000 * 60 * 60);
@@ -754,7 +767,7 @@ export const GoalController = {
                 fastestGrowingArea: fastestGrowing,
                 upcomingPriority: roadmap.find(
                     (r) => r.status === "in-progress" || r.status === "upcoming",
-                ) ? .title || "Next Strategic Expansion",
+                )?.title || "Next Strategic Expansion",
                 executionHealthScore: Math.round(
                     goals.reduce((sum, g) => sum + (g.progress || 0), 0) / goals.length,
                 ),
@@ -789,16 +802,128 @@ export const GoalController = {
         }
     },
 
+    async getRecentProgress(publicOnly = true) {
+        try {
+            await dbConnect();
+            const query = {
+                entityType: "progress",
+                ...(publicOnly ? { publishStatus: "published" } : {}),
+            };
+
+            const updates = await GoalActivityLog.find(query)
+                .sort({ isPinned: -1, order: 1, createdAt: -1 })
+                .lean();
+
+            if (updates.length > 0) {
+                return serializeDoc(updates);
+            }
+
+            return (goalsPageData.recentProgress || []).map((title, index) => ({
+                _id: `fallback_progress_${index + 1}`,
+                _isFromDataJs: true,
+                action: "progress",
+                entityType: "progress",
+                title,
+                description: "",
+                category: "Roadmap",
+                publishStatus: "published",
+                order: index,
+                createdAt: new Date(0),
+            }));
+        } catch (error) {
+            console.error("[GoalController.getRecentProgress] Error:", error);
+            return (goalsPageData.recentProgress || []).map((title, index) => ({
+                _id: `fallback_progress_${index + 1}`,
+                _isFromDataJs: true,
+                title,
+                description: "",
+                category: "Roadmap",
+                publishStatus: "published",
+                order: index,
+                createdAt: new Date(0),
+            }));
+        }
+    },
+
+    async createRecentProgress(data) {
+        try {
+            await dbConnect();
+            const progress = await GoalActivityLog.create({
+                action: "progress",
+                entityType: "progress",
+                title: data.title,
+                description: data.description || "",
+                category: data.category || "Content",
+                publishStatus: data.publishStatus || "published",
+                order: data.order || 0,
+                isPinned: Boolean(data.isPinned),
+                createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
+            });
+
+            emitSocketEvent("CHANGELOG_UPDATED", {
+                action: "progress",
+                entityType: "progress",
+                title: progress.title,
+                createdAt: progress.createdAt,
+            });
+
+            return serializeDoc(progress);
+        } catch (error) {
+            console.error("[GoalController.createRecentProgress] Error:", error);
+            throw error;
+        }
+    },
+
+    async updateRecentProgress(id, data) {
+        try {
+            await dbConnect();
+            const update = {
+                ...data,
+                ...(data.createdAt ? { createdAt: new Date(data.createdAt) } : {}),
+            };
+            const progress = await GoalActivityLog.findOneAndUpdate({
+                _id: id,
+                entityType: "progress",
+            }, update, { new: true }).lean();
+
+            return progress ? serializeDoc(progress) : null;
+        } catch (error) {
+            console.error("[GoalController.updateRecentProgress] Error:", error);
+            throw error;
+        }
+    },
+
+    async deleteRecentProgress(id) {
+        try {
+            await dbConnect();
+            return await GoalActivityLog.findOneAndDelete({
+                _id: id,
+                entityType: "progress",
+            });
+        } catch (error) {
+            console.error("[GoalController.deleteRecentProgress] Error:", error);
+            throw error;
+        }
+    },
+
     // ===== STATISTICS =====
 
     // Get goals statistics
     async getGoalsStats() {
         try {
+            const fallbackSummary = !Array.isArray(portfolioData.goalsData) ?
+                portfolioData.goalsData?.progressMetrics :
+                null;
+
+            if (fallbackSummary) {
+                return fallbackSummary;
+            }
+
             await dbConnect();
             const goals = await Goal.find({ publishStatus: "published" }).lean();
-            const fallback = portfolioData.goalsData || [];
+            const fallback = fallbackGoalsData;
 
-            const allGoals = [...goals, ...fallback];
+            const allGoals = goals.length > 0 ? goals : fallback;
 
             return {
                 totalGoals: allGoals.length,
@@ -836,7 +961,7 @@ export const GoalController = {
             };
 
             // 1. Goals
-            for (const g of portfolioData.goalsData || []) {
+            for (const g of fallbackGoalsData) {
                 const exists = await Goal.findOne({ title: g.title });
                 if (!exists) {
                     const data = {...g };
@@ -847,7 +972,7 @@ export const GoalController = {
             }
 
             // 2. Roadmap
-            for (const r of portfolioData.roadmapData || []) {
+            for (const r of fallbackRoadmapData) {
                 const exists = await RoadmapItem.findOne({ title: r.title });
                 if (!exists) {
                     const data = {...r };
@@ -858,7 +983,7 @@ export const GoalController = {
             }
 
             // 3. Milestones
-            for (const m of portfolioData.milestonesData || []) {
+            for (const m of fallbackMilestonesData) {
                 const exists = await Milestone.findOne({ title: m.title });
                 if (!exists) {
                     const data = {...m };

@@ -37,6 +37,9 @@ function renderIcon(iconName) {
     Shield: <Shield className="w-6 h-6" />,
     Target: <Target className="w-6 h-6" />,
     FileText: <FileText className="w-6 h-6" />,
+    Sparkles: <Sparkles className="w-6 h-6" />,
+    TrendingUp: <TrendingUp className="w-6 h-6" />,
+    MessageSquare: <MessageSquare className="w-6 h-6" />,
   };
   return icons[iconName] || <Target className="w-6 h-6" />;
 }
@@ -63,6 +66,7 @@ export default function GoalsClient({
   initialHealth = {},
   initialInsights = {},
   initialChangelog = [],
+  initialPageData = {},
 }) {
   const [goals, setGoals] = useState(initialGoals);
   const [roadmap, setRoadmap] = useState(initialRoadmap);
@@ -72,6 +76,7 @@ export default function GoalsClient({
   const [health, setHealth] = useState(initialHealth);
   const [insights, setInsights] = useState(initialInsights);
   const [changelog, setChangelog] = useState(initialChangelog);
+  const [pageData, setPageData] = useState(initialPageData);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -87,6 +92,7 @@ export default function GoalsClient({
           setHealth(data.data.health || {});
           setInsights(data.data.insights || {});
           setChangelog(data.data.changelog || []);
+          setPageData(data.data.pageData || {});
         }
       } catch (error) {
         console.error("Failed to fetch goals:", error);
@@ -116,6 +122,12 @@ export default function GoalsClient({
     if (a.year !== b.year) return a.year - b.year;
     return (quarterOrder[a.quarter] || 0) - (quarterOrder[b.quarter] || 0);
   });
+  const focusCards = pageData.currentFocus || [];
+  const roadmapItems = pageData.roadmap || sortedRoadmap;
+  const recentProgress = pageData.recentProgress || [];
+  const futureDirection = pageData.futureDirection || [];
+  const finalCTA = pageData.finalCTA || {};
+  const ctaButtons = finalCTA.buttons || [];
 
   return (
     <div className="min-h-screen  relative overflow-hidden">
@@ -145,7 +157,7 @@ export default function GoalsClient({
               <div className="inline-flex items-center gap-3 px-6 py-2.5 glass rounded-full border border-accent/20 shadow-[0_0_30px_rgba(var(--color-accent),0.15)] group hover:border-accent/40 transition-all cursor-default">
                 <Target className="w-4 h-4 text-accent animate-pulse" />
                 <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-accent">
-                  Strategic Intent — 2025
+                  Strategic Intent - 2026
                 </span>
               </div>
             </motion.div>
@@ -249,10 +261,10 @@ export default function GoalsClient({
                   </div>
                   <div>
                     <div className="text-[10px] font-black text-accent uppercase">
-                      Reliability
+                      Roadmap
                     </div>
                     <div className="text-xl font-black text-foreground">
-                      99.9%
+                      Active
                     </div>
                   </div>
                 </div>
@@ -274,10 +286,10 @@ export default function GoalsClient({
                   </div>
                   <div>
                     <div className="text-[10px] font-black text-accent uppercase">
-                      Velocity
+                      Focus
                     </div>
                     <div className="text-xl font-black text-foreground">
-                      10x Scale
+                      SaaS
                     </div>
                   </div>
                 </div>
@@ -478,417 +490,146 @@ export default function GoalsClient({
         </div>
       </SectionWrapper>
 
-      {/* NEW: AI STRATEGIC INSIGHTS */}
-      <SectionWrapper
-        id="ai-insights"
-        title="AI Strategic Insights"
-        subtitle="Data-Driven Foresight"
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[
-            {
-              title: "Highest Progress Goal",
-              value: insights.highestProgressGoal?.title || "N/A",
-              detail: `${insights.highestProgressGoal?.progress || 0}% Complete`,
-              icon: Award,
-            },
-            {
-              title: "Most Critical Goal",
-              value: insights.mostCriticalGoal?.title || "N/A",
-              detail: "High Priority Focus",
-              icon: Target,
-            },
-            {
-              title: "Fastest Growing Area",
-              value: insights.fastestGrowingArea || "Technology",
-              detail: "Strategic Expansion",
-              icon: TrendingUp,
-            },
-            {
-              title: "Upcoming Priority",
-              value: insights.upcomingPriority || "Roadmap Q3",
-              detail: "Next Execution Phase",
-              icon: Zap,
-            },
-            {
-              title: "Execution Health Score",
-              value: `${insights.executionHealthScore || 0}/100`,
-              detail: "Overall Studio Performance",
-              icon: Shield,
-            },
-            {
-              title: "Projected Completion",
-              value: insights.projectedCompletionDate || "Q4 2025",
-              detail: "Timeline Confidence: High",
-              icon: Calendar,
-            },
-          ].map((insight, idx) => (
-            <motion.div
-              key={idx}
-              variants={itemVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              className="group"
-            >
-              <Card className="p-8 h-full bg-gradient-to-br from-accent/[0.02] to-transparent border-accent/10 hover:border-accent/30 transition-all flex flex-col justify-between">
-                <div className="mb-6">
-                  <div className="w-10 h-10 rounded-lg bg-accent/10 text-accent flex items-center justify-center mb-4 group-hover:rotate-6 transition-transform">
-                    <insight.icon className="w-5 h-5" />
-                  </div>
-                  <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-accent/60 mb-2">
-                    {insight.title}
-                  </h4>
-                  <div className="text-lg font-black text-foreground tracking-tight leading-snug">
-                    {insight.value}
-                  </div>
-                </div>
-                <div className="text-xs font-medium text-muted-foreground italic flex items-center gap-2">
-                  <Sparkles className="w-3 h-3 text-accent/40" />
-                  {insight.detail}
-                </div>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
-      </SectionWrapper>
-
-      {/* 3. STRATEGIC GOALS GRID */}
-      <SectionWrapper
-        id="goals"
-        title="Core Objectives"
-        subtitle="Strategic Imperatives"
-      >
+      {/* 4. CURRENT FOCUS */}
+      <SectionWrapper id="current-focus" title="Current Focus" subtitle="Active Direction">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {goals.map((goal, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
-            >
-              <Card className="p-10 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:scale-110 transition-transform pointer-events-none">
-                  {goal.icon ? (
-                    renderIcon(goal.icon)
-                  ) : (
-                    <Target className="w-40 h-40" />
-                  )}
-                </div>
-
-                <div className="flex items-start justify-between mb-8">
-                  <div className="flex items-center gap-5">
-                    <div
-                      className={`w-14 h-14 rounded-2xl flex items-center justify-center p-3 shadow-xl transition-all duration-500 ${
-                        goal.status === "completed"
-                          ? "bg-accent/10 text-accent"
-                          : "bg-muted text-muted-foreground"
-                      } group-hover:scale-110`}
-                    >
-                      {goal.icon ? (
-                        renderIcon(goal.icon)
-                      ) : (
-                        <Target className="w-7 h-7" />
-                      )}
-                    </div>
-                    <div>
-                      <h3 className="text-2xl font-bold tracking-tight text-foreground group-hover:text-accent transition-colors">
-                        {goal.title}
-                      </h3>
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">
-                        {goal.category || "General Strategy"}
-                      </p>
+          {focusCards.map((item, idx) => (
+            <motion.div key={item.title} variants={itemVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ delay: idx * 0.08 }}>
+              <Card className="p-8 h-full group hover:border-accent/30 transition-all">
+                <div className="flex items-start gap-5 mb-6">
+                  <div className="w-12 h-12 rounded-2xl bg-accent/10 text-accent flex items-center justify-center group-hover:scale-110 transition-transform">{renderIcon(item.icon)}</div>
+                  <div>
+                    <h3 className="text-2xl font-black text-foreground tracking-tight group-hover:text-accent transition-colors">{item.title}</h3>
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      <span className="px-3 py-1 rounded-full bg-accent/10 text-accent border border-accent/20 text-[10px] font-black uppercase tracking-widest">{item.status}</span>
+                      <span className="px-3 py-1 rounded-full bg-muted/30 text-muted-foreground border border-border/50 text-[10px] font-black uppercase tracking-widest">{item.type}</span>
                     </div>
                   </div>
-                  {goal.featured && (
-                    <div className="px-3 py-1 rounded-full bg-accent/10 text-accent text-[10px] font-black uppercase tracking-widest border border-accent/20">
-                      Primary
-                    </div>
-                  )}
                 </div>
-
-                <p className="text-muted-foreground leading-relaxed mb-8 font-medium italic opacity-80">
-                  {goal.description ||
-                    "Architecting next-generation digital solutions with precision."}
-                </p>
-
-                <div className="flex flex-wrap items-center gap-3 mb-8">
-                  <span
-                    className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${statusColors[goal.status] || statusColors.planned}`}
-                  >
-                    {goal.status}
-                  </span>
-                  <span
-                    className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${priorityColors[goal.priority] || "bg-muted text-muted-foreground"}`}
-                  >
-                    {goal.priority}
-                  </span>
-                </div>
-
-                {/* Performance Gauge */}
-                <div className="space-y-3 pt-8 border-t border-border/10">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-                      Execution Intensity
-                    </span>
-                    <span className="text-sm font-black text-accent">
-                      {goal.progress || 0}%
-                    </span>
-                  </div>
-                  <div className="h-2 w-full bg-muted/20 rounded-full overflow-hidden p-[1px] border border-white/5">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      whileInView={{ width: `${goal.progress || 0}%` }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 1.5, ease: "easeOut" }}
-                      className="h-full rounded-full bg-gradient-to-r from-accent via-accent/80 to-accent/60 shadow-[0_0_10px_rgba(var(--color-accent),0.3)]"
-                    />
-                  </div>
-                </div>
-
-                {goal.targetDate && (
-                  <div className="flex items-center gap-2 mt-8 text-[11px] font-bold text-muted-foreground/60 uppercase tracking-widest">
-                    <Calendar className="w-3.5 h-3.5" />
-                    Deadline: {new Date(goal.targetDate).toLocaleDateString()}
-                  </div>
-                )}
+                <p className="text-muted-foreground leading-relaxed font-medium opacity-85">{item.description}</p>
               </Card>
             </motion.div>
           ))}
         </div>
       </SectionWrapper>
 
-      {/* 4. ROADMAP VISUALIZATION */}
-      <SectionWrapper
-        id="roadmap"
-        title="Timeline Matrix"
-        subtitle="Future Trajectory"
-      >
+      {/* 5. REAL ROADMAP TIMELINE */}
+      <SectionWrapper id="roadmap" title="Real Roadmap Timeline" subtitle="Estimated Direction">
         <div className="relative space-y-8">
-          {/* Timeline central line */}
           <div className="absolute left-0 lg:left-1/2 top-0 bottom-0 w-[1px] bg-gradient-to-b from-accent/50 via-accent/30 to-transparent lg:-translate-x-1/2 opacity-20" />
-
-          {sortedRoadmap.map((item, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, x: idx % 2 === 0 ? -50 : 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className={`relative flex flex-col lg:flex-row items-center gap-12 lg:gap-24 ${idx % 2 === 0 ? "lg:flex-row" : "lg:flex-row-reverse"}`}
-            >
-              {/* Point on timeline */}
-              <div className="absolute left-0 lg:left-1/2 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-background border-2 border-accent z-20 transition-transform group-hover:scale-125 lg:-translate-x-1/2 shadow-[0_0_15px_rgba(var(--color-accent),0.5)]">
-                <div className="absolute inset-0 rounded-full bg-accent animate-ping opacity-20" />
-              </div>
-
+          {roadmapItems.map((item, idx) => (
+            <motion.div key={item.title} initial={{ opacity: 0, x: idx % 2 === 0 ? -50 : 50 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className={`relative flex flex-col lg:flex-row items-center gap-12 lg:gap-24 ${idx % 2 === 0 ? "lg:flex-row" : "lg:flex-row-reverse"}`}>
+              <div className="absolute left-0 lg:left-1/2 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-background border-2 border-accent z-20 lg:-translate-x-1/2 shadow-[0_0_15px_rgba(var(--color-accent),0.5)]"><div className="absolute inset-0 rounded-full bg-accent animate-ping opacity-20" /></div>
               <div className="w-full lg:w-1/2 flex flex-col items-center lg:items-start order-2">
                 <Card className="w-full p-8 group hover:border-accent/40 transition-all duration-500 shadow-2xl bg-card/10 backdrop-blur-3xl">
-                  <div className="flex justify-between items-center mb-6">
-                    <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-accent/10 border border-accent/20">
-                      <span className="text-[12px] font-black text-accent tracking-tighter">
-                        {item.year} — {item.quarter}
-                      </span>
-                    </div>
-                    <span
-                      className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${
-                        item.status === "completed"
-                          ? "bg-accent/10 text-accent border border-accent/20"
-                          : item.status === "in-progress"
-                            ? "bg-accent/10 text-accent border border-accent/20"
-                            : "bg-muted/30 text-muted-foreground border border-border/50"
-                      }`}
-                    >
-                      {item.status}
-                    </span>
+                  <div className="flex flex-wrap justify-between items-center gap-3 mb-6">
+                    <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-accent/10 border border-accent/20"><span className="text-[12px] font-black text-accent tracking-tighter">{item.phase || `${item.year || "Roadmap"} - ${item.quarter || "Phase"}`}</span></div>
+                    <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-muted/30 text-muted-foreground border border-border/50">{item.status}</span>
                   </div>
-                  <h3 className="text-2xl font-black text-foreground mb-4 group-hover:text-accent transition-colors italic">
-                    {item.title}
-                  </h3>
-                  <p className="text-muted-foreground text-base leading-relaxed opacity-80 font-medium">
-                    {item.description}
-                  </p>
+                  <h3 className="text-2xl font-black text-foreground mb-4 group-hover:text-accent transition-colors italic">{item.title}</h3>
+                  <p className="text-muted-foreground text-base leading-relaxed opacity-80 font-medium">{item.description}</p>
                 </Card>
               </div>
-
-              {/* Decorative label column for desktop */}
-              <div className="hidden lg:flex w-1/2 justify-center lg:justify-start order-1">
-                <div
-                  className={`text-9xl font-black font-serif italic pointer-events-none opacity-[0.02] select-none ${idx % 2 === 0 ? "lg:text-right w-full" : "lg:text-left w-full"}`}
-                >
-                  {item.quarter}
-                </div>
-              </div>
+              <div className="hidden lg:flex w-1/2 justify-center lg:justify-start order-1"><div className={`text-8xl font-black font-serif italic pointer-events-none opacity-[0.02] select-none ${idx % 2 === 0 ? "lg:text-right w-full" : "lg:text-left w-full"}`}>{item.phase || item.quarter}</div></div>
             </motion.div>
           ))}
         </div>
       </SectionWrapper>
 
-      {/* NEW: PUBLIC CHANGELOG */}
-      <SectionWrapper
-        id="changelog"
-        title="Recent Progress"
-        subtitle="Public Pulse"
-      >
-        <div className="max-w-4xl mx-auto space-y-4">
-          {changelog && changelog.length > 0 ? (
-            changelog.map((log, idx) => (
-              <motion.div
-                key={log._id || idx}
-                initial={{ opacity: 0, x: -10 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.05 }}
-              >
-                <div className="flex items-center gap-6 p-5 glass rounded-2xl border border-border/50 group hover:border-accent/20 transition-all">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-accent/10 text-accent flex items-center justify-center">
-                    {log.action === "complete" ? (
-                      <CheckCircle2 className="w-4 h-4" />
-                    ) : (
-                      <Zap className="w-4 h-4" />
+      {/* 6. RECENT PROGRESS */}
+      <SectionWrapper id="recent-progress" title="Recent Progress" subtitle="Honest Updates">
+        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
+          {recentProgress.map((item, idx) => {
+            const progress = typeof item === "string" ? { title: item } : item;
+
+            return (
+              <motion.div key={progress._id || progress.title} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.04 }} className="flex items-start gap-4 p-5 glass rounded-2xl border border-border/50">
+                <CheckCircle2 className="w-5 h-5 text-accent flex-shrink-0" />
+                <div>
+                  <div className="flex flex-wrap items-center gap-2 mb-1">
+                    <span className="text-sm font-bold text-foreground/85">{progress.title}</span>
+                    {progress.category && (
+                      <span className="px-2 py-0.5 rounded-md bg-muted text-[8px] font-black uppercase tracking-widest text-muted-foreground border border-border/50">
+                        {progress.category}
+                      </span>
                     )}
                   </div>
-                  <div className="flex-grow">
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                      <span className="text-sm font-black text-foreground">
-                        {log.title}
-                      </span>
-                      <span className="px-2 py-0.5 rounded-md bg-muted text-[8px] font-black uppercase tracking-widest text-muted-foreground border border-border/50">
-                        {log.entityType}
-                      </span>
-                    </div>
-                    <p className="text-[10px] font-medium text-muted-foreground mt-1 italic">
-                      {log.description}
-                    </p>
-                  </div>
-                  <div className="flex-shrink-0 text-right">
-                    <div className="text-[9px] font-bold text-muted-foreground/60 uppercase tracking-widest">
-                      {new Date(log.createdAt).toLocaleDateString(undefined, {
-                        month: "short",
-                        day: "numeric",
-                      })}
-                    </div>
-                    <div className="text-[8px] font-medium text-accent/40 uppercase">
-                      {new Date(log.createdAt).toLocaleTimeString(undefined, {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </div>
-                  </div>
+                  {progress.description && (
+                    <p className="text-xs text-muted-foreground leading-relaxed">{progress.description}</p>
+                  )}
                 </div>
               </motion.div>
-            ))
-          ) : (
-            <div className="text-center py-12 glass rounded-3xl border border-dashed border-border">
-              <span className="text-xs font-medium text-muted-foreground italic">
-                Awaiting strategic updates...
-              </span>
-            </div>
-          )}
+            );
+          })}
         </div>
       </SectionWrapper>
 
-      {/* 5. ACHIEVED MILESTONES */}
-      {milestones.length > 0 && (
-        <SectionWrapper
-          id="milestones"
-          title="Wall of Scale"
-          subtitle="Key Milestones"
-        >
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {milestones.map((milestone, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
-              >
-                <Card className="min-h-[250px] flex flex-col justify-between group hover:border-accent/40 relative overflow-hidden">
-                  {/* Digital Seal Pattern */}
-                  <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full border-[10px] border-accent/5 group-hover:scale-125 transition-transform" />
-
-                  <div className="relative z-10">
-                    <div className="flex justify-between items-start mb-6">
-                      <div className="relative">
-                        <div className="absolute inset-0 bg-accent blur-xl opacity-0 group-hover:opacity-20 transition-opacity" />
-                        <div className="w-12 h-12 rounded-xl bg-accent/10 border border-accent/20 text-accent flex items-center justify-center group-hover:bg-accent group-hover:text-white group-hover:rotate-12 transition-all duration-500 shadow-lg">
-                          <Award className="w-6 h-6" />
-                        </div>
-                      </div>
-                      {milestone.featured && (
-                        <div className="px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent text-[9px] font-black uppercase tracking-[0.2em]">
-                          Verified Achievement
-                        </div>
-                      )}
-                    </div>
-                    <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-accent transition-colors italic tracking-tight">
-                      {milestone.title}
-                    </h3>
-                    <p className="text-muted-foreground text-sm font-medium opacity-80 leading-relaxed italic">
-                      "{milestone.description}"
-                    </p>
-                  </div>
-
-                  <div className="relative z-10 pt-6 mt-6 border-t border-border/10 flex justify-between items-center">
-                    <div className="flex flex-col">
-                      <span className="text-[8px] font-black text-muted-foreground/40 uppercase tracking-widest">
-                        Entry Serial
-                      </span>
-                      <span className="text-[10px] font-bold text-muted-foreground/80 tracking-tighter uppercase">
-                        #GT-{idx + 1024}
-                      </span>
-                    </div>
-                    <div className="flex flex-col items-end">
-                      <span className="text-[8px] font-black text-accent/40 uppercase tracking-widest">
-                        Signed Date
-                      </span>
-                      <span className="text-[10px] font-bold text-accent tracking-tighter uppercase">
-                        {new Date(milestone.date).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </SectionWrapper>
-      )}
-
+      {/* 7. FUTURE DIRECTION */}
+      <SectionWrapper id="future-direction" title="Future Direction" subtitle="Professional Vision">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {futureDirection.map((item, idx) => (
+            <motion.div key={item.title} variants={itemVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ delay: idx * 0.08 }}>
+              <Card className="p-7 h-full group hover:border-accent/30 transition-all">
+                <div className="w-11 h-11 rounded-xl bg-accent/10 text-accent flex items-center justify-center mb-5 group-hover:rotate-6 transition-transform">{renderIcon(item.icon)}</div>
+                <h3 className="text-xl font-black text-foreground mb-3 tracking-tight">{item.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed font-medium opacity-85">{item.description}</p>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </SectionWrapper>
       {/* 6. CALL TO ACTION */}
-      <section className="py-32 relative group mt-20">
+      <section className="py-24 md:py-28 relative mt-16">
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
         <div className="container mx-auto px-6 relative z-10">
-          <Card className="max-w-5xl mx-auto p-12 md:p-24 text-center relative overflow-hidden bg-gradient-to-br from-accent/5 via-card/10 to-emerald-500/5">
-            <div className="absolute top-0 right-0 p-24 opacity-5 pointer-events-none group-hover:scale-110 transition-transform">
-              <MessageSquare className="w-80 h-80 text-accent" />
-            </div>
+          <div className="max-w-6xl mx-auto rounded-lg border border-border/50 bg-card/35 backdrop-blur-xl overflow-hidden">
+            <div className="grid lg:grid-cols-[1.1fr_0.9fr] items-center gap-8 p-8 md:p-12 lg:p-14">
+              <motion.div
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="text-center lg:text-left"
+              >
+                <div className="inline-flex items-center gap-2 rounded-full border border-accent/25 bg-accent/10 px-4 py-2 text-xs font-bold text-accent mb-6">
+                  <MessageSquare className="w-4 h-4" />
+                  {"Start a conversation"}
+                </div>
+                <h2 className="text-3xl md:text-5xl font-black text-foreground mb-5 tracking-normal leading-tight">
+                  {finalCTA.heading || "Have an Idea or Project in Mind?"}
+                  <span className="block text-accent italic mt-1">
+                    {"Let's Talk."}
+                  </span>
+                </h2>
+                <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto lg:mx-0 font-medium leading-relaxed">
+                  {finalCTA.subtitle ||
+                    "Muhyo Tech is actively building modern web products, SaaS systems, and business-focused digital solutions. Let's discuss your idea and turn it into something professional."}
+                </p>
+              </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              className="relative z-10"
-            >
-              <h2 className="text-4xl md:text-6xl font-black text-foreground mb-8 tracking-tighter">
-                Let's Build Something <br className="hidden md:block" />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-accent/80 to-accent italic">
-                  Extraordinary.
-                </span>
-              </h2>
-              <p className="text-lg md:text-xl text-muted-foreground mb-12 max-w-2xl mx-auto font-medium opacity-80 backdrop-blur-sm">
-                Have a vision that needs architectural precision? Let's discuss
-                how we can bring your concept to life with cutting-edge
-                engineering.
-              </p>
-              <Link href="/contact">
-                <Button className="scale-125 md:scale-110">
-                  Architect Your Project
-                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
-            </motion.div>
-          </Card>
+              <motion.div
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.08 }}
+                className="flex flex-col sm:flex-row lg:flex-col xl:flex-row justify-center lg:justify-end gap-3"
+              >
+                {(ctaButtons.length
+                  ? ctaButtons
+                  : [{ label: "Book a Call", href: "/contact" }]
+                ).map((button, index) => (
+                  <Link key={button.label} href={button.href} className="w-full sm:w-auto">
+                    <Button
+                      variant={index === 0 ? "primary" : "secondary"}
+                      className="w-full sm:w-auto min-w-[170px] px-6"
+                    >
+                      {button.label}
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </Link>
+                ))}
+              </motion.div>
+            </div>
+          </div>
         </div>
         <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
       </section>
