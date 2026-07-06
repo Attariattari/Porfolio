@@ -457,10 +457,10 @@ const Portfolio = ({ projects }) => {
           {/* Project Tree Structure */}
           <div className="relative group/tree-main">
             {/* Central Vertical Trunk */}
-            <div className="absolute left-[24px] md:left-[52px] lg:left-1/2 top-0 bottom-0 w-[2px] bg-gradient-to-b from-accent/0 via-accent/20 to-accent/0 lg:-translate-x-1/2 z-0" />
+            <div className="hidden lg:block absolute left-1/2 top-0 bottom-0 w-[2px] bg-gradient-to-b from-accent/0 via-accent/20 to-accent/0 -translate-x-1/2 z-0" />
             <div className="absolute left-[24px] md:left-[52px] lg:left-1/2 top-0 bottom-0 w-[2px] bg-accent/10 blur-[3px] lg:-translate-x-1/2 z-0 hidden lg:block" />
 
-            <div className="flex flex-col gap-24 md:gap-24 relative z-10">
+            <div className="flex flex-col gap-6 lg:gap-24 relative z-10">
               <AnimatePresence mode="popLayout">
                 {filteredProjects.map((project, index) => {
                   const isReversed = index % 2 !== 0;
@@ -474,10 +474,10 @@ const Portfolio = ({ projects }) => {
                       exit={{ opacity: 0, scale: 0.9 }}
                       viewport={{ once: true, margin: "-100px" }}
                       transition={{ duration: 0.7, ease: "easeOut" }}
-                      className={`relative flex flex-col lg:flex-row items-center justify-between w-full pl-16 md:pl-32 lg:pl-0 group`}
+                      className="relative flex flex-col lg:flex-row items-center justify-between w-full rounded-2xl border border-border/60 bg-card/45 p-4 shadow-sm backdrop-blur-md lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none group"
                     >
                       {/* Interactive Connector Node */}
-                      <div className="absolute left-[13px] md:left-[41px] lg:left-1/2 top-10 lg:top-1/2 w-8 h-8 rounded-xl bg-card border-2 border-accent/30 transform lg:-translate-x-1/2 lg:-translate-y-1/2 flex items-center justify-center z-20 transition-all duration-500 group-hover:rotate-45 group-hover:border-accent group-hover:scale-110 shadow-[0_0_20px_rgba(var(--accent-rgb),0.2)]">
+                      <div className="hidden lg:flex absolute left-1/2 top-1/2 w-8 h-8 rounded-xl bg-card border-2 border-accent/30 transform -translate-x-1/2 -translate-y-1/2 items-center justify-center z-20 transition-all duration-500 group-hover:rotate-45 group-hover:border-accent group-hover:scale-110 shadow-[0_0_20px_rgba(var(--accent-rgb),0.2)]">
                         <div className="w-2 h-2 rounded-full bg-accent group-hover:animate-ping" />
                       </div>
 
@@ -496,7 +496,7 @@ const Portfolio = ({ projects }) => {
 
                       {/* Content Side */}
                       <div
-                        className={`w-full lg:w-[calc(50%-6rem)] flex flex-col gap-6 ${
+                        className={`order-2 mt-5 w-full lg:mt-0 lg:w-[calc(50%-6rem)] flex flex-col gap-6 ${
                           isReversed
                             ? "lg:order-2 text-left"
                             : "lg:order-1 lg:text-right text-left"
@@ -512,11 +512,11 @@ const Portfolio = ({ projects }) => {
                           <span className="px-4 py-1.5 bg-accent/5 rounded-full border border-accent/10 text-[9px] font-bold tracking-normal text-accent/60 mb-5 group-hover:text-accent transition-colors">
                             {project.category}
                           </span>
-                          <h3 className="text-3xl md:text-5xl font-bold text-foreground tracking-tighter leading-none mb-6 group-hover:text-accent transition-colors">
+                          <h3 className="text-2xl md:text-5xl font-bold text-foreground tracking-tight lg:tracking-tighter leading-tight lg:leading-none mb-4 lg:mb-6 group-hover:text-accent transition-colors">
                             {project.title}
                           </h3>
                           <p
-                            className={`text-muted-foreground text-sm md:text-lg leading-relaxed font-medium italic mb-10 max-w-lg ${
+                            className={`text-muted-foreground text-sm md:text-lg leading-relaxed font-medium italic mb-6 lg:mb-10 max-w-lg ${
                               isReversed ? "" : "lg:ml-auto"
                             }`}
                           >
@@ -525,7 +525,7 @@ const Portfolio = ({ projects }) => {
 
                           {/* Tech Minimalist View */}
                           <div
-                            className={`flex flex-wrap gap-2 mb-10 ${
+                            className={`flex flex-wrap gap-2 mb-6 lg:mb-10 ${
                               isReversed ? "" : "lg:justify-end"
                             }`}
                           >
@@ -541,7 +541,7 @@ const Portfolio = ({ projects }) => {
 
                           {/* Refined Actions */}
                           <div
-                            className={`flex items-center gap-8 ${
+                            className={`flex flex-wrap items-center gap-4 lg:gap-8 ${
                               isReversed ? "" : "lg:flex-row-reverse"
                             }`}
                           >
@@ -579,9 +579,9 @@ const Portfolio = ({ projects }) => {
 
                       {/* Image Side: Cinematic Service-style Card */}
                       <div
-                        className={`w-full lg:w-[calc(50%-6rem)] relative group/img-side ${
+                        className={`order-1 w-full lg:w-[calc(50%-6rem)] relative group/img-side ${
                           isReversed ? "lg:order-1" : "lg:order-2"
-                        } mt-12 lg:mt-0`}
+                        } mt-0`}
                       >
                         {/* Accent glow */}
                         <div className="absolute bg-accent/20 blur-[40px] rounded-full scale-90 animate-pulse -z-10 inset-0" />

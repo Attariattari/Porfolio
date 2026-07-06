@@ -87,10 +87,10 @@ const ServiceRow = ({ service, index, onImageClick }) => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
       transition={{ duration: 0.8 }}
-      className={`relative flex flex-col lg:flex-row items-center justify-between w-full pl-16 md:pl-28 lg:pl-0`}
+      className="relative flex flex-col lg:flex-row items-center justify-between w-full rounded-2xl border border-border/60 bg-card/45 p-4 shadow-sm backdrop-blur-md lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none"
     >
       {/* Central Node for Tree */}
-      <div className="absolute left-[12px] md:left-[40px] lg:left-1/2 top-10 lg:top-1/2 w-6 h-6 rounded-full bg-background border-[3px] border-accent transform lg:-translate-x-1/2 lg:-translate-y-1/2 flex items-center justify-center z-20 transition-transform duration-500 hover:scale-[1.3] cursor-pointer shadow-lg shadow-accent/40">
+      <div className="hidden lg:flex absolute left-1/2 top-1/2 w-6 h-6 rounded-full bg-background border-[3px] border-accent transform -translate-x-1/2 -translate-y-1/2 items-center justify-center z-20 transition-transform duration-500 hover:scale-[1.3] cursor-pointer shadow-lg shadow-accent/40">
         <div className="w-1.5 h-1.5 rounded-full bg-accent animate-ping absolute" />
       </div>
 
@@ -99,10 +99,10 @@ const ServiceRow = ({ service, index, onImageClick }) => {
 
       {/* Content Side */}
       <div
-        className={`w-full lg:w-[calc(50%-4rem)] flex flex-col gap-6 md:gap-8 ${isReversed ? "lg:order-2 text-left" : "lg:order-1 lg:text-right text-left"} relative z-10`}
+        className={`order-2 mt-5 w-full lg:mt-0 lg:w-[calc(50%-4rem)] flex flex-col gap-6 md:gap-8 ${isReversed ? "lg:order-2 text-left" : "lg:order-1 lg:text-right text-left"} relative z-10`}
       >
         <div
-          className={`flex items-center gap-4 ${isReversed ? "flex-row" : "flex-row lg:flex-row-reverse"}`}
+          className={`flex items-start sm:items-center gap-4 ${isReversed ? "flex-row" : "flex-row lg:flex-row-reverse"}`}
         >
           <div className="w-16 h-16 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent shadow-lg shrink-0">
             <Icon className="w-8 h-8" />
@@ -111,7 +111,7 @@ const ServiceRow = ({ service, index, onImageClick }) => {
             <span className="text-accent font-bold tracking-normal text-xs block mb-1">
               Phase 0{index + 1}
             </span>
-            <h3 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight leading-tight">
+            <h3 className="text-2xl md:text-4xl font-bold text-foreground tracking-tight leading-tight">
               {service.title}
             </h3>
           </div>
@@ -185,7 +185,7 @@ const ServiceRow = ({ service, index, onImageClick }) => {
 
       {/* Image Side: Cinematic Slider-style — OPTIMIZED with Next/Image */}
       <div
-        className={`w-full lg:w-[calc(50%-4rem)] relative group/img-side ${isReversed ? "lg:order-1" : "lg:order-2"} mt-12 lg:mt-0`}
+        className={`order-1 w-full lg:w-[calc(50%-4rem)] relative group/img-side ${isReversed ? "lg:order-1" : "lg:order-2"} mt-0`}
       >
         {/* Accent glow */}
         <div className="absolute inset-0 bg-accent/20 blur-[40px] rounded-full scale-90 animate-pulse -z-10" />
@@ -269,10 +269,10 @@ export default function Services({ data, showViewAll = false }) {
     >
       <div className="relative max-w-7xl mx-auto mt-8 md:mt-12 group/tree">
         {/* Central Vertical Line (Tree Trunk) */}
-        <div className="absolute left-[23px] md:left-[51px] lg:left-1/2 top-4 bottom-4 w-[2px] bg-gradient-to-b from-accent/0 via-accent/30 to-accent/0 lg:-translate-x-1/2 z-0" />
-        <div className="absolute left-[23px] md:left-[51px] lg:left-1/2 top-4 bottom-4 w-[2px] bg-accent/20 blur-[2px] lg:-translate-x-1/2 z-0 opacity-0 group-hover/tree:opacity-100 transition-opacity duration-1000" />
+        <div className="hidden lg:block absolute left-1/2 top-4 bottom-4 w-[2px] bg-gradient-to-b from-accent/0 via-accent/30 to-accent/0 -translate-x-1/2 z-0" />
+        <div className="hidden lg:block absolute left-1/2 top-4 bottom-4 w-[2px] bg-accent/20 blur-[2px] -translate-x-1/2 z-0 opacity-0 group-hover/tree:opacity-100 transition-opacity duration-1000" />
 
-        <div className="flex flex-col gap-12 md:gap-12 relative z-10 w-full overflow-hidden lg:overflow-visible pb-10">
+        <div className="flex flex-col gap-6 lg:gap-12 relative z-10 w-full overflow-hidden lg:overflow-visible pb-10">
           {displayData.map((service, index) => (
             <ServiceRow
               key={service._id || service.slug || service.id}

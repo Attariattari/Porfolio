@@ -32,10 +32,10 @@ const ProjectRow = ({ project, index, setSelectedProject }) => {
       exit={{ opacity: 0, scale: 0.9 }}
       viewport={{ once: true, margin: "-100px" }}
       transition={{ duration: 0.7, ease: "easeOut" }}
-      className={`relative flex flex-col lg:flex-row items-center justify-between w-full pl-16 md:pl-32 lg:pl-0 group mb-24 md:mb-32`}
+      className="relative flex flex-col lg:flex-row items-center justify-between w-full rounded-2xl border border-border/60 bg-card/45 p-4 shadow-sm backdrop-blur-md lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none group mb-8 lg:mb-32"
     >
       {/* Interactive Connector Node */}
-      <div className="absolute left-[13px] md:left-[41px] lg:left-1/2 top-10 lg:top-1/2 w-8 h-8 rounded-xl bg-card border-2 border-accent/30 transform lg:-translate-x-1/2 lg:-translate-y-1/2 flex items-center justify-center z-20 transition-all duration-500 group-hover:rotate-45 group-hover:border-accent group-hover:scale-110 shadow-[0_0_20px_rgba(var(--accent-rgb),0.2)]">
+      <div className="hidden lg:flex absolute left-1/2 top-1/2 w-8 h-8 rounded-xl bg-card border-2 border-accent/30 transform -translate-x-1/2 -translate-y-1/2 items-center justify-center z-20 transition-all duration-500 group-hover:rotate-45 group-hover:border-accent group-hover:scale-110 shadow-[0_0_20px_rgba(var(--accent-rgb),0.2)]">
         <div className="w-2 h-2 rounded-full bg-accent group-hover:animate-ping" />
       </div>
 
@@ -52,7 +52,7 @@ const ProjectRow = ({ project, index, setSelectedProject }) => {
 
       {/* Content Side */}
       <div
-        className={`w-full lg:w-[calc(50%-6rem)] flex flex-col gap-6 ${
+        className={`order-2 mt-5 w-full lg:mt-0 lg:w-[calc(50%-6rem)] flex flex-col gap-6 ${
           isReversed
             ? "lg:order-2 text-left"
             : "lg:order-1 lg:text-right text-left"
@@ -66,11 +66,11 @@ const ProjectRow = ({ project, index, setSelectedProject }) => {
           <span className="px-4 py-1.5 bg-accent/5 rounded-full border border-accent/10 text-xs font-semibold tracking-normal text-accent/60 mb-5 group-hover:text-accent transition-colors">
             {project.category}
           </span>
-          <h3 className="text-3xl md:text-5xl font-bold text-foreground tracking-tight leading-tight mb-6 group-hover:text-accent transition-colors italic">
+          <h3 className="text-2xl md:text-5xl font-bold text-foreground tracking-tight leading-tight mb-4 lg:mb-6 group-hover:text-accent transition-colors italic">
             {project.title}
           </h3>
           <p
-            className={`text-muted-foreground text-sm md:text-lg leading-relaxed font-medium italic mb-10 max-w-lg ${
+            className={`text-muted-foreground text-sm md:text-lg leading-relaxed font-medium italic mb-6 lg:mb-10 max-w-lg ${
               isReversed ? "" : "lg:ml-auto"
             }`}
           >
@@ -79,7 +79,7 @@ const ProjectRow = ({ project, index, setSelectedProject }) => {
 
           {/* Tech Minimalist View */}
           <div
-            className={`flex flex-wrap gap-2 mb-10 ${
+            className={`flex flex-wrap gap-2 mb-6 lg:mb-10 ${
               isReversed ? "" : "lg:justify-end"
             }`}
           >
@@ -154,9 +154,9 @@ const ProjectRow = ({ project, index, setSelectedProject }) => {
 
       {/* Image Side: Service-style card */}
       <div
-        className={`w-full lg:w-[calc(50%-4rem)] relative group/img-side ${
+        className={`order-1 w-full lg:w-[calc(50%-4rem)] relative group/img-side ${
           isReversed ? "lg:order-1" : "lg:order-2"
-        } mt-12 lg:mt-0`}
+        } mt-0`}
       >
         <div className="absolute inset-0 bg-accent/20 blur-[40px] rounded-full scale-90 opacity-70 -z-10" />
 
@@ -230,9 +230,9 @@ export default function Projects({ data, showViewAll = false }) {
 
   return (
     <SectionWrapper id="projects" title="Featured Work" subtitle="My Portfolio">
-      <div className="relative max-w-7xl mx-auto mt-24 group/tree-main">
+      <div className="relative max-w-7xl mx-auto mt-10 lg:mt-24 group/tree-main">
         {/* Central Vertical Trunk */}
-        <div className="absolute left-[24px] md:left-[52px] lg:left-1/2 top-0 bottom-0 w-[2px] bg-gradient-to-b from-accent/0 via-accent/20 to-accent/0 lg:-translate-x-1/2 z-0" />
+        <div className="hidden lg:block absolute left-1/2 top-0 bottom-0 w-[2px] bg-gradient-to-b from-accent/0 via-accent/20 to-accent/0 -translate-x-1/2 z-0" />
         <div className="absolute left-[24px] md:left-[52px] lg:left-1/2 top-0 bottom-0 w-[2px] bg-accent/10 blur-[3px] lg:-translate-x-1/2 z-0 hidden lg:block" />
 
         <div className="flex flex-col relative z-20">
