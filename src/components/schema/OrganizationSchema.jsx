@@ -90,6 +90,7 @@ export async function OrganizationSchema() {
           image: getSeoImage("/portfolio-hero.png"),
           logo: getSeoImage("/logo.png"),
           telephone: "+92-322-4458481",
+          location: "Lahore, Punjab, Pakistan",
           address,
           areaServed: ["Lahore", "Pakistan"],
           priceRange: "$$",

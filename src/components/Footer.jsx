@@ -298,7 +298,7 @@ export default function Footer({ data }) {
             </p>
             <div className="hidden md:block w-[1px] h-4 bg-border/60" />
             <p className="mb-0 text-[11px] font-medium text-muted-foreground">
-              Chota, Mohlanwal Road, Badu Pura Chung, Lahore, 53720, Pakistan
+              Address: Lahore, Punjab, Pakistan
             </p>
           </div>
 
