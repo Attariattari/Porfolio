@@ -107,7 +107,7 @@ export const aboutData = {
     mission: "To build practical, modern, and scalable web solutions for businesses, startups, professionals, and personal brands.",
     email: "MuhyoTech@gmail.com",
     phone: "+92 322 4458481",
-    location: "Chung, Lahore, Pakistan",
+    location: "Chota, Mohlanwal Road, Badu Pura Chung, Lahore, 53720, Pakistan",
     workingHours: "Mon - Sat: 9:00 AM - 6:00 PM",
     typewriterWords: [
         "Full-Stack Developer",
@@ -242,9 +242,9 @@ export const aboutData = {
     availability: {
         title: "Ready to discuss your project?",
         description: "Share your website, web app, dashboard, or business idea and I will help you shape the right digital solution.",
-        email: "MuhyoTech@gmail.com",
+        email: "Use contact form",
         phone: "+92 322 4458481",
-        location: "Chung, Lahore, Pakistan",
+        location: "Chota, Mohlanwal Road, Badu Pura Chung, Lahore, 53720, Pakistan",
         workingHours: "Mon - Sat: 9:00 AM - 6:00 PM",
         status: "Available for selected projects",
         socialLinks: SOCIAL_LINKS_ARRAY,
@@ -582,7 +582,7 @@ export const portfolioData = {
             ],
             locationInfo: {
                 label: "Location",
-                value: "Lahore, Pakistan",
+                value: "Chota, Mohlanwal Road, Badu Pura Chung, Lahore, 53720, Pakistan",
             },
         },
     },
@@ -590,8 +590,8 @@ export const portfolioData = {
     contactInfo: [{
             icon: "Mail",
             label: "Email Us",
-            value: "MuhyoTech@gmail.com",
-            href: "mailto:MuhyoTech@gmail.com?subject=Project Inquiry&body=Hi MuhyoTech Team, I'm interested in working with you on a project...",
+            value: "Use contact form",
+            href: "#contact-form",
             color: "from-accent/80 to-accent",
         },
         {
@@ -612,8 +612,8 @@ export const portfolioData = {
         {
             icon: "MapPin",
             label: "Our Office",
-            value: "Lahore, Pakistan",
-            href: "https://www.google.com/maps/search/?api=1&query=Lahore,+Pakistan",
+            value: "Chota, Mohlanwal Road, Badu Pura Chung, Lahore, 53720, Pakistan",
+            href: "https://www.google.com/maps/search/?api=1&query=Chota,+Mohlanwal+Road,+Badu+Pura+Chung,+Lahore,+53720,+Pakistan",
             color: "from-purple-500 to-indigo-500",
             target: "_blank",
         },
@@ -1485,8 +1485,8 @@ export const portfolioData = {
         contactInfo: [{
                 icon: "Mail",
                 label: "Email",
-                value: "MuhyoTech@gmail.com",
-                link: "mailto:MuhyoTech@gmail.com",
+                value: "Use contact form",
+                link: "/contact#contact-form",
             },
             {
                 icon: "Phone",
@@ -1497,7 +1497,7 @@ export const portfolioData = {
             {
                 icon: "MapPin",
                 label: "Office Location",
-                value: "Lahore, Pakistan",
+                value: "Chota, Mohlanwal Road, Badu Pura Chung, Lahore, 53720, Pakistan",
             },
             {
                 icon: "Clock",
@@ -1513,8 +1513,8 @@ export const portfolioData = {
         about: "I am a results-driven developer and project strategist with a unique background that blends sales management, team leadership, and full-stack engineering. After starting my career in sales—where I learned how to build relationships and lead teams—I transitioned into web development to bring ideas to life through code. I specialize in building smooth digital systems that help businesses grow and run efficiently. My goal is always to create tools that are not only powerful but also easy and helpful for people to use.",
         contact: [
             { icon: "Phone", text: "+92-322-4458481" },
-            { icon: "Mail", text: "attariattari549@gmail.com" },
-            { icon: "MapPin", text: "Lahore, Pakistan" },
+            { icon: "Mail", text: "Use contact form" },
+            { icon: "MapPin", text: "Chota, Mohlanwal Road, Badu Pura Chung, Lahore, 53720, Pakistan" },
         ],
         stats: [{
                 label: "Years Experience",

@@ -3,7 +3,7 @@ import { SITE_URL } from "@/lib/config";
 export const defaultSeoData = {
   title: "Muhyo Tech - Full Stack Web Development & Software Engineering",
   description:
-    "Muhyo Tech builds fast, scalable Next.js websites, SaaS dashboards, backend systems, SEO-ready web apps, and premium digital products.",
+    "Muhyo Tech builds modern websites, full-stack web apps, admin dashboards, and scalable Next.js & MERN solutions for businesses in Lahore and beyond.",
   keywords:
     "Muhyo Tech, Full Stack Developer, Next.js Developer, React Developer, Node.js Developer, Web Development Pakistan, SaaS Dashboard, SEO Web Design",
   author: "Pir Ghulam Muhyo Din",

@@ -225,17 +225,17 @@ export default function Footer({ data }) {
                 </h4>
                 <ul className="space-y-3">
                   <li>
-                    <a
-                      href={`mailto:${about.email}`}
+                    <Link
+                      href="/contact#contact-form"
                       className="group flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-accent"
-                      aria-label={`Email ${displayName}`}
+                      aria-label={`Contact ${displayName}`}
                     >
-                      Email me
+                      Contact form
                       <ExternalLink
                         size={12}
                         className="ml-1 opacity-50 transition-opacity group-hover:opacity-100"
                       />
-                    </a>
+                    </Link>
                   </li>
                   <li>
                     <Link
@@ -298,7 +298,7 @@ export default function Footer({ data }) {
             </p>
             <div className="hidden md:block w-[1px] h-4 bg-border/60" />
             <p className="mb-0 text-[11px] font-medium text-muted-foreground">
-              Web experiences, dashboards, and automation workflows.
+              Chota, Mohlanwal Road, Badu Pura Chung, Lahore, 53720, Pakistan
             </p>
           </div>
 

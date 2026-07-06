@@ -127,8 +127,7 @@ const AnimatedBackgroundComponent = () => {
           isDark
             ? "bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"
             : "bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"
-        } pointer-events-none`}
-        style={{ backgroundSize: "200px 200px" }}
+        } pointer-events-none bg-[length:200px_200px]`}
       />
     </div>
   );

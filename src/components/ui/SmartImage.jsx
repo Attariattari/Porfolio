@@ -51,7 +51,7 @@ export default function SmartImage({
         src={currentSrc || fallbackSrc}
         alt={alt || "Image"}
         className={cn(
-          "transition-all duration-700 ease-in-out",
+          "object-cover transition-all duration-700 ease-in-out",
           isLoading ? "scale-110 blur-xl grayscale" : "scale-100 blur-0 grayscale-0",
           error ? "opacity-40" : "opacity-100"
         )}
@@ -60,7 +60,6 @@ export default function SmartImage({
         priority={priority}
         fill
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        style={{ objectFit: "cover" }}
         {...props}
       />
       

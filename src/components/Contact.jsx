@@ -60,6 +60,7 @@ const resolveIcon = (icon) => {
 const Contact = ({ isHomePage = false }) => {
   const { contactInfo, siteConfig } = portfolioData;
   const data = siteConfig.contactPage;
+  const HeadingTag = isHomePage ? "h2" : "h1";
 
   // Form state
   const [formData, setFormData] = useState({
@@ -213,9 +214,9 @@ const Contact = ({ isHomePage = false }) => {
                   {data.quickResponse}
                 </span>
               </div>
-              <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-none text-foreground px-4 py-2 border-l-4 border-accent bg-accent/5 rounded-r-2xl italic">
+              <HeadingTag className="text-5xl md:text-7xl font-bold tracking-tight leading-none text-foreground px-4 py-2 border-l-4 border-accent bg-accent/5 rounded-r-2xl italic">
                 Let's connect
-              </h1>
+              </HeadingTag>
               <p className="text-muted-foreground text-lg font-medium leading-relaxed max-w-md">
                 Have an idea or project requirement? Share the details and I'll
                 review your message to guide you with the right solution.
@@ -320,7 +321,7 @@ const Contact = ({ isHomePage = false }) => {
                   </div>
                 </div>
 
-                <form className="space-y-8" onSubmit={handleSubmit}>
+                <form id="contact-form" className="space-y-8" onSubmit={handleSubmit}>
                   <div className="grid md:grid-cols-2 gap-8">
                     <div className="space-y-3">
                       <label className="text-xs font-semibold tracking-normal text-accent/80 ml-2">
@@ -716,14 +717,13 @@ const Contact = ({ isHomePage = false }) => {
               className="mt-12 relative h-[500px] glass p-2 rounded-[3.5rem] overflow-hidden group shadow-2xl"
             >
               <iframe
-                src="https://www.google.com/maps?q=Lahore,+Pakistan&output=embed"
+                src="https://www.google.com/maps?q=Chota,+Mohlanwal+Road,+Badu+Pura+Chung,+Lahore,+53720,+Pakistan&output=embed"
                 width="100%"
                 height="100%"
-                style={{ border: 0 }}
                 allowFullScreen=""
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                className="rounded-[3rem] grayscale invert contrast-[1.1] opacity-60 group-hover:opacity-100 transition-all duration-1000 group-hover:grayscale-0 group-hover:invert-0"
+                className="border-0 rounded-[3rem] grayscale invert contrast-[1.1] opacity-60 group-hover:opacity-100 transition-all duration-1000 group-hover:grayscale-0 group-hover:invert-0"
               ></iframe>
 
               <div className="absolute top-10 left-10 p-8 glass rounded-[2rem] border border-border shadow-2xl hidden md:block">

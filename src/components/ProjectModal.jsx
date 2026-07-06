@@ -130,8 +130,7 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
                         : 0),
                   }}
                   transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                  className="flex gap-4 px-6 cursor-grab active:cursor-grabbing"
-                  style={{ width: "max-content" }}
+                  className="flex w-max gap-4 px-6 cursor-grab active:cursor-grabbing"
                 >
                   {galleryImages.map((img, i) => (
                     <motion.div

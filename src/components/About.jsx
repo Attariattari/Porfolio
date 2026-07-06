@@ -486,8 +486,11 @@ const EducationSection = ({ items }) => (
 );
 
 const AvailabilitySection = ({ data }) => {
+  const emailHref = data.availability.email?.includes("@")
+    ? `mailto:${data.availability.email}`
+    : "/contact#contact-form";
   const contactItems = [
-    { icon: "Mail", label: "Email", value: data.availability.email, href: `mailto:${data.availability.email}` },
+    { icon: "Mail", label: "Email", value: data.availability.email, href: emailHref },
     { icon: "Phone", label: "Phone", value: data.availability.phone, href: `tel:${data.availability.phone}` },
     { icon: "MapPin", label: "Location", value: data.availability.location },
     { icon: "Clock", label: "Working hours", value: data.availability.workingHours },
@@ -778,4 +781,3 @@ export default function About({ data: initialData = null, isHomePage = false }) 
     </div>
   );
 }
-

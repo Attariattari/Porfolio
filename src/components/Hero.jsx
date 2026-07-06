@@ -130,8 +130,8 @@ export default function Hero({ initialData = null }) {
               className="relative mb-8"
             >
               <h1 className="text-3xl md:text-5xl font-bold text-foreground leading-tight tracking-tight">
-                Building modern{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-accent/80 to-accent animate-gradient-flow bg-[length:200%_auto] italic">{data.highlightedWord || "websites"}</span>
+                Full-Stack Web Developer{" "}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-accent/80 to-accent animate-gradient-flow bg-[length:200%_auto] italic">& Next.js Expert</span>
               </h1>
             </motion.div>
 

@@ -21,8 +21,7 @@ export async function OrganizationSchema() {
       config = {
         siteTitle: "Muhyo Tech",
         adminName: "Pir Ghulam Muhyo Din",
-        email: "attariattari549@gmail.com",
-        location: "Lahore, Pakistan",
+        location: "Chota, Mohlanwal Road, Badu Pura Chung, Lahore, 53720, Pakistan",
         seo: {
           description: "Full Stack Web Developer specializing in modern web applications",
         },
@@ -38,75 +37,98 @@ export async function OrganizationSchema() {
       "https://wa.me/923224458481",
     ].filter(Boolean);
 
-    // Organization JSON-LD Structure
+    const address = {
+      "@type": "PostalAddress",
+      streetAddress: "Chota, Mohlanwal Road, Badu Pura Chung",
+      addressLocality: "Lahore",
+      addressRegion: "Punjab",
+      postalCode: "53720",
+      addressCountry: "PK",
+    };
+
+    // Organization and LocalBusiness JSON-LD Structure
     const organizationSchema = {
       "@context": "https://schema.org",
-      "@type": "Organization",
-      "@id": `${SITE_URL}/#organization`,
-      name: config.siteTitle,
-      alternateName: "Muhyo Tech",
-      url: SITE_URL,
-      logo: getSeoImage("/logo.png"),
-      image: getSeoImage("/portfolio-hero.png"),
-      description:
-        config.seo?.description ||
-        "Enterprise-grade full-stack web development and digital solutions",
-      sameAs: sameAsProfiles,
-      contactPoint: {
-        "@type": "ContactPoint",
-        telephone: "+92-322-4458481",
-        contactType: "Customer Service",
-        email: config.email,
-        areaServed: "PK",
-        availableLanguage: ["en", "ur"],
-      },
-      address: {
-        "@type": "PostalAddress",
-        streetAddress: "Lahore",
-        addressRegion: "Punjab",
-        postalCode: "54000",
-        addressCountry: "PK",
-        name: config.location,
-      },
-      founder: {
-        "@type": "Person",
-        name: config.adminName,
-        url: SITE_URL,
-        jobTitle: "Founder & Lead Developer",
-        email: config.email,
-      },
-      foundingDate: "2023",
-      foundingLocation: config.location,
-      knowsAbout: [
-        "Web Development",
-        "Next.js",
-        "React",
-        "Node.js",
-        "Full Stack Development",
-        "Software Architecture",
-        "Digital Solutions",
-        "Cloud Infrastructure",
-      ],
-      services: [
+      "@graph": [
         {
-          "@type": "Service",
-          name: "Full Stack Web Development",
-          description: "Custom web application development with modern technologies",
+          "@type": "Organization",
+          "@id": `${SITE_URL}/#organization`,
+          name: config.siteTitle || "Muhyo Tech",
+          alternateName: "Muhyo Tech",
+          url: SITE_URL,
+          logo: getSeoImage("/logo.png"),
+          image: getSeoImage("/portfolio-hero.png"),
+          description:
+            config.seo?.description ||
+            "Full-stack web development, Next.js websites, admin dashboards, and scalable digital solutions.",
+          sameAs: sameAsProfiles,
+          address,
+          founder: {
+            "@type": "Person",
+            name: config.adminName || "Pir Ghulam Muhyo Din",
+            url: SITE_URL,
+            jobTitle: "Founder & Lead Developer",
+          },
+          foundingDate: "2023",
+          foundingLocation: "Lahore, Pakistan",
+          knowsAbout: [
+            "Web Development",
+            "Next.js",
+            "React",
+            "Node.js",
+            "Full Stack Development",
+            "Software Architecture",
+            "Digital Solutions",
+            "Cloud Infrastructure",
+          ],
         },
         {
-          "@type": "Service",
-          name: "UI/UX Design",
-          description: "Professional user interface and experience design",
-        },
-        {
-          "@type": "Service",
-          name: "API Development",
-          description: "RESTful and GraphQL API design and implementation",
-        },
-        {
-          "@type": "Service",
-          name: "Consulting",
-          description: "Technical consulting and architecture planning",
+          "@type": "LocalBusiness",
+          "@id": `${SITE_URL}/#localbusiness`,
+          name: "Muhyo Tech",
+          url: SITE_URL,
+          image: getSeoImage("/portfolio-hero.png"),
+          logo: getSeoImage("/logo.png"),
+          telephone: "+92-322-4458481",
+          address,
+          areaServed: ["Lahore", "Pakistan"],
+          priceRange: "$$",
+          parentOrganization: {
+            "@id": `${SITE_URL}/#organization`,
+          },
+          contactPoint: {
+            "@type": "ContactPoint",
+            telephone: "+92-322-4458481",
+            contactType: "Project inquiries",
+            areaServed: "PK",
+            availableLanguage: ["en", "ur"],
+          },
+          makesOffer: [
+            {
+              "@type": "Offer",
+              itemOffered: {
+                "@type": "Service",
+                name: "Full Stack Web Development",
+                description: "Custom web application development with modern technologies.",
+              },
+            },
+            {
+              "@type": "Offer",
+              itemOffered: {
+                "@type": "Service",
+                name: "Next.js Website Development",
+                description: "Modern websites, dashboards, and SEO-ready web applications.",
+              },
+            },
+            {
+              "@type": "Offer",
+              itemOffered: {
+                "@type": "Service",
+                name: "Admin Dashboard Development",
+                description: "Business dashboards, content management tools, and backend workflows.",
+              },
+            },
+          ],
         },
       ],
     };
@@ -130,10 +152,19 @@ export async function OrganizationSchema() {
             name: "Muhyo Tech",
             url: SITE_URL,
             logo: getSeoImage("/logo.png"),
+            telephone: "+92-322-4458481",
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: "Chota, Mohlanwal Road, Badu Pura Chung",
+              addressLocality: "Lahore",
+              addressRegion: "Punjab",
+              postalCode: "53720",
+              addressCountry: "PK",
+            },
             contactPoint: {
               "@type": "ContactPoint",
               telephone: "+92-322-4458481",
-              contactType: "Customer Service",
+              contactType: "Project inquiries",
             },
           }),
         }}

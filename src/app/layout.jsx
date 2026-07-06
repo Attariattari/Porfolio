@@ -8,6 +8,7 @@ import { Toaster } from "sonner";
 import VisitorTracker from "@/components/VisitorTracker";
 import NetworkListener from "@/components/NetworkListener";
 import { OrganizationSchema } from "@/components/schema/OrganizationSchema";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
 import { SITE_URL } from "@/lib/config";
 import { getSeoImage } from "@/lib/seo";
 
@@ -20,7 +21,7 @@ export const metadata = {
     template: "%s | Muhyo Tech",
   },
   description:
-    "Muhyo Tech builds high-performance websites, SaaS dashboards, backend systems, SEO-ready web apps, and premium digital products.",
+    "Muhyo Tech builds modern websites, full-stack web apps, admin dashboards, and scalable Next.js & MERN solutions for businesses in Lahore and beyond.",
   icons: {
     icon: "/logo.png",
     apple: "/logo.png",
@@ -28,7 +29,7 @@ export const metadata = {
   openGraph: {
     title: "Muhyo Tech - Premium Software Engineering & Digital Solutions",
     description:
-      "High-performance websites, SaaS dashboards, backend systems, SEO-ready web apps, and premium digital products.",
+      "Muhyo Tech builds modern websites, full-stack web apps, admin dashboards, and scalable Next.js & MERN solutions for businesses in Lahore and beyond.",
     url: SITE_URL,
     siteName: "Muhyo Tech",
     images: [
@@ -50,6 +51,7 @@ export default function RootLayout({ children }) {
         <link rel="icon" href="/logo.png" />
         <link rel="apple-touch-icon" href="/logo.png" />
         <OrganizationSchema />
+        <GoogleAnalytics />
         <script
           dangerouslySetInnerHTML={{
             __html: `

@@ -24,7 +24,7 @@ export const metadata = {
     template: "%s | Muhyo Tech",
   },
   description:
-    "Muhyo Tech builds fast, scalable Next.js websites, SaaS dashboards, backend systems, SEO-ready web apps, and premium digital products.",
+    "Muhyo Tech builds modern websites, full-stack web apps, admin dashboards, and scalable Next.js & MERN solutions for businesses in Lahore and beyond.",
   keywords: [
     "Muhyo Tech",
     "Full Stack Developer",
@@ -44,7 +44,7 @@ export const metadata = {
   openGraph: {
     title: "Muhyo Tech - Full Stack Web Development & Software Engineering",
     description:
-      "High-performance websites, SaaS dashboards, backend systems, and SEO-ready digital products by Muhyo Tech.",
+      "Muhyo Tech builds modern websites, full-stack web apps, admin dashboards, and scalable Next.js & MERN solutions for businesses in Lahore and beyond.",
     url: SITE_URL,
     siteName: "Muhyo Tech",
     images: [
@@ -61,7 +61,7 @@ export const metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Muhyo Tech - Full Stack Web Development",
-    description: "Next.js, React, Node.js, SaaS dashboards, backend systems, and SEO-ready websites.",
+    description: "Modern websites, web apps, admin dashboards, and scalable Next.js & MERN solutions.",
     images: [getSeoImage("/portfolio-hero.png")],
   },
   robots: {
@@ -95,8 +95,7 @@ export default async function MainLayout({ children }) {
       <AnimatedBackground />
       <WhatsAppButton />
       <div
-        className="site-main-shell flex flex-col min-h-screen relative z-10 transition-[padding] duration-500 ease-in-out pt-16 md:pt-0"
-        style={{ paddingLeft: "var(--sidebar-width, 0px)" }}
+        className="site-main-shell flex flex-col min-h-screen relative z-10 transition-[padding] duration-500 ease-in-out pt-16 md:pt-0 pl-[var(--sidebar-width,0px)]"
       >
         <MainProviders>
           <main className="grow">{children}</main>

@@ -146,12 +146,12 @@ export default function Sidebar({ data }) {
                   animate={{ opacity: 1, y: 0 }}
                   className="mt-4 text-center"
                 >
-                  <h1 className="text-lg font-bold text-foreground tracking-tight italic flex items-center gap-1.5 justify-center">
+                  <div className="text-lg font-bold text-foreground tracking-tight italic flex items-center gap-1.5 justify-center">
                     {about.firstName}{" "}
                     <span className="text-accent underline decoration-accent/20 underline-offset-4">
                       {about.lastName}
                     </span>
-                  </h1>
+                  </div>
                   <p className="text-[10px] text-muted-foreground font-medium tracking-[0.1em] uppercase mt-1 opacity-70">
                     {about.title || "Software Engineer"}
                   </p>

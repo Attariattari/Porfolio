@@ -140,8 +140,7 @@ const Portfolio = ({ projects }) => {
 
             {/* RIGHT SIDE: Elevated Visual Showcase */}
             <div
-              className="relative hidden h-[680px] items-center justify-center lg:flex"
-              style={{ perspective: "2000px" }}
+              className="relative hidden h-[680px] items-center justify-center lg:flex [perspective:2000px]"
             >
               <div className="relative w-full h-full flex items-center justify-center">
                 {featuredProjects.map((project, idx) => {
