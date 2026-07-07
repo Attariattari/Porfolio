@@ -250,6 +250,19 @@ export default function Footer({ data }) {
                     </Link>
                   </li>
                   <li>
+                    <a
+                      href="tel:+923224458481"
+                      className="block text-sm font-medium text-muted-foreground transition-colors hover:text-accent"
+                    >
+                      Phone: +92 322 4458481
+                    </a>
+                  </li>
+                  <li>
+                    <p className="mb-0 text-sm font-medium leading-relaxed text-muted-foreground">
+                      Business Address: Lahore, Punjab, Pakistan
+                    </p>
+                  </li>
+                  <li>
                     <Link
                       href="/resume"
                       className="group flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-accent"
@@ -298,7 +311,7 @@ export default function Footer({ data }) {
             </p>
             <div className="hidden md:block w-[1px] h-4 bg-border/60" />
             <p className="mb-0 text-[11px] font-medium text-muted-foreground">
-              Address: Lahore, Punjab, Pakistan
+              Business Address: Lahore, Punjab, Pakistan
             </p>
           </div>
 
