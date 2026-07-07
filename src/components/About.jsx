@@ -510,7 +510,7 @@ const AvailabilitySection = ({ data }) => {
         <p className="text-muted-foreground leading-relaxed font-medium mb-8">
           {data.availability.description}
         </p>
-        <Link href="/contact?intent=book-call">
+        <Link href="/book-a-call">
           <Button className="rounded-2xl">
             Book a Call <ArrowRight className="w-4 h-4" />
           </Button>

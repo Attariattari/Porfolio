@@ -15,6 +15,23 @@ const nextConfig = {
     async redirects() {
         return [
             {
+                source: "/contact",
+                has: [
+                    {
+                        type: "query",
+                        key: "intent",
+                        value: "book-call",
+                    },
+                ],
+                destination: "/book-a-call",
+                permanent: true,
+            },
+            {
+                source: "/book-call",
+                destination: "/book-a-call",
+                permanent: true,
+            },
+            {
                 source: "/:path*",
                 has: [
                     {

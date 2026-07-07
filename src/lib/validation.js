@@ -91,25 +91,16 @@ export const MessageQuerySchema = z.object({
     .or(z.number()),
   
   service: z
-    .union([
-      z.enum([
-        'general', 
-        'web-development', 
-        'ui-ux-design', 
-        'api-development', 
-        'mobile-app-development', 
-        'cloud-devops', 
-        'seo-optimization',
-        'other'
-      ]), 
-      z.null(), 
-      z.literal('')
-    ])
+    .union([z.string().max(160), z.null(), z.literal('')])
     .optional()
     .transform((val) => val === null || val === '' ? undefined : val),
   
   status: z
-    .union([z.enum(['new', 'seen', 'replied']), z.null(), z.literal('')])
+    .union([
+      z.enum(['new', 'read', 'seen', 'replied', 'confirmed', 'completed', 'rejected', 'cancelled']),
+      z.null(),
+      z.literal('')
+    ])
     .optional()
     .transform((val) => val === null || val === '' ? undefined : val),
   

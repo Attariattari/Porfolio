@@ -904,7 +904,10 @@ export default function ServiceDetailClient({ service, relatedProjects = [] }) {
       <BookingModal
         isOpen={bookingOpen}
         onClose={() => setBookingOpen(false)}
+        initialServiceSlug={service.slug}
         initialService={initialService}
+        sourcePage="service-detail"
+        contextTitle={service.title}
       />
     </main>
   );

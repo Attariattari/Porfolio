@@ -141,7 +141,11 @@ export async function OrganizationSchema() {
       />
     );
   } catch (error) {
-    console.error("[OrganizationSchema] Error:", error.message);
+    if (error.message?.includes("querySrv")) {
+      console.warn("[OrganizationSchema] Warning: Database connection failed (querySrv), using minimal schema.");
+    } else {
+      console.error("[OrganizationSchema] Error:", error.message);
+    }
     // Return minimal schema on error
     return (
       <script
@@ -154,6 +158,7 @@ export async function OrganizationSchema() {
             url: SITE_URL,
             logo: getSeoImage("/logo.png"),
             telephone: "+92-322-4458481",
+            location: "Lahore, Punjab, Pakistan",
             address: {
               "@type": "PostalAddress",
               streetAddress: "Chota, Mohlanwal Road, Badu Pura Chung",

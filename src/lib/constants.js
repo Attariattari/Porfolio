@@ -64,6 +64,7 @@ export const STATUS_OPTIONS = [
 
 export const BOOKING_STATUS_OPTIONS = [
   { value: "new", label: "New" },
+  { value: "read", label: "Read" },
   { value: "seen", label: "Seen" },
   { value: "confirmed", label: "Confirmed" },
   { value: "completed", label: "Completed" },

@@ -9,20 +9,13 @@ import {
   Calendar,
   Clock,
   Filter,
-  ArrowUpDown,
-  AlertCircle
+  ArrowUpDown
 } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDeleteBooking } from "@/app/(admin)/hooks/useBookings";
-import { toast } from "sonner";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
-import { SERVICE_OPTIONS, BOOKING_STATUS_OPTIONS } from "@/lib/constants";
-
-const SERVICE_FILTER_OPTIONS = [
-  { value: "", label: "All Services" },
-  ...SERVICE_OPTIONS,
-];
+import { BOOKING_STATUS_OPTIONS } from "@/lib/constants";
 
 const STATUS_FILTER_OPTIONS = [
   { value: "", label: "All Status" },
@@ -59,6 +52,7 @@ export default function BookingList({
   const getStatusBadge = (status) => {
     const badges = {
       new: "bg-amber-500/10 text-amber-500 border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.1)]",
+      read: "bg-slate-500/10 text-slate-400 border-white/10",
       seen: "bg-slate-500/10 text-slate-400 border-white/10",
       confirmed: "bg-blue-500/10 text-blue-500 border-blue-500/20 shadow-[0_0_15px_rgba(59,130,246,0.1)]",
       completed: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]",
@@ -75,6 +69,26 @@ export default function BookingList({
       year: "numeric"
     });
   };
+
+  const serviceFilterOptions = [
+    { value: "", label: "All Services" },
+    ...Array.from(
+      new Map(
+        bookings
+          .map((booking) => [
+            booking.serviceSlug || booking.service,
+            {
+              value: booking.serviceSlug || booking.service,
+              label: booking.serviceTitle || booking.service || "Unknown Service",
+            },
+          ])
+          .filter(([value]) => Boolean(value)),
+      ).values(),
+    ),
+  ];
+
+  const getBookingService = (booking) =>
+    booking.serviceTitle || booking.service || booking.serviceSlug || "Selected service";
 
   return (
     <div className="flex flex-col gap-6">
@@ -97,7 +111,7 @@ export default function BookingList({
               value={filters.service || ""}
               onChange={(e) => onFilterChange({ service: e.target.value || null })}
             >
-              {SERVICE_FILTER_OPTIONS.map((opt) => (
+              {serviceFilterOptions.map((opt) => (
                 <option key={opt.value} value={opt.value} className="bg-[#0f172a] text-white">{opt.label}</option>
               ))}
             </select>
@@ -163,7 +177,7 @@ export default function BookingList({
                     <div className="grid grid-cols-2 gap-4 bg-white/[0.02] p-3 rounded-xl border border-white/5">
                       <div className="space-y-1">
                         <span className="text-[8px] font-black uppercase tracking-[0.1em] text-slate-500">Service</span>
-                        <div className="text-[10px] font-bold text-slate-300 truncate">{booking.service?.replace("-", " ")}</div>
+                        <div className="text-[10px] font-bold text-slate-300 truncate">{getBookingService(booking)}</div>
                       </div>
                       <div className="space-y-1">
                         <span className="text-[8px] font-black uppercase tracking-[0.1em] text-slate-500">Schedule</span>
@@ -221,7 +235,10 @@ export default function BookingList({
                           </div>
                         </td>
                         <td className="px-8 py-5">
-                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{booking.service?.replace("-", " ")}</span>
+                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{getBookingService(booking)}</span>
+                          {booking.sourcePage && (
+                            <div className="mt-1 text-[9px] font-semibold text-slate-600">{booking.sourcePage}</div>
+                          )}
                         </td>
                         <td className="px-8 py-5">
                           <div className="flex items-center gap-2 text-xs text-slate-300">

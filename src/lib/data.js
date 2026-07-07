@@ -62,7 +62,7 @@ export const homeData = {
         description: "Muhyo Tech builds modern websites, dashboards, and full-stack applications for businesses, startups, and personal brands using Next.js, MERN Stack, and clean conversion-focused UI.",
         heroImage: "/hero-visual.png",
         ctas: [
-            { label: "Book a Call", href: "/contact?intent=book-call", variant: "primary" },
+            { label: "Book a Call", href: "/book-a-call", variant: "primary" },
             { label: "View Projects", href: "/projects", variant: "outline" },
             { label: "Explore Services", href: "/services", variant: "secondary" },
         ],
@@ -77,7 +77,7 @@ export const homeData = {
         title: "Ready to discuss your project?",
         description: "Send a message, book a call, or browse the services and projects to see how Muhyo Tech can help.",
         buttons: [
-            { label: "Book a Call", href: "/contact?intent=book-call" },
+            { label: "Book a Call", href: "/book-a-call" },
             { label: "View Services", href: "/services" },
             { label: "View Projects", href: "/projects" },
         ],
@@ -91,7 +91,7 @@ export const homeData = {
         title: "Ready to Build Something Professional?",
         description: "Let's discuss your website, web app, dashboard, or business idea and turn it into a modern digital solution.",
         buttons: [
-            { label: "Book a Call", href: "/contact?intent=book-call", variant: "primary" },
+            { label: "Book a Call", href: "/book-a-call", variant: "primary" },
             { label: "Contact Me", href: "/contact", variant: "outline" },
             { label: "View Projects", href: "/projects", variant: "secondary" },
         ],
@@ -128,7 +128,7 @@ export const aboutData = {
             "Responsive UI delivery",
         ],
         ctas: [
-            { label: "Book a Call", href: "/contact?intent=book-call", variant: "primary" },
+            { label: "Book a Call", href: "/book-a-call", variant: "primary" },
             { label: "View Projects", href: "/projects", variant: "secondary" },
             { label: "Contact Me", href: "/contact", variant: "outline" },
         ],
@@ -253,7 +253,7 @@ export const aboutData = {
         badge: "Start the conversation",
         title: "Ready to Build Something Professional?",
         description: "Let's discuss your website, web app, dashboard, or business idea and turn it into a modern digital solution.",
-        primaryButton: { label: "Book a Call", href: "/contact?intent=book-call" },
+        primaryButton: { label: "Book a Call", href: "/book-a-call" },
         secondaryButton: { label: "View Projects", href: "/projects" },
         tertiaryButton: { label: "Contact Me", href: "/contact" },
     },

@@ -9,6 +9,41 @@ import {
   generateBookingConfirmationEmail, 
   generateBookingActionEmail 
 } from "@/lib/emailTemplates";
+import { findPublicServiceOption } from "@/lib/services/getPublicServiceOptions";
+
+const cleanText = (value = "") =>
+  String(value)
+    .replace(/[<>]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+const normalizeBookingPayload = async (data = {}) => {
+  const requestedService = cleanText(data.serviceSlug || data.service || "");
+  const serviceOption = await findPublicServiceOption(requestedService).catch(() => null);
+  const serviceSlug = serviceOption?.slug || requestedService;
+  const serviceTitle = serviceOption?.title || cleanText(data.serviceTitle || data.service || serviceSlug);
+
+  return {
+    name: cleanText(data.name),
+    email: cleanText(data.email).toLowerCase(),
+    phone: cleanText(data.phone),
+    service: serviceTitle || serviceSlug,
+    serviceSlug,
+    serviceTitle: serviceTitle || serviceSlug,
+    preferredDate: cleanText(data.preferredDate),
+    preferredTime: cleanText(data.preferredTime),
+    projectType: cleanText(data.projectType),
+    timelinePreference: cleanText(data.timelinePreference),
+    contactPreference: cleanText(data.contactPreference),
+    message: cleanText(data.message),
+    source: cleanText(data.source || "booking-form"),
+    sourcePage: cleanText(data.sourcePage),
+    contextTitle: cleanText(data.contextTitle),
+    status: "new",
+    priority: data.priority || "normal",
+    isRead: false,
+  };
+};
 
 export const BookingController = {
   /**
@@ -17,16 +52,14 @@ export const BookingController = {
   create: async (data) => {
     try {
       await dbConnect();
-      const booking = await Booking.create({
-        ...data,
-        status: 'new',
-        isRead: false
-      });
+      const payload = await normalizeBookingPayload(data);
+      const booking = await Booking.create(payload);
 
       const serialized = serializeDoc(booking);
 
       // Emit events for real-time dashboard updates
       emitSocketEvent(SOCKET_EVENTS.NEW_BOOKING, serialized);
+      emitSocketEvent("booking:created", serialized);
       emitSocketEvent(SOCKET_EVENTS.BOOKING_STATS_UPDATED); 
       eventBus.emit(ADMIN_EVENTS.BOOKING_UPDATE, serialized);
       eventBus.emit(ADMIN_EVENTS.STATS_UPDATE);
@@ -36,7 +69,7 @@ export const BookingController = {
         await NotificationController.create({
           type: "booking",
           title: "New Call Booking",
-          message: `Booking request from ${data.name} for ${data.service}`,
+          message: `Booking request from ${payload.name} for ${payload.serviceTitle}`,
         });
       } catch (err) {
         console.error("[BookingController.create] Notification failed:", err);
@@ -46,10 +79,10 @@ export const BookingController = {
       try {
         if (process.env.SMTP_USER) {
           const emailHtml = generateBookingConfirmationEmail({
-            userName: data.name,
-            service: data.service,
-            date: data.preferredDate,
-            time: data.preferredTime
+            userName: payload.name,
+            service: payload.serviceTitle,
+            date: payload.preferredDate,
+            time: payload.preferredTime
           });
           
           await sendEmail({
@@ -60,6 +93,33 @@ export const BookingController = {
         }
       } catch (emailErr) {
         console.error("[BookingController.create] Email failed:", emailErr);
+      }
+
+      // Send optional admin notification without blocking the booking flow
+      try {
+        const adminEmail = process.env.SUPER_ADMIN_EMAIL || process.env.SMTP_USER;
+        if (adminEmail && process.env.SMTP_USER) {
+          await sendEmail({
+            to: adminEmail,
+            subject: "[Muhyo Tech] New Booking Request",
+            html: `
+              <div style="font-family:Arial,sans-serif;line-height:1.6;color:#0f172a">
+                <h2>New booking request</h2>
+                <p><strong>Name:</strong> ${payload.name}</p>
+                <p><strong>Email:</strong> ${payload.email}</p>
+                <p><strong>Phone:</strong> ${payload.phone || "Not provided"}</p>
+                <p><strong>Service:</strong> ${payload.serviceTitle}</p>
+                <p><strong>Preferred date/time:</strong> ${payload.preferredDate} ${payload.preferredTime}</p>
+                <p><strong>Source page:</strong> ${payload.sourcePage || payload.source}</p>
+                <p><strong>Message:</strong></p>
+                <p>${payload.message}</p>
+                <p><a href="${process.env.NEXT_PUBLIC_SITE_URL || ""}/admin/bookings">Open admin bookings</a></p>
+              </div>
+            `,
+          });
+        }
+      } catch (emailErr) {
+        console.error("[BookingController.create] Admin email failed:", emailErr);
       }
 
       return serialized;
@@ -79,12 +139,28 @@ export const BookingController = {
 
     const query = {};
     if (status) query.status = status;
-    if (service) query.service = service;
-    if (search) {
+    if (service) {
       query.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } }
+        { service: service },
+        { serviceSlug: service },
+        { serviceTitle: { $regex: service, $options: 'i' } },
       ];
+    }
+    if (search) {
+      const searchQuery = [
+        { name: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } },
+        { service: { $regex: search, $options: 'i' } },
+        { serviceSlug: { $regex: search, $options: 'i' } },
+        { serviceTitle: { $regex: search, $options: 'i' } },
+        { message: { $regex: search, $options: 'i' } },
+      ];
+      if (query.$or) {
+        query.$and = [{ $or: query.$or }, { $or: searchQuery }];
+        delete query.$or;
+      } else {
+        query.$or = searchQuery;
+      }
     }
 
     const [data, total] = await Promise.all([
@@ -107,17 +183,17 @@ export const BookingController = {
   },
 
   /**
-   * Get single booking by ID and mark as seen if new
+   * Get single booking by ID and mark as read if new
    */
   getById: async (id) => {
     if (!id) throw new Error("ID required for operational retrieval");
     await dbConnect();
     
-    // Use an atomic update to mark as seen ONLY if it was new
+    // Use an atomic update to mark as read ONLY if it was new
     // This prevents status resets from other states
     let booking = await Booking.findOneAndUpdate(
       { _id: id, status: 'new' },
-      { $set: { status: 'seen', isRead: true, updatedAt: new Date() } },
+      { $set: { status: 'read', isRead: true, readAt: new Date(), updatedAt: new Date() } },
       { new: true }
     );
 
@@ -130,8 +206,8 @@ export const BookingController = {
 
     const serialized = serializeDoc(booking);
 
-    // If we transitioned to 'seen', emit updates
-    if (booking.status === 'seen' && booking.isRead === true) {
+    // If we transitioned to read, emit updates
+    if ((booking.status === 'read' || booking.status === 'seen') && booking.isRead === true) {
       emitSocketEvent(SOCKET_EVENTS.BOOKING_SEEN, serialized);
       emitSocketEvent(SOCKET_EVENTS.BOOKING_STATS_UPDATED); 
       emitSocketEvent(SOCKET_EVENTS.BOOKING_UPDATED, serialized);
@@ -151,7 +227,7 @@ export const BookingController = {
     
     console.log(`[BookingController] Updating booking ${id} with:`, updateData);
     
-    const { status, meetingLink, adminNote, rejectionReason, isManualEmail, customMessage } = updateData;
+    const { status, meetingLink, adminNote, adminNotes, rejectionReason, isManualEmail, customMessage, replyMessage } = updateData;
     
     const existing = await Booking.findById(id);
     if (!existing) throw new Error("Booking not found");
@@ -163,11 +239,17 @@ export const BookingController = {
     if (status) {
       console.log(`[BookingController] Status transitioning from ${existing.status} to ${status}`);
       updateObj.status = status;
+      if (status === "read") updateObj.readAt = new Date();
+      if (status === "confirmed") updateObj.confirmedAt = new Date();
+      if (status === "rejected") updateObj.rejectedAt = new Date();
+      if (status === "completed") updateObj.completedAt = new Date();
     }
     
     if (meetingLink !== undefined) updateObj.meetingLink = meetingLink;
     if (adminNote !== undefined) updateObj.adminNote = adminNote;
+    if (adminNotes !== undefined) updateObj.adminNotes = adminNotes;
     if (rejectionReason !== undefined) updateObj.rejectionReason = rejectionReason;
+    if (replyMessage !== undefined) updateObj.replyMessage = replyMessage;
     if (updateData.isRead !== undefined) updateObj.isRead = updateData.isRead;
 
     // Perform atomic update
@@ -185,6 +267,7 @@ export const BookingController = {
 
     // Emit socket events
     emitSocketEvent(SOCKET_EVENTS.BOOKING_UPDATED, serialized);
+    emitSocketEvent("booking:updated", serialized);
     emitSocketEvent(SOCKET_EVENTS.BOOKING_STATS_UPDATED);
     eventBus.emit(ADMIN_EVENTS.BOOKING_UPDATE, serialized);
     eventBus.emit(ADMIN_EVENTS.STATS_UPDATE);

@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui";
 import { ImageLightbox } from "@/components/ImageLightbox";
+import BookingModal from "@/components/BookingModal";
 
 const iconMap = {
   Award,
@@ -120,6 +121,7 @@ export default function ProjectDetailView({
   relatedServices = [],
 }) {
   const [lightboxIndex, setLightboxIndex] = useState(null);
+  const [bookingOpen, setBookingOpen] = useState(false);
   const galleryImages = useMemo(() => {
     const gallery = asArray(project.galleryImages).length
       ? asArray(project.galleryImages)
@@ -231,11 +233,14 @@ export default function ProjectDetailView({
                   </Button>
                 </Link>
               )}
-              <Link href="/contact?intent=book-call">
-                <Button variant={liveUrl ? "secondary" : "primary"} className="w-full rounded-2xl sm:w-auto">
-                  Similar Project
-                </Button>
-              </Link>
+              <Button
+                type="button"
+                onClick={() => setBookingOpen(true)}
+                variant={liveUrl ? "secondary" : "primary"}
+                className="w-full rounded-2xl sm:w-auto"
+              >
+                Similar Project
+              </Button>
             </div>
           </motion.div>
 
@@ -535,11 +540,13 @@ export default function ProjectDetailView({
             Let&apos;s discuss your idea and build a modern, scalable, and professional web solution for your business.
           </p>
           <div className="flex flex-col justify-center gap-4 sm:flex-row">
-            <Link href="/contact?intent=book-call">
-              <Button className="w-full rounded-2xl sm:w-auto">
+            <Button
+              type="button"
+              onClick={() => setBookingOpen(true)}
+              className="w-full rounded-2xl sm:w-auto"
+            >
                 Book a Call <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
+            </Button>
             <Link href="/contact">
               <Button variant="outline" className="w-full rounded-2xl sm:w-auto">
                 Send Message
@@ -559,6 +566,12 @@ export default function ProjectDetailView({
         onClose={() => setLightboxIndex(null)}
         images={lightboxImages}
         initialIndex={lightboxIndex || 0}
+      />
+      <BookingModal
+        isOpen={bookingOpen}
+        onClose={() => setBookingOpen(false)}
+        sourcePage="project-detail"
+        contextTitle={project.title}
       />
     </main>
   );

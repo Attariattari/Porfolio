@@ -155,7 +155,7 @@ export const useRealTimeBookingUpdates = () => {
         
         // Show toast for new bookings if we are not the ones who created it (though usually it's from client side)
         if (data.status === 'new' && !data.isRead) {
-          toast.info(`New Appointment: ${data.name} for ${data.service}`, {
+          toast.info(`New booking request received.`, {
             description: `Scheduled for ${data.preferredDate} at ${data.preferredTime}`
           });
         }

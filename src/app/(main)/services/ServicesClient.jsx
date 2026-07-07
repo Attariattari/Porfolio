@@ -297,7 +297,9 @@ export default function ServicesClient({ services, initialData }) {
       <BookingModal
         isOpen={bookingOpen}
         onClose={() => setBookingOpen(false)}
+        initialServiceSlug={selectedService}
         initialService={selectedService}
+        sourcePage="services"
       />
     </div>
   );

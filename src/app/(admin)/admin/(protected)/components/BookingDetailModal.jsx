@@ -102,6 +102,7 @@ export default function BookingDetailModal({ booking: initialBooking, isOpen, on
   const getStatusDisplay = (status) => {
     const displays = {
       new: { label: "Pending Review", color: "text-amber-500", bg: "bg-amber-500/10", border: "border-amber-500/20" },
+      read: { label: "Under Evaluation", color: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20" },
       seen: { label: "Under Evaluation", color: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20" },
       confirmed: { label: "Authorized Call", color: "text-indigo-400", bg: "bg-indigo-500/10", border: "border-indigo-500/20" },
       completed: { label: "Session Finished", color: "text-emerald-500", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
@@ -170,10 +171,13 @@ export default function BookingDetailModal({ booking: initialBooking, isOpen, on
                     <History className="w-3 h-3" /> Audit Meta
                  </h3>
                  <div className="p-5 rounded-3xl bg-accent/[0.03] border border-accent/10 space-y-3">
-                    <p className="text-[10px] font-black tracking-widest text-accent uppercase">{booking.service?.replace("-", " ")}</p>
+                    <p className="text-[10px] font-black tracking-widest text-accent uppercase">{booking.serviceTitle || booking.service?.replace("-", " ")}</p>
                     <div className="flex flex-col gap-2 text-white text-[11px] font-bold">
                        <div className="flex items-center gap-2"><Calendar className="w-3.5 h-3.5 text-slate-500" /> {booking.preferredDate}</div>
                        <div className="flex items-center gap-2"><Clock className="w-3.5 h-3.5 text-slate-500" /> {booking.preferredTime}</div>
+                       {booking.sourcePage && (
+                         <div className="flex items-center gap-2"><Info className="w-3.5 h-3.5 text-slate-500" /> {booking.sourcePage}</div>
+                       )}
                     </div>
                  </div>
               </div>

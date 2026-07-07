@@ -171,7 +171,7 @@ const ServiceRow = ({ service, index, onImageClick }) => {
               />
             </motion.button>
           </Link>
-          <Link href="/contact?intent=book-call">
+          <Link href="/book-a-call">
             <motion.button
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.95 }}
