@@ -75,6 +75,11 @@ export const normalizeServiceData = (service = {}) => {
         description: step.description || "",
       }));
   const faqs = service.faqs?.length ? service.faqs : service.faq || [];
+  const targetKeywords = toStringArray(service.targetKeywords).length
+    ? toStringArray(service.targetKeywords)
+    : toStringArray(service.keywords);
+  const localKeywords = toStringArray(service.localKeywords);
+  const relatedServices = toStringArray(service.relatedServices);
 
   return {
     ...service,
@@ -97,6 +102,7 @@ export const normalizeServiceData = (service = {}) => {
     techStack,
     clientRequirements: service.clientRequirements || [],
     relatedProjects: service.relatedProjects || [],
+    relatedServices,
     faqs,
     faq: faqs,
     quoteNote: service.quoteNote || QUOTE_NOTE,
@@ -107,6 +113,8 @@ export const normalizeServiceData = (service = {}) => {
     sortOrder: Number(service.sortOrder ?? service.order ?? 0),
     order: Number(service.order ?? service.sortOrder ?? 0),
     keywords: toStringArray(service.keywords),
+    targetKeywords,
+    localKeywords,
   };
 };
 

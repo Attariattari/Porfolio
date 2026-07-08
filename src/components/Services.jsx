@@ -134,7 +134,7 @@ const ServiceRow = ({ service, index, onImageClick }) => {
             The challenge
           </span>
           <p className="text-sm italic text-foreground/80 leading-relaxed">
-            "{problemSolved}"
+            &quot;{problemSolved}&quot;
           </p>
         </div>
 
@@ -207,7 +207,7 @@ const ServiceRow = ({ service, index, onImageClick }) => {
             {image && (
               <Image
                 src={image}
-                alt={service.title}
+                alt={`${service.title} service by Muhyo Tech`}
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                 className="object-cover transition-transform duration-1000 group-hover/img-side:scale-110"

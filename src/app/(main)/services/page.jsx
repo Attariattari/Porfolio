@@ -5,30 +5,40 @@ import { ServiceController } from "@/controllers/ServiceController";
 import { serializeDoc } from "@/lib/mongooseHelper";
 import { SITE_URL } from "@/lib/config";
 import { buildCanonical, getSeoImage } from "@/lib/seo";
+import FAQSchema from "@/components/seo/FAQSchema";
+import BreadcrumbSchema from "@/components/seo/BreadcrumbSchema";
+import { servicesPageFaqs } from "@/lib/servicesSeo";
 
 // P1 OPTIMIZATION: Enable ISR (Incremental Static Regeneration)
 // Revalidate every 5 minutes for optimal performance
 export const revalidate = 300;
 
 export const metadata = {
-  title: "Services | Muhyo Tech",
+  title: "Web Development Services in Lahore",
   description:
-    "Professional Next.js development, SaaS dashboards, backend APIs, UI/UX design, SEO optimization, cloud infrastructure, and custom digital products.",
+    "Muhyo Tech offers custom websites, Next.js apps, MERN stack development, admin dashboards, and SEO-friendly web solutions in Lahore and beyond.",
   alternates: { canonical: buildCanonical("/services") },
   openGraph: {
-    title: "Muhyo Tech Services - Next.js, SaaS, Backend & SEO",
+    title: "Web Development Services in Lahore | Muhyo Tech",
     description:
-      "Professional Next.js development, SaaS dashboards, backend APIs, UI/UX design, SEO optimization, and custom digital products.",
+      "Muhyo Tech offers custom websites, Next.js apps, MERN stack development, admin dashboards, and SEO-friendly web solutions in Lahore and beyond.",
     url: buildCanonical("/services"),
     images: [{ url: getSeoImage("/portfolio-hero.png"), width: 1200, height: 630, alt: "Muhyo Tech services" }],
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Web Development Services in Lahore | Muhyo Tech",
+    description:
+      "Muhyo Tech offers custom websites, Next.js apps, MERN stack development, admin dashboards, and SEO-friendly web solutions in Lahore and beyond.",
+    images: [getSeoImage("/portfolio-hero.png")],
   },
 };
 
 const serviceSchema = {
   "@context": "https://schema.org",
   "@type": "Service",
-  name: "Web Development Services",
+  name: "Web Development Services in Lahore",
   provider: {
     "@type": "Organization",
     name: "Muhyo Tech",
@@ -36,8 +46,12 @@ const serviceSchema = {
   },
   url: buildCanonical("/services"),
   image: getSeoImage("/portfolio-hero.png"),
-  serviceType: "Software Engineering",
-  areaServed: "Worldwide",
+  serviceType:
+    "Web Development, Next.js Development, MERN Stack Development, Admin Dashboard Development, Custom Website Development",
+  areaServed: {
+    "@type": "Place",
+    name: "Lahore, Pakistan",
+  },
 };
 
 export default async function ServicesPage() {
@@ -53,6 +67,13 @@ export default async function ServicesPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
       />
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: SITE_URL },
+          { name: "Services", url: buildCanonical("/services") },
+        ]}
+      />
+      <FAQSchema faqs={servicesPageFaqs} />
       <ServicesClient services={services} initialData={portfolioData} />
     </>
   );

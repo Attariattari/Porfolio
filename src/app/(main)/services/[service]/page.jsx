@@ -59,6 +59,22 @@ const getRelatedProjects = async (service) => {
     .map(({ project }) => project);
 };
 
+const getRelatedServices = async (service) => {
+  const relatedSlugs = normalizeArray(service.relatedServices);
+  if (relatedSlugs.length === 0) return [];
+
+  const services = await ServiceController.getAll(true).catch(() => []);
+  const relatedSet = new Set(relatedSlugs);
+
+  return services
+    .filter((item) => relatedSet.has(item.slug) && item.slug !== service.slug)
+    .sort(
+      (a, b) =>
+        relatedSlugs.indexOf(a.slug) - relatedSlugs.indexOf(b.slug),
+    )
+    .slice(0, 4);
+};
+
 export default async function ServiceDetailPage({ params }) {
   const resolvedParams = await params;
   const serviceSlug = resolvedParams.service;
@@ -68,7 +84,16 @@ export default async function ServiceDetailPage({ params }) {
     notFound();
   }
 
-  const relatedProjects = await getRelatedProjects(service);
+  const [relatedProjects, relatedServices] = await Promise.all([
+    getRelatedProjects(service),
+    getRelatedServices(service),
+  ]);
 
-  return <ServiceDetailClient service={service} relatedProjects={relatedProjects} />;
+  return (
+    <ServiceDetailClient
+      service={service}
+      relatedProjects={relatedProjects}
+      relatedServices={relatedServices}
+    />
+  );
 }

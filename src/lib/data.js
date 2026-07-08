@@ -402,8 +402,8 @@ export const portfolioData = {
         servicesPage: {
             hero: {
                 badge: "Expert Solutions",
-                title: "Transforming Ideas Into Digital Excellence",
-                description: "I provide high-end web development and design services tailored to your specific business needs. My focus is on quality, performance, and delivering real results that help you scale.",
+                title: "Web Development Services in Lahore",
+                description: "Muhyo Tech builds modern websites, full-stack web apps, admin dashboards, and scalable Next.js & MERN solutions for businesses in Lahore, Pakistan and beyond.",
             },
             stats: [
                 { value: "3+", label: "Years Exp" },
@@ -414,6 +414,33 @@ export const portfolioData = {
                 title: "Ready to build something professional?",
                 description: "Let's work together to create a website that actually helps your business grow.",
             },
+        },
+        servicesPageSEO: {
+            primaryKeyword: "Web Development Services in Lahore",
+            secondaryKeywords: [
+                "Website Developer in Lahore",
+                "Custom Website Development Lahore",
+                "Next.js Developer in Lahore",
+                "MERN Stack Developer Pakistan",
+                "Admin Dashboard Development Pakistan",
+                "Full-Stack Web Developer Lahore",
+            ],
+            supportingKeywords: [
+                "React.js development",
+                "Node.js development",
+                "MongoDB development",
+                "Express.js development",
+                "business website development",
+                "responsive website development",
+                "SEO-friendly website setup",
+                "API integration",
+                "database integration",
+                "admin panel development",
+                "website redesign",
+                "landing page design",
+                "website speed optimization",
+            ],
+            localKeywords: ["Lahore", "Pakistan", "businesses in Lahore"],
         },
         privacyPage: {
             title: "Privacy Policy",
@@ -621,12 +648,12 @@ export const portfolioData = {
     serviceFeatures: [{
             icon: "Zap",
             title: "Fast Performance",
-            description: "Optimized for speed to ensure your visitors stay engaged and convert.",
+            description: "Optimized for speed so visitors from Lahore, Pakistan and beyond can browse smoothly and take action.",
         },
         {
             icon: "Shield",
             title: "Secure & Reliable",
-            description: "Built with the latest security standards to protect your data and users.",
+            description: "Built with practical security standards to protect business data, users, forms, and admin workflows.",
         },
         {
             icon: "Laptop",
@@ -636,7 +663,7 @@ export const portfolioData = {
         {
             icon: "Rocket",
             title: "SEO Optimized",
-            description: "Clean code structure that search engines love, helping you rank higher.",
+            description: "Clean metadata, semantic structure, and SEO-friendly foundations for stronger online visibility.",
         },
     ],
     serviceProcess: [{
@@ -2273,3 +2300,4 @@ portfolioData.projects = projectsData;
 portfolioData.about = aboutData;
 portfolioData.home = homeData;
 portfolioData.services = servicesSeedData;
+

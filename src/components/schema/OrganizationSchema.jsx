@@ -146,33 +146,55 @@ export async function OrganizationSchema() {
     } else {
       console.error("[OrganizationSchema] Error:", error.message);
     }
-    // Return minimal schema on error
+    const fallbackGraph = {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": `${SITE_URL}/#organization`,
+          name: "Muhyo Tech",
+          url: SITE_URL,
+          logo: getSeoImage("/logo.png"),
+          telephone: "+92 322 4458481",
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: "Chota, Mohlanwal Road, Badu Pura Chung",
+            addressLocality: "Lahore",
+            addressRegion: "Punjab",
+            postalCode: "53720",
+            addressCountry: "PK",
+          },
+        },
+        {
+          "@type": "ProfessionalService",
+          "@id": `${SITE_URL}/#localbusiness`,
+          name: "Muhyo Tech",
+          url: SITE_URL,
+          logo: getSeoImage("/logo.png"),
+          image: getSeoImage("/portfolio-hero.png"),
+          telephone: "+92 322 4458481",
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: "Chota, Mohlanwal Road, Badu Pura Chung",
+            addressLocality: "Lahore",
+            addressRegion: "Punjab",
+            postalCode: "53720",
+            addressCountry: "PK",
+          },
+          areaServed: ["Lahore", "Pakistan"],
+          parentOrganization: {
+            "@id": `${SITE_URL}/#organization`,
+          },
+        },
+      ],
+    };
+
+    // Return minimal local business graph on error
     return (
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            name: "Muhyo Tech",
-            url: SITE_URL,
-            logo: getSeoImage("/logo.png"),
-            telephone: "+92-322-4458481",
-            location: "Lahore, Punjab, Pakistan",
-            address: {
-              "@type": "PostalAddress",
-              streetAddress: "Chota, Mohlanwal Road, Badu Pura Chung",
-              addressLocality: "Lahore",
-              addressRegion: "Punjab",
-              postalCode: "53720",
-              addressCountry: "PK",
-            },
-            contactPoint: {
-              "@type": "ContactPoint",
-              telephone: "+92-322-4458481",
-              contactType: "Project inquiries",
-            },
-          }),
+          __html: JSON.stringify(fallbackGraph),
         }}
       />
     );

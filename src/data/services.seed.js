@@ -124,6 +124,141 @@ const makeItems = (items) =>
       : item,
   );
 
+const primaryTargetBySlug = {
+  "custom-website-development": "Custom Website Development in Lahore",
+  "mern-stack-web-development": "MERN Stack Developer in Pakistan",
+  "nextjs-website-development": "Next.js Developer in Lahore",
+  "full-stack-web-app-development": "Full-Stack Web App Development in Pakistan",
+  "admin-dashboard-development": "Admin Dashboard Development in Pakistan",
+  "e-commerce-website-development": "E-commerce Website Development in Lahore",
+  "portfolio-website-development": "Portfolio Website Development in Lahore",
+  "landing-page-design": "Landing Page Design in Lahore",
+  "website-redesign": "Website Redesign Services in Lahore",
+  "api-integration": "API Integration Developer in Pakistan",
+  "database-integration": "Database Integration Services in Pakistan",
+  "seo-friendly-website-setup": "SEO-Friendly Website Setup in Lahore",
+  "website-speed-optimization": "Website Speed Optimization Services in Pakistan",
+  "maintenance-support": "Website Maintenance & Support in Pakistan",
+};
+
+const seoDescriptionBySlug = {
+  "custom-website-development":
+    "Custom website development in Lahore for businesses that need responsive design, clean structure, lead flow, and scalable functionality.",
+  "mern-stack-web-development":
+    "Build practical MERN stack web applications in Pakistan with MongoDB, Express.js, React.js, Node.js, APIs, dashboards, and secure workflows.",
+  "nextjs-website-development":
+    "Fast, SEO-friendly Next.js websites for businesses in Lahore and Pakistan with responsive UI, clean structure, and scalable performance.",
+  "full-stack-web-app-development":
+    "Full-stack web app development in Pakistan with frontend, backend, database, authentication, dashboards, APIs, and practical automation.",
+  "admin-dashboard-development":
+    "Custom admin dashboard development in Pakistan for managing users, content, bookings, messages, analytics, and business operations securely.",
+  "e-commerce-website-development":
+    "E-commerce website development in Lahore with product catalogs, store management, checkout planning, responsive UI, and admin controls.",
+  "portfolio-website-development":
+    "Portfolio website development in Lahore for freelancers, founders, creators, and service providers who need stronger online credibility.",
+  "landing-page-design":
+    "Landing page design in Lahore for campaigns, products, offers, and lead generation with clear messaging and focused conversion paths.",
+  "website-redesign":
+    "Website redesign services in Lahore for outdated sites that need modern visuals, clearer structure, better mobile UX, and stronger CTAs.",
+  "api-integration":
+    "API integration developer support in Pakistan for connecting apps with payments, email, uploads, analytics, CRMs, webhooks, and workflows.",
+  "database-integration":
+    "Database integration services in Pakistan for content, users, leads, bookings, products, dashboards, and reliable business workflows.",
+  "seo-friendly-website-setup":
+    "SEO-friendly website setup in Lahore with metadata, clean URLs, structured content, sitemap, robots, performance, and search-ready pages.",
+  "website-speed-optimization":
+    "Improve website speed, image delivery, loading performance, and user experience for modern business websites in Pakistan.",
+  "maintenance-support":
+    "Website maintenance and support in Pakistan for updates, fixes, content changes, monitoring, improvements, and technical guidance.",
+};
+
+const relatedServicesBySlug = {
+  "custom-website-development": [
+    "nextjs-website-development",
+    "seo-friendly-website-setup",
+    "website-speed-optimization",
+    "maintenance-support",
+  ],
+  "mern-stack-web-development": [
+    "full-stack-web-app-development",
+    "api-integration",
+    "database-integration",
+    "admin-dashboard-development",
+  ],
+  "nextjs-website-development": [
+    "custom-website-development",
+    "full-stack-web-app-development",
+    "seo-friendly-website-setup",
+    "website-speed-optimization",
+  ],
+  "full-stack-web-app-development": [
+    "mern-stack-web-development",
+    "api-integration",
+    "database-integration",
+    "admin-dashboard-development",
+  ],
+  "admin-dashboard-development": [
+    "full-stack-web-app-development",
+    "api-integration",
+    "database-integration",
+    "maintenance-support",
+  ],
+  "e-commerce-website-development": [
+    "custom-website-development",
+    "admin-dashboard-development",
+    "database-integration",
+    "maintenance-support",
+  ],
+  "portfolio-website-development": [
+    "custom-website-development",
+    "landing-page-design",
+    "seo-friendly-website-setup",
+    "website-speed-optimization",
+  ],
+  "landing-page-design": [
+    "custom-website-development",
+    "seo-friendly-website-setup",
+    "website-speed-optimization",
+    "website-redesign",
+  ],
+  "website-redesign": [
+    "custom-website-development",
+    "seo-friendly-website-setup",
+    "website-speed-optimization",
+    "maintenance-support",
+  ],
+  "api-integration": [
+    "full-stack-web-app-development",
+    "mern-stack-web-development",
+    "database-integration",
+    "admin-dashboard-development",
+  ],
+  "database-integration": [
+    "api-integration",
+    "full-stack-web-app-development",
+    "mern-stack-web-development",
+    "admin-dashboard-development",
+  ],
+  "seo-friendly-website-setup": [
+    "custom-website-development",
+    "nextjs-website-development",
+    "website-speed-optimization",
+    "landing-page-design",
+  ],
+  "website-speed-optimization": [
+    "seo-friendly-website-setup",
+    "nextjs-website-development",
+    "website-redesign",
+    "maintenance-support",
+  ],
+  "maintenance-support": [
+    "website-speed-optimization",
+    "website-redesign",
+    "seo-friendly-website-setup",
+    "custom-website-development",
+  ],
+};
+
 const makeService = ({
   id,
   slug,
@@ -139,6 +274,10 @@ const makeService = ({
   features,
   benefits,
   keywords,
+  seoDescription,
+  targetKeywords,
+  localKeywords,
+  relatedServices,
   sortOrder,
   legacySlugs = [],
 }) => ({
@@ -179,9 +318,20 @@ const makeService = ({
     "Share your idea, business goal, or current website challenge and Muhyo Tech will guide you with the right solution.",
   ctaPrimaryText: "Book a Call",
   ctaSecondaryText: "View Related Work",
-  seoTitle: `${title} | Muhyo Tech`,
-  seoDescription: shortDescription,
+  seoTitle: primaryTargetBySlug[slug] || title,
+  seoDescription: seoDescription || seoDescriptionBySlug[slug] || shortDescription,
   keywords,
+  targetKeywords: targetKeywords || [
+    primaryTargetBySlug[slug] || title,
+    ...(keywords || []),
+  ],
+  localKeywords: localKeywords || [
+    `${primaryTargetBySlug[slug] || title}`,
+    `${title} Lahore`,
+    `${title} Pakistan`,
+    "web development services in Lahore",
+  ],
+  relatedServices: relatedServices || relatedServicesBySlug[slug] || [],
   status: "published",
   publishStatus: "published",
   isFeatured: sortOrder <= 4,

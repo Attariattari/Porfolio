@@ -18,6 +18,11 @@ import Link from "next/link";
 import Image from "next/image";
 import EditorialBackground from "@/components/ui/EditorialBackground";
 import BookingModal from "@/components/BookingModal";
+import {
+  servicesAudienceCards,
+  servicesPageFaqs,
+  servicesTechnologyGroups,
+} from "@/lib/servicesSeo";
 
 const IconMap = {
   Zap,
@@ -94,7 +99,11 @@ const ServiceSlider = ({ services }) => {
                     services[currentIndex].banner ||
                     services[currentIndex].image
                   }
-                  alt={services[currentIndex].title || "Service image"}
+                  alt={
+                    services[currentIndex].title
+                      ? `${services[currentIndex].title} service by Muhyo Tech`
+                      : "Muhyo Tech web development service"
+                  }
                   fill
                   sizes="(max-width: 768px) 100vw, 600px"
                   className="object-cover transition-transform duration-1000 group-hover/img-side:scale-110"
@@ -129,7 +138,7 @@ const ServiceSlider = ({ services }) => {
                 </h3>
                 {/* Description — same italic border-l style as Portfolio */}
                 <p className="text-white/70 text-xs md:text-sm line-clamp-2 italic font-medium border-l-2 border-accent/50 pl-3 mb-6">
-                  "{services[currentIndex].shortDescription || services[currentIndex].description}"
+                  &quot;{services[currentIndex].shortDescription || services[currentIndex].description}&quot;
                 </p>
                 <Link
                   href={`/services/${services[currentIndex].slug || services[currentIndex]._id}`}
@@ -267,7 +276,70 @@ export default function ServicesClient({ services, initialData }) {
                 {step.title}
               </h3>
               <p className="text-sm text-muted-foreground italic">
-                "{step.description}"
+                &quot;{step.description}&quot;
+              </p>
+            </div>
+          ))}
+        </div>
+      </SectionWrapper>
+      <SectionWrapper
+        title="Technologies Used"
+        subtitle="Modern Stack"
+        className="bg-secondary/5"
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {servicesTechnologyGroups.map((group) => (
+            <div
+              key={group.title}
+              className="p-8 rounded-3xl bg-background border border-border/50 hover:border-accent/30 transition-all group"
+            >
+              <h3 className="text-xl font-bold mb-4">{group.title}</h3>
+              <div className="flex flex-wrap gap-2">
+                {group.items.map((item) => (
+                  <span
+                    key={item}
+                    className="px-3 py-1.5 md:px-4 md:py-2 rounded-lg bg-card border border-border hover:border-accent/40 text-[10px] md:text-xs font-bold text-foreground/80 transition-colors shadow-sm"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </SectionWrapper>
+      <SectionWrapper title="Who These Services Are For" subtitle="Built For">
+        <div className="mb-8 max-w-3xl mx-auto text-center">
+          <p className="text-muted-foreground text-sm md:text-lg leading-relaxed">
+            Muhyo Tech helps businesses in Lahore, Pakistan and beyond build
+            modern websites, admin systems, full-stack web apps, and custom web
+            solutions that support a stronger online presence.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {servicesAudienceCards.map((audience) => (
+            <div
+              key={audience.title}
+              className="p-8 rounded-3xl bg-background border border-border/50 hover:border-accent/30 transition-all group"
+            >
+              <h3 className="text-xl font-bold mb-3">{audience.title}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {audience.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </SectionWrapper>
+      <SectionWrapper title="Common Questions" subtitle="Services FAQ">
+        <div className="max-w-4xl mx-auto space-y-4">
+          {servicesPageFaqs.map((item) => (
+            <div
+              key={item.question}
+              className="p-6 rounded-3xl bg-background border border-border/50 hover:border-accent/30 transition-all"
+            >
+              <h3 className="text-lg font-bold mb-3">{item.question}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {item.answer}
               </p>
             </div>
           ))}
@@ -280,14 +352,20 @@ export default function ServicesClient({ services, initialData }) {
               {servicesCta.title}
             </h2>
             <p className="text-muted-foreground mb-10 max-w-xl mx-auto text-lg italic">
-              "{servicesCta.description}"
+              &quot;{servicesCta.description}&quot;
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button onClick={() => openBooking("Start Your Project")}>
                 Start Your Project
               </Button>
+              <Link href="/book-a-call">
+                <Button variant="secondary">Book a Call Page</Button>
+              </Link>
               <Link href="/projects">
                 <Button variant="outline">View My Work</Button>
+              </Link>
+              <Link href="/contact">
+                <Button variant="outline">Contact Muhyo Tech</Button>
               </Link>
             </div>
           </div>

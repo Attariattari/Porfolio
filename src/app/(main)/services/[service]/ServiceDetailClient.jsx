@@ -326,9 +326,17 @@ const FAQItem = ({ question, answer }) => {
   );
 };
 
-export default function ServiceDetailClient({ service, relatedProjects = [] }) {
+export default function ServiceDetailClient({
+  service,
+  relatedProjects = [],
+  relatedServices = [],
+}) {
   const [bookingOpen, setBookingOpen] = useState(false);
   const content = professionalCopy[service.slug] || {};
+  const displayTitle =
+    service.slug === "maintenance-support"
+      ? "Website Maintenance & Support in Pakistan"
+      : service.title;
   const description =
     service.shortDescription || content.description || service.description;
   const overview =
@@ -383,6 +391,7 @@ export default function ServiceDetailClient({ service, relatedProjects = [] }) {
     "Share your idea, business goal, or website requirement, and Muhyo Tech will guide you with the right solution.";
   const category = service.category || content.eyebrow || "Muhyo Tech Service";
   const initialService = service.title || service.slug || "";
+  const bookCallHref = `/book-a-call?service=${encodeURIComponent(service.slug || "")}`;
 
   const outcomes = useMemo(
     () => [
@@ -402,7 +411,7 @@ export default function ServiceDetailClient({ service, relatedProjects = [] }) {
         <div className="absolute inset-0">
           <Image
             src={banner}
-            alt={service.title}
+            alt={`${displayTitle} service by Muhyo Tech`}
             fill
             priority
             sizes="100vw"
@@ -435,7 +444,7 @@ export default function ServiceDetailClient({ service, relatedProjects = [] }) {
             </div>
 
             <h1 className="max-w-5xl text-5xl font-black leading-[0.98] tracking-tight text-foreground dark:text-white drop-shadow-sm dark:drop-shadow-[0_8px_28px_rgba(0,0,0,0.65)] md:text-7xl">
-              {service.title}
+              {displayTitle}
             </h1>
             <p className="mt-7 max-w-3xl text-lg font-medium leading-relaxed text-muted-foreground dark:text-white/78 drop-shadow-none dark:drop-shadow-[0_4px_18px_rgba(0,0,0,0.7)] md:text-xl">
               {description}
@@ -458,6 +467,11 @@ export default function ServiceDetailClient({ service, relatedProjects = [] }) {
                 Book a Call
                 <ArrowRight className="h-4 w-4" />
               </Button>
+              <Link href={bookCallHref}>
+                <Button variant="secondary" className="border border-border/50 dark:border-white/15 bg-background/50 dark:bg-black/45 text-foreground dark:text-white shadow-sm dark:shadow-[0_14px_36px_rgba(0,0,0,0.35)] backdrop-blur-2xl hover:bg-background/80 dark:hover:bg-white/15">
+                  Discuss This Service
+                </Button>
+              </Link>
               <Link
                 href={`https://wa.me/923224458481?text=${encodeURIComponent(`Hello! I want to discuss ${service.title}.`)}`}
                 target="_blank"
@@ -536,6 +550,11 @@ export default function ServiceDetailClient({ service, relatedProjects = [] }) {
                 <p className="text-base leading-relaxed text-muted-foreground md:text-lg">
                   {overview}
                 </p>
+                <p className="mt-5 text-base leading-relaxed text-muted-foreground md:text-lg">
+                  Muhyo Tech helps businesses in Lahore, Pakistan and beyond
+                  plan this service around real project scope, online presence,
+                  and long-term digital growth.
+                </p>
                 <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
                   {[
                     "For businesses, startups, and professionals",
@@ -577,6 +596,11 @@ export default function ServiceDetailClient({ service, relatedProjects = [] }) {
                   Book a Call
                   <Zap className="h-4 w-4" />
                 </Button>
+                <Link href={bookCallHref} className="block">
+                  <Button variant="secondary" className="w-full">
+                    Book This Service
+                  </Button>
+                </Link>
                 <Link href="/projects" className="block">
                   <Button variant="outline" className="w-full">
                     View related work
@@ -766,6 +790,35 @@ export default function ServiceDetailClient({ service, relatedProjects = [] }) {
               </div>
             </Reveal>
 
+            {relatedServices.length > 0 && (
+              <Reveal>
+                <SectionHeader
+                  eyebrow="Related services"
+                  title="Services That Work Well With This"
+                  description="Explore connected Muhyo Tech services that can support the same website, app, dashboard, or business workflow."
+                />
+                <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                  {relatedServices.map((relatedService) => (
+                    <Link
+                      key={relatedService.slug || relatedService._id || relatedService.title}
+                      href={`/services/${relatedService.slug || relatedService._id}`}
+                      className="group rounded-2xl border border-border/60 bg-card/45 p-5 transition-colors hover:border-accent/35"
+                    >
+                      <h3 className="text-xl font-bold tracking-tight">
+                        {relatedService.title}
+                      </h3>
+                      <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
+                        {relatedService.shortDescription || relatedService.description}
+                      </p>
+                      <div className="mt-5 inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-accent">
+                        View Service <ArrowRight className="h-4 w-4" />
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </Reveal>
+            )}
+
             <Reveal>
               <SectionHeader
                 eyebrow="Related work"
@@ -824,9 +877,14 @@ export default function ServiceDetailClient({ service, relatedProjects = [] }) {
                     Want to see examples of similar work? Contact us and we will
                     guide you based on your project type.
                   </p>
-                  <Link href="/contact" className="mt-5 inline-block">
-                    <Button variant="outline">Contact Muhyo Tech</Button>
-                  </Link>
+                  <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+                    <Link href="/projects">
+                      <Button variant="secondary">View Projects</Button>
+                    </Link>
+                    <Link href="/contact">
+                      <Button variant="outline">Contact Muhyo Tech</Button>
+                    </Link>
+                  </div>
                 </div>
               )}
             </Reveal>
@@ -885,6 +943,9 @@ export default function ServiceDetailClient({ service, relatedProjects = [] }) {
                   Book a Call for a Custom Quote
                   <ArrowRight className="h-4 w-4" />
                 </Button>
+                <Link href={bookCallHref}>
+                  <Button variant="secondary">Book a Call Page</Button>
+                </Link>
                 <Link
                   href={`https://wa.me/923224458481?text=${encodeURIComponent(`Hello! I want to discuss ${service.title}.`)}`}
                   target="_blank"

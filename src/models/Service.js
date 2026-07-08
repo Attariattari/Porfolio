@@ -67,6 +67,9 @@ const ServiceSchema = new mongoose.Schema(
     seoTitle: { type: String },
     seoDescription: { type: String },
     keywords: [{ type: String }],
+    targetKeywords: [{ type: String }],
+    localKeywords: [{ type: String }],
+    relatedServices: [{ type: String }],
     status: {
       type: String,
       enum: ["draft", "pending", "published"],
@@ -120,8 +123,11 @@ ServiceSchema.pre("validate", function syncLegacyFields() {
       .map((item) => (typeof item === "string" ? item : item?.name))
       .filter(Boolean);
   }
-  if ((!this.technologies || this.technologies.length === 0) && this.techStack?.length) {
+    if ((!this.technologies || this.technologies.length === 0) && this.techStack?.length) {
     this.technologies = this.techStack;
+  }
+  if ((!this.targetKeywords || this.targetKeywords.length === 0) && this.keywords?.length) {
+    this.targetKeywords = this.keywords;
   }
 });
 
