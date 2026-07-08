@@ -10,6 +10,18 @@ import { revalidatePath } from "next/cache";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+function withTimeout(promise, timeoutMs, fallbackValue, label = "Operation") {
+  let timeoutId;
+  const timeout = new Promise((resolve) => {
+    timeoutId = setTimeout(() => {
+      console.warn(`[${label}] Timed out after ${timeoutMs}ms. Using fallback.`);
+      resolve(fallbackValue);
+    }, timeoutMs);
+  });
+
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timeoutId));
+}
+
 /**
  * SENIOR AI EDITORIAL ENHANCEMENT - Editorial Pipeline v3.0 (Human-Centric)
  * Upgraded with Human Rhythm, Emotional Storytelling, and Realistic Visual Contexts.
@@ -778,9 +790,20 @@ export async function runBlogAutomationPipeline(
       }));
       recentTitles = recentBlogs.map((b) => b.title);
 
-      selectedTopic =
-        (await generateStrategicTopic(recentBlogMeta)) ||
-        pickFallbackTopic(recentBlogMeta);
+      const aiTopic = await withTimeout(
+        generateStrategicTopic(recentBlogMeta),
+        Number(process.env.AI_TOPIC_TIMEOUT_MS || 12000),
+        null,
+        "TopicStrategist",
+      );
+
+      selectedTopic = aiTopic || pickFallbackTopic(recentBlogMeta);
+
+      if (!aiTopic) {
+        report("TOPIC_FALLBACK", {
+          message: `Topic strategist was slow/unavailable. Using curated topic: ${selectedTopic}`,
+        });
+      }
     }
 
     report(previousDraft ? "REFINING" : "GENERATING", {

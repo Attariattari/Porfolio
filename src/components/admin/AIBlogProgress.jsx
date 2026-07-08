@@ -34,23 +34,22 @@ export default function AIBlogProgress({
     const eventSource = new EventSource(url);
     let finished = false;
 
-    // Set connection timeout - close if no message in 30 seconds
+    // Warn on long-running steps, but keep the stream open.
     let timeoutId = setTimeout(() => {
       if (!finished) {
-        console.warn("Connection timeout - no update received in 30s");
-        eventSource.close();
-        toast.warning("Connection paused. Process continues on server (max 5 minutes)");
+        console.warn("No AI progress update received in 45s");
+        toast.warning("AI is still working. Keeping the live connection open.");
       }
-    }, 30000);
+    }, 45000);
 
     eventSource.onmessage = (event) => {
-      clearTimeout(timeoutId); // Reset timeout on each message
+      clearTimeout(timeoutId); // Reset long-step warning on each message
       timeoutId = setTimeout(() => {
         if (!finished) {
-          console.warn("Connection timeout - no update received in 30s");
-          eventSource.close();
+          console.warn("No AI progress update received in 45s");
+          toast.warning("AI is still working. Keeping the live connection open.");
         }
-      }, 30000);
+      }, 45000);
 
       const data = JSON.parse(event.data);
       console.log("AI Progress:", data);
@@ -130,12 +129,14 @@ export default function AIBlogProgress({
 
   useEffect(() => {
     if (!isOpen) {
-      setSteps([]);
-      setCurrentStatus("STARTING");
-      setBlogPreview(null);
-      setImagePreview(null);
-      setError(null);
-      setPendingBlogId(null);
+      queueMicrotask(() => {
+        setSteps([]);
+        setCurrentStatus("STARTING");
+        setBlogPreview(null);
+        setImagePreview(null);
+        setError(null);
+        setPendingBlogId(null);
+      });
       return;
     }
 

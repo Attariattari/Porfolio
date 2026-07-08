@@ -25,8 +25,11 @@ export async function GET(request) {
             console.log("[Cron] Starting Step 1: Text Generation");
             results.step1 = await runBlogAutomationPipeline();
             if (results.step1?.success && results.step1.blogId) {
-                console.log("[Cron] Starting Step 1b: Image Ensure");
-                const imageResult = await finalizeBlogPipeline(results.step1.blogId);
+                console.log("[Cron] Starting Step 1b: Image prompt email");
+                const imageResult = await finalizeBlogPipeline(results.step1.blogId, {
+                    generateImage: false,
+                    baseUrl: new URL(request.url).origin,
+                });
                 results.step2.push({
                     id: results.step1.blogId,
                     success: imageResult.success,
@@ -41,13 +44,16 @@ export async function GET(request) {
         const pendingImageBlogs = await Blog.find({
             aiGenerated: true,
             imageGenerated: false,
-            imageStatus: { $ne: "generating" }
+            imageStatus: { $in: ["pending", "failed", "retry_pending"] }
         }).limit(2); // Process 2 at a time to avoid timeouts
 
         if (pendingImageBlogs.length > 0) {
-            console.log(`[Cron] Starting Step 2: Image Generation for ${pendingImageBlogs.length} blogs`);
+            console.log(`[Cron] Starting Step 2: Prompt email workflow for ${pendingImageBlogs.length} blogs`);
             for (const blog of pendingImageBlogs) {
-                const res = await finalizeBlogPipeline(blog._id);
+                const res = await finalizeBlogPipeline(blog._id, {
+                    generateImage: false,
+                    baseUrl: new URL(request.url).origin,
+                });
                 results.step2.push({ id: blog._id, success: res.success });
             }
         }
