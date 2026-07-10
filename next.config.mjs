@@ -4,6 +4,8 @@ const nextConfig = {
     images: {
         minimumCacheTTL: 60,
         deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+        imageSizes: [32, 48, 64, 96, 128, 256, 384],
+        formats: ["image/avif", "image/webp"],
         remotePatterns: [
             { protocol: "https", hostname: "res.cloudinary.com" },
             { protocol: "https", hostname: "images.unsplash.com" },
@@ -11,6 +13,7 @@ const nextConfig = {
     },
     experimental: {
         optimizePackageImports: ["lucide-react", "framer-motion"],
+        globalNotFound: true,
     },
     async redirects() {
         return [

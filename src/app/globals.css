@@ -2,6 +2,7 @@
 @layer base {
      :root {
         /* Light Theme */
+        --sidebar-width: 0px;
         --background: #f8fafc;
         --foreground: #020617;
         --primary: #1e293b;
@@ -115,6 +116,11 @@
 @layer base {
     * {
         border-color: var(--border);
+    }
+    @media (min-width: 768px) {
+        :root {
+            --sidebar-width: 300px;
+        }
     }
     html {
         scroll-behavior: smooth;

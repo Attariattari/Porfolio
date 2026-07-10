@@ -18,6 +18,7 @@ import {
   Target,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import { portfolioData } from "@/lib/data";
 
 const IconMap = {
@@ -95,10 +96,13 @@ export default function Sidebar({ data }) {
       <div className="site-sidebar-shell md:hidden fixed top-0 left-0 w-full h-16 bg-background/80 backdrop-blur-xl border-b border-border/50 z-[60] px-6 flex items-center justify-between">
         <Link href="/" className="group flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center overflow-hidden shadow-lg shadow-accent/20 transition-transform group-active:scale-95">
-            <img
-              src="/logo.png"
-              alt="Logo"
+            <Image
+              src="/logo.webp"
+              alt="Muhyo Tech logo"
+              width={40}
+              height={40}
               className="w-full h-full object-contain p-1"
+              priority
             />
           </div>
           <span className="text-lg font-bold text-foreground tracking-tight italic">
@@ -132,10 +136,13 @@ export default function Sidebar({ data }) {
               <div className="relative group/logo">
                 <div className="absolute inset-0 bg-accent blur-2xl opacity-0 group-hover/logo:opacity-30 transition-opacity duration-700" />
                 <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-card to-muted border border-border/50 flex items-center justify-center shadow-xl transition-all duration-500 group-hover/logo:scale-105 group-hover/logo:rotate-3 backdrop-blur-xl group-hover/logo:border-accent/40 overflow-hidden">
-                  <img
-                    src="/logo.png"
-                    alt="Logo"
+                  <Image
+                    src="/logo.webp"
+                    alt="Muhyo Tech logo"
+                    width={56}
+                    height={56}
                     className="w-full h-full object-contain p-2.5"
+                    priority
                   />
                 </div>
               </div>

@@ -2,7 +2,7 @@ import dbConnect from "@/lib/dbConnect";
 import { Skill } from "@/models/Portfolio";
 import { portfolioData } from "@/lib/data";
 import { serializeDoc } from "@/lib/mongooseHelper";
-import { withCache } from "@/lib/cache";
+import { cacheManager, withCache } from "@/lib/cache";
 
 /**
  * SkillController
@@ -11,7 +11,7 @@ import { withCache } from "@/lib/cache";
 export const SkillController = {
     // 1. Get All Skills - Optimized with caching
     async getAll() {
-        const cacheKey = "skills_all";
+        const cacheKey = "skills:list";
         
         try {
             return await withCache(
@@ -48,6 +48,7 @@ export const SkillController = {
     async create(data) {
         await dbConnect();
         const newSkill = await Skill.create(data);
+        await cacheManager.invalidateByTag("skills");
         return serializeDoc(newSkill);
     },
 
@@ -58,18 +59,23 @@ export const SkillController = {
             new: true,
             runValidators: true,
         }).lean();
+        await cacheManager.invalidateByTag("skills");
         return serializeDoc(updated);
     },
 
     // 4. Delete One
     async deleteOne(id) {
         await dbConnect();
-        return await Skill.findByIdAndDelete(id).lean();
+        const deleted = await Skill.findByIdAndDelete(id).lean();
+        await cacheManager.invalidateByTag("skills");
+        return deleted;
     },
 
     // 5. Delete All
     async deleteAll() {
         await dbConnect();
-        return await Skill.deleteMany({});
+        const result = await Skill.deleteMany({});
+        await cacheManager.invalidateByTag("skills");
+        return result;
     },
 };

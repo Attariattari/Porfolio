@@ -36,15 +36,21 @@ import {
   Users,
   Zap,
 } from "lucide-react";
-import { Cursor, useTypewriter } from "react-simple-typewriter";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { portfolioData } from "@/lib/data";
 import { getAboutPageData } from "@/lib/content/getAboutPageData";
 import { Button, SectionWrapper } from "./ui";
 import EditorialBackground from "./ui/EditorialBackground";
 import SocialLinks from "./SocialLinks";
+import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
+
+const HeroTypewriter = dynamic(() => import("./HeroTypewriter"), {
+  ssr: false,
+  loading: () => <>modern web experiences</>,
+});
 
 const iconMap = {
   ArrowRight,
@@ -189,7 +195,7 @@ const ProfileCard = ({ data }) => (
     <div className="relative z-10 p-2 glass rounded-[1.5rem] overflow-hidden group border border-white/10 hover:border-accent/30 transition-all duration-700">
       <div className="relative w-full aspect-[4/5] rounded-[1rem] overflow-hidden shadow-2xl">
         <Image
-          src={data.hero.image}
+          src={getSafeImageSrc(data.hero?.image, "/about-portrait-new.jpg")}
           alt={data.name}
           fill
           sizes="(min-width: 1024px) 44vw, 100vw"
@@ -228,12 +234,6 @@ const ProfileCard = ({ data }) => (
 );
 
 const HeroSection = ({ data, isHomePage }) => {
-  const [text] = useTypewriter({
-    words: Array.isArray(data.typewriterWords) ? data.typewriterWords : [],
-    loop: true,
-    delaySpeed: 2000,
-  });
-
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-24 items-center relative z-10">
       <ProfileCard data={data} />
@@ -273,8 +273,14 @@ const HeroSection = ({ data, isHomePage }) => {
           variants={fadeUp}
           className="text-lg font-semibold text-accent mb-6 min-h-8"
         >
-          Building <span className="text-foreground">{text}</span>
-          <Cursor cursorColor="var(--color-accent)" cursorStyle="|" />
+          Building{" "}
+          <span className="inline-block min-w-[20ch] text-foreground">
+            <HeroTypewriter
+              words={Array.isArray(data.typewriterWords) ? data.typewriterWords : []}
+              cursorColor="var(--color-accent)"
+              cursorStyle="|"
+            />
+          </span>
         </motion.div>
 
         <motion.p

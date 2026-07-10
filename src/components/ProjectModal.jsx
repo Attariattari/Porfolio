@@ -12,7 +12,13 @@ import {
   Github,
 } from "lucide-react";
 import { Button } from "./ui";
-import { ImageLightbox } from "./ImageLightbox";
+import dynamic from "next/dynamic";
+import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
+
+const ImageLightbox = dynamic(
+  () => import("./ImageLightbox").then((mod) => mod.ImageLightbox),
+  { ssr: false },
+);
 
 const ProjectModal = ({ selectedProject, setSelectedProject }) => {
   const [lightboxIndex, setLightboxIndex] = React.useState(null);
@@ -32,9 +38,9 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
   if (!selectedProject) return null;
 
   const galleryImages = [
-    selectedProject.thumbnail,
+    selectedProject.thumbnail || selectedProject.thumbnailImage || selectedProject.image,
     ...(selectedProject.gallery || []),
-  ];
+  ].map((image) => getSafeImageSrc(image)).filter(Boolean);
 
   const openLightbox = (index) => setLightboxIndex(index);
 
@@ -139,7 +145,7 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
                       onDoubleClick={() => openLightbox(i)}
                     >
                       <img
-                        src={img}
+                        src={getSafeImageSrc(img)}
                         alt={`Project ${i}`}
                         className="w-full aspect-[16/10] object-cover rounded-2xl border border-border shadow-md select-none pointer-events-none"
                       />
@@ -288,7 +294,7 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
                   onClick={() => openLightbox(0)}
                 >
                   <img
-                    src={selectedProject.thumbnail}
+                    src={getSafeImageSrc(selectedProject.thumbnail || selectedProject.thumbnailImage || selectedProject.image)}
                     alt="Main"
                     className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
                   />
@@ -300,7 +306,7 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
                     onClick={() => openLightbox(i + 1)}
                   >
                     <img
-                      src={img}
+                      src={getSafeImageSrc(img)}
                       alt={`Gallery ${i}`}
                       className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
                     />
@@ -312,12 +318,14 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
         </motion.div>
 
         {/* Professional Image Lightbox Overlay */}
+      {lightboxIndex !== null && (
         <ImageLightbox
-          isOpen={lightboxIndex !== null}
+          isOpen
           onClose={() => setLightboxIndex(null)}
           images={galleryImages}
           initialIndex={lightboxIndex || 0}
         />
+      )}
       </motion.div>
     </AnimatePresence>
   );

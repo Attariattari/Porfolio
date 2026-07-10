@@ -4,6 +4,22 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+function isModelFallbackError(error) {
+    return (
+        error.status === 404 ||
+        error.status === 429 ||
+        error.status >= 500 ||
+        (error.message &&
+            (error.message.includes("404") ||
+                error.message.includes("429") ||
+                error.message.includes("503") ||
+                error.message.includes("not found") ||
+                error.message.includes("no longer available") ||
+                error.message.includes("overloading") ||
+                error.message.includes("temporary")))
+    );
+}
+
 async function callGeminiWithRetry(fn, retries = 3, delay = 5000) {
     let lastError;
     for (let i = 0; i < retries; i++) {
@@ -52,9 +68,10 @@ export async function generateGeminiResponse(input, config = {}) {
     const modelsToTry = [
         process.env.GEMINI_PRIMARY_MODEL,
         process.env.GEMINI_FALLBACK_MODEL,
+        "gemini-3.5-flash",
+        "gemini-3.1-flash-lite-preview",
         "gemini-2.5-flash",
-        "gemini-2.5-flash-lite",
-    ].filter(Boolean); // Remove duplicates or undefined values
+    ].filter((modelName, index, models) => modelName && models.indexOf(modelName) === index);
 
     let lastError;
 
@@ -116,18 +133,10 @@ export async function generateGeminiResponse(input, config = {}) {
             ); // Fewer retries per model to move to fallback faster
         } catch (error) {
             lastError = error;
-            const isFallbackError =
-                error.status === 429 ||
-                error.status >= 500 ||
-                (error.message &&
-                    (error.message.includes("429") ||
-                        error.message.includes("503") ||
-                        error.message.includes("overloading") ||
-                        error.message.includes("temporary")));
 
-            if (isFallbackError) {
+            if (isModelFallbackError(error)) {
                 console.warn(
-                    `[Gemini] Model ${modelName} failed (quota/server error). Attempting fallback to next model...`,
+                    `[Gemini] Model ${modelName} failed (${error.status || "unknown code"}). Attempting fallback to next model...`,
                 );
                 continue; // Try the next model in the list
             }
@@ -146,7 +155,7 @@ export async function generateGeminiResponse(input, config = {}) {
  */
 export async function reviewContentWithGemini(prompt, imageUrl) {
     return await callGeminiWithRetry(async() => {
-        const modelName = process.env.GEMINI_PRIMARY_MODEL || "gemini-2.5-flash";
+        const modelName = process.env.GEMINI_PRIMARY_MODEL || "gemini-3.5-flash";
         const model = genAI.getGenerativeModel({ model: modelName });
 
         // Fetch image and convert to base64 for Gemini

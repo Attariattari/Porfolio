@@ -15,7 +15,7 @@ import { Subscriber } from "@/models/Subscriber";
 import { portfolioData } from "@/lib/data";
 import { serializeDoc } from "@/lib/mongooseHelper";
 import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socket";
-import { withCache } from "@/lib/cache";
+import { cacheManager, withCache } from "@/lib/cache";
 
 const goalsPageData = portfolioData.goalsData || {};
 const fallbackGoalsData = Array.isArray(goalsPageData) ?
@@ -25,6 +25,15 @@ const fallbackRoadmapData = Array.isArray(portfolioData.roadmapData) && portfoli
     portfolioData.roadmapData :
     goalsPageData.roadmap || [];
 const fallbackMilestonesData = portfolioData.milestonesData || [];
+
+const invalidateGoalsCache = async () => {
+    await Promise.all([
+        cacheManager.invalidateByTag("goals"),
+        cacheManager.invalidateByTag("roadmap"),
+        cacheManager.invalidateByTag("milestones"),
+        cacheManager.invalidateByTag("goals_vision"),
+    ]).catch(() => {});
+};
 
 /**
  * GoalController
@@ -65,7 +74,7 @@ export const GoalController = {
 
     // Get all goals - merged DB + fallback
     async getAllGoals(filterPublished = false) {
-        const cacheKey = `goals_all_${filterPublished}`;
+        const cacheKey = filterPublished ? "goals:list:published" : "admin:goals:list";
 
         try {
             return await withCache(
@@ -164,6 +173,7 @@ export const GoalController = {
                 data: serializeDoc(goal),
             });
 
+            await invalidateGoalsCache();
             return serializeDoc(goal);
         } catch (error) {
             console.error("[GoalController.createGoal] Error:", error);
@@ -217,6 +227,7 @@ export const GoalController = {
                 });
             }
 
+            await invalidateGoalsCache();
             return serializeDoc(goal);
         } catch (error) {
             console.error("[GoalController.updateGoal] Error:", error);
@@ -246,6 +257,7 @@ export const GoalController = {
                 });
             }
 
+            await invalidateGoalsCache();
             return result;
         } catch (error) {
             console.error("[GoalController.deleteGoal] Error:", error);
@@ -276,6 +288,7 @@ export const GoalController = {
                 data: results.map(serializeDoc),
             });
 
+            await invalidateGoalsCache();
             return results;
         } catch (error) {
             console.error("[GoalController.reorderGoals] Error:", error);
@@ -287,7 +300,7 @@ export const GoalController = {
 
     // Get all roadmap items
     async getAllRoadmap(filterPublished = false) {
-        const cacheKey = `roadmap_all_${filterPublished}`;
+        const cacheKey = filterPublished ? "goals:roadmap:published" : "admin:goals:roadmap";
 
         try {
             return await withCache(
@@ -360,6 +373,7 @@ export const GoalController = {
                 data: serializeDoc(item),
             });
 
+            await invalidateGoalsCache();
             return serializeDoc(item);
         } catch (error) {
             console.error("[GoalController.createRoadmapItem] Error:", error);
@@ -390,6 +404,7 @@ export const GoalController = {
                 });
             }
 
+            await invalidateGoalsCache();
             return serializeDoc(item);
         } catch (error) {
             console.error("[GoalController.updateRoadmapItem] Error:", error);
@@ -419,6 +434,7 @@ export const GoalController = {
                 });
             }
 
+            await invalidateGoalsCache();
             return result;
         } catch (error) {
             console.error("[GoalController.deleteRoadmapItem] Error:", error);
@@ -430,7 +446,7 @@ export const GoalController = {
 
     // Get all milestones
     async getAllMilestones(filterPublished = false) {
-        const cacheKey = `milestones_all_${filterPublished}`;
+        const cacheKey = filterPublished ? "goals:milestones:published" : "admin:goals:milestones";
 
         try {
             return await withCache(
@@ -503,6 +519,7 @@ export const GoalController = {
                 data: serializeDoc(milestone),
             });
 
+            await invalidateGoalsCache();
             return serializeDoc(milestone);
         } catch (error) {
             console.error("[GoalController.createMilestone] Error:", error);
@@ -533,6 +550,7 @@ export const GoalController = {
                 });
             }
 
+            await invalidateGoalsCache();
             return serializeDoc(milestone);
         } catch (error) {
             console.error("[GoalController.updateMilestone] Error:", error);
@@ -562,6 +580,7 @@ export const GoalController = {
                 });
             }
 
+            await invalidateGoalsCache();
             return result;
         } catch (error) {
             console.error("[GoalController.deleteMilestone] Error:", error);
@@ -573,7 +592,7 @@ export const GoalController = {
 
     // Get vision data
     async getVision() {
-        const cacheKey = "goals_vision";
+        const cacheKey = "goals:data";
 
         try {
             return await withCache(
@@ -625,6 +644,7 @@ export const GoalController = {
 
             emitSocketEvent("VISION_UPDATED", { data: serializeDoc(vision) });
 
+            await invalidateGoalsCache();
             return serializeDoc(vision);
         } catch (error) {
             console.error("[GoalController.updateVision] Error:", error);
@@ -867,6 +887,7 @@ export const GoalController = {
                 createdAt: progress.createdAt,
             });
 
+            await invalidateGoalsCache();
             return serializeDoc(progress);
         } catch (error) {
             console.error("[GoalController.createRecentProgress] Error:", error);
@@ -886,6 +907,7 @@ export const GoalController = {
                 entityType: "progress",
             }, update, { new: true }).lean();
 
+            await invalidateGoalsCache();
             return progress ? serializeDoc(progress) : null;
         } catch (error) {
             console.error("[GoalController.updateRecentProgress] Error:", error);
@@ -896,10 +918,12 @@ export const GoalController = {
     async deleteRecentProgress(id) {
         try {
             await dbConnect();
-            return await GoalActivityLog.findOneAndDelete({
+            const deleted = await GoalActivityLog.findOneAndDelete({
                 _id: id,
                 entityType: "progress",
             });
+            await invalidateGoalsCache();
+            return deleted;
         } catch (error) {
             console.error("[GoalController.deleteRecentProgress] Error:", error);
             throw error;
@@ -993,6 +1017,7 @@ export const GoalController = {
                 }
             }
 
+            await invalidateGoalsCache();
             return results;
         } catch (error) {
             console.error("[GoalController.importDefaultGoals] Error:", error);
@@ -1008,6 +1033,7 @@ export const GoalController = {
                 new: true,
                 upsert: true,
             }).lean();
+            await invalidateGoalsCache();
             return serializeDoc(config);
         } catch (error) {
             console.error("[GoalController.updateConfig] Error:", error);

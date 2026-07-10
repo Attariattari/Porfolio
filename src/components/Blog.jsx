@@ -20,13 +20,16 @@ import { toast } from "sonner";
 import Image from "next/image";
 import { SectionWrapper, Button } from "./ui";
 import EditorialBackground from "./ui/EditorialBackground";
-import { ImageLightbox } from "./ImageLightbox";
 import { resolveFeaturedBlogs } from "@/lib/blogUtils";
 import { portfolioData } from "@/lib/data";
 import React from "react";
 import dynamic from "next/dynamic";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { FreeMode } from "swiper/modules";
+import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
+
+const ImageLightbox = dynamic(
+  () => import("./ImageLightbox").then((mod) => mod.ImageLightbox),
+  { ssr: false },
+);
 
 // Lazy-load FeaturedBlogSlider to avoid bundling Swiper upfront
 const FeaturedBlogSlider = dynamic(
@@ -34,8 +37,19 @@ const FeaturedBlogSlider = dynamic(
   { 
     ssr: false,
     loading: () => (
-      <div className="relative aspect-[4/3] rounded-[2.5rem] bg-card/60 border border-border/40 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-accent animate-spin" />
+      <div className="relative min-h-[560px] rounded-[2.5rem] bg-card/60 border border-border/40 overflow-hidden">
+        <div className="aspect-[4/3] bg-muted/50 flex items-center justify-center">
+          <Loader2 className="w-8 h-8 text-accent animate-spin" />
+        </div>
+        <div className="p-8 space-y-4" aria-hidden="true">
+          <div className="h-7 w-4/5 rounded-full bg-muted/70" />
+          <div className="h-4 w-full rounded-full bg-muted/60" />
+          <div className="h-4 w-3/4 rounded-full bg-muted/60" />
+          <div className="flex items-center justify-between pt-4">
+            <div className="h-4 w-28 rounded-full bg-muted/50" />
+            <div className="h-4 w-20 rounded-full bg-muted/50" />
+          </div>
+        </div>
       </div>
     ),
   }
@@ -193,98 +207,41 @@ const ControlHub = ({
   activeCategory,
   setActiveCategory,
 }) => {
-  const [swiperInstance, setSwiperInstance] = useState(null);
-
-  const handleCategoryClick = (category, index) => {
+  const handleCategoryClick = (category) => {
     setActiveCategory(category);
-    if (swiperInstance && !swiperInstance.destroyed) {
-      const slide = swiperInstance.slides[index];
-      if (slide && swiperInstance.el) {
-        const slideRect = slide.getBoundingClientRect();
-        const swiperRect = swiperInstance.el.getBoundingClientRect();
-
-        const isFullyVisible =
-          slideRect.left >= swiperRect.left &&
-          slideRect.right <= swiperRect.right;
-
-        if (!isFullyVisible) {
-          if (slideRect.right > swiperRect.right) {
-            // Cut off on the right -> shift left
-            const diff = slideRect.right - swiperRect.right;
-            swiperInstance.translateTo(
-              swiperInstance.translate - diff - 10,
-              500,
-            );
-          } else if (slideRect.left < swiperRect.left) {
-            // Cut off on the left -> shift right
-            const diff = swiperRect.left - slideRect.left;
-            swiperInstance.translateTo(
-              swiperInstance.translate + diff + 10,
-              500,
-            );
-          }
-        }
-      }
-    }
   };
-
-  useEffect(() => {
-    if (swiperInstance && !swiperInstance.destroyed) {
-      // More pronounced back-and-forth nudge to show interactivity
-      const nudgeTimer = setTimeout(() => {
-        // Slide out (leftward move to reveal right items)
-        swiperInstance.translateTo(-180, 1800);
-
-        setTimeout(() => {
-          // Slide back home
-          swiperInstance.translateTo(0, 1200);
-        }, 2000);
-      }, 1500);
-
-      return () => clearTimeout(nudgeTimer);
-    }
-  }, [swiperInstance]);
 
   return (
     <div className="max-w-7xl mx-auto px-6 mb-16">
       <div className="flex flex-col lg:flex-row items-center justify-between gap-10 bg-card/30 border border-border/50 p-3 rounded-[2.5rem]">
         {/* Category Navigation */}
-        <div className="relative w-full lg:flex-1 min-w-0 rounded-[1.8rem] overflow-hidden">
-          <Swiper
-            onSwiper={setSwiperInstance}
-            slidesPerView="auto"
-            spaceBetween={4}
-            freeMode={true}
-            modules={[FreeMode]}
-            grabCursor={true}
-            className="w-full py-1"
-          >
-            {categories.map((category, index) => (
-              <SwiperSlide key={category} style={{ width: "auto" }}>
-                <button
-                  onClick={() => handleCategoryClick(category, index)}
-                  className={`relative px-8 py-4 rounded-[1.8rem] text-xs font-semibold tracking-normal transition-all whitespace-nowrap ${
-                    activeCategory === category
-                      ? "text-accent-foreground"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  <span className="relative z-10">{category}</span>
-                  {activeCategory === category && (
-                    <motion.div
-                      layoutId="pill-selector"
-                      className="absolute inset-0 bg-accent rounded-[1.8rem] shadow-xl shadow-accent/20"
-                      transition={{
-                        type: "spring",
-                        bounce: 0.2,
-                        duration: 0.6,
-                      }}
-                    />
-                  )}
-                </button>
-              </SwiperSlide>
+        <div className="relative w-full lg:flex-1 min-w-0 rounded-[1.8rem] overflow-x-auto scrollbar-hide">
+          <div className="flex w-max min-w-full gap-1 py-1">
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => handleCategoryClick(category)}
+                className={`relative px-8 py-4 rounded-[1.8rem] text-xs font-semibold tracking-normal transition-all whitespace-nowrap ${
+                  activeCategory === category
+                    ? "text-accent-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <span className="relative z-10">{category}</span>
+                {activeCategory === category && (
+                  <motion.div
+                    layoutId="pill-selector"
+                    className="absolute inset-0 bg-accent rounded-[1.8rem] shadow-xl shadow-accent/20"
+                    transition={{
+                      type: "spring",
+                      bounce: 0.2,
+                      duration: 0.6,
+                    }}
+                  />
+                )}
+              </button>
             ))}
-          </Swiper>
+          </div>
         </div>
 
         <div className="relative w-full lg:w-[400px] group">
@@ -356,9 +313,10 @@ const ArticleCard = ({ blog, index, onImageClick }) => (
         aria-label={`Preview image for ${blog.title}`}
       >
         <Image
-          src={blog.image || blog.featuredImage?.url || "/portfolio-hero.png"}
-          alt={blog.title}
+          src={getSafeImageSrc(blog.image || blog.featuredImage?.url, "/portfolio-hero.png")}
+          alt={blog.title ? `Blog cover image for ${blog.title}` : "Blog cover image"}
           fill
+          loading="lazy"
           sizes="(max-width: 768px) 100vw, 33vw"
           className="object-cover transition-transform duration-700 group-hover:scale-105"
         />
@@ -414,7 +372,7 @@ const ArticleCard = ({ blog, index, onImageClick }) => (
 );
 
 const HomeArticleCard = ({ blog, index, onImageClick }) => {
-  const image = blog.image || blog.featuredImage?.url || "/portfolio-hero.png";
+  const image = getSafeImageSrc(blog.image || blog.featuredImage?.url, "/portfolio-hero.png");
   const isFeatured = !!blog.featured;
 
   return (
@@ -434,8 +392,9 @@ const HomeArticleCard = ({ blog, index, onImageClick }) => {
         >
           <Image
             src={image}
-            alt={blog.title}
+            alt={blog.title ? `Blog cover image for ${blog.title}` : "Blog cover image"}
             fill
+            loading="lazy"
             sizes="(max-width: 768px) 100vw, 33vw"
             className="object-cover transition-transform duration-700 group-hover:scale-105"
           />
@@ -680,12 +639,14 @@ export default function Blog({ data, isHomePage = false }) {
             </motion.div>
           </div>
         </SectionWrapper>
-        <ImageLightbox
-          isOpen={lightboxIndex !== null}
-          onClose={() => setLightboxIndex(null)}
-          images={lightboxImages}
-          initialIndex={lightboxIndex || 0}
-        />
+        {lightboxIndex !== null && (
+          <ImageLightbox
+            isOpen
+            onClose={() => setLightboxIndex(null)}
+            images={lightboxImages}
+            initialIndex={lightboxIndex || 0}
+          />
+        )}
       </>
     );
   }
@@ -812,12 +773,14 @@ export default function Blog({ data, isHomePage = false }) {
       {/* 6. Newsletter CTA */}
       <NewsletterCTA />
 
-      <ImageLightbox
-        isOpen={lightboxIndex !== null}
-        onClose={() => setLightboxIndex(null)}
-        images={lightboxImages}
-        initialIndex={lightboxIndex || 0}
-      />
+      {lightboxIndex !== null && (
+        <ImageLightbox
+          isOpen
+          onClose={() => setLightboxIndex(null)}
+          images={lightboxImages}
+          initialIndex={lightboxIndex || 0}
+        />
+      )}
     </div>
   );
 }

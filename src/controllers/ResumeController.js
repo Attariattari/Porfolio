@@ -1,12 +1,12 @@
 import dbConnect from "@/lib/dbConnect";
 import { Resume } from "@/models/Portfolio";
 import { serializeDoc } from "@/lib/mongooseHelper";
-import { withCache } from "@/lib/cache";
+import { cacheManager, withCache } from "@/lib/cache";
 
 export const ResumeController = {
     // GET THE CURRENT RESUME DATA - with caching
     get: async () => {
-        const cacheKey = "resume_data";
+        const cacheKey = "resume:data";
         return await withCache(
             cacheKey,
             async () => {
@@ -27,6 +27,7 @@ export const ResumeController = {
             upsert: true,
             runValidators: true,
         });
+        await cacheManager.invalidateByTag("resume");
         return serializeDoc(updated);
     },
 };

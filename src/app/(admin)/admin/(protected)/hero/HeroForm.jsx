@@ -40,7 +40,7 @@ export default function HeroForm({ initialData, staticFallback }) {
     // Priority logic for visual image
     const initialVisual = initialData?.visualImage 
         ? [initialData.visualImage] 
-        : (staticFallback?.visualImage ? [staticFallback.visualImage] : ["/hero-visual.png"]);
+        : (staticFallback?.visualImage ? [staticFallback.visualImage] : ["/hero-visual.webp"]);
 
     const defaultValues = {
         description: initialData?.description || staticFallback.description || "",
@@ -57,7 +57,7 @@ export default function HeroForm({ initialData, staticFallback }) {
         if (initialData && Object.keys(initialData).length > 0) {
             reset({
                 ...initialData,
-                visualImage: initialData.visualImage ? [initialData.visualImage] : [staticFallback?.visualImage || "/hero-visual.png"],
+                visualImage: initialData.visualImage ? [initialData.visualImage] : [staticFallback?.visualImage || "/hero-visual.webp"],
                 typewriterWords: (initialData.typewriterWords || []).map(w => ({ word: w })),
                 features: initialData.features || []
             });
@@ -78,7 +78,7 @@ export default function HeroForm({ initialData, staticFallback }) {
         setIsSaving(true);
         const loadingToast = toast.loading("Updating Hero Section...");
         try {
-            let finalVisual = initialData?.visualImage || staticFallback?.visualImage || "/hero-visual.png";
+            let finalVisual = initialData?.visualImage || staticFallback?.visualImage || "/hero-visual.webp";
             
             // Check if there is a new image to upload (an object with a file, or a local path that hasn't been saved yet)
             const currentImg = data.visualImage?.[0];

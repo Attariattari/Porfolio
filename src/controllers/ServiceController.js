@@ -157,9 +157,19 @@ const stripImportOnlyFields = (service) => {
   return cleaned;
 };
 
+const uniqueServicesBySlug = (services = []) => {
+  const seen = new Set();
+  return services.filter((service) => {
+    const key = service.slug || service._id || service.title;
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+};
+
 export const ServiceController = {
   async getAll(filterPublished = false) {
-    const cacheKey = `services_all_${filterPublished}`;
+    const cacheKey = filterPublished ? "services:list:published" : "admin:services:list";
 
     try {
       return await withCache(
@@ -181,7 +191,7 @@ export const ServiceController = {
             .lean();
 
           if (!filterPublished && dbServices.length > 0) {
-            return serializeDoc(dbServices).map(normalizeServiceData);
+            return uniqueServicesBySlug(serializeDoc(dbServices).map(normalizeServiceData));
           }
 
           const uploadedSlugs = new Set(dbServices.map((service) => service.slug));
@@ -195,7 +205,10 @@ export const ServiceController = {
               status: "published",
             }));
 
-          return [...serializeDoc(dbServices).map(normalizeServiceData), ...fallbackServices];
+          return uniqueServicesBySlug([
+            ...serializeDoc(dbServices).map(normalizeServiceData),
+            ...fallbackServices,
+          ]);
         },
         300,
         ["services", filterPublished ? "public:services" : "admin:services:list"],
@@ -210,38 +223,46 @@ export const ServiceController = {
   },
 
   async getOne(identifier) {
+    const cacheKey = `services:detail:${identifier}`;
     const fallbackService = servicesSeedData.find(
       (service) => service.id?.toString() === identifier || service.slug === identifier,
     );
 
     try {
-      await dbConnect();
+      return await withCache(
+        cacheKey,
+        async () => {
+          await dbConnect();
 
-      const isObjectId = mongoose.Types.ObjectId.isValid(identifier);
-      const query = {
-        $or: [{ slug: identifier }, ...(isObjectId ? [{ _id: identifier }] : [])],
-      };
+          const isObjectId = mongoose.Types.ObjectId.isValid(identifier);
+          const query = {
+            $or: [{ slug: identifier }, ...(isObjectId ? [{ _id: identifier }] : [])],
+          };
 
-      const service = await Service.findOne(query).lean();
+          const service = await Service.findOne(query).lean();
 
-      if (service) {
-        const normalized = normalizeServiceData(serializeDoc(service));
-        if (normalized.status !== "published" && normalized.publishStatus !== "published") {
+          if (service) {
+            const normalized = normalizeServiceData(serializeDoc(service));
+            if (normalized.status !== "published" && normalized.publishStatus !== "published") {
+              return null;
+            }
+            return normalized;
+          }
+
+          if (fallbackService) {
+            return {
+              ...normalizeServiceData(fallbackService),
+              _isFromDataJs: true,
+              publishStatus: "published",
+              status: "published",
+            };
+          }
+
           return null;
-        }
-        return normalized;
-      }
-
-      if (fallbackService) {
-        return {
-          ...normalizeServiceData(fallbackService),
-          _isFromDataJs: true,
-          publishStatus: "published",
-          status: "published",
-        };
-      }
-
-      return null;
+        },
+        900,
+        ["services", "public:services"],
+      );
     } catch (error) {
       console.error(`[ServiceController.getOne] Error for ${identifier}:`, error.message);
 
@@ -265,7 +286,29 @@ export const ServiceController = {
   async create(data) {
     try {
       await dbConnect();
-      const savedService = await Service.create(normalizeServiceData(data));
+      const normalized = normalizeServiceData(data);
+      const existing = await Service.findOne({ slug: normalized.slug }).lean();
+
+      if (existing) {
+        const updated = await Service.findByIdAndUpdate(
+          existing._id,
+          { ...normalized, updatedAt: new Date() },
+          {
+            new: true,
+            runValidators: true,
+          },
+        ).lean();
+        const serialized = normalizeServiceData(serializeDoc(updated));
+
+        emitSocketEvent(SOCKET_EVENTS.STATS_UPDATED);
+        emitSocketEvent("service:updated", serialized);
+        emitSocketEvent("public-data:updated", { type: "service" });
+        await invalidateServices();
+
+        return serialized;
+      }
+
+      const savedService = await Service.create(normalized);
       const serialized = normalizeServiceData(serializeDoc(savedService));
 
       sendNewsletterEmail("service", savedService).catch((err) => {
@@ -286,7 +329,10 @@ export const ServiceController = {
   async update(id, data) {
     try {
       await dbConnect();
-      const updated = await Service.findByIdAndUpdate(id, normalizeServiceData(data), {
+      const query = mongoose.Types.ObjectId.isValid(id)
+        ? { _id: id }
+        : { slug: id };
+      const updated = await Service.findOneAndUpdate(query, normalizeServiceData(data), {
         new: true,
         runValidators: true,
       }).lean();

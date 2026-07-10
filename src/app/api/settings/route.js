@@ -2,17 +2,44 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import { SiteConfig } from "@/models/Portfolio";
 import { apiResponse } from "@/lib/apiResponse";
-import mongoose from "mongoose";
 import eventBus, { ADMIN_EVENTS } from "@/lib/eventBus";
+import { portfolioData } from "@/lib/data";
+import { getAuthSession } from "@/lib/auth";
+
+const defaultSettings = {
+    siteTitle: "Muhyo Tech",
+    siteAccent: "Tech",
+    adminName: "Pir Ghulam Muhyo Din",
+    email: "attariattari549@gmail.com",
+    location: "Lahore, Pakistan",
+    seo: {
+        title: "Muhyo Tech - Full Stack Developer",
+        description: "Full Stack Web Developer specializing in modern web applications",
+    },
+    ...(portfolioData.siteConfig || {}),
+};
+
+const sanitizePublicSettings = (settings = {}) => {
+    const source = settings?.toObject ? settings.toObject() : settings;
+    return {
+        siteTitle: source.siteTitle || defaultSettings.siteTitle,
+        siteAccent: source.siteAccent || defaultSettings.siteAccent,
+        adminName: source.adminName || defaultSettings.adminName,
+        email: source.email || defaultSettings.email,
+        location: source.location || defaultSettings.location,
+        seo: source.seo || defaultSettings.seo,
+        socialLinks: source.socialLinks || defaultSettings.socialLinks || [],
+    };
+};
+
+const isAdminSession = (session) =>
+    ["super-admin", "root-super-admin", "admin"].includes(session?.role);
 
 // GET /api/settings - Fetch current site configuration
 export async function GET(request) {
     try {
+        const session = await getAuthSession().catch(() => null);
         await dbConnect();
-        const dbName = mongoose.connection.db.databaseName;
-        console.log(
-            `[GET] Connected to DB: ${dbName}, State: ${mongoose.connection.readyState}`,
-        );
 
         // Get the site config (should be only one document)
         let config = await SiteConfig.findOne();
@@ -33,10 +60,18 @@ export async function GET(request) {
             await config.save();
         }
 
-        return apiResponse.success(config, "Settings fetched successfully");
+        return apiResponse.success(
+            isAdminSession(session) ? config : sanitizePublicSettings(config),
+            "Settings fetched successfully",
+        );
     } catch (error) {
-        console.error("Settings fetch error:", error);
-        return apiResponse.error("Failed to fetch settings", 500, error.message);
+        if (process.env.NODE_ENV !== "production") {
+            console.warn("[settings] DB unavailable, using fallback settings");
+        }
+        return apiResponse.success(
+            sanitizePublicSettings(defaultSettings),
+            "Settings fallback loaded",
+        );
     }
 }
 
@@ -44,18 +79,12 @@ export async function GET(request) {
 export async function PATCH(request) {
     try {
         await dbConnect();
-        const dbName = mongoose.connection.db.databaseName;
-        console.log(
-            `[PATCH] Connected to DB: ${dbName}, State: ${mongoose.connection.readyState}`,
-        );
 
         const data = await request.json();
 
         if (!data) {
             return apiResponse.error("No data provided", 400);
         }
-
-        console.log("Updating settings with data:", JSON.stringify(data, null, 2));
 
         // Construct update object dynamically to avoid overwriting fields with undefined
         const updateData = {
@@ -99,6 +128,6 @@ export async function PATCH(request) {
         );
     } catch (error) {
         console.error("❌ Settings update error:", error);
-        return apiResponse.error("Failed to update settings", 500, error.message);
+        return apiResponse.error("Failed to update settings", 500);
     }
 }

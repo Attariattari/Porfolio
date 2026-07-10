@@ -336,7 +336,7 @@ export default function AuthContainer({
                     <div className="flex items-center gap-4 lg:gap-6">
                         <div className="p-1 rounded-xl bg-gradient-to-tr from-accent/20 to-transparent flex-shrink-0">
                             <div className="w-[40px] h-[40px] lg:w-[50px] lg:h-[50px] relative">
-                                <Image src="/logo.png" alt="Muhyo Tech" fill className="rounded-lg shadow-xl object-contain" />
+                                <Image src="/logo.webp" alt="Muhyo Tech logo" fill sizes="48px" className="rounded-lg shadow-xl object-contain" />
                             </div>
                         </div>
                         <div className="h-6 lg:h-8 w-[1px] bg-white/10" />

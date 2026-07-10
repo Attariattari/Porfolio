@@ -100,11 +100,12 @@ export default function Footer({ data }) {
               <Link href="/" className="mb-5 flex w-fit items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-accent p-2.5 shadow-lg shadow-accent/20">
                   <Image
-                    src="/logo.png"
-                    alt="Logo"
+                    src="/logo.webp"
+                    alt="Muhyo Tech logo"
                     width={24}
                     height={24}
                     className="h-full w-full object-contain"
+                    loading="lazy"
                   />
                 </div>
                 <span className="text-xl font-bold tracking-tight text-foreground">

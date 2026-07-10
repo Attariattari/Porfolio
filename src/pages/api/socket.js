@@ -8,18 +8,18 @@ import { setupSocketServer } from '@/lib/socket';
  */
 export default function handler(req, res) {
   if (res.socket.server.io) {
-    console.log('✅ Socket.io already running');
+    globalThis.io = res.socket.server.io;
+    console.log('Socket.io already running');
   } else {
-    console.log('🚀 Socket.io initializing...');
+    console.log('Socket.io initializing...');
     const io = new Server(res.socket.server, {
-      path: '/api/socket', // Custom path to match our API route
+      path: '/api/socket',
       addTrailingSlash: false,
     });
-    
-    // Initialize our custom server logic
+
     setupSocketServer(io);
-    
-    // Assign to globalThis so server-side controllers can use it to emit events
+
+    // Assign to globalThis so server-side controllers can use it to emit events.
     globalThis.io = io;
     res.socket.server.io = io;
   }

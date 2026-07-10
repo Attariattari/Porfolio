@@ -72,6 +72,16 @@ export async function GET(request) {
                     const result = await runBlogAutomationPipeline(0, (progress) => {
                         sendUpdate(progress);
                     });
+
+                    if (!result?.success) {
+                        sendUpdate({
+                            status: "FAILED",
+                            details: result?.details || {
+                                message: result?.error || "AI blog generation failed.",
+                            },
+                        });
+                        return;
+                    }
                     
                     if (result?.success && result.blogId) {
                         if (generateImage) {

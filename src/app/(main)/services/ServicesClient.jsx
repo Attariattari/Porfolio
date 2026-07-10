@@ -17,12 +17,16 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import EditorialBackground from "@/components/ui/EditorialBackground";
-import BookingModal from "@/components/BookingModal";
+import dynamic from "next/dynamic";
 import {
   servicesAudienceCards,
   servicesPageFaqs,
   servicesTechnologyGroups,
 } from "@/lib/servicesSeo";
+
+const BookingModal = dynamic(() => import("@/components/BookingModal"), {
+  ssr: false,
+});
 
 const IconMap = {
   Zap,
@@ -372,13 +376,15 @@ export default function ServicesClient({ services, initialData }) {
         </Card>
       </SectionWrapper>
 
-      <BookingModal
-        isOpen={bookingOpen}
-        onClose={() => setBookingOpen(false)}
-        initialServiceSlug={selectedService}
-        initialService={selectedService}
-        sourcePage="services"
-      />
+      {bookingOpen && (
+        <BookingModal
+          isOpen
+          onClose={() => setBookingOpen(false)}
+          initialServiceSlug={selectedService}
+          initialService={selectedService}
+          sourcePage="services"
+        />
+      )}
     </div>
   );
 }

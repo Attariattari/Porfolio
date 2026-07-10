@@ -580,6 +580,9 @@ export default function ServicesPage() {
       } else {
         toast.loading("Publishing to global index...");
       }
+      const firstPendingImageIndex = Array.isArray(data.images)
+        ? data.images.findIndex((img) => typeof img !== "string" && (img?.isPending || img?.file))
+        : -1;
       const finalImageUrls = await uploadPendingImages(data.images);
       const cleanArray = (items = []) =>
         (Array.isArray(items) ? items : []).filter((item) =>
@@ -588,11 +591,14 @@ export default function ServicesPage() {
       const technologies = cleanArray(data.technologies);
       const techStack = technologies.map((item) => item.name).filter(Boolean);
       const status = data.status || data.publishStatus || "published";
-      const heroImage = data.heroImage || finalImageUrls[0] || "";
+      const uploadedHeroImage =
+        firstPendingImageIndex >= 0 ? finalImageUrls[firstPendingImageIndex] : "";
+      const heroImage = uploadedHeroImage || finalImageUrls[0] || data.heroImage || "";
+      const serviceImages = uploadedHeroImage ? [uploadedHeroImage] : finalImageUrls;
 
       const submissionData = {
         ...data,
-        images: finalImageUrls,
+        images: serviceImages,
         heroImage,
         banner: heroImage,
         image: heroImage,

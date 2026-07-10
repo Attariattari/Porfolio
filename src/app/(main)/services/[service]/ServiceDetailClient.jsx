@@ -23,7 +23,12 @@ import {
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui";
-import BookingModal from "@/components/BookingModal";
+import dynamic from "next/dynamic";
+import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
+
+const BookingModal = dynamic(() => import("@/components/BookingModal"), {
+  ssr: false,
+});
 
 const professionalCopy = {
   "web-development": {
@@ -375,12 +380,12 @@ export default function ServiceDetailClient({
   const highlights = normalizeArray(service.keyHighlights).length
     ? normalizeArray(service.keyHighlights).slice(0, 4)
     : [
-        "Responsive experience",
-        "Business-focused structure",
-        "Clean implementation",
-        "Custom quote after discussion",
-      ];
-  const banner = service.heroImage || service.banner || service.image || "/portfolio-hero.png";
+      "Responsive experience",
+      "Business-focused structure",
+      "Clean implementation",
+      "Custom quote after discussion",
+    ];
+  const banner = getSafeImageSrc(service.heroImage || service.banner || service.image, "/portfolio-hero.png");
   const deliveryNote =
     service.deliveryNote ||
     service.deliveryTime ||
@@ -407,46 +412,33 @@ export default function ServiceDetailClient({
 
   return (
     <main className="min-h-screen text-foreground">
-      <section className="relative min-h-[100svh] overflow-hidden border-b border-border/50">
-        <div className="absolute inset-0">
-          <Image
-            src={banner}
-            alt={`${displayTitle} service by Muhyo Tech`}
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-background/80 dark:bg-black/18 backdrop-blur-[1.5px]" />
-          <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-background/30 to-background/50 dark:from-black/40 dark:via-black/10 dark:to-black/25" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_45%,rgba(0,0,0,0.05),transparent_34%)] dark:bg-[radial-gradient(circle_at_30%_45%,rgba(255,255,255,0.08),transparent_34%)]" />
-          <div className="absolute inset-y-0 left-0 w-full md:w-[62%] bg-[radial-gradient(ellipse_at_center,var(--background)_0%,transparent_100%)] opacity-80 dark:opacity-100 dark:bg-[radial-gradient(ellipse_at_center,rgba(5,12,24,0.58),rgba(5,12,24,0.24)_48%,transparent_72%)] backdrop-blur-[2px]" />
-        </div>
+      <section className="relative overflow-hidden border-b border-border/50 ">
+        <div className="absolute inset-0 " />
 
-        <div className="relative mx-auto grid min-h-[100svh] max-w-7xl grid-cols-1 items-center gap-12 px-6 py-24 lg:grid-cols-[minmax(0,1fr)_420px] lg:py-28">
+        <div className="relative mx-auto grid min-h-[calc(100svh-1px)] max-w-7xl grid-cols-1 items-center gap-12 px-6 py-24 lg:grid-cols-[minmax(0,1fr)_minmax(380px,520px)] lg:py-28">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
-            className="relative rounded-3xl border border-border/50 dark:border-white/10 bg-card/60 dark:bg-black/18 p-5 shadow-xl dark:shadow-[0_24px_80px_rgba(0,0,0,0.35)] backdrop-blur-md md:bg-card/40 md:dark:bg-black/10 md:p-6 lg:-ml-6 lg:max-w-4xl"
+            className="lg:max-w-4xl"
           >
             <Link
               href="/services"
-              className="mb-8 inline-flex items-center gap-2 rounded-xl border border-border/50 dark:border-white/15 bg-background/60 dark:bg-black/30 px-4 py-2 text-xs font-bold text-foreground/80 dark:text-white/80 shadow-lg backdrop-blur-xl transition-colors hover:border-accent/50 hover:text-foreground dark:hover:text-white"
+              className="mb-8 inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs font-bold text-muted-foreground shadow-lg shadow-accent/5 transition-colors hover:border-accent/50 hover:text-foreground"
             >
               <ArrowLeft className="h-4 w-4" />
               Back to services
             </Link>
 
-            <div className="mb-5 inline-flex items-center gap-2 rounded-lg border border-accent/40 bg-accent/5 dark:bg-black/35 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-accent shadow-lg backdrop-blur-xl">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-accent">
               <Sparkles className="h-3.5 w-3.5" />
               {category}
             </div>
 
-            <h1 className="max-w-5xl text-5xl font-black leading-[0.98] tracking-tight text-foreground dark:text-white drop-shadow-sm dark:drop-shadow-[0_8px_28px_rgba(0,0,0,0.65)] md:text-7xl">
+            <h1 className="max-w-5xl text-5xl font-black leading-[0.98] tracking-tight text-foreground md:text-7xl">
               {displayTitle}
             </h1>
-            <p className="mt-7 max-w-3xl text-lg font-medium leading-relaxed text-muted-foreground dark:text-white/78 drop-shadow-none dark:drop-shadow-[0_4px_18px_rgba(0,0,0,0.7)] md:text-xl">
+            <p className="mt-7 max-w-3xl text-lg font-medium leading-relaxed text-muted-foreground md:text-xl">
               {description}
             </p>
 
@@ -454,7 +446,7 @@ export default function ServiceDetailClient({
               {highlights.map((item) => (
                 <span
                   key={item}
-                  className="inline-flex items-center gap-2 rounded-full border border-border/50 dark:border-white/25 bg-background/50 dark:bg-black/45 px-4 py-2 text-xs font-bold text-foreground/90 dark:text-white shadow-sm dark:shadow-[0_10px_30px_rgba(0,0,0,0.35)] backdrop-blur-2xl"
+                  className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs font-bold text-foreground shadow-sm shadow-accent/5"
                 >
                   <CheckCircle2 className="h-4 w-4 text-accent" />
                   {item}
@@ -463,27 +455,15 @@ export default function ServiceDetailClient({
             </div>
 
             <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-              <Button onClick={openBooking} className="shadow-[0_16px_40px_rgba(0,170,255,0.34)]">
+              <Button onClick={openBooking}>
                 Book a Call
                 <ArrowRight className="h-4 w-4" />
               </Button>
+              <Link href="/services">
+                <Button variant="secondary">View All Services</Button>
+              </Link>
               <Link href={bookCallHref}>
-                <Button variant="secondary" className="border border-border/50 dark:border-white/15 bg-background/50 dark:bg-black/45 text-foreground dark:text-white shadow-sm dark:shadow-[0_14px_36px_rgba(0,0,0,0.35)] backdrop-blur-2xl hover:bg-background/80 dark:hover:bg-white/15">
-                  Discuss This Service
-                </Button>
-              </Link>
-              <Link
-                href={`https://wa.me/923224458481?text=${encodeURIComponent(`Hello! I want to discuss ${service.title}.`)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button variant="outline" className="border-accent/70 bg-background/50 dark:bg-black/35 text-accent shadow-sm dark:shadow-[0_14px_36px_rgba(0,0,0,0.35)] backdrop-blur-2xl hover:bg-accent/10 hover:text-accent">
-                  Send Message
-                  <MessageSquare className="h-4 w-4" />
-                </Button>
-              </Link>
-              <Link href="/projects">
-                <Button variant="secondary" className="border border-border/50 dark:border-white/15 bg-background/50 dark:bg-black/45 text-foreground dark:text-white shadow-sm dark:shadow-[0_14px_36px_rgba(0,0,0,0.35)] backdrop-blur-2xl hover:bg-background/80 dark:hover:bg-white/15">View Related Work</Button>
+                <Button variant="outline">Book This Service</Button>
               </Link>
             </div>
           </motion.div>
@@ -492,46 +472,63 @@ export default function ServiceDetailClient({
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }}
-            className="rounded-2xl border border-border/50 dark:border-white/10 bg-card/70 p-6 shadow-2xl backdrop-blur-2xl"
+            className="relative rounded-3xl border border-border bg-card p-4 shadow-2xl shadow-accent/10"
           >
-            <div className="flex items-center gap-3 border-b border-border/60 pb-5">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent text-accent-foreground">
-                <Target className="h-6 w-6" />
-              </div>
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-accent">
-                  Quote-based service
-                </p>
-                <p className="text-sm font-bold text-foreground">
-                  Planned around your actual scope
-                </p>
-              </div>
-            </div>
-
-            <p className="mt-5 text-sm leading-relaxed text-muted-foreground">
-              {promise}
-            </p>
-
-            <div className="mt-6 grid grid-cols-2 gap-3">
-              {outcomes.map((item) => (
-                <div
-                  key={item}
-                  className="rounded-xl border border-border/60 bg-background/45 p-3"
-                >
-                  <CheckCircle2 className="mb-2 h-4 w-4 text-accent" />
-                  <p className="text-xs font-bold leading-snug text-foreground/80">
-                    {item}
-                  </p>
+            <div className="absolute -inset-3 -z-10 rounded-3xl border border-accent/20 bg-accent/10 blur-2xl" />
+            <div className="overflow-hidden rounded-2xl border border-border bg-background">
+              <div className="flex items-center justify-between border-b border-border bg-muted/40 px-4 py-3">
+                <div className="flex items-center gap-1.5">
+                  <span className="h-2.5 w-2.5 rounded-full bg-muted" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-muted" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-muted" />
                 </div>
-              ))}
+                <span className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground">
+                  Service Preview
+                </span>
+              </div>
+
+              <div className="relative aspect-[16/10] bg-muted">
+                <Image
+                  src={banner}
+                  alt={`${displayTitle} service by Muhyo Tech`}
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 520px"
+                  className="object-cover"
+                />
+              </div>
             </div>
 
-            <div className="mt-5 rounded-xl border border-accent/20 bg-accent/10 p-4">
-              <p className="text-xs font-semibold leading-relaxed text-foreground/80">
-                Pricing depends on project requirements, features, timeline,
-                and scope. Book a call to discuss your project and receive a
-                custom quote.
-              </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {[category, ...techStack.slice(0, 3).map(itemTitle)]
+                .filter(Boolean)
+                .map((item) => (
+                  <span
+                    key={item}
+                    className="rounded-full border border-border bg-background px-3 py-1.5 text-xs font-bold text-muted-foreground"
+                  >
+                    {item}
+                  </span>
+                ))}
+            </div>
+
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              <div className="rounded-2xl border border-border bg-background p-4">
+                <p className="text-xs font-bold uppercase tracking-[0.14em] text-accent">
+                  Focus
+                </p>
+                <p className="mt-2 text-sm font-semibold text-foreground">
+                  Clear scope and delivery
+                </p>
+              </div>
+              <div className="rounded-2xl border border-border bg-background p-4">
+                <p className="text-xs font-bold uppercase tracking-[0.14em] text-accent">
+                  Built For
+                </p>
+                <p className="mt-2 text-sm font-semibold text-foreground">
+                  Business growth
+                </p>
+              </div>
             </div>
           </motion.aside>
         </div>
@@ -826,64 +823,79 @@ export default function ServiceDetailClient({
                 description="A few relevant examples from the Muhyo Tech project library."
               />
               {relatedProjects.length > 0 ? (
-                <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   {relatedProjects.map((project) => (
                     <Link
                       key={project.slug || project._id || project.title}
                       href={`/projects/${project.slug || project._id}`}
-                      className="group overflow-hidden rounded-2xl border border-border/60 bg-card/45 transition-colors hover:border-accent/35"
+                      className="group overflow-hidden rounded-2xl border border-border/70 bg-card shadow-lg shadow-accent/5 transition-all duration-300 hover:-translate-y-1 hover:border-accent/40 hover:shadow-xl hover:shadow-accent/10"
                     >
-                      <div className="relative aspect-[16/10] overflow-hidden bg-background/50">
-                        {(project.thumbnail || project.image) && (
+                      <div className="grid grid-cols-[116px_minmax(0,1fr)] gap-0">
+                        <div className="relative min-h-36 overflow-hidden bg-muted">
                           <Image
-                            src={project.thumbnail || project.image}
-                            alt={project.title}
+                            src={getSafeImageSrc(project.thumbnail || project.thumbnailImage || project.image)}
+                            alt={`${project.title} project by Muhyo Tech`}
                             fill
-                            sizes="(max-width: 768px) 100vw, 480px"
+                            loading="lazy"
+                            sizes="116px"
                             className="object-cover transition-transform duration-700 group-hover:scale-105"
                           />
-                        )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
-                      </div>
-                      <div className="p-5">
-                        <h3 className="text-xl font-bold tracking-tight">
-                          {project.title}
-                        </h3>
-                        <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
-                          {project.description}
-                        </p>
-                        <div className="mt-4 flex flex-wrap gap-2">
-                          {normalizeArray(project.techStack)
-                            .slice(0, 4)
-                            .map((tech, index) => (
-                              <span
-                                key={`${itemTitle(tech)}-${index}`}
-                                className="rounded-lg border border-border/60 bg-background/45 px-2.5 py-1 text-[10px] font-bold text-foreground/70"
-                              >
-                                {itemTitle(tech)}
-                              </span>
-                            ))}
                         </div>
-                        <div className="mt-5 inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-accent">
-                          View Project <ArrowRight className="h-4 w-4" />
+
+                        <div className="flex min-h-36 flex-col p-4">
+                          {(project.category || project.purpose) && (
+                            <span className="mb-2 w-fit rounded-full border border-accent/30 bg-accent/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-accent">
+                              {project.category || project.purpose}
+                            </span>
+                          )}
+                          <h3 className="line-clamp-2 text-base font-bold tracking-tight text-foreground">
+                            {project.title}
+                          </h3>
+                          {project.description && (
+                            <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
+                              {project.description}
+                            </p>
+                          )}
+                          <div className="mt-auto flex items-center justify-between gap-3 pt-3">
+                            <div className="flex min-w-0 flex-wrap gap-1.5">
+                              {normalizeArray(project.techStack)
+                                .slice(0, 2)
+                                .map((tech, techIndex) => (
+                                  <span
+                                    key={`${itemTitle(tech)}-${techIndex}`}
+                                    className="rounded-full border border-border bg-background px-2 py-0.5 text-[9px] font-bold text-muted-foreground"
+                                  >
+                                    {itemTitle(tech)}
+                                  </span>
+                                ))}
+                            </div>
+                            <ArrowRight className="h-4 w-4 shrink-0 text-accent transition-transform group-hover:translate-x-1" />
+                          </div>
                         </div>
                       </div>
                     </Link>
                   ))}
                 </div>
               ) : (
-                <div className="rounded-2xl border border-border/60 bg-card/45 p-6">
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    Want to see examples of similar work? Contact us and we will
-                    guide you based on your project type.
-                  </p>
-                  <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-                    <Link href="/projects">
-                      <Button variant="secondary">View Projects</Button>
-                    </Link>
-                    <Link href="/contact">
-                      <Button variant="outline">Contact Muhyo Tech</Button>
-                    </Link>
+                <div className="rounded-3xl border border-border/70 bg-card p-6 shadow-xl shadow-accent/5 md:p-8">
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-[1fr_auto] md:items-center">
+                    <div>
+                      <h3 className="text-2xl font-bold tracking-tight text-foreground">
+                        Need examples for this service?
+                      </h3>
+                      <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                        Explore the Muhyo Tech project library or contact us to
+                        discuss the most relevant work for your project type.
+                      </p>
+                    </div>
+                    <div className="flex flex-col gap-3 sm:flex-row">
+                      <Link href="/projects">
+                        <Button variant="secondary">View Projects</Button>
+                      </Link>
+                      <Link href="/contact">
+                        <Button variant="outline">Contact Muhyo Tech</Button>
+                      </Link>
+                    </div>
                   </div>
                 </div>
               )}
@@ -962,14 +974,16 @@ export default function ServiceDetailClient({
         </div>
       </section>
 
-      <BookingModal
-        isOpen={bookingOpen}
-        onClose={() => setBookingOpen(false)}
-        initialServiceSlug={service.slug}
-        initialService={initialService}
-        sourcePage="service-detail"
-        contextTitle={service.title}
-      />
+      {bookingOpen && (
+        <BookingModal
+          isOpen
+          onClose={() => setBookingOpen(false)}
+          initialServiceSlug={service.slug}
+          initialService={initialService}
+          sourcePage="service-detail"
+          contextTitle={service.title}
+        />
+      )}
     </main>
   );
 }

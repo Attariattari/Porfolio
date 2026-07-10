@@ -12,6 +12,11 @@ import {
 } from "@/lib/ai/featuredEngine";
 import { revalidatePath } from "next/cache";
 
+const isPublicBlog = (blog = {}) => {
+    const status = blog.publishStatus ?? blog.status ?? "published";
+    return status === "published";
+};
+
 /**
  * BlogController
  * Optimized with lean queries and caching for production.
@@ -20,18 +25,24 @@ export const BlogController = {
     // 1. Get All Blogs - Optimized with lean() and field selection for list pages
     async getAll(filterPublished = false, options = {}) {
         const includeContent = options.includeContent === true;
-        const cacheKey = `blogs_all_${filterPublished}_${includeContent}`;
+        const cacheKey = filterPublished
+            ? "blogs:list:published"
+            : `admin:blogs:list:${includeContent ? "full" : "summary"}`;
 
         try {
             return await withCache(
                 cacheKey,
                 async() => {
                     await dbConnect();
-                    const query = filterPublished ? { publishStatus: "published" } : {};
-
-                    console.log(
-                        `[BlogController] Fetching blogs (Published Only: ${filterPublished})`,
-                    );
+                    const query = filterPublished
+                        ? {
+                            $or: [
+                                { publishStatus: "published" },
+                                { status: "published" },
+                                { publishStatus: { $exists: false }, status: { $exists: false } },
+                            ],
+                        }
+                        : {};
 
                     // P5 OPTIMIZATION: Select only needed fields for list pages.
                     // Admin edit screens can opt into content with includeContent.
@@ -87,7 +98,7 @@ export const BlogController = {
                         publishStatus: "published",
                     }));
                 },
-                300, ["blogs"],
+                300, ["blogs", filterPublished ? "public:blogs" : "admin:blogs"],
             );
         } catch (error) {
             console.error(
@@ -106,29 +117,41 @@ export const BlogController = {
         );
 
         try {
-            await dbConnect();
-            const isObjectId = mongoose.Types.ObjectId.isValid(identifier);
-            const query = {
-                $or: [
-                    { slug: identifier },
-                    ...(isObjectId ? [{ _id: identifier }] : []),
-                ],
-            };
+            return await withCache(
+                `blogs:detail:${identifier}`,
+                async () => {
+                    await dbConnect();
+                    const isObjectId = mongoose.Types.ObjectId.isValid(identifier);
+                    const query = {
+                        $or: [
+                            { slug: identifier },
+                            ...(isObjectId ? [{ _id: identifier }] : []),
+                        ],
+                    };
 
-            const blog = await Blog.findOne(query).lean();
+                    const blog = await Blog.findOne(query).lean();
 
-            if (blog) return serializeDoc(blog);
+                    if (blog) {
+                        const serialized = serializeDoc(blog);
+                        if (!isPublicBlog(serialized)) {
+                            return null;
+                        }
+                        return serialized;
+                    }
 
-            // Fallback to static data
-            if (fallbackBlog) {
-                return {
-                    ...fallbackBlog,
-                    _isFromDataJs: true,
-                    publishStatus: "published",
-                };
-            }
+                    if (fallbackBlog) {
+                        return {
+                            ...fallbackBlog,
+                            _isFromDataJs: true,
+                            publishStatus: "published",
+                        };
+                    }
 
-            return null;
+                    return null;
+                },
+                900,
+                ["blogs", "public:blogs"],
+            );
         } catch (error) {
             console.error(
                 `[BlogController.getOne] Database connection timeout or failure for ${identifier}:`,

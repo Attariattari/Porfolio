@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { AboutController } from "@/controllers/AboutController";
 import { getAuthSession, checkPermission } from "@/lib/auth";
 import { serializeDoc } from "@/lib/mongooseHelper";
+import { getAboutPageData } from "@/lib/content/getAboutPageData";
 
 // GET PROFILE (Public)
 export async function GET() {
@@ -9,7 +10,8 @@ export async function GET() {
     const profile = await AboutController.get();
     return NextResponse.json({ success: true, data: serializeDoc(profile) });
   } catch (error) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    console.warn("[about-api] Unable to load DB profile, using safe fallback");
+    return NextResponse.json({ success: true, data: getAboutPageData(null) });
   }
 }
 

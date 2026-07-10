@@ -1,12 +1,12 @@
 import dbConnect from "@/lib/dbConnect";
 import { Hero } from "@/models/Portfolio";
 import { serializeDoc } from "@/lib/mongooseHelper";
-import { withCache } from "@/lib/cache";
+import { cacheManager, withCache } from "@/lib/cache";
 
 export const HeroController = {
     // 1. Get Hero Data - Optimized with lean() + caching
     async get() {
-        const cacheKey = "hero_data";
+        const cacheKey = "home:hero";
         try {
             return await withCache(
                 cacheKey,
@@ -36,6 +36,7 @@ export const HeroController = {
                 runValidators: true,
             }).lean();
 
+            await cacheManager.invalidateByTag("hero");
             return serializeDoc(hero);
         } catch (error) {
             throw new Error(error.message || "Failed to update hero section");

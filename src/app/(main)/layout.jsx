@@ -4,7 +4,7 @@ import { BottomNav } from "@/components/BottomNav";
 import Footer from "@/components/Footer";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
 import InitialLoader from "@/components/InitialLoader";
-import WhatsAppButton from "@/components/WhatsAppButton";
+import DeferredWhatsAppButton from "@/components/DeferredWhatsAppButton";
 import ScrollProgress from "@/components/ScrollProgress";
 import NavigationWatcher from "@/components/NavigationWatcher";
 import MainProviders from "./MainProviders";
@@ -15,7 +15,11 @@ import { OrganizationSchema } from "@/components/schema/OrganizationSchema";
 import { SITE_URL } from "@/lib/config";
 import { getSeoImage } from "@/lib/seo";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  adjustFontFallback: true,
+});
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
@@ -93,7 +97,7 @@ export default async function MainLayout({ children }) {
       <Sidebar data={globalAbout} />
       <BottomNav />
       <AnimatedBackground />
-      <WhatsAppButton />
+      <DeferredWhatsAppButton />
       <div
         className="site-main-shell flex flex-col min-h-screen relative z-10 transition-[padding] duration-500 ease-in-out pt-16 md:pt-0 pl-[var(--sidebar-width,0px)]"
       >

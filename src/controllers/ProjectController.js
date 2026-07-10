@@ -59,6 +59,28 @@ const findSeedProject = (project) =>
             item.title?.toLowerCase() === project?.title?.toLowerCase(),
     );
 
+const findFallbackProject = (identifier) =>
+    portfolioData.projects.find(
+        (project) =>
+            project.id?.toString() === identifier ||
+            project.slug === identifier ||
+            project.title?.toLowerCase().replace(/\s+/g, "-") === identifier,
+    );
+
+const toFallbackProject = (project) =>
+    project
+        ? {
+            ...project,
+            _isFromDataJs: true,
+            publishStatus: "published",
+        }
+        : null;
+
+const isPublicProject = (project = {}) => {
+    const status = project.publishStatus ?? project.status ?? "published";
+    return status === "published";
+};
+
 const mergeWithSeedCaseStudy = (project) => {
     const seedProject = findSeedProject(project);
     if (!seedProject) return project;
@@ -84,7 +106,7 @@ const mergeWithSeedCaseStudy = (project) => {
 export const ProjectController = {
     // 1. Get All Projects - Optimized with lean(), caching, and efficient merge
     async getAll(filterPublished = false) {
-        const cacheKey = `projects_all_${filterPublished}_case_study_v2`;
+        const cacheKey = filterPublished ? "projects:list:published" : "admin:projects:list";
         
         try {
             return await withCache(
@@ -92,7 +114,15 @@ export const ProjectController = {
                 async () => {
                     await dbConnect();
 
-                    const query = filterPublished ? { publishStatus: "published" } : {};
+                    const query = filterPublished
+                        ? {
+                            $or: [
+                                { publishStatus: "published" },
+                                { status: "published" },
+                                { publishStatus: { $exists: false }, status: { $exists: false } },
+                            ],
+                        }
+                        : {};
 
                     // Use .lean() for faster execution and smaller memory footprint
                     const dbProjects = await Project.find(query)
@@ -116,7 +146,7 @@ export const ProjectController = {
                     return [...mergedDbProjects, ...fallbackProjects];
                 },
                 300, // 5 minute cache
-                ["projects"]
+                ["projects", filterPublished ? "public:projects" : "admin:projects"]
             );
         } catch (error) {
             console.error("[ProjectController.getAll] Error:", error);
@@ -126,7 +156,8 @@ export const ProjectController = {
 
     // 2. Get One Project By SLUG or ID - Optimized with lean()
     async getOne(identifier) {
-        const cacheKey = `project_one_${identifier}_case_study_v2`;
+        const cacheKey = `projects:detail:${identifier}`;
+        const fallbackProject = findFallbackProject(identifier);
 
         return await withCache(
             cacheKey,
@@ -144,33 +175,27 @@ export const ProjectController = {
 
                     const project = await Project.findOne(query).lean();
 
-                    if (project) return mergeWithSeedCaseStudy(serializeDoc(project));
-
-                    // Fallback to static data
-                    const fallbackProject = portfolioData.projects.find(
-                        (p) =>
-                        p.id?.toString() === identifier ||
-                        p.slug === identifier ||
-                        p.title.toLowerCase().replace(/\s+/g, "-") === identifier,
-                    );
-
-                    if (fallbackProject) {
-                        return {
-                            ...fallbackProject,
-                            _isFromDataJs: true,
-                            publishStatus: "published",
-                        };
+                    if (project) {
+                        const serialized = mergeWithSeedCaseStudy(serializeDoc(project));
+                        if (!isPublicProject(serialized)) {
+                            return null;
+                        }
+                        return serialized;
                     }
+
+                    if (fallbackProject) return toFallbackProject(fallbackProject);
 
                     return null;
                 } catch (error) {
-                    throw new Error(
-                        `Failed to fetch project ${identifier}: ${error.message}`,
-                    );
+                    if (process.env.NODE_ENV !== "production") {
+                        console.warn("[projects] DB unavailable, using fallback data");
+                    }
+
+                    return toFallbackProject(fallbackProject);
                 }
             },
             900,
-            ["projects"],
+            ["projects", "public:projects"],
         );
     },
 
@@ -196,6 +221,7 @@ export const ProjectController = {
             sendNewsletterEmail("project", savedProject).catch(() => {});
             emitSocketEvent(SOCKET_EVENTS.NEW_PROJECT, serialized);
             emitSocketEvent(SOCKET_EVENTS.STATS_UPDATED);
+            emitSocketEvent("public-data:updated", { type: "project" });
             await cacheManager.invalidateByTag("projects");
 
             return serialized;
@@ -216,6 +242,7 @@ export const ProjectController = {
             if (!updatedProject) return null;
 
             emitSocketEvent(SOCKET_EVENTS.STATS_UPDATED);
+            emitSocketEvent("public-data:updated", { type: "project" });
             await cacheManager.invalidateByTag("projects");
             return serializeDoc(updatedProject);
         } catch (error) {
@@ -230,6 +257,7 @@ export const ProjectController = {
             const deletedProject = await Project.findByIdAndDelete(id).lean();
             if (deletedProject) {
                 emitSocketEvent(SOCKET_EVENTS.STATS_UPDATED);
+                emitSocketEvent("public-data:updated", { type: "project" });
                 await cacheManager.invalidateByTag("projects");
             }
             return deletedProject;
@@ -244,6 +272,7 @@ export const ProjectController = {
             await dbConnect();
             const result = await Project.deleteMany({});
             emitSocketEvent(SOCKET_EVENTS.STATS_UPDATED);
+            emitSocketEvent("public-data:updated", { type: "project" });
             await cacheManager.invalidateByTag("projects");
             return result;
         } catch (error) {
@@ -272,6 +301,7 @@ export const ProjectController = {
 
             emitSocketEvent(SOCKET_EVENTS.PROJECTS_REORDERED);
             emitSocketEvent(SOCKET_EVENTS.STATS_UPDATED);
+            emitSocketEvent("public-data:updated", { type: "project" });
             await cacheManager.invalidateByTag("projects");
             return true;
         } catch (error) {

@@ -60,7 +60,7 @@ export const homeData = {
         title: "Building modern websites, dashboards, and full-stack applications",
         highlightedWord: "applications",
         description: "Muhyo Tech builds modern websites, dashboards, and full-stack applications for businesses, startups, and personal brands using Next.js, MERN Stack, and clean conversion-focused UI.",
-        heroImage: "/hero-visual.png",
+        heroImage: "/hero-visual.webp",
         ctas: [
             { label: "Book a Call", href: "/book-a-call", variant: "primary" },
             { label: "View Projects", href: "/projects", variant: "outline" },

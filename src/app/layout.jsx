@@ -5,14 +5,17 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import ScrollToTop from "@/components/ScrollToTop";
 import { Toaster } from "sonner";
-import VisitorTracker from "@/components/VisitorTracker";
-import NetworkListener from "@/components/NetworkListener";
+import DeferredRuntimeWidgets from "@/components/DeferredRuntimeWidgets";
 import { OrganizationSchema } from "@/components/schema/OrganizationSchema";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import { SITE_URL } from "@/lib/config";
 import { getSeoImage } from "@/lib/seo";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  adjustFontFallback: true,
+});
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
@@ -68,6 +71,13 @@ export default function RootLayout({ children }) {
                   } else {
                     document.documentElement.classList.remove('dark');
                   }
+
+                  const isDesktop = window.matchMedia('(min-width: 768px)').matches;
+                  const isSidebarCollapsed = localStorage.getItem('muhyo:sidebar-collapsed') === 'true';
+                  document.documentElement.style.setProperty(
+                    '--sidebar-width',
+                    isDesktop ? (isSidebarCollapsed ? '100px' : '300px') : '0px'
+                  );
                 } catch (e) {}
               })();
             `,
@@ -76,8 +86,7 @@ export default function RootLayout({ children }) {
       </head>
       <body className={inter.className} suppressHydrationWarning>
         <ThemeProvider>
-          <NetworkListener />
-          <VisitorTracker />
+          <DeferredRuntimeWidgets />
           <ScrollToTop />
           {children}
           <Toaster

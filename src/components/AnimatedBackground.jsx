@@ -1,11 +1,23 @@
 "use client";
 
-import { memo } from "react";
+import { memo, useEffect, useState } from "react";
 import { useTheme } from "./ThemeProvider";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 const AnimatedBackgroundComponent = () => {
   const { isDark } = useTheme();
+  const prefersReducedMotion = useReducedMotion();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 767px)");
+    const update = () => setIsMobile(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
+
+  const shouldAnimate = !prefersReducedMotion && !isMobile;
 
   return (
     <div className="fixed inset-0 -z-50 overflow-hidden bg-background pointer-events-none">
@@ -21,33 +33,49 @@ const AnimatedBackgroundComponent = () => {
       {/* Animated Glowing Orbs */}
       <div className="absolute inset-0">
         <motion.div
-          animate={{
-            scale: [1, 1.2, 1],
-            rotate: [0, 90, 0],
-            x: [0, 50, 0],
-            y: [0, -30, 0],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
+          animate={
+            shouldAnimate
+              ? {
+                  scale: [1, 1.2, 1],
+                  rotate: [0, 90, 0],
+                  x: [0, 50, 0],
+                  y: [0, -30, 0],
+                }
+              : undefined
+          }
+          transition={
+            shouldAnimate
+              ? {
+                  duration: 20,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }
+              : undefined
+          }
           className={`absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full blur-[120px] opacity-20 ${
             isDark ? "bg-accent" : "bg-blue-300"
           }`}
         />
         <motion.div
-          animate={{
-            scale: [1.2, 1, 1.2],
-            rotate: [0, -60, 0],
-            x: [0, -40, 0],
-            y: [0, 60, 0],
-          }}
-          transition={{
-            duration: 25,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
+          animate={
+            shouldAnimate
+              ? {
+                  scale: [1.2, 1, 1.2],
+                  rotate: [0, -60, 0],
+                  x: [0, -40, 0],
+                  y: [0, 60, 0],
+                }
+              : undefined
+          }
+          transition={
+            shouldAnimate
+              ? {
+                  duration: 25,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }
+              : undefined
+          }
           className={`absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full blur-[140px] opacity-10 ${
             isDark ? "bg-blue-600" : "bg-cyan-200"
           }`}
@@ -79,7 +107,7 @@ const AnimatedBackgroundComponent = () => {
           </linearGradient>
         </defs>
 
-        {[...Array(6)].map((_, i) => (
+        {(shouldAnimate ? [...Array(6)] : [...Array(2)]).map((_, i) => (
           <motion.path
             key={i}
             d={`M -500 ${200 + i * 150} Q 0 ${100 + i * 100} 500 ${200 + i * 150} T 1500 ${200 + i * 150}`}
@@ -87,15 +115,23 @@ const AnimatedBackgroundComponent = () => {
             stroke="url(#lineGradient)"
             strokeWidth="1.5"
             initial={{ pathLength: 0, pathOffset: 0 }}
-            animate={{
-              pathLength: [0.2, 0.4, 0.2],
-              pathOffset: [0, 1],
-            }}
-            transition={{
-              duration: 15 + i * 2,
-              repeat: Infinity,
-              ease: "linear",
-            }}
+            animate={
+              shouldAnimate
+                ? {
+                    pathLength: [0.2, 0.4, 0.2],
+                    pathOffset: [0, 1],
+                  }
+                : undefined
+            }
+            transition={
+              shouldAnimate
+                ? {
+                    duration: 15 + i * 2,
+                    repeat: Infinity,
+                    ease: "linear",
+                  }
+                : undefined
+            }
           />
         ))}
 
@@ -106,18 +142,26 @@ const AnimatedBackgroundComponent = () => {
             isDark ? "rgba(14, 165, 233, 0.15)" : "rgba(59, 130, 246, 0.1)"
           }
           strokeWidth="3"
-          animate={{
-            d: [
-              "M -200 800 Q 400 600 1000 800 T 2200 800",
-              "M -200 750 Q 500 850 1100 750 T 2200 750",
-              "M -200 800 Q 400 600 1000 800 T 2200 800",
-            ],
-          }}
-          transition={{
-            duration: 12,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
+          animate={
+            shouldAnimate
+              ? {
+                  d: [
+                    "M -200 800 Q 400 600 1000 800 T 2200 800",
+                    "M -200 750 Q 500 850 1100 750 T 2200 750",
+                    "M -200 800 Q 400 600 1000 800 T 2200 800",
+                  ],
+                }
+              : undefined
+          }
+          transition={
+            shouldAnimate
+              ? {
+                  duration: 12,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }
+              : undefined
+          }
         />
       </svg>
 

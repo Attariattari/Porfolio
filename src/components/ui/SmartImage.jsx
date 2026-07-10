@@ -4,29 +4,30 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { ImageIcon, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
 
 export default function SmartImage({
   src,
   alt,
   className,
-  fallbackSrc = "/logo.png",
+  fallbackSrc = "/logo.webp",
   priority = false,
   ...props
 }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [currentSrc, setCurrentSrc] = useState(src);
+  const [currentSrc, setCurrentSrc] = useState(getSafeImageSrc(src, fallbackSrc));
 
   useEffect(() => {
-    setCurrentSrc(src);
+    setCurrentSrc(getSafeImageSrc(src, fallbackSrc));
     setError(false);
     setIsLoading(true);
-  }, [src]);
+  }, [src, fallbackSrc]);
 
   const handleError = () => {
     if (!error) {
       setError(true);
-      setCurrentSrc(fallbackSrc);
+      setCurrentSrc(getSafeImageSrc(fallbackSrc));
       setIsLoading(false);
     }
   };
@@ -48,7 +49,7 @@ export default function SmartImage({
       )}
 
       <Image
-        src={currentSrc || fallbackSrc}
+        src={getSafeImageSrc(currentSrc, fallbackSrc)}
         alt={alt || "Image"}
         className={cn(
           "object-cover transition-all duration-700 ease-in-out",

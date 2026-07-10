@@ -15,9 +15,15 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import ProjectModal from "./ProjectModal";
 import { SectionWrapper, Button } from "./ui";
 import EditorialBackground from "./ui/EditorialBackground";
+import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
+import Image from "next/image";
+import dynamic from "next/dynamic";
+
+const ProjectModal = dynamic(() => import("./ProjectModal"), {
+  ssr: false,
+});
 
 const Portfolio = ({ projects }) => {
   const router = useRouter();
@@ -194,10 +200,13 @@ const Portfolio = ({ projects }) => {
                       </div>
 
                       <div className="relative h-full w-full pt-12">
-                        <img
-                          src={project.thumbnail}
-                          alt={project.title}
-                          loading={idx === currentSlide ? "eager" : "lazy"}
+                        <Image
+                          src={getSafeImageSrc(project.thumbnail || project.thumbnailImage || project.image)}
+                          alt={project.title ? `Project screenshot for ${project.title}` : "Project screenshot"}
+                          fill
+                          priority={idx === 0}
+                          loading={idx === 0 ? undefined : "lazy"}
+                          sizes="660px"
                           className={`h-full w-full object-cover transition-all duration-[2s] ${
                             isActive
                               ? "grayscale-0 scale-100"
@@ -323,10 +332,13 @@ const Portfolio = ({ projects }) => {
                   </div>
 
                   <div className="relative m-5 mb-0 aspect-[16/10] overflow-hidden rounded-xl border border-white/10 bg-background">
-                    <img
-                      src={project.thumbnail}
-                      alt={project.title}
-                      loading={idx === 0 ? "eager" : "lazy"}
+                    <Image
+                      src={getSafeImageSrc(project.thumbnail || project.thumbnailImage || project.image)}
+                      alt={project.title ? `Project screenshot for ${project.title}` : "Project screenshot"}
+                      fill
+                      priority={idx === 0}
+                      loading={idx === 0 ? undefined : "lazy"}
+                      sizes="(max-width: 768px) 100vw, 33vw"
                       className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-80" />
@@ -603,7 +615,7 @@ const Portfolio = ({ projects }) => {
                             transition={{ duration: 1.2, ease: "easeOut" }}
                             className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover/img-side:scale-110"
                             style={{
-                              backgroundImage: `url(${project.thumbnail})`,
+                              backgroundImage: `url(${getSafeImageSrc(project.thumbnail || project.thumbnailImage || project.image)})`,
                             }}
                           >
                             {/* Dark gradient overlay — same as ServiceSlider */}
@@ -805,10 +817,12 @@ const Portfolio = ({ projects }) => {
       </section>
 
       {/* Project Case Study Modal */}
-      <ProjectModal
-        selectedProject={selectedProject}
-        setSelectedProject={setSelectedProject}
-      />
+      {selectedProject && (
+        <ProjectModal
+          selectedProject={selectedProject}
+          setSelectedProject={setSelectedProject}
+        />
+      )}
     </div>
   );
 };

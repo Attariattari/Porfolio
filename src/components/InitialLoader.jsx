@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 export default function InitialLoader() {
   const [loading, setLoading] = useState(true);
@@ -53,10 +54,13 @@ export default function InitialLoader() {
               className="relative mb-12"
             >
               <div className="w-32 h-32 flex items-center justify-center glass rounded-[2.5rem] border border-accent/20 shadow-[0_0_80px_rgba(var(--accent-rgb),0.15)] overflow-hidden">
-                <img
-                  src="/logo.png"
-                  alt="Logo"
+                <Image
+                  src="/logo.webp"
+                  alt="Muhyo Tech logo"
+                  width={80}
+                  height={80}
                   className="w-20 h-20 object-contain animate-pulse"
+                  priority
                 />
                 <motion.div
                   animate={{ rotate: 360 }}

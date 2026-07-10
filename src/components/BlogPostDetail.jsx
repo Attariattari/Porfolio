@@ -15,11 +15,12 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { SectionWrapper, Button } from "@/components/ui";
+import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
 
 export default function BlogPostDetail({ blog, shareUrl }) {
   if (!blog) return null;
 
-  const coverImage = blog.image || blog.featuredImage?.url || "/portfolio-hero.png";
+  const coverImage = getSafeImageSrc(blog.image || blog.featuredImage?.url, "/portfolio-hero.png");
   const blogPath = `/blog/${blog.slug}`;
   const fullShareUrl =
     shareUrl ||
@@ -117,7 +118,7 @@ export default function BlogPostDetail({ blog, shareUrl }) {
               <div className="flex items-center gap-4 lg:justify-end">
                 <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full border-2 border-accent/30">
                   <Image
-                    src="https://res.cloudinary.com/dg5gwixf1/image/upload/v1772736622/ChatGPT_Image_Mar_5_2026_11_36_42_AM_auw4uw.png"
+                    src={getSafeImageSrc("https://res.cloudinary.com/dg5gwixf1/image/upload/v1772736622/ChatGPT_Image_Mar_5_2026_11_36_42_AM_auw4uw.png", "/logo.png")}
                     alt={blog.author}
                     width={48}
                     height={48}

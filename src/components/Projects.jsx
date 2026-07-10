@@ -10,8 +10,13 @@ import {
 import { SectionWrapper } from "./ui";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import ProjectModal from "./ProjectModal";
 import Image from "next/image";
+import dynamic from "next/dynamic";
+import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
+
+const ProjectModal = dynamic(() => import("./ProjectModal"), {
+  ssr: false,
+});
 
 const ProjectRow = ({ project, index, setSelectedProject }) => {
   const router = useRouter();
@@ -167,11 +172,11 @@ const ProjectRow = ({ project, index, setSelectedProject }) => {
           className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-[0_40px_80px_-20px_rgba(0,0,0,0.6)] border border-white/10 bg-background cursor-pointer"
         >
           <Image
-            src={project.thumbnail}
-            alt={project.title}
+            src={getSafeImageSrc(project.thumbnail || project.thumbnailImage || project.image)}
+            alt={project.title ? `Project screenshot for ${project.title}` : "Project screenshot"}
             fill
-            unoptimized
-            priority={index < 2}
+            priority={index === 0}
+            loading={index === 0 ? undefined : "lazy"}
             sizes="(max-width: 1024px) 100vw, 50vw"
             className="object-cover transition-transform duration-1000 group-hover/img-side:scale-110"
           />
@@ -271,10 +276,12 @@ export default function Projects({ data, showViewAll = false }) {
       )}
 
       {/* Reusable Project Modal */}
-      <ProjectModal 
-        selectedProject={selectedProject} 
-        setSelectedProject={setSelectedProject} 
-      />
+      {selectedProject && (
+        <ProjectModal
+          selectedProject={selectedProject}
+          setSelectedProject={setSelectedProject}
+        />
+      )}
     </SectionWrapper>
   );
 }

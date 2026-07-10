@@ -16,6 +16,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/effect-fade";
 import "swiper/css/effect-creative";
+import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
 
 /**
  * FeaturedBlogSlider - Lazy-loaded component for featured blogs
@@ -61,9 +62,12 @@ export default function FeaturedBlogSlider({ featuredBlogs, onImageClick }) {
               {/* Thumbnail Area */}
               <div className="relative aspect-[4/3] overflow-hidden">
                 <Image
-                  src={blog.image}
-                  alt={blog.title}
+                  src={getSafeImageSrc(blog.image || blog.featuredImage?.url, "/portfolio-hero.png")}
+                  alt={blog.title ? `Blog cover image for ${blog.title}` : "Blog cover image"}
                   fill
+                  priority={idx === 0}
+                  loading={idx === 0 ? undefined : "lazy"}
+                  sizes="(max-width: 1024px) 100vw, 420px"
                   className="object-cover transition-transform duration-1000 group-hover:scale-110 cursor-zoom-in"
                   onClick={() => onImageClick(idx)}
                 />

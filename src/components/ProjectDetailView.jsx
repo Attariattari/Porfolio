@@ -22,8 +22,17 @@ import {
   Target,
 } from "lucide-react";
 import { Button } from "@/components/ui";
-import { ImageLightbox } from "@/components/ImageLightbox";
-import BookingModal from "@/components/BookingModal";
+import dynamic from "next/dynamic";
+import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
+
+const ImageLightbox = dynamic(
+  () => import("@/components/ImageLightbox").then((mod) => mod.ImageLightbox),
+  { ssr: false },
+);
+
+const BookingModal = dynamic(() => import("@/components/BookingModal"), {
+  ssr: false,
+});
 
 const iconMap = {
   Award,
@@ -42,6 +51,7 @@ const iconMap = {
 const asArray = (value) => (Array.isArray(value) ? value.filter(Boolean) : []);
 const text = (...values) => values.find((value) => typeof value === "string" && value.trim()) || "";
 const imageUrl = (image) => (typeof image === "string" ? image : image?.url || "");
+const safeImageUrl = (image, fallback) => getSafeImageSrc(imageUrl(image) || image, fallback);
 const groupTechStack = (techStack = []) => ({
   frontend: techStack.filter((tech) => /next|react|tailwind|framer|three|d3|typescript/i.test(tech)),
   backend: techStack.filter((tech) => /node|express|api|fastapi|go|prisma/i.test(tech)),
@@ -254,11 +264,10 @@ export default function ProjectDetailView({
               className="group relative aspect-[4/3] overflow-hidden rounded-[2rem] border border-white/10 bg-card text-left shadow-2xl"
             >
               <Image
-                src={heroImage}
-                alt={project.title}
+                src={getSafeImageSrc(heroImage)}
+                alt={project.title ? `Project hero screenshot for ${project.title}` : "Project hero screenshot"}
                 fill
                 priority
-                unoptimized
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover transition-transform duration-1000 group-hover:scale-105"
               />
@@ -405,10 +414,10 @@ export default function ProjectDetailView({
                   className="group relative aspect-[16/10] overflow-hidden rounded-[2rem] border border-white/10 bg-card text-left"
                 >
                   <Image
-                    src={imageUrl(image)}
-                    alt={image.alt || project.title}
+                    src={safeImageUrl(image)}
+                    alt={image.alt || `Project screenshot for ${project.title}`}
                     fill
-                    unoptimized
+                    loading="lazy"
                     sizes="(max-width: 768px) 100vw, 50vw"
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
@@ -512,10 +521,10 @@ export default function ProjectDetailView({
                   <GlassCard className="h-full overflow-hidden p-0">
                     <div className="relative aspect-[16/10]">
                       <Image
-                        src={item.thumbnail || item.thumbnailImage || item.image}
-                        alt={item.title}
+                        src={getSafeImageSrc(item.thumbnail || item.thumbnailImage || item.image)}
+                        alt={item.title ? `Related project screenshot for ${item.title}` : "Related project screenshot"}
                         fill
-                        unoptimized
+                        loading="lazy"
                         sizes="(max-width: 768px) 100vw, 33vw"
                         className="object-cover"
                       />
@@ -561,18 +570,22 @@ export default function ProjectDetailView({
         </section>
       </section>
 
-      <ImageLightbox
-        isOpen={lightboxIndex !== null}
-        onClose={() => setLightboxIndex(null)}
-        images={lightboxImages}
-        initialIndex={lightboxIndex || 0}
-      />
-      <BookingModal
-        isOpen={bookingOpen}
-        onClose={() => setBookingOpen(false)}
-        sourcePage="project-detail"
-        contextTitle={project.title}
-      />
+      {lightboxIndex !== null && (
+        <ImageLightbox
+          isOpen
+          onClose={() => setLightboxIndex(null)}
+          images={lightboxImages}
+          initialIndex={lightboxIndex || 0}
+        />
+      )}
+      {bookingOpen && (
+        <BookingModal
+          isOpen
+          onClose={() => setBookingOpen(false)}
+          sourcePage="project-detail"
+          contextTitle={project.title}
+        />
+      )}
     </main>
   );
 }

@@ -2,8 +2,6 @@
 
 import {
   motion,
-  useScroll,
-  useTransform,
   useReducedMotion,
 } from "framer-motion";
 import {
@@ -20,12 +18,20 @@ import {
 import Link from "next/link";
 import { useRef } from "react";
 import Image from "next/image";
-import { useTypewriter, Cursor } from "react-simple-typewriter";
-import Tilt from "react-parallax-tilt";
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui";
 import EditorialBackground from "@/components/ui/EditorialBackground";
 
 import { homeData, portfolioData } from "@/lib/data";
+
+const HeroTypewriter = dynamic(() => import("./HeroTypewriter"), {
+  ssr: false,
+  loading: () => <>Full-Stack Developer</>,
+});
+
+const DesktopTilt = dynamic(() => import("./DesktopTilt"), {
+  ssr: false,
+});
 
 export default function Hero({ initialData = null }) {
   // Priority: Database Data > Static Data
@@ -43,7 +49,6 @@ export default function Hero({ initialData = null }) {
       homeData.hero.highlights,
   };
   const containerRef = useRef(null);
-  const { scrollY } = useScroll();
   // PHASE 3: Respect prefers-reduced-motion
   const shouldReduceMotion = useReducedMotion();
 
@@ -58,12 +63,6 @@ export default function Hero({ initialData = null }) {
     Cpu,
   };
 
-  const [text] = useTypewriter({
-    words: data.typewriterWords,
-    loop: true,
-    delaySpeed: 2000,
-  });
-
   const tiltOptions = {
     tiltReverse: false,
     tiltMaxAngleX: 15,
@@ -73,10 +72,6 @@ export default function Hero({ initialData = null }) {
     transitionSpeed: 1000,
     transitionEasing: "cubic-bezier(.03,.98,.52,.99)",
   };
-
-  const y1 = useTransform(scrollY, [0, 500], [0, 200]);
-  const y2 = useTransform(scrollY, [0, 500], [0, -150]);
-  const opacity = useTransform(scrollY, [0, 300], [1, 0]);
 
   const features = data.features.map((feature) => ({
     ...feature,
@@ -117,8 +112,10 @@ export default function Hero({ initialData = null }) {
               className="mb-4 h-6"
             >
               <span className="text-accent font-semibold tracking-normal text-sm">
-                Hello, I am <span className="text-foreground">{text}</span>
-                <Cursor cursorColor="#0ea5e9" cursorStyle="_" />
+                Hello, I am{" "}
+                <span className="inline-block min-w-[18ch] text-foreground">
+                  <HeroTypewriter words={data.typewriterWords} />
+                </span>
               </span>
             </motion.div>
 
@@ -225,16 +222,17 @@ export default function Hero({ initialData = null }) {
             }}
             className="relative hidden lg:block"
           >
-            <Tilt {...tiltOptions}>
+            <DesktopTilt {...tiltOptions}>
               <div className="relative z-10 w-full aspect-square max-w-[500px] mx-auto">
                 {/* Main Visual - Borderless & Blended */}
                 <div className="relative w-full h-full [mask-image:radial-gradient(ellipse_at_center,black_50%,transparent_100%)]">
                   <Image
-                    src={data.visualImage || data.heroImage || "/hero-visual.png"}
-                    alt="Professional Tech Visual"
+                    src={data.visualImage || data.heroImage || "/hero-visual.webp"}
+                    alt="Muhyo Tech full-stack development visual"
                     fill
                     className="object-cover"
                     priority
+                    sizes="500px"
                   />
                   {/* Subtle Glow to match the theme */}
                   <div className="absolute inset-0 bg-accent/10 mix-blend-soft-light pointer-events-none" />
@@ -297,7 +295,7 @@ export default function Hero({ initialData = null }) {
                   </div>
                 </motion.div>
               </div>
-            </Tilt>
+            </DesktopTilt>
           </motion.div>
         </div>
 
@@ -332,7 +330,6 @@ export default function Hero({ initialData = null }) {
 
       {/* Elegant Scroll Indicator */}
       <motion.div
-        style={{ opacity }}
         className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-3"
       >
         <div className="w-[1px] h-20 bg-gradient-to-b from-accent/50 to-transparent relative overflow-hidden">

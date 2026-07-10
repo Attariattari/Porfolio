@@ -14,8 +14,13 @@ import {
 import { SectionWrapper, Card } from "./ui";
 import Link from "next/link";
 import React from "react";
-import { ImageLightbox } from "./ImageLightbox";
 import Image from "next/image";
+import dynamic from "next/dynamic";
+
+const ImageLightbox = dynamic(
+  () => import("./ImageLightbox").then((mod) => mod.ImageLightbox),
+  { ssr: false },
+);
 
 const icons = {
   1: Layout,
@@ -284,12 +289,14 @@ export default function Services({ data, showViewAll = false }) {
         </div>
       </div>
 
-      <ImageLightbox
-        isOpen={lightboxIndex !== null}
-        onClose={() => setLightboxIndex(null)}
-        images={galleryImages}
-        initialIndex={lightboxIndex || 0}
-      />
+      {lightboxIndex !== null && (
+        <ImageLightbox
+          isOpen
+          onClose={() => setLightboxIndex(null)}
+          images={galleryImages}
+          initialIndex={lightboxIndex || 0}
+        />
+      )}
 
       {showViewAll && (
         <motion.div

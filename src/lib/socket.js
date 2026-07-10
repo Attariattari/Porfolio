@@ -1,11 +1,6 @@
 /**
  * Socket.io Real-Time Events System (OPTIONAL)
- * For live message updates in admin dashboard
- * 
- * Usage:
- * 1. Add this server initialization to your Next.js app
- * 2. Connect client to socket in admin components
- * 3. Listen for real-time updates
+ * For live message updates in admin dashboard.
  */
 
 import { io } from 'socket.io-client';
@@ -44,15 +39,15 @@ export const SOCKET_EVENTS = {
 };
 
 /**
- * Initialize Socket.io client in browser
+ * Initialize Socket.io client in browser.
  */
 export function initializeSocket(options = {}) {
   if (typeof window === 'undefined') return null;
 
-  // Wake up the socket server if it's not running
-  fetch('/api/socket').catch(err => console.warn('Socket wakeup failed', err));
+  // Wake up the socket server if it's not running.
+  fetch('/api/socket').catch((err) => console.warn('Socket wakeup failed', err));
 
-  const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL || '/', {
+  return io(process.env.NEXT_PUBLIC_SOCKET_URL || '/', {
     path: '/api/socket',
     addTrailingSlash: false,
     transports: ['websocket', 'polling'],
@@ -62,25 +57,21 @@ export function initializeSocket(options = {}) {
     reconnectionAttempts: 5,
     ...options,
   });
-
-  return socket;
 }
 
 /**
- * Server-side Socket.io initialization (Node.js backend)
+ * Server-side Socket.io initialization (Node.js backend).
  */
-export const setupSocketServer = (io) => {
-  io.on('connection', (socket) => {
+export const setupSocketServer = (ioServer) => {
+  ioServer.on('connection', (socket) => {
     console.log('User connected:', socket.id);
 
-    // Join specific rooms
     socket.on('join_admin', (userId) => {
       socket.join(`admin_${userId}`);
       console.log(`User ${userId} joined admin room`);
     });
 
-    // Listen for new messages
-    socket.on('listen_messages', (data) => {
+    socket.on('listen_messages', () => {
       socket.join('messages_room');
     });
 
@@ -89,17 +80,23 @@ export const setupSocketServer = (io) => {
     });
   });
 
-  return io;
+  return ioServer;
 };
 
 /**
- * Emit events from server (in API routes)
+ * Emit events from server API routes. Socket.io is optional, so events are
+ * skipped quietly until /api/socket has initialized the server.
  */
 export const emitSocketEvent = (eventName, data) => {
   if (globalThis.io) {
-    console.log(`📡 [SOCKET] Emitting event: ${eventName}`);
+    console.log(`[SOCKET] Emitting event: ${eventName}`);
     globalThis.io.emit(eventName, data);
-  } else {
-    console.warn(`⚠️ [SOCKET] Cannot emit ${eventName}: globalThis.io is not initialized`);
+    return true;
   }
+
+  if (process.env.SOCKET_DEBUG === 'true') {
+    console.debug(`[SOCKET] Skipped ${eventName}: Socket.io is not initialized`);
+  }
+
+  return false;
 };

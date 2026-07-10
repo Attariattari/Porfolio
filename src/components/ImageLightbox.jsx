@@ -3,12 +3,14 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ZoomIn, ZoomOut, Maximize2, Minimize2, Download, ChevronLeft, ChevronRight } from "lucide-react";
+import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
 
 export const ImageLightbox = ({ isOpen, onClose, images, initialIndex = 0 }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [zoom, setZoom] = useState(1);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [transformOrigin, setTransformOrigin] = useState("center center");
+  const safeImages = (Array.isArray(images) ? images : []).map((image) => getSafeImageSrc(image));
 
   useEffect(() => {
     setCurrentIndex(initialIndex);
@@ -29,14 +31,14 @@ export const ImageLightbox = ({ isOpen, onClose, images, initialIndex = 0 }) => 
 
   const handleNext = (e) => {
     e?.stopPropagation();
-    setCurrentIndex((prev) => (prev + 1) % images.length);
+    setCurrentIndex((prev) => (prev + 1) % safeImages.length);
     setZoom(1);
     setTransformOrigin("center center");
   };
 
   const handlePrev = (e) => {
     e?.stopPropagation();
-    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+    setCurrentIndex((prev) => (prev - 1 + safeImages.length) % safeImages.length);
     setZoom(1);
     setTransformOrigin("center center");
   };
@@ -78,7 +80,7 @@ export const ImageLightbox = ({ isOpen, onClose, images, initialIndex = 0 }) => 
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || safeImages.length === 0) return null;
 
   return (
     <AnimatePresence>
@@ -93,7 +95,7 @@ export const ImageLightbox = ({ isOpen, onClose, images, initialIndex = 0 }) => 
         <div className="absolute top-16 md:top-0 left-0 right-0 p-6 flex items-center justify-between z-[210] bg-gradient-to-b from-black/50 to-transparent pointer-events-none">
           <div className="flex items-center gap-4 pointer-events-auto">
             <span className="text-white/70 text-xs font-mono tracking-widest uppercase">
-              {currentIndex + 1} <span className="opacity-30">/</span> {images.length}
+              {currentIndex + 1} <span className="opacity-30">/</span> {safeImages.length}
             </span>
           </div>
           
@@ -121,7 +123,7 @@ export const ImageLightbox = ({ isOpen, onClose, images, initialIndex = 0 }) => 
         </div>
 
         {/* Navigation Arrows */}
-        {images.length > 1 && (
+        {safeImages.length > 1 && (
           <>
             <button 
               onClick={handlePrev}
@@ -147,7 +149,7 @@ export const ImageLightbox = ({ isOpen, onClose, images, initialIndex = 0 }) => 
         >
           <motion.img
             key={currentIndex}
-            src={images[currentIndex]}
+            src={safeImages[currentIndex]}
             alt="Gallery Detail"
             className="max-w-full max-h-full object-contain cursor-zoom-in rounded-sm shadow-2xl"
             style={{ transformOrigin }}
@@ -164,7 +166,7 @@ export const ImageLightbox = ({ isOpen, onClose, images, initialIndex = 0 }) => 
 
         {/* Thumbnails Strip (Desktop) */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 hidden md:flex gap-3 p-3 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl z-[210]">
-          {images.map((img, i) => (
+          {safeImages.map((img, i) => (
             <button
               key={i}
               onClick={(e) => { e.stopPropagation(); setCurrentIndex(i); setZoom(1); }}
