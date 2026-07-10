@@ -178,6 +178,8 @@ export default function Sidebar({ data }) {
                   <Link
                     key={link.name}
                     href={link.href}
+                    target="_self"
+                    prefetch={true}
                     className={`group/link relative flex items-center gap-3.5 p-3 rounded-2xl transition-all duration-300 ${
                       isActive
                         ? "bg-accent/5 text-accent shadow-[0_4px_20px_rgba(var(--accent-rgb),0.05)]"
