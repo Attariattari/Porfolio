@@ -64,14 +64,14 @@ export default function Sidebar({ data }) {
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 768) {
-        document.documentElement.style.setProperty("--sidebar-width", "0px");
-      } else {
-        document.documentElement.style.setProperty(
-          "--sidebar-width",
-          isCollapsed ? "100px" : "300px",
-        );
-      }
+      document.documentElement.classList.toggle(
+        "sidebar-collapsed",
+        window.innerWidth >= 768 && isCollapsed,
+      );
+      document.documentElement.classList.toggle(
+        "sidebar-expanded",
+        window.innerWidth >= 768 && !isCollapsed,
+      );
     };
     handleResize();
     window.addEventListener("resize", handleResize);

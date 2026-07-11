@@ -38,7 +38,6 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { portfolioData } from "@/lib/data";
 import { getAboutPageData } from "@/lib/content/getAboutPageData";
@@ -46,6 +45,24 @@ import { Button, SectionWrapper } from "./ui";
 import EditorialBackground from "./ui/EditorialBackground";
 import SocialLinks from "./SocialLinks";
 import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
+
+const particleClasses = [
+  "top-[12%] left-[8%]",
+  "top-[18%] left-[72%]",
+  "top-[26%] left-[38%]",
+  "top-[34%] left-[88%]",
+  "top-[42%] left-[16%]",
+  "top-[48%] left-[58%]",
+  "top-[55%] left-[80%]",
+  "top-[62%] left-[28%]",
+  "top-[70%] left-[48%]",
+  "top-[76%] left-[92%]",
+  "top-[84%] left-[12%]",
+  "top-[88%] left-[68%]",
+  "top-[14%] left-[52%]",
+  "top-[66%] left-[6%]",
+  "top-[92%] left-[36%]",
+];
 
 const HeroTypewriter = dynamic(() => import("./HeroTypewriter"), {
   ssr: false,
@@ -612,17 +629,6 @@ const FinalCTA = ({ data }) => (
 
 export default function About({ data: initialData = null, isHomePage = false }) {
   const data = getAboutPageData(initialData || portfolioData.about);
-  const [particles, setParticles] = useState([]);
-
-  useEffect(() => {
-    setParticles(
-      [...Array(15)].map(() => ({
-        top: Math.random() * 100,
-        left: Math.random() * 100,
-        duration: 5 + Math.random() * 5,
-      })),
-    );
-  }, []);
 
   if (!data) return null;
 
@@ -761,7 +767,7 @@ export default function About({ data: initialData = null, isHomePage = false }) 
       </SectionWrapper>
 
       <div className="absolute inset-0 pointer-events-none -z-20">
-        {particles.map((particle, i) => (
+        {particleClasses.map((particleClass, i) => (
           <motion.div
             key={i}
             animate={{
@@ -771,16 +777,12 @@ export default function About({ data: initialData = null, isHomePage = false }) 
               scale: [1, 1.2, 1],
             }}
             transition={{
-              duration: particle.duration,
+              duration: 5 + (i % 5),
               repeat: Infinity,
               ease: "easeInOut",
               delay: i * 0.8,
             }}
-            className="absolute w-1.5 h-1.5 rounded-full bg-accent"
-            style={{
-              top: `${particle.top}%`,
-              left: `${particle.left}%`,
-            }}
+            className={`absolute w-1.5 h-1.5 rounded-full bg-accent ${particleClass}`}
           />
         ))}
       </div>

@@ -613,12 +613,16 @@ const Portfolio = ({ projects }) => {
                             whileInView={{ scale: 1, opacity: 1 }}
                             viewport={{ once: true }}
                             transition={{ duration: 1.2, ease: "easeOut" }}
-                            className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover/img-side:scale-110"
-                            style={{
-                              backgroundImage: `url(${getSafeImageSrc(project.thumbnail || project.thumbnailImage || project.image)})`,
-                            }}
+                            className="absolute inset-0 transition-transform duration-1000 group-hover/img-side:scale-110"
                           >
                             {/* Dark gradient overlay — same as ServiceSlider */}
+                            <img
+                              src={getSafeImageSrc(project.thumbnail || project.thumbnailImage || project.image)}
+                              alt=""
+                              className="absolute inset-0 h-full w-full object-cover"
+                              loading="lazy"
+                              decoding="async"
+                            />
                             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
                             <div className="absolute inset-0 bg-black/20" />
                           </motion.div>

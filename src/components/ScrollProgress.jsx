@@ -2,6 +2,11 @@
 
 import { useEffect, useRef } from "react";
 
+const progressClasses = Array.from(
+  { length: 21 },
+  (_, index) => `scroll-progress-${index * 5}`,
+);
+
 export default function ScrollProgress() {
   const progressRef = useRef(null);
 
@@ -14,7 +19,9 @@ export default function ScrollProgress() {
         document.documentElement.scrollHeight - window.innerHeight;
       const progress = scrollable > 0 ? window.scrollY / scrollable : 0;
       if (progressRef.current) {
-        progressRef.current.style.transform = `scaleX(${Math.min(1, Math.max(0, progress))})`;
+        const bucket = Math.round(Math.min(1, Math.max(0, progress)) * 20) * 5;
+        progressRef.current.classList.remove(...progressClasses);
+        progressRef.current.classList.add(`scroll-progress-${bucket}`);
       }
     };
 
@@ -38,8 +45,7 @@ export default function ScrollProgress() {
   return (
     <div
       ref={progressRef}
-      className="site-scroll-progress fixed top-0 left-0 right-0 h-[3px] bg-accent origin-left z-[9999] shadow-[0_0_20px_rgba(var(--color-accent),0.7)]"
-      style={{ transform: "scaleX(0)" }}
+      className="site-scroll-progress scroll-progress-0 fixed top-0 left-0 right-0 h-[3px] bg-accent origin-left z-[9999] shadow-[0_0_20px_rgba(var(--color-accent),0.7)]"
     />
   );
 }

@@ -106,71 +106,41 @@ const AnimatedBackgroundComponent = () => {
             />
           </linearGradient>
         </defs>
-
         {(shouldAnimate ? [...Array(6)] : [...Array(2)]).map((_, i) => (
-          <motion.path
+          <path
             key={i}
             d={`M -500 ${200 + i * 150} Q 0 ${100 + i * 100} 500 ${200 + i * 150} T 1500 ${200 + i * 150}`}
             fill="none"
             stroke="url(#lineGradient)"
             strokeWidth="1.5"
-            initial={{ pathLength: 0, pathOffset: 0 }}
-            animate={
-              shouldAnimate
-                ? {
-                    pathLength: [0.2, 0.4, 0.2],
-                    pathOffset: [0, 1],
-                  }
-                : undefined
-            }
-            transition={
-              shouldAnimate
-                ? {
-                    duration: 15 + i * 2,
-                    repeat: Infinity,
-                    ease: "linear",
-                  }
-                : undefined
-            }
+            pathLength="1"
+            className={shouldAnimate ? `animated-bg-line animated-bg-line-${i}` : undefined}
           />
         ))}
 
-        <motion.path
+        <path
           d="M -200 800 Q 400 600 1000 800 T 2200 800"
           fill="none"
           stroke={
             isDark ? "rgba(14, 165, 233, 0.15)" : "rgba(59, 130, 246, 0.1)"
           }
           strokeWidth="3"
-          animate={
-            shouldAnimate
-              ? {
-                  d: [
-                    "M -200 800 Q 400 600 1000 800 T 2200 800",
-                    "M -200 750 Q 500 850 1100 750 T 2200 750",
-                    "M -200 800 Q 400 600 1000 800 T 2200 800",
-                  ],
-                }
-              : undefined
-          }
-          transition={
-            shouldAnimate
-              ? {
-                  duration: 12,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }
-              : undefined
-          }
-        />
+        >
+          {shouldAnimate && (
+            <animate
+              attributeName="d"
+              values="M -200 800 Q 400 600 1000 800 T 2200 800; M -200 750 Q 500 850 1100 750 T 2200 750; M -200 800 Q 400 600 1000 800 T 2200 800"
+              dur="12s"
+              repeatCount="indefinite"
+            />
+          )}
+        </path>
       </svg>
 
       {/* Grid Pattern Overlay */}
       <div
         className={`absolute inset-0 opacity-[0.03] ${
-          isDark
-            ? "bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"
-            : "bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"
+          isDark ? "bg-[url('/noise.svg')]" : "bg-[url('/noise.svg')]"
         } pointer-events-none bg-[length:200px_200px]`}
       />
     </div>

@@ -146,7 +146,7 @@ export default function Topbar() {
     return () => clearInterval(interval);
   }, []);
 
-  const playNotificationSound = () => {
+  function playNotificationSound() {
     try {
       const context = new (window.AudioContext || window.webkitAudioContext)();
       const oscillator = context.createOscillator();
@@ -163,16 +163,16 @@ export default function Topbar() {
     } catch (e) {
       /* Audio policy */
     }
-  };
+  }
 
-  const triggerBrowserNotification = (notif) => {
+  function triggerBrowserNotification(notif) {
     if ("Notification" in window && Notification.permission === "granted") {
       new Notification(`[System Alert] ${notif.title}`, {
         body: notif.message,
         icon: "/favicon.ico",
       });
     }
-  };
+  }
 
   const unreadCount = useMemo(
     () => notifications.filter((n) => n.status === "unread").length,

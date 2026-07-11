@@ -72,12 +72,9 @@ export default function RootLayout({ children }) {
                     document.documentElement.classList.remove('dark');
                   }
 
-                  const isDesktop = window.matchMedia('(min-width: 768px)').matches;
                   const isSidebarCollapsed = localStorage.getItem('muhyo:sidebar-collapsed') === 'true';
-                  document.documentElement.style.setProperty(
-                    '--sidebar-width',
-                    isDesktop ? (isSidebarCollapsed ? '100px' : '300px') : '0px'
-                  );
+                  document.documentElement.classList.toggle('sidebar-collapsed', isSidebarCollapsed);
+                  document.documentElement.classList.toggle('sidebar-expanded', !isSidebarCollapsed);
                 } catch (e) {}
               })();
             `,

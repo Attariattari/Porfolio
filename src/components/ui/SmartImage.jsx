@@ -63,13 +63,6 @@ export default function SmartImage({
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         {...props}
       />
-      
-      <style jsx global>{`
-        @keyframes shimmer {
-          0% { transform: translateX(-150%) skewX(-20deg); }
-          100% { transform: translateX(150%) skewX(-20deg); }
-        }
-      `}</style>
     </div>
   );
 }

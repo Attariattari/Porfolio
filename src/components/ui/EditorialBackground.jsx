@@ -1,7 +1,15 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
+
+const particleClasses = [
+  "top-[15%] left-[20%]",
+  "top-[35%] left-[70%]",
+  "top-[60%] left-[40%]",
+  "top-[80%] left-[85%]",
+  "top-[45%] left-[10%]",
+];
 
 const EditorialBackground = ({ text }) => {
   const [mounted, setMounted] = useState(false);
@@ -19,16 +27,6 @@ const EditorialBackground = ({ text }) => {
     return () =>
       document.removeEventListener("visibilitychange", handleVisibility);
   }, []);
-
-  // PHASE 3: Stable random positions to avoid re-renders on each mount
-  const particlePositions = useMemo(
-    () =>
-      Array.from({ length: 5 }, (_, i) => ({
-        top: [15, 35, 60, 80, 45][i],
-        left: [20, 70, 40, 85, 10][i],
-      })),
-    [],
-  );
 
   // When reduced motion is preferred or tab is hidden, use static/no animation
   const glowAnimate1 =
@@ -87,7 +85,7 @@ const EditorialBackground = ({ text }) => {
       <div className="absolute inset-0 overflow-hidden">
         {mounted &&
           !shouldReduceMotion &&
-          particlePositions.map((pos, i) => (
+          particleClasses.map((particleClass, i) => (
             <motion.div
               key={i}
               animate={
@@ -105,8 +103,7 @@ const EditorialBackground = ({ text }) => {
                     }
                   : { duration: 0 }
               }
-              className="absolute w-1 h-1 bg-accent/30 rounded-full"
-              style={{ top: `${pos.top}%`, left: `${pos.left}%` }}
+              className={`absolute w-1 h-1 bg-accent/30 rounded-full ${particleClass}`}
             />
           ))}
       </div>

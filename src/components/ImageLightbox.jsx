@@ -9,52 +9,42 @@ export const ImageLightbox = ({ isOpen, onClose, images, initialIndex = 0 }) => 
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [zoom, setZoom] = useState(1);
   const [isFullScreen, setIsFullScreen] = useState(false);
-  const [transformOrigin, setTransformOrigin] = useState("center center");
   const safeImages = (Array.isArray(images) ? images : []).map((image) => getSafeImageSrc(image));
 
   useEffect(() => {
     setCurrentIndex(initialIndex);
     setZoom(1);
-    setTransformOrigin("center center");
   }, [initialIndex]);
 
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = "hidden";
+      document.body.classList.add("lightbox-open");
     } else {
-      document.body.style.overflow = "auto";
+      document.body.classList.remove("lightbox-open");
       setZoom(1);
-      setTransformOrigin("center center");
     }
-    return () => { document.body.style.overflow = "auto"; };
+    return () => {
+      document.body.classList.remove("lightbox-open");
+    };
   }, [isOpen]);
 
   const handleNext = (e) => {
     e?.stopPropagation();
     setCurrentIndex((prev) => (prev + 1) % safeImages.length);
     setZoom(1);
-    setTransformOrigin("center center");
   };
 
   const handlePrev = (e) => {
     e?.stopPropagation();
     setCurrentIndex((prev) => (prev - 1 + safeImages.length) % safeImages.length);
     setZoom(1);
-    setTransformOrigin("center center");
   };
 
   const handleImageClick = (e) => {
     e?.stopPropagation();
     if (zoom > 1) {
       setZoom(1);
-      setTimeout(() => setTransformOrigin("center center"), 300);
     } else {
-      // Calculate click position relative to the image
-      const rect = e.currentTarget.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / rect.width) * 100;
-      const y = ((e.clientY - rect.top) / rect.height) * 100;
-      
-      setTransformOrigin(`${x}% ${y}%`);
       setZoom(2.5);
     }
   };
@@ -63,7 +53,6 @@ export const ImageLightbox = ({ isOpen, onClose, images, initialIndex = 0 }) => 
     e?.stopPropagation();
     if (zoom > 1) {
       setZoom(1);
-      setTimeout(() => setTransformOrigin("center center"), 300);
     } else {
       setZoom(2.5);
     }
@@ -151,11 +140,11 @@ export const ImageLightbox = ({ isOpen, onClose, images, initialIndex = 0 }) => 
             key={currentIndex}
             src={safeImages[currentIndex]}
             alt="Gallery Detail"
-            className="max-w-full max-h-full object-contain cursor-zoom-in rounded-sm shadow-2xl"
-            style={{ transformOrigin }}
+            className={`max-w-full max-h-full object-contain rounded-sm shadow-2xl ${
+              zoom > 1 ? "cursor-zoom-out" : "cursor-zoom-in"
+            }`}
             animate={{ 
               scale: zoom,
-              cursor: zoom > 1 ? "zoom-out" : "zoom-in"
             }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
             onClick={handleImageClick}

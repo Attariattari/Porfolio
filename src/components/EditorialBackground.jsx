@@ -36,7 +36,7 @@ const EditorialBackground = ({ text }) => {
   return (
     <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
       {/* Noise/Grain Layer */}
-      <div className="absolute inset-0 opacity-[0.015] dark:opacity-[0.02] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] brightness-100 contrast-150" />
+      <div className="absolute inset-0 opacity-[0.015] dark:opacity-[0.02] bg-[url('/noise.svg')] brightness-100 contrast-150" />
 
       {/* Large Faded Background Text */}
       <div className="absolute -top-10 -left-10 select-none opacity-[0.02] dark:opacity-[0.03]">

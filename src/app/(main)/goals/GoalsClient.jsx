@@ -128,6 +128,20 @@ export default function GoalsClient({
   const futureDirection = pageData.futureDirection || [];
   const finalCTA = pageData.finalCTA || {};
   const ctaButtons = finalCTA.buttons || [];
+  const progressWidthClass =
+    [
+      "w-0",
+      "w-[10%]",
+      "w-[20%]",
+      "w-[30%]",
+      "w-[40%]",
+      "w-[50%]",
+      "w-[60%]",
+      "w-[70%]",
+      "w-[80%]",
+      "w-[90%]",
+      "w-full",
+    ][Math.max(0, Math.min(10, Math.round((stats.overallProgress || 0) / 10)))] || "w-0";
 
   return (
     <div className="min-h-screen  relative overflow-hidden">
@@ -141,7 +155,7 @@ export default function GoalsClient({
           <div className="absolute bottom-[-10%] right-[-5%] w-[500px] h-[500px] bg-accent/5 blur-[130px] rounded-full" />
 
           {/* Subtle Grid Backdrop */}
-          <div className="absolute inset-0 opacity-[0.02] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+          <div className="absolute inset-0 opacity-[0.02] bg-[url('/noise.svg')]" />
           <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background" />
         </div>
 
@@ -175,10 +189,10 @@ export default function GoalsClient({
             <motion.div variants={itemVariants} className="relative mb-12">
               <div className="absolute -left-6 top-0 bottom-0 w-1 bg-gradient-to-b from-accent via-accent/50 to-transparent rounded-full opacity-40 shadow-[0_0_15px_rgba(var(--color-accent),0.3)]" />
               <p className="text-xl md:text-2xl text-muted-foreground font-medium leading-relaxed max-w-xl opacity-90 italic">
-                "
+                &ldquo;
                 {vision.visionStatement ||
                   "Engineering high-performance digital ecosystems with extreme precision and strategic foresight."}
-                "
+                &rdquo;
               </p>
 
               {/* Executive Signature Section */}
@@ -402,8 +416,7 @@ export default function GoalsClient({
           className="mt-12 h-1.5 w-full bg-muted/20 rounded-full overflow-hidden relative"
         >
           <div
-            className="absolute inset-y-0 left-0 bg-gradient-to-r from-accent via-accent/80 to-accent/60 transition-all duration-1000"
-            style={{ width: `${stats.overallProgress || 0}%` }}
+            className={`absolute inset-y-0 left-0 bg-gradient-to-r from-accent via-accent/80 to-accent/60 transition-all duration-1000 ${progressWidthClass}`}
           />
           <div className="absolute inset-0 bg-white/20 animate-shimmer pointer-events-none" />
         </motion.div>
