@@ -251,6 +251,9 @@ const ProfileCard = ({ data }) => (
 );
 
 const HeroSection = ({ data, isHomePage }) => {
+  const TitleHeading = isHomePage ? motion.h2 : motion.h1;
+  const HeadlineHeading = isHomePage ? motion.h3 : motion.h2;
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-24 items-center relative z-10">
       <ProfileCard data={data} />
@@ -272,19 +275,19 @@ const HeroSection = ({ data, isHomePage }) => {
           </span>
         </motion.div>
 
-        <motion.h1
+        <TitleHeading
           variants={fadeUp}
           className="text-4xl md:text-6xl font-black text-foreground leading-tight tracking-tight mb-5"
         >
           {data.hero.title}
-        </motion.h1>
+        </TitleHeading>
 
-        <motion.h2
+        <HeadlineHeading
           variants={fadeUp}
           className="text-xl md:text-2xl font-bold text-foreground/90 leading-snug mb-6"
         >
           {data.hero.headline}
-        </motion.h2>
+        </HeadlineHeading>
 
         <motion.div
           variants={fadeUp}
