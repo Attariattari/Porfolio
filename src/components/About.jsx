@@ -224,9 +224,9 @@ const ProfileCard = ({ data }) => (
           <div className="text-xs font-bold text-accent mb-1 underline decoration-accent/30 decoration-2 underline-offset-4 italic">
             Founder
           </div>
-          <div className="text-xl font-bold text-foreground italic">
+          <h3 className="text-xl font-bold text-foreground italic">
             {data.name}
-          </div>
+          </h3>
         </div>
       </div>
     </div>

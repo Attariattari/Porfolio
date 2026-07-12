@@ -23,16 +23,16 @@ import { buildCanonical, getSeoImage } from "@/lib/seo";
 export const revalidate = 3600;
 
 export const metadata = {
-  title: "Muhyo Tech | Full-Stack Web Developer",
+  title: "Muhyo Tech | Full-Stack Web Developer, NextJS & MERN Stack Projects",
   description:
-    "Muhyo Tech builds modern websites, full-stack web apps, admin dashboards, and scalable Next.js & MERN solutions for businesses in Lahore and beyond.",
+    "Pir Ghulam Muhyo Din at Muhyo Tech provides expert website development. Explore modern full-stack web apps, NextJS, and MERN stack projects. Book a call today!",
   alternates: {
     canonical: buildCanonical("/"),
   },
   openGraph: {
-    title: "Muhyo Tech - Full Stack Web Developer & Next.js Engineer",
+    title: "Muhyo Tech | Full-Stack Web Developer, NextJS & MERN Stack Projects",
     description:
-      "Modern websites, web apps, admin dashboards, and scalable Next.js & MERN solutions.",
+      "Pir Ghulam Muhyo Din at Muhyo Tech provides expert website development. Explore modern full-stack web apps, NextJS, and MERN stack projects.",
     url: buildCanonical("/"),
     images: [{ url: getSeoImage("/portfolio-hero.png"), width: 1200, height: 630, alt: "Muhyo Tech portfolio" }],
     type: "website",

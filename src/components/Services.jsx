@@ -269,7 +269,7 @@ export default function Services({ data, showViewAll = false }) {
   return (
     <SectionWrapper
       id="services"
-      title="How I Can Help You"
+      title="Website Development & Services"
       subtitle="My Services"
     >
       <div className="relative max-w-7xl mx-auto mt-8 md:mt-12 group/tree">

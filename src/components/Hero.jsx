@@ -128,7 +128,7 @@ export default function Hero({ initialData = null }) {
             >
               <h1 className="text-3xl md:text-5xl font-bold text-foreground leading-tight tracking-tight">
                 Full-Stack Web Developer{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-accent/80 to-accent animate-gradient-flow bg-[length:200%_auto] italic">& Next.js Expert</span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-accent/80 to-accent animate-gradient-flow bg-[length:200%_auto] italic">& NextJS MERN Expert</span>
               </h1>
             </motion.div>
 
