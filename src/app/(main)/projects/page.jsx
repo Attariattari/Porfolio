@@ -18,8 +18,14 @@ export const metadata = {
     description:
       "Modern websites, full-stack web applications, admin dashboards, and scalable digital solutions built by Muhyo Tech.",
     url: buildCanonical("/projects"),
-    images: [{ url: getSeoImage("/portfolio-hero.png"), width: 1200, height: 630, alt: "Muhyo Tech projects" }],
+    images: [{ url: getSeoImage("/projects-preview.png"), width: 1200, height: 630, alt: "Muhyo Tech - Engineering Modern Digital Products" }],
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Projects | Muhyo Tech",
+    description: "Explore high-performance web applications, scalable SaaS architectures, and digital products built by Muhyo Tech.",
+    images: [getSeoImage("/projects-preview.png")],
   },
 };
 

@@ -53,7 +53,7 @@ export const metadata = {
     siteName: "Muhyo Tech",
     images: [
       {
-        url: getSeoImage("/portfolio-hero.png"),
+        url: getSeoImage("/home-preview.png"),
         width: 1200,
         height: 630,
         alt: "Muhyo Tech full stack web development portfolio",
@@ -66,7 +66,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "Muhyo Tech - Full Stack Web Development",
     description: "Modern websites, web apps, admin dashboards, and scalable Next.js & MERN solutions.",
-    images: [getSeoImage("/portfolio-hero.png")],
+    images: [getSeoImage("/home-preview.png")],
   },
   robots: {
     index: true,

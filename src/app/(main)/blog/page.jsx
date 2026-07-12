@@ -19,8 +19,14 @@ export const metadata = {
     description:
       "Practical guides on Next.js, Node.js, performance, SEO, backend architecture, and modern web development.",
     url: buildCanonical("/blog"),
-    images: [{ url: getSeoImage("/portfolio-hero.png"), width: 1200, height: 630, alt: "Muhyo Tech blog" }],
+    images: [{ url: getSeoImage("/blog-preview.png"), width: 1200, height: 630, alt: "Muhyo Tech Blog - Stories, Guides & Insights" }],
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Tech Blog | Engineering Insights by Muhyo Tech",
+    description: "Practical guides on Next.js, Node.js, performance, SEO, backend architecture, and modern web development.",
+    images: [getSeoImage("/blog-preview.png")],
   },
 };
 

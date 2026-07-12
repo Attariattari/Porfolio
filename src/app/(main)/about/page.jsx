@@ -11,6 +11,21 @@ export const metadata = {
   description:
     "Learn more about Muhyo Tech and Pir Ghulam Muhyo Din, a Full-Stack Web Developer building modern websites, web applications, dashboards, and scalable digital solutions with Next.js and MERN stack.",
   alternates: { canonical: buildCanonical("/about") },
+  openGraph: {
+    title: "About Muhyo Tech | Pir Ghulam Muhyo Din - Full-Stack Web Developer",
+    description:
+      "Learn more about Muhyo Tech and Pir Ghulam Muhyo Din, a Full-Stack Web Developer building modern websites, web applications, dashboards, and scalable digital solutions with Next.js and MERN stack.",
+    url: buildCanonical("/about"),
+    images: [{ url: getSeoImage("/about-preview.png"), width: 1200, height: 630, alt: "Pir Ghulam Muhyo Din - Muhyo Tech founder and Full-Stack Web Developer" }],
+    type: "profile",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About Muhyo Tech | Pir Ghulam Muhyo Din",
+    description:
+      "Full-Stack Web Developer specializing in Next.js and MERN stack. Building modern websites, dashboards, and scalable digital solutions.",
+    images: [getSeoImage("/about-preview.png")],
+  },
 };
 
 const personSchema = {

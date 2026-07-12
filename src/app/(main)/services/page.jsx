@@ -23,7 +23,7 @@ export const metadata = {
     description:
       "Muhyo Tech offers custom websites, Next.js apps, MERN stack development, admin dashboards, and SEO-friendly web solutions in Lahore and beyond.",
     url: buildCanonical("/services"),
-    images: [{ url: getSeoImage("/portfolio-hero.png"), width: 1200, height: 630, alt: "Muhyo Tech services" }],
+    images: [{ url: getSeoImage("/services-preview.png"), width: 1200, height: 630, alt: "Muhyo Tech - Web Development Services in Lahore" }],
     type: "website",
   },
   twitter: {
@@ -31,7 +31,7 @@ export const metadata = {
     title: "Web Development Services in Lahore | Muhyo Tech",
     description:
       "Muhyo Tech offers custom websites, Next.js apps, MERN stack development, admin dashboards, and SEO-friendly web solutions in Lahore and beyond.",
-    images: [getSeoImage("/portfolio-hero.png")],
+    images: [getSeoImage("/services-preview.png")],
   },
 };
 
@@ -45,7 +45,7 @@ const serviceSchema = {
     url: SITE_URL,
   },
   url: buildCanonical("/services"),
-  image: getSeoImage("/portfolio-hero.png"),
+  image: getSeoImage("/services-preview.png"),
   serviceType:
     "Web Development, Next.js Development, MERN Stack Development, Admin Dashboard Development, Custom Website Development",
   areaServed: {

@@ -3,11 +3,27 @@ import ResumeClient from "./ResumeClient";
 import { portfolioData } from "@/lib/data";
 import { ResumeController } from "@/controllers/ResumeController";
 import { serializeDoc } from "@/lib/mongooseHelper";
+import { buildCanonical, getSeoImage } from "@/lib/seo";
 
 export const metadata = {
-  title: "Professional journey | Pir Ghulam Muhyo Din",
+  title: "Professional Journey | Pir Ghulam Muhyo Din - Muhyo Tech",
   description:
     "Explore the career evolution, skills, and projects of Pir Ghulam Muhyo Din, a full-stack developer and project strategist dedicated to building impactful digital solutions.",
+  alternates: { canonical: buildCanonical("/resume") },
+  openGraph: {
+    title: "Resume | Pir Ghulam Muhyo Din - Full Stack Web Developer",
+    description:
+      "Full-Stack Engineer specializing in performance & scalable web applications. 3+ years experience, 10+ projects delivered. Based in Lahore, Pakistan.",
+    url: buildCanonical("/resume"),
+    images: [{ url: getSeoImage("/resume-preview.png"), width: 1200, height: 630, alt: "Pir Ghulam Muhyo Din - Full Stack Web Developer Resume" }],
+    type: "profile",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Resume | Pir Ghulam Muhyo Din - Muhyo Tech",
+    description: "Full-Stack Engineer | Performance & Scalable Web Applications. View my digital legacy.",
+    images: [getSeoImage("/resume-preview.png")],
+  },
 };
 
 export default async function ResumePage() {

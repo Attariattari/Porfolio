@@ -3,12 +3,29 @@ import GoalsClient from "./GoalsClient";
 import { GoalController } from "@/controllers/GoalController";
 import { serializeDoc } from "@/lib/mongooseHelper";
 
+import { buildCanonical, getSeoImage } from "@/lib/seo";
+
 export const revalidate = 300; // ISR: Revalidate every 5 minutes
 
 export const metadata = {
   title: "Goals & Roadmap | Muhyo Tech",
   description:
     "Explore Muhyo Tech goals, roadmap, real active projects, SiteCraft AI development, QR Profile Connect, LeadFlow AI, and future digital product direction.",
+  alternates: { canonical: buildCanonical("/goals") },
+  openGraph: {
+    title: "Goals & Roadmap | Muhyo Tech - Beyond Objectives",
+    description:
+      "Explore Muhyo Tech's strategic roadmap, active SaaS projects, and future digital product direction. Building the trusted technology partner for ambitious brands.",
+    url: buildCanonical("/goals"),
+    images: [{ url: getSeoImage("/goals-preview.png"), width: 1200, height: 630, alt: "Muhyo Tech Goals & Roadmap - Beyond Objectives" }],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Goals & Roadmap | Muhyo Tech",
+    description: "Explore Muhyo Tech's strategic roadmap, active SaaS projects, and future digital product direction.",
+    images: [getSeoImage("/goals-preview.png")],
+  },
 };
 
 const schemaData = {

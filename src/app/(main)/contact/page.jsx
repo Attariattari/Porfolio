@@ -1,13 +1,27 @@
 import React from "react";
 import Contact from "@/components/Contact";
 import EditorialBackground from "@/components/ui/EditorialBackground";
-import { buildCanonical } from "@/lib/seo";
+import { buildCanonical, getSeoImage } from "@/lib/seo";
 
 export const metadata = {
   title: "Contact Muhyo Tech | Start Your Web Development Project",
   description:
     "Contact Muhyo Tech for Next.js websites, SaaS dashboards, backend systems, SEO optimization, and professional web development services.",
   alternates: { canonical: buildCanonical("/contact") },
+  openGraph: {
+    title: "Contact Muhyo Tech | Let's Connect & Start a Project",
+    description:
+      "Have an idea or project requirement? Get in touch with Muhyo Tech. Usually replies within 24 hours.",
+    url: buildCanonical("/contact"),
+    images: [{ url: getSeoImage("/contact-preview.png"), width: 1200, height: 630, alt: "Contact Muhyo Tech - Let's Connect" }],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Contact Muhyo Tech | Let's Connect",
+    description: "Have an idea or project requirement? Contact Muhyo Tech. Usually replies within 24 hours.",
+    images: [getSeoImage("/contact-preview.png")],
+  },
 };
 
 /**
