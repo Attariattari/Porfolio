@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { checkRateLimit, getClientIP } from "@/lib/rateLimit";
 import { confirmGoogleLink } from "@/lib/googleOAuth";
+import { attachAdminSessionCookies } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -29,13 +30,14 @@ export async function POST(request) {
       );
     }
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       message: "Google account linked successfully.",
       token: result.token,
       user: result.user,
       redirectTo: result.redirectTo,
     });
+    return attachAdminSessionCookies(response, result.token);
   } catch (e) {
     return NextResponse.json(
       { success: false, message: "Google account linking failed. Please try again." },

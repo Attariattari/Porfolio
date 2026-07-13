@@ -31,6 +31,25 @@ export function getDefaultAuthRedirect(user, callbackUrl = "") {
     return "/admin/dashboard";
 }
 
+export function attachAdminSessionCookies(response, token) {
+    const cookieOptions = {
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 60 * 60 * 8,
+        path: "/",
+    };
+
+    response.cookies.set("admin_auth_token", token, {
+        ...cookieOptions,
+        httpOnly: true,
+    });
+    response.cookies.set("admin_token", token, {
+        ...cookieOptions,
+        httpOnly: false,
+    });
+    return response;
+}
+
 export async function createAdminSession(user, source = "credentials") {
     const normalizedEmail = user.email.toLowerCase();
     const finalRole = resolveSafeRole({ ...user, email: normalizedEmail });

@@ -67,12 +67,29 @@ export default function AdminDataInitializer({ children }) {
 
   // Check authentication on mount
   useEffect(() => {
-    setMounted(true);
-    const token = typeof window !== "undefined"
-      ? localStorage.getItem("admin_token") || localStorage.getItem("token")
-      : null;
-    setIsAuthenticated(!!token);
-    console.log("[AdminDataInitializer] Authentication check:", !!token);
+    let cancelled = false;
+
+    const checkAuthentication = async () => {
+      try {
+        const response = await fetch("/api/admin/me", {
+          credentials: "include",
+          cache: "no-store",
+        });
+        if (!cancelled) {
+          setIsAuthenticated(response.ok);
+          console.log("[AdminDataInitializer] Authentication check:", response.ok);
+        }
+      } catch {
+        if (!cancelled) setIsAuthenticated(false);
+      } finally {
+        if (!cancelled) setMounted(true);
+      }
+    };
+
+    checkAuthentication();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Don't render auth-dependent content until we've checked auth status

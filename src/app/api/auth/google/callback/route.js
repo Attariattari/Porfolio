@@ -8,6 +8,7 @@ import {
   redirectWithGoogleError,
   sanitizeInternalRedirect,
 } from "@/lib/googleOAuth";
+import { attachAdminSessionCookies } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -57,7 +58,9 @@ export async function GET(request) {
       new URL(result.redirectTo || "/admin/dashboard", request.url),
     );
     response.cookies.delete("google_oauth_state");
-    return response;
+    return result.session?.token
+      ? attachAdminSessionCookies(response, result.session.token)
+      : response;
   } catch (e) {
     console.error("[GoogleOAuth] Callback failed:", e.message);
     const code = e.message?.startsWith("GOOGLE_TOKEN_EXCHANGE_FAILED")
