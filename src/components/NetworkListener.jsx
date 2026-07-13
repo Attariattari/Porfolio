@@ -3,17 +3,10 @@
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { useNetworkStore } from "@/lib/store/networkStore";
-import { onlineManager, useQueryClient } from "@tanstack/react-query";
 import { setupFetchInterceptor } from "@/lib/network/fetchInterceptor";
 
 export default function NetworkListener() {
-  const { status, setStatus, lastStatus } = useNetworkStore();
-  let queryClient = null;
-  try {
-    queryClient = useQueryClient();
-  } catch (e) {
-    // React Query not available in this context
-  }
+  const { status, setStatus } = useNetworkStore();
 
   useEffect(() => {
     setupFetchInterceptor();
@@ -50,15 +43,6 @@ export default function NetworkListener() {
             duration: 3000,
           });
           
-          // React Query Online Sync
-          onlineManager.setOnline(true);
-          
-          // Global Auto Refresh (React Query)
-          if (queryClient) {
-            queryClient.resumePausedMutations();
-            queryClient.invalidateQueries();
-          }
-
           // Global Auto Retry (Non-React Query)
           const { failedRequests, clearFailedRequests } = useNetworkStore.getState();
           if (failedRequests.length > 0) {
@@ -84,9 +68,6 @@ export default function NetworkListener() {
       connection.addEventListener("change", handleStatusChange);
     }
 
-    // Set initial onlineManager state
-    onlineManager.setOnline(navigator.onLine);
-
     return () => {
       window.removeEventListener("online", handleStatusChange);
       window.removeEventListener("offline", handleStatusChange);
@@ -94,7 +75,7 @@ export default function NetworkListener() {
         connection.removeEventListener("change", handleStatusChange);
       }
     };
-  }, [status, setStatus, queryClient]);
+  }, [status, setStatus]);
 
   return null;
 }

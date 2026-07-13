@@ -7,7 +7,6 @@ import InitialLoader from "@/components/InitialLoader";
 import DeferredWhatsAppButton from "@/components/DeferredWhatsAppButton";
 import ScrollProgress from "@/components/ScrollProgress";
 import NavigationWatcher from "@/components/NavigationWatcher";
-import MainProviders from "./MainProviders";
 import { AboutController } from "@/controllers/AboutController";
 import { portfolioData } from "@/lib/data";
 import { serializeDoc } from "@/lib/mongooseHelper";
@@ -101,9 +100,7 @@ export default async function MainLayout({ children }) {
       <div
         className="site-main-shell flex flex-col min-h-screen relative z-10 transition-[padding] duration-500 ease-in-out pt-16 md:pt-0 pl-[var(--sidebar-width,0px)]"
       >
-        <MainProviders>
-          <main className="grow">{children}</main>
-        </MainProviders>
+        <main className="grow">{children}</main>
         <Footer data={globalAbout} />
       </div>
     </div>

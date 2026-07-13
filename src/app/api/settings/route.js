@@ -4,6 +4,10 @@ import { apiResponse } from "@/lib/apiResponse";
 import eventBus, { ADMIN_EVENTS } from "@/lib/eventBus";
 import { portfolioData } from "@/lib/data";
 import { getAuthSession } from "@/lib/auth";
+import { cacheManager, withCache } from "@/lib/cache";
+
+const PUBLIC_THEME_CACHE_KEY = "settings:public-theme";
+const PUBLIC_THEME_CACHE_TTL = 5;
 
 const defaultSettings = {
     siteTitle: "Muhyo Tech",
@@ -49,6 +53,37 @@ const noStore = (response) => {
 export async function GET(request) {
     try {
         const themeOnly = new URL(request.url).searchParams.get("themeOnly") === "1";
+
+        if (themeOnly) {
+            const themeSettings = await withCache(
+                PUBLIC_THEME_CACHE_KEY,
+                async () => {
+                    await dbConnect();
+                    let config = await SiteConfig.findOne()
+                        .select("siteTheme updatedAt")
+                        .lean();
+
+                    if (!config) {
+                        const createdConfig = await SiteConfig.create(defaultSettings);
+                        config = createdConfig.toObject();
+                    }
+
+                    const publicSettings = sanitizePublicSettings(config);
+                    return {
+                        siteTheme: publicSettings.siteTheme,
+                        updatedAt: publicSettings.updatedAt,
+                    };
+                },
+                PUBLIC_THEME_CACHE_TTL,
+                ["settings", "site-theme"],
+            );
+
+            return noStore(apiResponse.success(
+                themeSettings,
+                "Settings fetched successfully",
+            ));
+        }
+
         const session = await getAuthSession().catch(() => null);
         await dbConnect();
 
@@ -73,9 +108,7 @@ export async function GET(request) {
         }
 
         const publicSettings = sanitizePublicSettings(config);
-        const responseData = themeOnly
-            ? { siteTheme: publicSettings.siteTheme, updatedAt: publicSettings.updatedAt }
-            : (isAdminSession(session) ? config : publicSettings);
+        const responseData = isAdminSession(session) ? config : publicSettings;
 
         return noStore(apiResponse.success(
             responseData,
@@ -154,6 +187,11 @@ export async function PATCH(request) {
             console.warn("Socket.io emit warning:", ioError.message);
             // Continue anyway - socket is optional
         }
+
+        await Promise.all([
+            cacheManager.invalidateByTag("settings"),
+            cacheManager.invalidateByTag("site-theme"),
+        ]);
 
         return noStore(apiResponse.success(
             savedConfig.toObject(),
