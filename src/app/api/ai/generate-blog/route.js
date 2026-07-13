@@ -3,7 +3,7 @@ import { runBlogAutomationPipeline, finalizeBlogPipeline } from "@/lib/blogAutom
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-export const maxDuration = 300;
+export const maxDuration = 60;
 
 export async function GET(request) {
     const { searchParams } = new URL(request.url);
