@@ -271,6 +271,14 @@ export async function login(email, passkey) {
         };
     }
 
+    if (user.provider === "google") {
+        return {
+            success: false,
+            code: "GOOGLE_ONLY",
+            message: "This account uses Google login. Continue with Google instead.",
+        };
+    }
+
     const { valid: isPasskeyValid, method: verificationMethod } =
     await verifyPasskey(passkey, user.passkey);
 

@@ -10,6 +10,7 @@ import {
 import { generateBlogImage } from "./generateBlogImage";
 import { createBlogImageUploadLink } from "@/lib/server/blogImageUploadToken";
 import { sendBlogImagePromptEmail } from "@/lib/server/email/sendBlogImagePromptEmail";
+import { triggerFeaturedUpdate } from "@/lib/ai/featuredEngine";
 
 function safeErrorMessage(error) {
   if (!error) return "Image generation failed.";
@@ -112,6 +113,10 @@ export async function ensureBlogImage(blogId, options = {}) {
         status: "success",
         message: "AI blog image generated and attached.",
       });
+
+      if (blog.publishStatus === "published") {
+        await triggerFeaturedUpdate(blog);
+      }
 
       return { success: true, status: "generated", blog };
     }

@@ -81,6 +81,8 @@ export default function AuthContainer({
       cancelled: "Google login was cancelled.",
       "not-approved": "This account is not approved for admin access.",
       "rate-limited": "Too many Google login attempts. Please wait a moment.",
+      "token-exchange": "Google rejected the OAuth callback. Verify the production client secret and exact redirect URI.",
+      profile: "Google profile could not be loaded. Please try again.",
       failed: "Google login failed. Please try again.",
     };
     setError(messages[googleError] || "Google login failed. Please try again.");
@@ -640,10 +642,10 @@ export default function AuthContainer({
 
                                     <div className="space-y-4">
                                         <p className="text-sm font-medium leading-relaxed text-slate-300">
-                                            We found an existing Muhyo Tech account using this email. You can securely link Google login to your existing account, or continue logging in with your password.
+                                            This email currently uses manual passkey login. Confirm the existing passkey once to switch this account to Google-only login.
                                         </p>
                                         <p className="rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4 text-[11px] font-bold leading-relaxed text-amber-200">
-                                            For your safety, account linking requires passkey verification before Google login is connected.
+                                            After switching, manual passkey login will be disabled for this account. Other manual accounts remain unchanged.
                                         </p>
                                         {googleLinkEmail ? (
                                             <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
@@ -677,7 +679,7 @@ export default function AuthContainer({
                                             className="flex w-full items-center justify-center gap-3 rounded-2xl bg-accent px-4 py-4 text-[10px] font-black uppercase tracking-[0.25em] text-[#030712] transition-all hover:bg-white disabled:opacity-50"
                                         >
                                             {linkLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <GoogleIcon className="h-4 w-4" />}
-                                            Link Google Account
+                                            Switch to Google Login
                                         </button>
                                         <button
                                             type="button"

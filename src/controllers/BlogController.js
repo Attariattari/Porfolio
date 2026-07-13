@@ -222,14 +222,18 @@ export const BlogController = {
             if (!updated) return null;
 
             if (updated.publishStatus === "published") {
-                // Trigger AI Featured Ranking (Failsafe handled inside)
-                await triggerFeaturedUpdate(updated);
-
                 try {
                     revalidatePath("/");
                     revalidatePath("/blog");
                 } catch (e) {}
             }
+
+            // Re-rank after every update so publishing, unpublishing, image
+            // removal, and editorial score changes are reflected immediately.
+            await updateFeaturedRankings({
+                id: updated._id,
+                title: updated.title,
+            });
 
             emitSocketEvent(SOCKET_EVENTS.STATS_UPDATED);
             await cacheManager.invalidateByTag("blogs");
@@ -245,6 +249,7 @@ export const BlogController = {
             await dbConnect();
             const deleted = await Blog.findByIdAndDelete(id).lean();
             if (deleted) {
+                await updateFeaturedRankings();
                 emitSocketEvent(SOCKET_EVENTS.STATS_UPDATED);
                 await cacheManager.invalidateByTag("blogs");
             }

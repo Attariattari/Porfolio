@@ -5,23 +5,28 @@ import { revalidatePath } from "next/cache";
 
 /**
  * Muhyo Tech - AI Featured Engine
- * Intelligently ranks and selects the top 5 featured blogs.
- */
-/**
- * Muhyo Tech - AI Featured Engine
- * Intelligently ranks and selects the top 5 featured blogs.
+ * Intelligently ranks and selects the top 6 eligible featured blogs.
  */
 export async function updateFeaturedRankings(triggerBlogInfo = null) {
     const startTime = Date.now();
     try {
         await dbConnect();
 
-        // 1. Fetch all published blogs
+        // 1. Rank only published blogs that have a usable cover image.
         const blogs = await Blog.find({
             publishStatus: "published",
+            $or: [
+                { image: { $type: "string", $ne: "" } },
+                { "featuredImage.url": { $type: "string", $ne: "" } },
+            ],
         });
 
         if (blogs.length === 0) {
+            await Blog.updateMany(
+                { featured: true },
+                { $set: { featured: false, featuredOrder: 0, featuredScore: 0 } },
+            );
+            await cacheManager.invalidateByTag("blogs");
             console.log("[FeaturedEngine] No published blogs to rank.");
             return { success: true, message: "No published blogs to rank." };
         }
@@ -51,12 +56,12 @@ export async function updateFeaturedRankings(triggerBlogInfo = null) {
         // 3. Sort by score DESC
         rankedBlogs.sort((a, b) => b.score - a.score);
 
-        // 4. Update Database for Top 5
-        const top5Ids = rankedBlogs.slice(0, 5).map((b) => b._id.toString());
+        // 4. Keep exactly the best six eligible blogs featured.
+        const top6Ids = rankedBlogs.slice(0, 6).map((b) => b._id.toString());
 
         const bulkOps = blogs.map((blog) => {
-            const isTop5 = top5Ids.includes(blog._id.toString());
-            const rankIndex = top5Ids.indexOf(blog._id.toString());
+            const isTop6 = top6Ids.includes(blog._id.toString());
+            const rankIndex = top6Ids.indexOf(blog._id.toString());
             const scoreObj = rankedBlogs.find((rb) => rb._id.equals(blog._id));
 
             return {
@@ -64,8 +69,8 @@ export async function updateFeaturedRankings(triggerBlogInfo = null) {
                     filter: { _id: blog._id },
                     update: {
                         $set: {
-                            featured: isTop5,
-                            featuredOrder: isTop5 ? rankIndex + 1 : 0,
+                            featured: isTop6,
+                            featuredOrder: isTop6 ? rankIndex + 1 : 0,
                             featuredScore: scoreObj ? scoreObj.score : 0,
                         },
                     },
@@ -76,6 +81,13 @@ export async function updateFeaturedRankings(triggerBlogInfo = null) {
         if (bulkOps.length > 0) {
             await Blog.bulkWrite(bulkOps);
         }
+
+        // Also clear stale flags from blogs that became unpublished or lost
+        // their image and therefore were not part of the eligible query.
+        await Blog.updateMany(
+            { _id: { $nin: top6Ids }, featured: true },
+            { $set: { featured: false, featuredOrder: 0, featuredScore: 0 } },
+        );
 
         // 5. Cache Invalidation
         await cacheManager.invalidateByTag("blogs");
@@ -95,14 +107,14 @@ export async function updateFeaturedRankings(triggerBlogInfo = null) {
             const triggeredRank = rankedBlogs.find(
                 (b) => b._id.toString() === triggerBlogInfo.id.toString(),
             );
-            const enteredTop5 = top5Ids.includes(triggerBlogInfo.id.toString());
+            const enteredTop6 = top6Ids.includes(triggerBlogInfo.id.toString());
 
             console.log(`
 [AI Featured Refresh]
 Published Blog: ${triggerBlogInfo.title || "Unknown"}
 Blog ID: ${triggerBlogInfo.id}
 Featured Score: ${triggeredRank ? triggeredRank.score : "N/A"}
-Entered Top 5: ${enteredTop5 ? "Yes" : "No"}
+Entered Top 6: ${enteredTop6 ? "Yes" : "No"}
 
 Ranking Duration: ${duration}ms
 Updated Count: ${rankedBlogs.length}
@@ -125,25 +137,25 @@ Updated Count: ${rankedBlogs.length}
  * Ensures we only run when necessary and don't block main threads.
  */
 export async function triggerFeaturedUpdate(blog) {
-    // TRIGGER CONDITIONS:
-    // publishStatus = "published" AND imageGenerated = true AND imageStatus = "completed"
+    const eligibleImageStatuses = new Set(["completed", "generated", "uploaded"]);
+    const hasImage = Boolean(blog.featuredImage?.url || blog.image);
     const canTrigger =
         blog.publishStatus === "published" &&
-        blog.imageGenerated === true &&
-        blog.imageStatus === "completed";
+        hasImage &&
+        eligibleImageStatuses.has(blog.imageStatus);
 
     if (!canTrigger) {
         return { success: false, message: "Trigger conditions not met." };
     }
 
-    // Run rankings in background to avoid blocking the caller
-    // Failsafe: Error handling inside updateFeaturedRankings
-    updateFeaturedRankings({
+    // Await the small database ranking operation so Vercel cannot freeze the
+    // invocation before the featured flags are persisted.
+    const result = await updateFeaturedRankings({
         id: blog._id,
         title: blog.title,
-    }).catch((err) => {
-        console.error("[AI Featured Refresh] Failsafe caught error:", err);
     });
 
-    return { success: true, message: "Ranking refresh triggered." };
+    return result.success
+        ? { success: true, message: "Ranking refresh completed." }
+        : result;
 }

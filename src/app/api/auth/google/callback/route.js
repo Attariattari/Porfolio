@@ -59,6 +59,12 @@ export async function GET(request) {
     response.cookies.delete("google_oauth_state");
     return response;
   } catch (e) {
-    return redirectWithGoogleError(request, "failed");
+    console.error("[GoogleOAuth] Callback failed:", e.message);
+    const code = e.message?.startsWith("GOOGLE_TOKEN_EXCHANGE_FAILED")
+      ? "token-exchange"
+      : e.message === "GOOGLE_PROFILE_FAILED"
+        ? "profile"
+        : "failed";
+    return redirectWithGoogleError(request, code);
   }
 }

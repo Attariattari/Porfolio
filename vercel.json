@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/blog-pipeline",
       "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/featured-rankings",
+      "schedule": "0 2 * * *"
     }
   ]
 }

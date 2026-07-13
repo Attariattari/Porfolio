@@ -14,6 +14,7 @@ import { cacheManager } from "@/lib/cache";
 import { emitSocketEvent } from "@/lib/socket";
 import { ActivityController } from "@/controllers/ActivityController";
 import { revalidatePath } from "next/cache";
+import { triggerFeaturedUpdate } from "@/lib/ai/featuredEngine";
 
 function isSuperAdmin(session) {
   return session?.role === "super-admin" || session?.role === "root-super-admin";
@@ -112,6 +113,7 @@ export async function POST(request, { params }) {
       targetId: updatedBlog._id,
     }).catch(() => {});
     await cacheManager.invalidateByTag("blogs");
+    await triggerFeaturedUpdate(updatedBlog);
     revalidatePath("/");
     revalidatePath("/blog");
     revalidatePath(`/blog/${updatedBlog.slug}`);

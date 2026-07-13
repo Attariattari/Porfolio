@@ -96,8 +96,16 @@ export async function exchangeGoogleCode(request, code) {
     }),
   });
 
-  if (!response.ok) throw new Error("GOOGLE_TOKEN_EXCHANGE_FAILED");
-  return response.json();
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    console.error("[GoogleOAuth] Token exchange rejected:", {
+      status: response.status,
+      code: payload.error || "unknown",
+      description: payload.error_description || "No description",
+    });
+    throw new Error(`GOOGLE_TOKEN_EXCHANGE_FAILED:${payload.error || response.status}`);
+  }
+  return payload;
 }
 
 export async function fetchGoogleProfile(accessToken) {
@@ -143,7 +151,9 @@ function addOrUpdateGoogleProvider(user, profile) {
   user.googleId = profile.googleId;
   user.avatar = profile.avatar || user.avatar;
   user.emailVerified = true;
-  user.provider = user.provider || "google";
+  // Authentication methods are exclusive: once Google is confirmed it
+  // becomes the account's only login provider.
+  user.provider = "google";
   user.isOAuthUser = true;
   user.lastLoginAt = new Date();
   user.authProviders = Array.isArray(user.authProviders) ? user.authProviders : [];
@@ -163,6 +173,10 @@ function addOrUpdateGoogleProvider(user, profile) {
       linkedAt: new Date(),
     });
   }
+
+  user.authProviders = user.authProviders.filter(
+    (provider) => provider.provider === "google",
+  );
 }
 
 async function logOAuth(action, user, details) {
@@ -248,27 +262,15 @@ export async function handleGoogleProfile(profile, callbackUrl) {
       };
     }
 
-    if (!isPrivilegedAdmin(existingUser)) {
-      addOrUpdateGoogleProvider(existingUser, profile);
-      await existingUser.save();
-      const session = await createAdminSession(existingUser, "google");
-      await logOAuth(
-        "google_account_link_success",
-        existingUser,
-        "Existing account linked automatically after verified Google login.",
-      );
-      return {
-        type: "login",
-        redirectTo: getDefaultAuthRedirect(existingUser, callbackUrl),
-        session,
-      };
-    }
-
+    // Never silently combine credentials and Google. The existing passkey is
+    // required once to explicitly switch this account to Google-only login.
     const { rawToken } = await createGoogleLinkRequest({ profile, callbackUrl });
     await logOAuth(
       "google_account_link_requested",
       existingUser,
-      "Google login matched an existing Super Admin account and requires passkey confirmation.",
+      isPrivilegedAdmin(existingUser)
+        ? "Google login matched an existing privileged account and requires passkey confirmation."
+        : "Google login matched an existing credentials account and requires provider-switch confirmation.",
     );
     return { type: "link_required", linkToken: rawToken, email: profile.email };
   }
