@@ -75,7 +75,7 @@ function FAQItem({ question, answer }) {
 
 export default function BookCallClient({ initialServiceSlug = "" }) {
   return (
-    <main className="relative min-h-screen overflow-hidden px-6 py-20">
+    <main className="relative min-h-screen overflow-hidden px-6 py-8">
       <EditorialBackground text="BOOK CALL" />
 
       <section className="relative z-10 mx-auto grid min-h-[70vh] max-w-7xl items-center gap-12 lg:grid-cols-[1fr_420px]">
