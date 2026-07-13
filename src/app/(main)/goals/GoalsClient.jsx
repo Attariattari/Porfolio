@@ -26,6 +26,8 @@ import {
 import { SectionWrapper, Card, Button } from "@/components/ui";
 import EditorialBackground from "@/components/ui/EditorialBackground";
 
+const CURRENT_YEAR = new Date().getFullYear();
+
 // Dynamic icon renderer
 function renderIcon(iconName) {
   const icons = {
@@ -148,7 +150,7 @@ export default function GoalsClient({
       <EditorialBackground text="Vision" />
 
       {/* 1. ARCHITECTURAL HERO SECTION */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center pt-32 pb-20 px-6 overflow-hidden">
+      <section className="relative  flex flex-col items-center justify-center pt-22 pb-22 px-6 overflow-hidden">
         {/* Background Depth Layers */}
         <div className="absolute  z-0">
           <div className="absolute top-[10%] left-[-5%] w-[600px] h-[600px] bg-accent/10 blur-[140px] rounded-full animate-pulse" />
@@ -171,7 +173,7 @@ export default function GoalsClient({
               <div className="inline-flex items-center gap-3 px-6 py-2.5 glass rounded-full border border-accent/20 shadow-[0_0_30px_rgba(var(--color-accent),0.15)] group hover:border-accent/40 transition-all cursor-default">
                 <Target className="w-4 h-4 text-accent animate-pulse" />
                 <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-accent">
-                  Strategic Intent - 2026
+                  Strategic Intent - {CURRENT_YEAR}
                 </span>
               </div>
             </motion.div>

@@ -1,5 +1,7 @@
 import { servicesSeedData } from "@/data/services.seed";
 
+const CURRENT_YEAR = new Date().getFullYear();
+
 export const SOCIAL_LINKS = {
     whatsapp: {
         name: "WhatsApp",
@@ -1674,7 +1676,7 @@ export const portfolioData = {
 
     goalsData: {
         hero: {
-            badge: "Strategic Intent - 2026",
+            badge: `Strategic Intent - ${CURRENT_YEAR}`,
             statement: "Building practical SaaS products, portfolio systems, and business-focused web tools with honest roadmap execution.",
         },
         progressMetrics: {
@@ -2233,7 +2235,7 @@ const buildProjectCaseStudy = (project, index) => {
         galleryImages,
         liveUrl: project.liveUrl || project.liveLink || project.demoLink || "",
         githubUrl: project.githubUrl || project.gitLink || project.githubLink || "",
-        year: caseStudy.year || project.year || "2026",
+        year: caseStudy.year || project.year || String(CURRENT_YEAR),
         duration: caseStudy.duration || project.duration || "",
         clientType: caseStudy.clientType || project.clientType || project.purpose || "Digital product",
         role: caseStudy.role || project.role || "Full-stack development, UI implementation, project structure, and deployment-ready setup.",

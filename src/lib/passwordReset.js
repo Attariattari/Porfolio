@@ -8,6 +8,8 @@ import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import { SignJWT, jwtVerify } from 'jose';
 
+const getCurrentYear = () => new Date().getFullYear();
+
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || 'jwt_secret_key_2026_muhyo_tech_secure'
 );
@@ -558,7 +560,7 @@ You may need to login on any connected devices.
 Do not forward this email or share these credentials.
 
 ---
-© 2026 Muhyo Tech - Professional Development
+© ${getCurrentYear()} Muhyo Tech - Professional Development
 If you didn't authorize this, contact support immediately.
   `;
 

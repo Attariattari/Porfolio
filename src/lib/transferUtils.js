@@ -5,6 +5,8 @@
 
 import crypto from 'crypto';
 
+const getCurrentYear = () => new Date().getFullYear();
+
 /**
  * Generate a secure 6-digit OTP code
  * @returns {string} Random 6-digit code
@@ -263,7 +265,7 @@ export function generateOTPEmailContent(code, type, newEmail = null) {
 
           <div style="border-top: 1px solid #e5e7eb; padding-top: 16px; text-align: center;">
             <p style="margin: 0; font-size: 11px; color: #6b7280;">
-              © 2026 Muhyo Tech. All rights reserved.
+              © ${getCurrentYear()} Muhyo Tech. All rights reserved.
             </p>
           </div>
         </div>
@@ -329,7 +331,7 @@ export function generateOTPEmailContent(code, type, newEmail = null) {
 
         <div style="border-top: 1px solid #e5e7eb; padding-top: 16px; text-align: center;">
           <p style="margin: 0; font-size: 11px; color: #6b7280;">
-            © 2026 Muhyo Tech. All rights reserved.
+            © ${getCurrentYear()} Muhyo Tech. All rights reserved.
           </p>
         </div>
       </div>
@@ -400,7 +402,7 @@ export function generateTransferCompletionEmail(oldEmail, newEmail) {
 
         <div style="border-top: 1px solid #e5e7eb; padding-top: 16px; text-align: center;">
           <p style="margin: 0; font-size: 11px; color: #6b7280;">
-            © 2026 Muhyo Tech. All rights reserved.
+            © ${getCurrentYear()} Muhyo Tech. All rights reserved.
           </p>
         </div>
       </div>
@@ -461,7 +463,7 @@ export function generateSecurityAlertEmail(email, details) {
 
         <div style="border-top: 1px solid #e5e7eb; padding-top: 16px; text-align: center;">
           <p style="margin: 0; font-size: 11px; color: #6b7280;">
-            © 2026 Muhyo Tech. All rights reserved.
+            © ${getCurrentYear()} Muhyo Tech. All rights reserved.
           </p>
         </div>
       </div>
