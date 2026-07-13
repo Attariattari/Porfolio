@@ -3,6 +3,7 @@ import { BlogController } from "@/controllers/BlogController";
 import { notFound } from "next/navigation";
 import { SITE_URL } from "@/lib/config";
 import { buildCanonical, cleanSeoText, getSeoImage } from "@/lib/seo";
+import { getTrendingBlogs } from "@/lib/blogUtils";
 
 // P7 OPTIMIZATION: ISR with static generation
 // Revalidate every hour to keep detail pages fresh
@@ -60,7 +61,10 @@ export default async function BlogPostPage({ params }) {
   const slug = resolvedParams.slug || resolvedParams.id;
   const decodedSlug = slug ? decodeURIComponent(slug) : "";
 
-  const blog = await BlogController.getOne(decodedSlug);
+  const [blog, publishedBlogs] = await Promise.all([
+    BlogController.getOne(decodedSlug),
+    BlogController.getAll(true).catch(() => []),
+  ]);
 
   if (!blog || (blog.publishStatus !== "published" && !blog._isFromDataJs)) {
     notFound();
@@ -68,6 +72,10 @@ export default async function BlogPostPage({ params }) {
 
   const baseUrl = SITE_URL;
   const canonicalUrl = buildCanonical(`/blog/${blog.slug}`);
+  const trendingBlogs = getTrendingBlogs(publishedBlogs, {
+    excludeSlug: blog.slug,
+    limit: 2,
+  });
   const image = getSeoImage(blog.image || blog.featuredImage?.url);
   const articleSchema = {
     "@context": "https://schema.org",
@@ -109,7 +117,11 @@ export default async function BlogPostPage({ params }) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
-      <BlogPostDetail blog={blog} shareUrl={canonicalUrl} />
+      <BlogPostDetail
+        blog={blog}
+        shareUrl={canonicalUrl}
+        trendingBlogs={trendingBlogs}
+      />
     </>
   );
 }

@@ -20,7 +20,7 @@ import { toast } from "sonner";
 import Image from "next/image";
 import { SectionWrapper, Button } from "./ui";
 import EditorialBackground from "./ui/EditorialBackground";
-import { resolveFeaturedBlogs } from "@/lib/blogUtils";
+import { rankBlogsByMode, resolveFeaturedBlogs } from "@/lib/blogUtils";
 import { portfolioData } from "@/lib/data";
 import React from "react";
 import dynamic from "next/dynamic";
@@ -283,6 +283,11 @@ const TrendingTabs = ({ activeTab, setActiveTab }) => {
               className={`w-4 h-4 ${activeTab === tab.id ? "text-accent" : "text-muted-foreground/40"}`}
             />
             {tab.label}
+            {tab.id === "trending" && (
+              <span className="rounded-full border border-accent/20 bg-accent/10 px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider text-accent/80">
+                AI ranked
+              </span>
+            )}
             {activeTab === tab.id && (
               <motion.div
                 layoutId="underline-selector"
@@ -663,26 +668,7 @@ export default function Blog({ data, isHomePage = false }) {
     return matchesSearch && matchesCategory;
   });
 
-  const displayPosts = useMemo(() => {
-    let posts = [...filteredBlogs];
-
-    // SORTING RULE:
-    // 1. Featured blogs first
-    // 2. Then normal blogs
-    // 3. Then order/date
-    posts.sort((a, b) => {
-      const aFeatured = !!a.featured;
-      const bFeatured = !!b.featured;
-
-      if (bFeatured !== aFeatured) {
-        return Number(bFeatured) - Number(aFeatured);
-      }
-      return (a.order ?? 999) - (b.order ?? 999);
-    });
-
-    if (activeTab === "trending") posts = [...posts].reverse();
-    return posts;
-  }, [filteredBlogs, activeTab]);
+  const displayPosts = rankBlogsByMode(filteredBlogs, activeTab);
 
   // Diagnostic Log
   if (typeof window !== "undefined") {

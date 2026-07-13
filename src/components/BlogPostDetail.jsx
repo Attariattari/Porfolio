@@ -17,7 +17,7 @@ import Image from "next/image";
 import { SectionWrapper, Button } from "@/components/ui";
 import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
 
-export default function BlogPostDetail({ blog, shareUrl }) {
+export default function BlogPostDetail({ blog, shareUrl, trendingBlogs = [] }) {
   if (!blog) return null;
 
   const coverImage = getSafeImageSrc(blog.image || blog.featuredImage?.url, "/portfolio-hero.png");
@@ -285,43 +285,53 @@ export default function BlogPostDetail({ blog, shareUrl }) {
               </div>
             </motion.div>
 
-            {/* Trending Box - High-End List */}
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4 }}
-              className="relative overflow-hidden rounded-[2rem] border border-white/5 bg-[#0A0A0B]/40 p-6 backdrop-blur-xl lg:p-5"
-            >
-              <h4 className="mb-5 flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground/60">
-                <div className="w-8 h-[1px] bg-white/10" />
-                Trending Now
-              </h4>
-              <div className="space-y-5">
-                {[1, 2].map((i) => (
-                  <div key={i} className="group relative cursor-pointer flex gap-4">
-                    <span className="text-2xl font-black text-white/5 group-hover:text-accent/20 transition-colors duration-500 tabular-nums">
-                      0{i}
-                    </span>
-                    <div className="space-y-2">
-                      <p className="text-[9px] font-black uppercase tracking-widest text-accent/60 flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-accent" />
-                        Technology
-                      </p>
-                      <h5 className="text-sm font-bold leading-snug group-hover:text-accent transition-all duration-300 line-clamp-2">
-                        The Impact of AI on Modern Web Scalability
-                      </h5>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              
-              <div className="mt-6 border-t border-white/5 pt-5">
-                <Link href="/blog" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 hover:text-accent transition-colors flex items-center justify-between group">
-                  Discover more insights
-                  <ArrowRight className="w-4 h-4 -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all" />
-                </Link>
-              </div>
-            </motion.div>
+            {trendingBlogs.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4 }}
+                className="relative overflow-hidden rounded-[2rem] border border-border/60 bg-card/45 p-6 backdrop-blur-xl lg:p-5"
+              >
+                <div className="mb-5 flex items-center justify-between gap-3">
+                  <h4 className="mb-0 flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70">
+                    <span className="h-px w-8 bg-border" />
+                    Trending Now
+                  </h4>
+                  <span className="rounded-full border border-accent/20 bg-accent/10 px-2 py-1 text-[8px] font-bold uppercase tracking-wider text-accent">
+                    AI ranked
+                  </span>
+                </div>
+                <div className="space-y-5">
+                  {trendingBlogs.map((trendingBlog, index) => (
+                    <Link
+                      key={trendingBlog.slug || trendingBlog._id || index}
+                      href={`/blog/${trendingBlog.slug}`}
+                      className="group relative flex gap-4"
+                    >
+                      <span className="text-2xl font-black text-foreground/10 transition-colors duration-500 group-hover:text-accent/30 tabular-nums">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <span className="min-w-0 space-y-2">
+                        <span className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-accent/70">
+                          <span className="h-1.5 w-1.5 rounded-full bg-accent shadow-[0_0_10px_rgba(var(--accent-rgb),0.6)]" />
+                          {trendingBlog.category || "Insights"}
+                        </span>
+                        <span className="block text-sm font-bold leading-snug text-foreground transition-colors duration-300 line-clamp-2 group-hover:text-accent">
+                          {trendingBlog.title}
+                        </span>
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+
+                <div className="mt-6 border-t border-border/60 pt-5">
+                  <Link href="/blog" className="group flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 transition-colors hover:text-accent">
+                    Discover more insights
+                    <ArrowRight className="w-4 h-4 -translate-x-2 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100" />
+                  </Link>
+                </div>
+              </motion.div>
+            )}
             </div>
           </aside>
         </div>

@@ -52,3 +52,76 @@ export function resolveFeaturedBlogs(dbBlogs = [], staticBlogs = []) {
     // 6. Final Fallback: First 3 items from whatever list we have
     return safeDbBlogs.slice(0, 3);
 }
+
+const toTimestamp = (blog = {}) => {
+    const value = blog.createdAt || blog.generatedAt || blog.date || blog.updatedAt;
+    const timestamp = value ? new Date(value).getTime() : 0;
+    return Number.isFinite(timestamp) ? timestamp : 0;
+};
+
+const fallbackTrendScore = (blog = {}, referenceTimestamp = toTimestamp(blog)) => {
+    const quality = Number(blog.qualityScore);
+    const qualityScore = Number.isFinite(quality) && quality > 0
+        ? Math.min(100, quality * 10)
+        : (blog.featured ? 78 : 55);
+    const ageInDays = Math.max(0, (referenceTimestamp - toTimestamp(blog)) / 86400000);
+    const freshnessScore = Math.max(0, 100 - ageInDays * 1.5);
+    const completenessScore = [
+        blog.image || blog.featuredImage?.url,
+        blog.summary,
+        blog.readTime,
+        Array.isArray(blog.tags) && blog.tags.length > 0,
+    ].filter(Boolean).length * 25;
+
+    return qualityScore * 0.55 + freshnessScore * 0.3 + completenessScore * 0.15;
+};
+
+export const getBlogTrendScore = (blog = {}, referenceTimestamp) => {
+    const aiScore = Number(blog.featuredScore);
+    return Number.isFinite(aiScore) && aiScore > 0
+        ? aiScore
+        : fallbackTrendScore(blog, referenceTimestamp);
+};
+
+export function rankBlogsByMode(blogs = [], mode = "latest") {
+    const ranked = [...(Array.isArray(blogs) ? blogs : [])];
+    const referenceTimestamp = Math.max(0, ...ranked.map(toTimestamp));
+
+    if (mode === "trending") {
+        return ranked.sort((a, b) =>
+            getBlogTrendScore(b, referenceTimestamp) - getBlogTrendScore(a, referenceTimestamp)
+            || toTimestamp(b) - toTimestamp(a)
+            || String(a.title || "").localeCompare(String(b.title || "")),
+        );
+    }
+
+    if (mode === "picks") {
+        return ranked.sort((a, b) => {
+            const featuredDifference = Number(Boolean(b.featured)) - Number(Boolean(a.featured));
+            if (featuredDifference) return featuredDifference;
+
+            const orderA = Number(a.featuredOrder) > 0 ? Number(a.featuredOrder) : 999;
+            const orderB = Number(b.featuredOrder) > 0 ? Number(b.featuredOrder) : 999;
+            return orderA - orderB
+                || getBlogTrendScore(b, referenceTimestamp) - getBlogTrendScore(a, referenceTimestamp)
+                || toTimestamp(b) - toTimestamp(a);
+        });
+    }
+
+    return ranked.sort((a, b) =>
+        toTimestamp(b) - toTimestamp(a)
+        || (Number(a.order) || 999) - (Number(b.order) || 999),
+    );
+}
+
+export function getTrendingBlogs(blogs = [], options = {}) {
+    const { excludeSlug, limit = 2 } = options;
+    return rankBlogsByMode(
+        blogs.filter((blog) =>
+            blog
+            && (!blog.publishStatus || blog.publishStatus === "published")
+            && blog.slug !== excludeSlug,
+        ),
+        "trending",
+    ).slice(0, limit);
+}
