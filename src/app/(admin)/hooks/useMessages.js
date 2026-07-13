@@ -5,7 +5,6 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { toast } from "sonner";
-import { initializeSocket, SOCKET_EVENTS } from "@/lib/socket";
 
 /**
  * Hook to fetch and manage messages list
@@ -355,73 +354,13 @@ export const useMessageForm = (initialValues = {}) => {
  * Hook for real-time message updates
  * Automatically refetches messages or stats when socket events are received
  */
-export const useRealTimeMessageUpdates = ({ onNewMessage, onStatusUpdate, onStatsUpdate }) => {
+export const useRealTimeMessageUpdates = ({ onNewMessage }) => {
   useEffect(() => {
-    // 1. Socket.io Integration
-    const socket = initializeSocket();
-    if (socket) {
-      socket.on(SOCKET_EVENTS.CONNECT, () => {
-        console.log("[Socket] Admin connected to message stream");
-      });
+    const interval = setInterval(() => {
+      // Consumers use this callback to refetch both the list and counters.
+      onNewMessage?.(null);
+    }, 15000);
 
-      socket.on(SOCKET_EVENTS.NEW_MESSAGE, (message) => {
-        toast.info(`New message from ${message.name}`);
-        onNewMessage?.(message);
-      });
-
-      socket.on(SOCKET_EVENTS.MESSAGE_SEEN, (data) => {
-        onStatusUpdate?.(data.id || data._id || data, "seen");
-      });
-
-      socket.on(SOCKET_EVENTS.MESSAGE_REPLIED, (data) => {
-        onStatusUpdate?.(data.messageId || data.id || data._id, "replied");
-      });
-
-      socket.on(SOCKET_EVENTS.MESSAGE_DELETED, (data) => {
-        onStatusUpdate?.(data.id || data._id || data, "deleted");
-      });
-
-      socket.on(SOCKET_EVENTS.STATS_UPDATED, (stats) => {
-        onStatsUpdate?.(stats);
-      });
-    }
-
-    // 2. SSE Integration (Backup for more reliable connection)
-    const eventSource = new EventSource("/api/admin/events");
-
-    eventSource.addEventListener("message", (e) => {
-      try {
-        const message = JSON.parse(e.data);
-        console.log("[SSE] New message received:", message);
-        
-        if (message.status === "new") {
-          toast.info(`New Message: ${message.name}`);
-          onNewMessage?.(message);
-        } else {
-          onStatusUpdate?.(message.messageId || message.id || message._id, message.status);
-        }
-      } catch (err) {
-        console.error("[SSE] Failed to parse message event:", err);
-      }
-    });
-
-    eventSource.addEventListener("stats", (e) => {
-      try {
-        const stats = JSON.parse(e.data);
-        onStatsUpdate?.(stats);
-      } catch (err) {
-        onStatsUpdate?.(null);
-      }
-    });
-
-    eventSource.onerror = (err) => {
-      console.error("[SSE] EventSource failed:", err);
-      eventSource.close();
-    };
-
-    return () => {
-      socket?.disconnect();
-      eventSource.close();
-    };
-  }, [onNewMessage, onStatusUpdate, onStatsUpdate]);
+    return () => clearInterval(interval);
+  }, [onNewMessage]);
 };

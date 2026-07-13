@@ -68,7 +68,9 @@ export default function AdminDataInitializer({ children }) {
   // Check authentication on mount
   useEffect(() => {
     setMounted(true);
-    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    const token = typeof window !== "undefined"
+      ? localStorage.getItem("admin_token") || localStorage.getItem("token")
+      : null;
     setIsAuthenticated(!!token);
     console.log("[AdminDataInitializer] Authentication check:", !!token);
   }, []);

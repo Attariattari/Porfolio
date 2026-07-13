@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useEffect } from "react";
-import { initializeSocket, SOCKET_EVENTS } from "@/lib/socket";
 
 const fetchBookings = async (filters) => {
   const params = new URLSearchParams();
@@ -119,75 +118,12 @@ export const useRealTimeBookingUpdates = () => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    // 1. Socket.io Integration (Legacy / Alternative)
-    const socket = initializeSocket();
-    if (socket) {
-      socket.on(SOCKET_EVENTS.BOOKING_STATS_UPDATED, () => {
-        queryClient.invalidateQueries({ queryKey: ["booking-stats"] });
-      });
-
-      socket.on(SOCKET_EVENTS.NEW_BOOKING, () => {
-        queryClient.invalidateQueries({ queryKey: ["bookings"] });
-        queryClient.invalidateQueries({ queryKey: ["booking-stats"] });
-      });
-
-      socket.on(SOCKET_EVENTS.BOOKING_UPDATED, (data) => {
-        queryClient.invalidateQueries({ queryKey: ["bookings"] });
-        queryClient.invalidateQueries({ queryKey: ["booking-stats"] });
-        if (data?._id || data?.id) {
-          queryClient.invalidateQueries({ queryKey: ["booking", data._id || data.id] });
-        }
-      });
-
-      socket.on(SOCKET_EVENTS.BOOKING_DELETED, () => {
-        queryClient.invalidateQueries({ queryKey: ["bookings"] });
-        queryClient.invalidateQueries({ queryKey: ["booking-stats"] });
-      });
-    }
-
-    // 2. High-Performance SSE Integration (Preferred for Admin Muhyo Tech)
-    const eventSource = new EventSource("/api/admin/events");
-
-    eventSource.addEventListener("booking", (e) => {
-      try {
-        const data = JSON.parse(e.data);
-        console.log("[SSE] Booking Event Received:", data);
-        
-        // Show toast for new bookings if we are not the ones who created it (though usually it's from client side)
-        if (data.status === 'new' && !data.isRead) {
-          toast.info(`New booking request received.`, {
-            description: `Scheduled for ${data.preferredDate} at ${data.preferredTime}`
-          });
-        }
-
-        // Invalidate queries to trigger real-time UI refresh
-        queryClient.invalidateQueries({ queryKey: ["bookings"] });
-        queryClient.invalidateQueries({ queryKey: ["booking-stats"] });
-        
-        if (data._id || data.id) {
-          queryClient.invalidateQueries({ queryKey: ["booking", data._id || data.id] });
-        }
-      } catch (err) {
-        console.error("[SSE] Failed to process booking event:", err);
-      }
-    });
-
-    eventSource.addEventListener("stats", () => {
-      console.log("[SSE] Universal Stats Refresh Triggered");
+    const refreshBookings = () => {
+      queryClient.invalidateQueries({ queryKey: ["bookings"] });
       queryClient.invalidateQueries({ queryKey: ["booking-stats"] });
-    });
-
-    eventSource.onerror = (err) => {
-      console.error("[SSE] Connection Interrupted for Booking Stream:", err);
-      eventSource.close();
     };
 
-    return () => {
-      socket?.off(SOCKET_EVENTS.NEW_BOOKING);
-      socket?.off(SOCKET_EVENTS.BOOKING_UPDATED);
-      socket?.off(SOCKET_EVENTS.BOOKING_DELETED);
-      socket?.off(SOCKET_EVENTS.BOOKING_STATS_UPDATED);
-      eventSource.close();
-    };
+    const interval = setInterval(refreshBookings, 15000);
+    return () => clearInterval(interval);
   }, [queryClient]);
 };

@@ -200,10 +200,9 @@ export default function UserManagementPage() {
 
     useEffect(() => {
         fetchUsers().then(() => setLoading(false));
-        
-        const eventSource = new EventSource("/api/admin/events");
-        eventSource.addEventListener("user", () => { fetchUsers(); });
-        return () => eventSource.close();
+
+        const interval = setInterval(fetchUsers, 15000);
+        return () => clearInterval(interval);
     }, []);
 
     const filteredUsers = (users || []).filter(u => {

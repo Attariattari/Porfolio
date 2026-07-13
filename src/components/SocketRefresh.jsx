@@ -15,7 +15,9 @@ export default function SocketRefresh() {
 
   useEffect(() => {
     // Only initialize socket if user is authenticated
-    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    const token = typeof window !== 'undefined'
+      ? localStorage.getItem('admin_token') || localStorage.getItem('token')
+      : null;
     if (!token) {
       console.log("[SocketRefresh] Not authenticated, skipping socket initialization");
       return;

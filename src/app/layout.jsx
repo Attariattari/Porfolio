@@ -1,7 +1,7 @@
 import { Inter } from "next/font/google";
 import "@/app/globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { Analytics } from "@vercel/analytics/react";
+import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import ScrollToTop from "@/components/ScrollToTop";
 import { Toaster } from "sonner";
@@ -16,6 +16,9 @@ const inter = Inter({
   display: "swap",
   adjustFontFallback: true,
 });
+
+const enableVercelAnalytics =
+  process.env.NEXT_PUBLIC_ENABLE_VERCEL_ANALYTICS === "true";
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
@@ -98,8 +101,12 @@ export default function RootLayout({ children }) {
               className: "rounded-xl shadow-2xl",
             }}
           />
-          <Analytics />
-          <SpeedInsights />
+          {enableVercelAnalytics && (
+            <>
+              <Analytics />
+              <SpeedInsights />
+            </>
+          )}
         </ThemeProvider>
       </body>
     </html>

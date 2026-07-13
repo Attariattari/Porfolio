@@ -31,38 +31,34 @@ export default function LoginForm() {
   const [newPasskey, setNewPasskey] = useState("");
   const router = useRouter();
 
-  // Real-time Authority Tracing (SSE)
+  // Vercel-safe approval polling. A persistent in-memory SSE connection is
+  // unreliable across serverless function instances.
   useEffect(() => {
     if (view !== "pending" || !email) return;
 
-    const eventSource = new EventSource("/api/admin/events");
-
-    eventSource.addEventListener("user", (e) => {
-      const data = JSON.parse(e.data);
-      if (data.email.toLowerCase() === email.toLowerCase()) {
-        if (data.status === "approved") {
+    let cancelled = false;
+    const checkApproval = async () => {
+      try {
+        const res = await fetch(`/api/admin/status?email=${encodeURIComponent(email)}`, {
+          cache: "no-store",
+        });
+        const data = await res.json();
+        if (!cancelled && data.success && data.active) {
           toast.success("Identity Authorized. Access granted.");
           playSuccessSound();
-          eventSource.close();
-          setView("login");
-        } else if (data.status === "denied") {
-          toast.error("Identity Refused", {
-            description: "Authorization denied by Super Admin.",
-          });
-          eventSource.close();
-          setView("denied");
-        } else if (data.status === "removed") {
-          toast.error("Authority Revoked", {
-            description: "Access node blacklisted for 24 hours.",
-          });
-          eventSource.close();
-          setError("Access node blacklisted for 24 hours.");
           setView("login");
         }
+      } catch {
+        // Retry on the next interval.
       }
-    });
+    };
 
-    return () => eventSource.close();
+    checkApproval();
+    const interval = setInterval(checkApproval, 5000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
   }, [view, email]);
 
   const playSuccessSound = () => {

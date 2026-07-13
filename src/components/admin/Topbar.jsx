@@ -24,73 +24,31 @@ export default function Topbar() {
   const dropdownRef = useRef(null);
 
   useEffect(() => {
-    // Fetch Session
-    fetch("/api/admin/me")
-      .then((res) => res.json())
-      .then((data) => setSession(data));
+    let cancelled = false;
 
-    // Initial Fetch
-    fetchNotifications();
-
-    // Authority Event Stream (Real-time SSE)
-    const eventSource = new EventSource("/api/admin/events");
-
-    eventSource.addEventListener("notification", (e) => {
-      const notif = JSON.parse(e.data);
-      const currentNotifs = useAdminStore.getState().notifications;
-      if (!currentNotifs.some((n) => (n.id || n._id) === (notif.id || notif._id))) {
-        useAdminStore.getState().setData("notifications", [notif, ...currentNotifs]);
-        playNotificationSound();
-        triggerBrowserNotification(notif);
-        toast.info(notif.title, { description: notif.message });
+    const refreshAdminState = async () => {
+      try {
+        const res = await fetch("/api/admin/me", { cache: "no-store" });
+        if (res.status === 401 || res.status === 403) {
+          window.location.href = "/admin/login";
+          return;
+        }
+        const data = await res.json();
+        if (!cancelled) setSession(data);
+      } catch {
+        // Keep the current UI and retry on the next poll.
       }
-    });
 
-    eventSource.addEventListener("settings", (e) => {
-      const updatedSettings = JSON.parse(e.data);
-      useAdminStore.setState({ settings: updatedSettings });
-      toast.success("Global settings synchronized.");
-    });
+      if (!cancelled) fetchNotifications();
+    };
 
-    eventSource.addEventListener("notification_update", (e) => {
-      const updatedNotif = JSON.parse(e.data);
-      const currentNotifs = useAdminStore.getState().notifications;
-      const newNotifs = currentNotifs.map(n => 
-        (n.id || n._id) === (updatedNotif.id || updatedNotif._id) ? updatedNotif : n
-      );
-      useAdminStore.getState().setData("notifications", newNotifs);
-    });
-
-    eventSource.addEventListener("notification_delete", (e) => {
-      const { id } = JSON.parse(e.data);
-      const currentNotifs = useAdminStore.getState().notifications;
-      const newNotifs = currentNotifs.filter(n => (n.id || n._id) !== id);
-      useAdminStore.getState().setData("notifications", newNotifs);
-    });
-
-    eventSource.addEventListener("notification_clear", () => {
-      const currentNotifs = useAdminStore.getState().notifications;
-      const newNotifs = currentNotifs.map(n => ({ ...n, status: 'read' }));
-      useAdminStore.getState().setData("notifications", newNotifs);
-    });
-
-    eventSource.addEventListener("user", (e) => {
-      const data = JSON.parse(e.data);
-      if (data.forceLogout && session && data.email === session.email) {
-        playNotificationSound();
-        toast.error("Authority Revoked", {
-          description: "Your access has been terminated by Super Admin.",
-        });
-        setTimeout(() => {
-          fetch("/api/admin/logout", { method: "POST" }).then(() => {
-            window.location.href = "/admin/login";
-          });
-        }, 2000);
-      }
-    });
-
-    return () => eventSource.close();
-  }, [session]);
+    refreshAdminState();
+    const interval = setInterval(refreshAdminState, 15000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [fetchNotifications]);
 
   // PATCH: Token expiration check (every 45 seconds)
   useEffect(() => {
@@ -145,34 +103,6 @@ export default function Topbar() {
 
     return () => clearInterval(interval);
   }, []);
-
-  function playNotificationSound() {
-    try {
-      const context = new (window.AudioContext || window.webkitAudioContext)();
-      const oscillator = context.createOscillator();
-      const gain = context.createGain();
-      oscillator.connect(gain);
-      gain.connect(context.destination);
-      oscillator.type = "sine";
-      oscillator.frequency.setValueAtTime(880, context.currentTime);
-      gain.gain.setValueAtTime(0, context.currentTime);
-      gain.gain.linearRampToValueAtTime(0.2, context.currentTime + 0.05);
-      gain.gain.linearRampToValueAtTime(0, context.currentTime + 0.3);
-      oscillator.start();
-      oscillator.stop(context.currentTime + 0.3);
-    } catch (e) {
-      /* Audio policy */
-    }
-  }
-
-  function triggerBrowserNotification(notif) {
-    if ("Notification" in window && Notification.permission === "granted") {
-      new Notification(`[System Alert] ${notif.title}`, {
-        body: notif.message,
-        icon: "/favicon.ico",
-      });
-    }
-  }
 
   const unreadCount = useMemo(
     () => notifications.filter((n) => n.status === "unread").length,

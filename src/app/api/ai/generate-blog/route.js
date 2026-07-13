@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { runBlogAutomationPipeline, finalizeBlogPipeline } from "@/lib/blogAutomation";
 
 export const dynamic = "force-dynamic";
-// Hobby plan max: 60s. For longer operations, use background jobs or upgrade to Pro
+export const runtime = "nodejs";
+export const maxDuration = 300;
 
 export async function GET(request) {
     const { searchParams } = new URL(request.url);
@@ -30,23 +31,31 @@ export async function GET(request) {
             try {
                 if (action === "finalize" && blogId) {
                     if (generateImage) {
-                        // Fast path: don't wait for image generation.
                         sendUpdate({
-                            status: "COMPLETED",
+                            status: "GENERATING_IMAGE",
                             details: {
-                                message: "Image generation starting...",
-                                emailSent: false,
-                                workflowStatus: "blog_completed",
+                                message: "Image generation is running...",
                             },
                         });
 
-                        setTimeout(() => {
-                            finalizeBlogPipeline(
-                                blogId,
-                                { generateImage: true, baseUrl },
-                                (progress) => console.log("[Background] Image progress:", progress)
-                            ).catch(err => console.error("[Background] Image generation error:", err));
-                        }, 100);
+                        const result = await finalizeBlogPipeline(
+                            blogId,
+                            { generateImage: true, baseUrl },
+                            (progress) => sendUpdate(progress),
+                        );
+
+                        sendUpdate({
+                            status: "COMPLETED",
+                            details: {
+                                message: result.status === "generated"
+                                    ? "Blog image generated successfully."
+                                    : result.emailSent
+                                      ? "Image generation failed; secure upload email sent."
+                                      : "Image generation failed and email was not confirmed.",
+                                emailSent: !!result.emailSent,
+                                workflowStatus: result.status,
+                            },
+                        });
                     } else {
                         const result = await finalizeBlogPipeline(
                             blogId,
@@ -80,28 +89,38 @@ export async function GET(request) {
                                 message: result?.error || "AI blog generation failed.",
                             },
                         });
+                        clearInterval(keepAlive);
+                        controller.close();
                         return;
                     }
                     
                     if (result?.success && result.blogId) {
                         if (generateImage) {
                             sendUpdate({
-                                status: "COMPLETED",
+                                status: "GENERATING_IMAGE",
                                 details: {
-                                    message: "Blog content created. Image generation starting in background...",
-                                    emailSent: false,
-                                    workflowStatus: "blog_completed",
+                                    message: "Blog content created. Generating its image...",
                                 },
                             });
 
-                            // Generate image in background (don't await)
-                            setTimeout(() => {
-                                finalizeBlogPipeline(
-                                    result.blogId,
-                                    { generateImage: true, baseUrl },
-                                    (progress) => console.log("[Background] Image progress:", progress)
-                                ).catch(err => console.error("[Background] Image generation error:", err));
-                            }, 100);
+                            const imageResult = await finalizeBlogPipeline(
+                                result.blogId,
+                                { generateImage: true, baseUrl },
+                                (progress) => sendUpdate(progress),
+                            );
+
+                            sendUpdate({
+                                status: "COMPLETED",
+                                details: {
+                                    message: imageResult.status === "generated"
+                                        ? "Blog content and image created successfully."
+                                        : imageResult.emailSent
+                                          ? "Blog created; secure upload email sent."
+                                          : "Blog created, but image/email workflow needs attention.",
+                                    emailSent: !!imageResult.emailSent,
+                                    workflowStatus: imageResult.status,
+                                },
+                            });
                         } else {
                             const imageResult = await finalizeBlogPipeline(
                                 result.blogId,

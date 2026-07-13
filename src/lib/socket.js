@@ -44,6 +44,15 @@ export const SOCKET_EVENTS = {
 export function initializeSocket(options = {}) {
   if (typeof window === 'undefined') return null;
 
+  // The legacy Socket.IO server relies on a persistent Node HTTP server.
+  // Keep it available for local/VPS development, but do not try to wake it on
+  // Vercel Functions unless an external compatible socket service is enabled.
+  const socketEnabled =
+    process.env.NODE_ENV !== 'production' ||
+    process.env.NEXT_PUBLIC_ENABLE_SOCKET_IO === 'true';
+
+  if (!socketEnabled) return null;
+
   // Wake up the socket server if it's not running.
   fetch('/api/socket').catch((err) => console.warn('Socket wakeup failed', err));
 

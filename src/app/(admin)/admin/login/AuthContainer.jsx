@@ -88,23 +88,30 @@ export default function AuthContainer({
 
   useEffect(() => {
     if (view !== "pending" || !email) return;
-    const eventSource = new EventSource("/api/admin/events");
-    eventSource.addEventListener("user", (e) => {
-      const data = JSON.parse(e.data);
-      if (data.email.toLowerCase() === email.toLowerCase()) {
-        if (data.status === "approved") {
+
+    let cancelled = false;
+    const checkApproval = async () => {
+      try {
+        const res = await fetch(`/api/admin/status?email=${encodeURIComponent(email)}`, {
+          cache: "no-store",
+        });
+        const data = await res.json();
+        if (!cancelled && data.success && data.active) {
           toast.success("Access Approved. Welcome back.");
           playSuccessSound();
-          eventSource.close();
           setView("login");
-        } else if (data.status === "denied") {
-          toast.error("Access Denied", { description: "Your request was declined." });
-          eventSource.close();
-          setView("denied");
         }
+      } catch {
+        // A later poll will retry without interrupting the approval screen.
       }
-    });
-    return () => eventSource.close();
+    };
+
+    checkApproval();
+    const interval = setInterval(checkApproval, 5000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
   }, [view, email]);
 
   const playSuccessSound = () => {
@@ -193,6 +200,7 @@ export default function AuthContainer({
         // ⭐ PROFESSIONAL: Store token in localStorage for client-side expiry checks
         if (data.token) {
           localStorage.setItem("admin_token", data.token);
+          localStorage.setItem("token", data.token);
         }
         toast.success("Identity verified. Welcome to Admin Portal.");
         router.push(callbackUrl || "/admin/dashboard");
@@ -237,7 +245,10 @@ export default function AuthContainer({
         return;
       }
 
-      if (data.token) localStorage.setItem("admin_token", data.token);
+      if (data.token) {
+        localStorage.setItem("admin_token", data.token);
+        localStorage.setItem("token", data.token);
+      }
       toast.success("Google account linked successfully.");
       window.location.href = data.redirectTo || callbackUrl || "/admin/dashboard";
     } catch (e) {
