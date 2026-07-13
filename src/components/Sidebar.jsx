@@ -246,7 +246,7 @@ export default function Sidebar({ data }) {
                     } ${isCollapsed ? "justify-center px-0" : ""}`}
                   >
                     {/* Active Indicator */}
-                    {isActive && (
+                    {isActive && !isCollapsed && (
                       <motion.div
                         layoutId="active-indicator"
                         className="absolute left-0 w-1 h-6 bg-accent rounded-r-full"
