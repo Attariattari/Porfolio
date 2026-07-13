@@ -49,7 +49,9 @@ export async function ensureBlogImage(blogId, options = {}) {
     };
 
     if (!isProfessionalImagePromptReady(imagePrompt)) {
-      imagePrompt = await generateBlogImagePrompt(blog);
+      imagePrompt = await generateBlogImagePrompt(blog, {
+        useAI: !skipGeneration,
+      });
       blog.imagePrompt = imagePrompt.prompt;
       blog.image_prompt = imagePrompt.prompt;
       blog.imagePromptEnhanced = imagePrompt.visualDirection;

@@ -24,7 +24,7 @@ function excerptHtml(value = "", maxLength = 1800) {
     .slice(0, maxLength);
 }
 
-export async function generateBlogImagePrompt(blog) {
+export async function generateBlogImagePrompt(blog, options = {}) {
   const contentExcerpt = excerptHtml(blog.content || "");
 
   const fallback = {
@@ -34,6 +34,13 @@ export async function generateBlogImagePrompt(blog) {
       "Premium 16:9 technical editorial cover with realistic software-engineering artifacts, clear problem-to-outcome narrative, and clean blog/social crop space.",
     negativePrompt: FALLBACK_NEGATIVE_PROMPT,
   };
+
+  // The manual-email path already follows a full AI content-generation run.
+  // Use the deterministic production-ready prompt there so SMTP gets a fresh,
+  // predictable time budget instead of spending another Gemini request.
+  if (options.useAI === false) {
+    return fallback;
+  }
 
   try {
     const response = await generateGeminiResponse(

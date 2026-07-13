@@ -95,51 +95,18 @@ export async function GET(request) {
                     }
                     
                     if (result?.success && result.blogId) {
-                        if (generateImage) {
-                            sendUpdate({
-                                status: "GENERATING_IMAGE",
-                                details: {
-                                    message: "Blog content created. Generating its image...",
-                                },
-                            });
-
-                            const imageResult = await finalizeBlogPipeline(
-                                result.blogId,
-                                { generateImage: true, baseUrl },
-                                (progress) => sendUpdate(progress),
-                            );
-
-                            sendUpdate({
-                                status: "COMPLETED",
-                                details: {
-                                    message: imageResult.status === "generated"
-                                        ? "Blog content and image created successfully."
-                                        : imageResult.emailSent
-                                          ? "Blog created; secure upload email sent."
-                                          : "Blog created, but image/email workflow needs attention.",
-                                    emailSent: !!imageResult.emailSent,
-                                    workflowStatus: imageResult.status,
-                                },
-                            });
-                        } else {
-                            const imageResult = await finalizeBlogPipeline(
-                                result.blogId,
-                                { generateImage: false, baseUrl },
-                                (progress) => sendUpdate(progress),
-                            );
-
-                            sendUpdate({
-                                status: "COMPLETED",
-                                details: {
-                                    message: imageResult.emailSent
-                                        ? "Blog content created. Secure image prompt email sent."
-                                        : "Blog content created. Manual image upload is required, but email was not confirmed.",
-                                    emailSent: !!imageResult.emailSent,
-                                    workflowStatus: "manual_required",
-                                    uploadLinkId: imageResult.uploadLinkId,
-                                },
-                            });
-                        }
+                        // Finish this invocation after content persistence. The
+                        // browser starts finalize in a fresh Function invocation,
+                        // giving image/email work its own Hobby-plan time budget.
+                        sendUpdate({
+                            status: "COMPLETED",
+                            details: {
+                                message: "Blog content created. Starting image/email workflow...",
+                                workflowStatus: "content_ready",
+                                blogId: result.blogId.toString(),
+                                generateImage,
+                            },
+                        });
                     }
                 }
                 

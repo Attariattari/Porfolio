@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Sparkles,
@@ -29,9 +29,11 @@ export default function AIBlogProgress({
   const [error, setError] = useState(null);
 
   const [pendingBlogId, setPendingBlogId] = useState(null);
+  const activeSourceRef = useRef(null);
 
   const startPipeline = (url) => {
     const eventSource = new EventSource(url);
+    activeSourceRef.current = eventSource;
     let finished = false;
 
     // Warn on long-running steps, but keep the stream open.
@@ -66,6 +68,18 @@ export default function AIBlogProgress({
       if (data.status === "COMPLETED") {
         finished = true;
         eventSource.close();
+        clearTimeout(timeoutId);
+
+        if (data.details?.workflowStatus === "content_ready" && data.details?.blogId) {
+          const nextBlogId = data.details.blogId;
+          setPendingBlogId(nextBlogId);
+          const generateImage = autoGenerateImages ? "true" : "false";
+          startPipeline(
+            `/api/ai/generate-blog?action=finalize&id=${encodeURIComponent(nextBlogId)}&generateImage=${generateImage}`,
+          );
+          return;
+        }
+
         if (data.details?.url) setImagePreview(data.details.url);
         toast.dismiss();
         
@@ -146,8 +160,8 @@ export default function AIBlogProgress({
       url = `/api/ai/generate-blog?action=finalize&id=${blogId}&generateImage=${generateImage}`;
     }
 
-    const es = startPipeline(url);
-    return () => es.close();
+    startPipeline(url);
+    return () => activeSourceRef.current?.close();
   }, [isOpen, mode, blogId, autoGenerateImages]);
 
   const handleDecision = (generateImage) => {
