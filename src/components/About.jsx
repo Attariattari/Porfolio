@@ -210,7 +210,7 @@ const ProfileCard = ({ data }) => (
   >
     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] bg-accent/10 blur-[100px] rounded-full -z-10 animate-pulse" />
     <div className="relative z-10 p-2 glass rounded-[1.5rem] overflow-hidden group border border-white/10 hover:border-accent/30 transition-all duration-700">
-      <div className="relative w-full aspect-[4/5] rounded-[1rem] overflow-hidden shadow-2xl">
+      <div className="theme-media-frame relative w-full aspect-[4/5] rounded-[1rem] overflow-hidden">
         <Image
           src={getSafeImageSrc(data.hero?.image, "/about-portrait-new.jpg")}
           alt={data.name}
@@ -219,8 +219,8 @@ const ProfileCard = ({ data }) => (
           className="object-cover transition-transform duration-1000 group-hover:scale-110"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/20 to-transparent opacity-80 group-hover:opacity-45 transition-opacity duration-700" />
-        <div className="absolute bottom-6 left-6 right-6 sm:bottom-10 sm:left-10 sm:right-auto p-4 glass rounded-2xl border border-border backdrop-blur-xl translate-y-8 group-hover:translate-y-0 transition-transform duration-500 shadow-2xl">
+        <div className="theme-image-wash absolute inset-0 transition-opacity duration-700 dark:opacity-80 dark:group-hover:opacity-45" />
+        <div className="theme-surface-depth absolute bottom-6 left-6 right-6 sm:bottom-10 sm:left-10 sm:right-auto p-4 glass rounded-2xl border border-border backdrop-blur-xl translate-y-8 group-hover:translate-y-0 transition-transform duration-500">
           <div className="text-xs font-bold text-accent mb-1 underline decoration-accent/30 decoration-2 underline-offset-4 italic">
             Founder
           </div>

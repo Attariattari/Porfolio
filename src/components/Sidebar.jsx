@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ThemeToggle } from "./ThemeToggle";
 import { useState, useEffect } from "react";
 import {
   Home,
@@ -16,10 +15,14 @@ import {
   ChevronRight,
   Sparkles,
   Target,
+  Sun,
+  Moon,
+  Circle,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { portfolioData } from "@/lib/data";
+import { useTheme } from "@/components/ThemeProvider";
 
 const IconMap = {
   Home,
@@ -48,18 +51,67 @@ const navLinks = [
 ];
 
 const SIDEBAR_STORAGE_KEY = "muhyo:sidebar-collapsed";
+const themeOptions = [
+  { id: "light", label: "Light theme", icon: Sun },
+  { id: "dark", label: "Dark theme", icon: Moon },
+  { id: "black", label: "Black theme", icon: Circle },
+];
+
+function ThemeButtons({ theme, onChange, compact = false }) {
+  return (
+    <div
+      className={`flex items-center rounded-2xl border border-border/60 bg-background/65 p-1 ${compact ? "gap-0.5" : "gap-1"}`}
+      role="group"
+      aria-label="Choose website theme"
+    >
+      {themeOptions.map((option) => {
+        const Icon = option.icon;
+        const isActive = theme === option.id;
+
+        return (
+          <button
+            key={option.id}
+            type="button"
+            onClick={() => onChange(option.id)}
+            title={option.label}
+            aria-label={option.label}
+            aria-pressed={isActive}
+            className={`flex items-center justify-center rounded-xl border transition-colors ${
+              compact ? "h-7 w-7" : "h-9 flex-1"
+            } ${
+              isActive
+                ? "border-accent/40 bg-accent text-accent-foreground shadow-sm"
+                : "border-transparent text-muted-foreground hover:bg-muted/70 hover:text-foreground"
+            }`}
+          >
+            <Icon className={`h-3.5 w-3.5 ${option.id === "black" && isActive ? "fill-current" : ""}`} />
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 export default function Sidebar({ data }) {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const about = data || portfolioData.about;
+  const { theme, setTheme } = useTheme();
+
+  const changeTheme = (nextTheme) => {
+    setTheme(nextTheme, { persistPreference: true });
+  };
 
   useEffect(() => {
-    try {
-      const savedState = window.localStorage.getItem(SIDEBAR_STORAGE_KEY);
-      if (savedState === "true") setIsCollapsed(true);
-      if (savedState === "false") setIsCollapsed(false);
-    } catch {}
+    const restoreFrame = window.requestAnimationFrame(() => {
+      try {
+        const savedState = window.localStorage.getItem(SIDEBAR_STORAGE_KEY);
+        if (savedState === "true") setIsCollapsed(true);
+        if (savedState === "false") setIsCollapsed(false);
+      } catch {}
+    });
+
+    return () => window.cancelAnimationFrame(restoreFrame);
   }, []);
 
   useEffect(() => {
@@ -93,7 +145,7 @@ export default function Sidebar({ data }) {
   return (
     <>
       {/* Mobile Glass Header */}
-      <div className="site-sidebar-shell md:hidden fixed top-0 left-0 w-full h-16 bg-background/80 backdrop-blur-xl border-b border-border/50 z-[60] px-6 flex items-center justify-between">
+      <div className="site-sidebar-shell md:hidden fixed top-0 left-0 w-full h-16 bg-background/80 backdrop-blur-xl border-b border-border/50 z-[60] px-4 flex items-center justify-between gap-3">
         <Link href="/" className="group flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center overflow-hidden shadow-lg shadow-accent/20 transition-transform group-active:scale-95">
             <Image
@@ -112,9 +164,7 @@ export default function Sidebar({ data }) {
             </span>
           </span>
         </Link>
-        <div className="flex items-center gap-4">
-          <ThemeToggle />
-        </div>
+        <ThemeButtons theme={theme} onChange={changeTheme} compact />
       </div>
 
       {/* Modern Desktop Sidebar */}
@@ -180,6 +230,7 @@ export default function Sidebar({ data }) {
                     href={link.href}
                     target="_self"
                     prefetch={true}
+                    aria-current={isActive ? "page" : undefined}
                     className={`group/link relative flex items-center gap-3.5 p-3 rounded-2xl transition-all duration-300 ${
                       isActive
                         ? "bg-accent/5 text-accent shadow-[0_4px_20px_rgba(var(--accent-rgb),0.05)]"
@@ -235,24 +286,45 @@ export default function Sidebar({ data }) {
 
             {/* Footer Actions */}
             <div className="mt-auto px-4 pt-4 space-y-3">
-              <div className="p-3.5 rounded-[1.5rem] bg-muted/30 border border-border/40 backdrop-blur-md">
-                <div
-                  className={`flex items-center transition-all duration-300 ${isCollapsed ? "justify-center" : "justify-between"}`}
-                >
-                  {!isCollapsed && (
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-wider">
-                        Theme
-                      </span>
-                      <span className="text-[9px] text-muted-foreground/40 italic">
+              <div className={isCollapsed ? "flex justify-center" : ""}>
+                {isCollapsed ? (
+                  <div className="flex flex-col gap-1 rounded-2xl border border-border/60 bg-background/65 p-1">
+                    {themeOptions.map((option) => {
+                      const Icon = option.icon;
+                      const isActive = theme === option.id;
+                      return (
+                        <button
+                          key={option.id}
+                          type="button"
+                          onClick={() => changeTheme(option.id)}
+                          title={option.label}
+                          aria-label={option.label}
+                          aria-pressed={isActive}
+                          className={`flex h-9 w-9 items-center justify-center rounded-xl border transition-colors ${
+                            isActive
+                              ? "border-accent/40 bg-accent text-accent-foreground"
+                              : "border-transparent text-muted-foreground hover:bg-muted/70 hover:text-foreground"
+                          }`}
+                        >
+                          <Icon className={`h-3.5 w-3.5 ${option.id === "black" && isActive ? "fill-current" : ""}`} />
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between px-1">
+                      <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-muted-foreground/70">
                         Appearance
                       </span>
+                      <span className="text-[9px] font-medium text-muted-foreground/45">
+                        Choose theme
+                      </span>
                     </div>
-                  )}
-                  <ThemeToggle isCollapsed={isCollapsed} />
-                </div>
+                    <ThemeButtons theme={theme} onChange={changeTheme} />
+                  </div>
+                )}
               </div>
-
               {!isCollapsed && (
                 <div className="px-4 py-2 text-center">
                   <p className="text-[10px] text-muted-foreground/30 font-medium">

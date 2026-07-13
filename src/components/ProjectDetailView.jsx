@@ -261,7 +261,7 @@ export default function ProjectDetailView({
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.75, delay: 0.1 }}
               onClick={() => setLightboxIndex(0)}
-              className="group relative aspect-[4/3] overflow-hidden rounded-[2rem] border border-white/10 bg-card text-left shadow-2xl"
+              className="theme-media-frame group relative aspect-[4/3] overflow-hidden rounded-[2rem] border border-border/70 bg-card text-left"
             >
               <Image
                 src={getSafeImageSrc(heroImage)}
@@ -271,7 +271,7 @@ export default function ProjectDetailView({
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover transition-transform duration-1000 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
+              <div className="theme-image-wash absolute inset-0" />
             </motion.button>
           )}
         </div>
@@ -422,7 +422,7 @@ export default function ProjectDetailView({
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                   {image.caption && (
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background/90 to-transparent p-5">
+                    <div className="theme-image-caption absolute inset-x-0 bottom-0 p-5">
                       <p className="text-sm font-bold text-foreground">{image.caption}</p>
                     </div>
                   )}

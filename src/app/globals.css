@@ -8,6 +8,7 @@
         --primary: #1e293b;
         --secondary: #64748b;
         --accent: #3b82f6;
+        --accent-rgb: 59, 130, 246;
         /* Cyan-ish Blue */
         --accent-foreground: #ffffff;
         --card: #ffffff;
@@ -19,6 +20,8 @@
         --destructive-foreground: #ffffff;
         --muted: #f1f5f9;
         --muted-foreground: #475569;
+        --popover: #ffffff;
+        --popover-foreground: #020617;
     }
     /* Dark Theme when html has class 'dark' */
     .dark {
@@ -28,6 +31,7 @@
         --primary: #1e293b;
         --secondary: #94a3b8;
         --accent: #0ea5e9;
+        --accent-rgb: 14, 165, 233;
         /* Strong Cyan */
         --accent-foreground: #0f172a;
         --card: rgba(30, 41, 59, 0.7);
@@ -40,6 +44,33 @@
         --destructive-foreground: #ffffff;
         --muted: #1e293b;
         --muted-foreground: #94a3b8;
+        --popover: #111827;
+        --popover-foreground: #f8fafc;
+    }
+    /* True-black premium theme. The html element also keeps the `dark` class
+       so every existing Tailwind dark variant continues to work safely. */
+    .black {
+        --background: #000000;
+        --foreground: #ffffff;
+        --primary: #101216;
+        --secondary: #d4dce6;
+        --accent: #22d3ff;
+        --accent-rgb: 34, 211, 255;
+        --accent-foreground: #001015;
+        --card: rgba(7, 9, 12, 0.92);
+        --card-foreground: #ffffff;
+        --border: rgba(255, 255, 255, 0.15);
+        --input: #090b0f;
+        --ring: #22d3ff;
+        --destructive: #fb5b68;
+        --destructive-foreground: #ffffff;
+        --muted: #111318;
+        --muted-foreground: #c0c9d4;
+        --popover: #080a0d;
+        --popover-foreground: #ffffff;
+        --black-surface: rgba(5, 7, 10, 0.94);
+        --black-surface-raised: rgba(11, 14, 19, 0.96);
+        --black-highlight: rgba(34, 211, 255, 0.24);
     }
 }
 
@@ -131,6 +162,18 @@
     html {
         scroll-behavior: smooth;
     }
+    html.black {
+        color-scheme: dark;
+    }
+    html.black body {
+        background-color: var(--background);
+        background-image:
+            radial-gradient(circle at 18% -10%, rgba(var(--accent-rgb), 0.12), transparent 31rem),
+            linear-gradient(180deg, #020304 0%, #000000 58%, #010203 100%);
+    }
+    html.black :is(h1, h2, h3, h4, h5, h6) {
+        color: #ffffff;
+    }
     html,
     body {
         max-width: 100vw;
@@ -143,6 +186,14 @@
         color: var(--foreground);
         transition: background-color 0.3s, color 0.3s;
         line-height: 1.6;
+    }
+    /* Theme selection is intentionally immediate; component hover and motion
+       transitions resume on the following paint. */
+    html.theme-switching *,
+    html.theme-switching *::before,
+    html.theme-switching *::after {
+        transition-delay: 0s !important;
+        transition-duration: 0s !important;
     }
     /* Professional Typography System */
     h1,
@@ -186,18 +237,269 @@
 }
 
 @layer components {
+    .admin-theme-scope {
+        background-color: var(--background);
+        color: var(--foreground);
+    }
+    .admin-theme-scope [class*="bg-[#0a0f1c]"],
+    .admin-theme-scope [class*="bg-[#070b14]"],
+    .admin-theme-scope [class*="bg-[#050508]"],
+    .admin-theme-scope [class*="bg-[#030712]"] {
+        background-color: var(--background) !important;
+    }
+    .admin-theme-scope [class*="bg-[#0f172a]"],
+    .admin-theme-scope [class*="bg-[#0d1526]"],
+    .admin-theme-scope [class*="bg-[#0d1422]"],
+    .admin-theme-scope [class*="bg-[#1e293b]"] {
+        background-color: var(--card) !important;
+    }
+    .admin-theme-scope [class*="bg-slate-950"],
+    .admin-theme-scope [class*="bg-slate-900"] {
+        background-color: color-mix(in srgb, var(--card) 92%, transparent) !important;
+    }
+    .admin-theme-scope [class*="bg-slate-800"] {
+        background-color: color-mix(in srgb, var(--muted) 78%, transparent) !important;
+    }
+    .admin-theme-scope [class*="border-slate-"] {
+        border-color: var(--border) !important;
+    }
+    .admin-theme-scope [class*="border-white/"] {
+        border-color: var(--border) !important;
+    }
+    html.light .admin-theme-scope :is(h1, h2, h3, h4, h5, h6, label, input, textarea, select) {
+        color: var(--foreground) !important;
+    }
+    html.light .admin-theme-scope :is(input, textarea, select) {
+        background-color: color-mix(in srgb, var(--card) 88%, var(--muted));
+    }
+    html.light .admin-theme-scope :is(h1, h2, h3, h4, h5, h6, label, p, span, td, th).text-white {
+        color: var(--foreground) !important;
+    }
     .glass {
         background: var(--card);
         backdrop-filter: blur(6px);
         -webkit-backdrop-filter: blur(6px);
         border: 1px solid var(--border);
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+        box-shadow: none;
+    }
+    .dark .glass {
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+    }
+    .black .glass {
+        background: linear-gradient(145deg, rgba(13, 16, 21, 0.94), rgba(3, 4, 6, 0.96));
+        border-color: var(--black-highlight);
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.08),
+            0 22px 70px -46px rgba(var(--accent-rgb), 0.58),
+            0 30px 70px -48px rgba(0, 0, 0, 1);
     }
     .glass-dark {
         background: rgba(15, 23, 42, 0.6);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
         border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .theme-preview-light {
+        color: #0f172a;
+        background: #f8fafc;
+    }
+    .theme-preview-dark {
+        color: #f8fafc;
+        background: #0a0f1c;
+    }
+    .theme-preview-black {
+        color: #ffffff;
+        background:
+            radial-gradient(circle at 80% 0%, rgba(34, 211, 255, 0.24), transparent 48%),
+            #000000;
+    }
+    /* Theme-aware image treatment: clean surfaces in light mode, cinematic
+       blending in dark mode. This prevents dark overlays from looking like a
+       grey film when the site theme changes. */
+    .hero-media-blend {
+        overflow: hidden;
+        isolation: isolate;
+        border: 1px solid rgba(148, 163, 184, 0.22);
+        border-radius: 1.5rem;
+        background: var(--card);
+        box-shadow: none;
+    }
+    .dark .hero-media-blend {
+        -webkit-mask-image: radial-gradient(ellipse at center, black 50%, transparent 100%);
+        mask-image: radial-gradient(ellipse at center, black 50%, transparent 100%);
+        border-color: transparent;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+    .theme-media-accent {
+        background: transparent;
+    }
+    .dark .theme-media-accent {
+        background: color-mix(in srgb, var(--accent) 10%, transparent);
+        mix-blend-mode: soft-light;
+    }
+    .theme-media-frame {
+        box-shadow: none;
+    }
+    .dark .theme-media-frame {
+        box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.6);
+    }
+    .black .theme-media-frame {
+        border-color: rgba(var(--accent-rgb), 0.34);
+        box-shadow:
+            0 36px 90px -42px rgba(0, 0, 0, 0.95),
+            0 18px 58px -32px rgba(var(--accent-rgb), 0.82),
+            inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+    .theme-media-gradient {
+        background: linear-gradient(to top, rgba(2, 6, 23, 0.78) 0%, rgba(2, 6, 23, 0.16) 48%, transparent 78%);
+    }
+    .dark .theme-media-gradient {
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.98) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 82%);
+    }
+    .black .theme-media-gradient {
+        background:
+            linear-gradient(to top, rgba(2, 6, 10, 0.98) 0%, rgba(2, 8, 13, 0.36) 50%, transparent 82%),
+            linear-gradient(135deg, rgba(var(--accent-rgb), 0.035), transparent 48%);
+    }
+    .theme-media-tint {
+        background: rgba(15, 23, 42, 0.02);
+    }
+    .dark .theme-media-tint {
+        background: rgba(0, 0, 0, 0.2);
+    }
+    .theme-image-wash {
+        background: transparent;
+    }
+    .dark .theme-image-wash {
+        background: linear-gradient(to top, color-mix(in srgb, var(--background) 92%, transparent), transparent 68%);
+    }
+    .theme-image-caption {
+        background: color-mix(in srgb, var(--background) 92%, transparent);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+    }
+    .dark .theme-image-caption {
+        background: linear-gradient(to top, color-mix(in srgb, var(--background) 96%, transparent), transparent);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+    }
+    .theme-slider-wash {
+        background: transparent;
+    }
+    .dark .theme-slider-wash {
+        background:
+            linear-gradient(to right, var(--background), color-mix(in srgb, var(--background) 60%, transparent), transparent 78%),
+            linear-gradient(to top, var(--background), transparent 62%);
+    }
+    .theme-slider-copy {
+        max-width: 44rem;
+        padding: 2rem;
+        border: 1px solid var(--border);
+        border-radius: 1.5rem;
+        background: color-mix(in srgb, var(--card) 92%, transparent);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+    }
+    .dark .theme-slider-copy {
+        padding: 0;
+        border-color: transparent;
+        background: transparent;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+    }
+    .theme-surface-depth {
+        box-shadow: none !important;
+    }
+    .dark .theme-surface-depth {
+        box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.46) !important;
+    }
+    .black .theme-surface-depth {
+        border-color: rgba(255, 255, 255, 0.14) !important;
+        background-image: linear-gradient(145deg, rgba(15, 18, 23, 0.66), rgba(2, 3, 5, 0.32));
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.07),
+            0 28px 70px -52px rgba(0, 0, 0, 1),
+            0 16px 50px -38px rgba(var(--accent-rgb), 0.7) !important;
+    }
+    .black .theme-surface-depth:hover {
+        border-color: rgba(var(--accent-rgb), 0.48) !important;
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.09),
+            0 20px 62px -34px rgba(var(--accent-rgb), 0.72) !important;
+    }
+    .black .hero-media-blend {
+        -webkit-mask-image: none;
+        mask-image: none;
+        border: 1px solid rgba(var(--accent-rgb), 0.42);
+        border-radius: 2rem;
+        background: linear-gradient(145deg, rgba(10, 15, 20, 0.9), rgba(0, 0, 0, 0.98));
+        box-shadow:
+            0 34px 105px -42px rgba(var(--accent-rgb), 0.82),
+            0 30px 90px -48px rgba(0, 0, 0, 1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+    .black .site-sidebar-shell aside {
+        background:
+            linear-gradient(160deg, rgba(11, 15, 20, 0.97), rgba(1, 2, 4, 0.98) 62%),
+            var(--black-surface);
+        border-color: rgba(255, 255, 255, 0.15);
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.08),
+            inset -1px 0 0 rgba(var(--accent-rgb), 0.08),
+            0 30px 90px -55px rgba(0, 0, 0, 1),
+            0 16px 62px -38px rgba(var(--accent-rgb), 0.62);
+    }
+    .black .site-sidebar-shell nav a[aria-current="page"] {
+        border: 1px solid rgba(var(--accent-rgb), 0.26);
+        background: linear-gradient(90deg, rgba(var(--accent-rgb), 0.18), rgba(var(--accent-rgb), 0.055));
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.055),
+            0 12px 34px -22px rgba(var(--accent-rgb), 0.8);
+    }
+    .black .site-bottom-nav > div {
+        background: linear-gradient(145deg, rgba(13, 16, 21, 0.98), rgba(1, 2, 4, 0.99));
+        border-color: rgba(255, 255, 255, 0.16);
+        box-shadow:
+            0 24px 70px -38px rgba(0, 0, 0, 1),
+            0 12px 46px -34px rgba(var(--accent-rgb), 0.72);
+    }
+    .black .admin-theme-scope {
+        background-image:
+            radial-gradient(circle at 85% 0%, rgba(var(--accent-rgb), 0.12), transparent 30rem),
+            linear-gradient(180deg, rgba(3, 5, 7, 0.96), #000000);
+    }
+    .black .admin-theme-scope :is(input, textarea, select) {
+        border-color: rgba(var(--accent-rgb), 0.13);
+        caret-color: var(--accent);
+    }
+    .black .admin-theme-scope :is(input, textarea, select):focus {
+        border-color: rgba(var(--accent-rgb), 0.42);
+        box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.07);
+    }
+    .black-atmosphere {
+        background:
+            radial-gradient(circle at 14% -5%, rgba(var(--accent-rgb), 0.2), transparent 34rem),
+            radial-gradient(circle at 90% 25%, rgba(59, 130, 246, 0.13), transparent 32rem),
+            radial-gradient(circle at 55% 112%, rgba(6, 182, 212, 0.1), transparent 38rem),
+            linear-gradient(135deg, #030609 0%, #000000 48%, #010203 100%);
+    }
+    .black-tech-grid {
+        background-image:
+            linear-gradient(rgba(var(--accent-rgb), 0.055) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(var(--accent-rgb), 0.055) 1px, transparent 1px);
+        background-size: 72px 72px;
+        -webkit-mask-image: radial-gradient(ellipse at 50% 30%, black 0%, transparent 72%);
+        mask-image: radial-gradient(ellipse at 50% 30%, black 0%, transparent 72%);
+        opacity: 0.38;
+        animation: black-grid-drift 48s linear infinite;
+    }
+    /* Large blurred accent blobs read as dirty shadows on a light canvas.
+       They remain available in dark mode, where they add useful depth. */
+    html:not(.dark) body [class*="bg-accent/"][class*="blur-"],
+    html:not(.dark) body [class*="bg-blue-"][class*="blur-"] {
+        opacity: 0 !important;
     }
     .hover-glow:hover {
         box-shadow: 0 0 20px var(--accent);
@@ -236,6 +538,15 @@
         transform: scaleX(1);
         opacity: 0.5;
     }
+}
+
+@keyframes black-grid-drift {
+    from { background-position: 0 0; }
+    to { background-position: 72px 72px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .black-tech-grid { animation: none; }
 }
 
 .animate-progress-wide {
@@ -420,6 +731,16 @@ body.modal-open nav.md\:hidden {
 
 body.lightbox-open {
     overflow: hidden;
+}
+
+/* Keep the image viewer completely above persistent site chrome. */
+body.lightbox-open .site-sidebar-shell,
+body.lightbox-open .site-bottom-nav,
+body.lightbox-open .site-floating-action,
+body.lightbox-open .site-scroll-progress {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
 }
 
 /* Full-screen 404 mode: hide site chrome from the main layout shell. */

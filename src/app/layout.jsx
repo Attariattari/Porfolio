@@ -63,17 +63,25 @@ export default function RootLayout({ children }) {
             __html: `
               (function() {
                 try {
-                  const savedTheme = localStorage.getItem('theme');
-                  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                  let theme = savedTheme || 'system';
-                  if (theme === 'system') {
-                    theme = prefersDark ? 'dark' : 'light';
-                  }
-                  if (theme === 'dark') {
-                    document.documentElement.classList.add('dark');
+                  const preferredTheme = localStorage.getItem('muhyo_theme_preference');
+                  const savedTheme = localStorage.getItem('muhyo_global_theme');
+                  const initialTheme = ['light', 'dark', 'black'].includes(preferredTheme)
+                    ? preferredTheme
+                    : savedTheme;
+                  const theme = ['light', 'dark', 'black'].includes(initialTheme)
+                    ? initialTheme
+                    : 'black';
+                  const root = document.documentElement;
+                  root.classList.remove('light', 'dark', 'black');
+                  if (theme === 'black') {
+                    root.classList.add('dark', 'black');
                   } else {
-                    document.documentElement.classList.remove('dark');
+                    root.classList.add(theme);
                   }
+                  root.dataset.theme = theme;
+                  root.style.colorScheme = theme === 'light' ? 'light' : 'dark';
+                  localStorage.setItem('muhyo_global_theme', theme);
+                  localStorage.removeItem('theme');
 
                   const isSidebarCollapsed = localStorage.getItem('muhyo:sidebar-collapsed') === 'true';
                   document.documentElement.classList.toggle('sidebar-collapsed', isSidebarCollapsed);
@@ -93,10 +101,10 @@ export default function RootLayout({ children }) {
             position="top-right"
             toastOptions={{
               style: {
-                background: "rgba(15, 23, 42, 0.95)",
-                color: "#fff",
+                background: "color-mix(in srgb, var(--popover) 95%, transparent)",
+                color: "var(--popover-foreground)",
                 backdropFilter: "blur(10px)",
-                border: "1px solid rgba(255, 255, 255, 0.1)",
+                border: "1px solid var(--border)",
               },
               className: "rounded-xl shadow-2xl",
             }}

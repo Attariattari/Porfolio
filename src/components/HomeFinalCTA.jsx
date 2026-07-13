@@ -16,7 +16,7 @@ export default function HomeFinalCTA() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
-        className="relative mx-auto max-w-7xl overflow-hidden rounded-[3rem] border border-white/10 bg-gradient-to-br from-accent/10 via-background to-accent/5 p-10 text-center shadow-2xl md:p-20"
+        className="theme-surface-depth relative mx-auto max-w-7xl overflow-hidden rounded-[3rem] border border-border/60 bg-gradient-to-br from-accent/10 via-background to-accent/5 p-10 text-center md:p-20"
       >
         <div className="absolute right-0 top-0 h-80 w-80 translate-x-1/3 -translate-y-1/3 rounded-full bg-accent/10 blur-[100px]" />
         <div className="absolute bottom-0 left-0 h-72 w-72 -translate-x-1/3 translate-y-1/3 rounded-full bg-blue-500/10 blur-[100px]" />
@@ -56,4 +56,3 @@ export default function HomeFinalCTA() {
     </section>
   );
 }
-

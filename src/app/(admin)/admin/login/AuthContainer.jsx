@@ -1,31 +1,30 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import Image from "next/image";
 import {
-  Lock,
+  ArrowLeft,
+  ArrowRight,
+  BarChart3,
+  Check,
+  CheckCircle2,
+  Clock3,
+  Copy,
   Eye,
   EyeOff,
+  KeyRound,
   Loader2,
+  LockKeyhole,
   Mail,
-  Key,
-  CheckCircle2,
-  Clock,
   ShieldAlert,
-  ArrowRight,
-  Shield,
-  Zap,
+  ShieldCheck,
+  Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
-import Image from "next/image";
-import EditorialBackground from "@/components/ui/EditorialBackground";
 
-// Premium Background Images
-const LOGIN_IMAGE = "/admin-auth-bg.png";
-const SIGNUP_IMAGE = "/admin-signup-bg.png";
-
-function GoogleIcon({ className = "w-4 h-4" }) {
+function GoogleIcon({ className = "h-5 w-5" }) {
   return (
     <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
       <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -36,6 +35,58 @@ function GoogleIcon({ className = "w-4 h-4" }) {
   );
 }
 
+function Field({ icon: Icon, label, hint, children }) {
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between gap-4">
+        <label className="text-sm font-medium text-slate-200">{label}</label>
+        {hint}
+      </div>
+      <div className="group relative">
+        <Icon className="pointer-events-none absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-500 transition-colors group-focus-within:text-blue-400" />
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function ErrorNotice({ message }) {
+  if (!message) return null;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -6 }}
+      animate={{ opacity: 1, y: 0 }}
+      role="alert"
+      className="flex items-start gap-3 rounded-xl border border-red-400/20 bg-red-400/[0.08] px-4 py-3 text-sm leading-5 text-red-200"
+    >
+      <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
+      <span>{message}</span>
+    </motion.div>
+  );
+}
+
+function Divider() {
+  return (
+    <div className="flex items-center gap-4 py-1">
+      <span className="h-px flex-1 bg-white/10" />
+      <span className="text-xs font-medium text-slate-500">or</span>
+      <span className="h-px flex-1 bg-white/10" />
+    </div>
+  );
+}
+
+const googleErrorMessages = {
+  "not-configured": "Google sign-in is not configured yet.",
+  unverified: "This Google account has not been verified.",
+  unauthorized: "This Google sign-in request is not authorized.",
+  cancelled: "Google sign-in was cancelled.",
+  "not-approved": "This account is not approved for admin access.",
+  "rate-limited": "Too many attempts. Please wait a moment and try again.",
+  "token-exchange": "Google could not complete sign-in. Please check the OAuth configuration.",
+  profile: "Your Google profile could not be loaded. Please try again.",
+  failed: "Google sign-in failed. Please try again.",
+};
+
 export default function AuthContainer({
   defaultView = "login",
   callbackUrl = "/admin/dashboard",
@@ -43,71 +94,38 @@ export default function AuthContainer({
   googleLinkEmail = "",
   googleError = "",
 }) {
-  const [view, setView] = useState(defaultView); // login, setup, reset, verify, pending, success, denied, reverify
-  const [email, setEmail] = useState("");
+  const [view, setView] = useState(defaultView);
+  const [email, setEmail] = useState(googleLinkEmail || "");
   const [passkey, setPasskey] = useState("");
   const [code, setCode] = useState("");
   const [showPasskey, setShowPasskey] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(() => (
+    googleError ? (googleErrorMessages[googleError] || googleErrorMessages.failed) : ""
+  ));
   const [newPasskey, setNewPasskey] = useState("");
-  const [isDesktop, setIsDesktop] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [linkToken, setLinkToken] = useState(googleLinkToken);
   const [linkPasskey, setLinkPasskey] = useState("");
   const [linkLoading, setLinkLoading] = useState(false);
   const [linkError, setLinkError] = useState("");
   const router = useRouter();
 
-  const isAltMode = view !== "login";
-
-  useEffect(() => {
-    const checkDesktop = () => setIsDesktop(window.innerWidth >= 1024);
-    checkDesktop();
-    window.addEventListener("resize", checkDesktop);
-    return () => window.removeEventListener("resize", checkDesktop);
-  }, []);
-
-  useEffect(() => {
-    setLinkToken(googleLinkToken || "");
-    if (googleLinkEmail) setEmail(googleLinkEmail);
-  }, [googleLinkToken, googleLinkEmail]);
-
-  useEffect(() => {
-    if (!googleError) return;
-    const messages = {
-      "not-configured": "Google login is not configured yet.",
-      unverified: "This Google account is not verified.",
-      unauthorized: "Unauthorized Google login request.",
-      cancelled: "Google login was cancelled.",
-      "not-approved": "This account is not approved for admin access.",
-      "rate-limited": "Too many Google login attempts. Please wait a moment.",
-      "token-exchange": "Google rejected the OAuth callback. Verify the production client secret and exact redirect URI.",
-      profile: "Google profile could not be loaded. Please try again.",
-      failed: "Google login failed. Please try again.",
-    };
-    setError(messages[googleError] || "Google login failed. Please try again.");
-  }, [googleError]);
-
   useEffect(() => {
     if (view !== "pending" || !email) return;
-
     let cancelled = false;
     const checkApproval = async () => {
       try {
-        const res = await fetch(`/api/admin/status?email=${encodeURIComponent(email)}`, {
-          cache: "no-store",
-        });
+        const res = await fetch(`/api/admin/status?email=${encodeURIComponent(email)}`, { cache: "no-store" });
         const data = await res.json();
         if (!cancelled && data.success && data.active) {
-          toast.success("Access Approved. Welcome back.");
-          playSuccessSound();
+          toast.success("Your access request has been approved.");
           setView("login");
         }
       } catch {
-        // A later poll will retry without interrupting the approval screen.
+        // The next polling cycle retries silently.
       }
     };
-
     checkApproval();
     const interval = setInterval(checkApproval, 5000);
     return () => {
@@ -116,102 +134,88 @@ export default function AuthContainer({
     };
   }, [view, email]);
 
-  const playSuccessSound = () => {
-    try {
-      const context = new (window.AudioContext || window.webkitAudioContext)();
-      const oscillator = context.createOscillator();
-      const gain = context.createGain();
-      oscillator.connect(gain);
-      gain.connect(context.destination);
-      oscillator.type = "sine";
-      oscillator.frequency.setValueAtTime(1046.5, context.currentTime);
-      gain.gain.setValueAtTime(0, context.currentTime);
-      gain.gain.linearRampToValueAtTime(0.2, context.currentTime + 0.1);
-      gain.gain.linearRampToValueAtTime(0, context.currentTime + 0.5);
-      oscillator.start();
-      oscillator.stop(context.currentTime + 0.5);
-    } catch (e) {}
+  const changeView = (nextView) => {
+    setError("");
+    setCode("");
+    setView(nextView);
   };
 
-  const handleSendCode = async (e) => {
-    if (e && e.preventDefault) e.preventDefault();
-    if (!email) return setError("Please enter your email.");
+  const handleSendCode = async (event) => {
+    event?.preventDefault();
+    if (!email) return setError("Please enter your email address.");
     setLoading(true);
     setError("");
-    const type = (view === "reset" || view === "reverify") ? "reset" : "setup";
+    const type = view === "reset" || view === "reverify" ? "reset" : "setup";
     try {
-      const res = await fetch("/api/admin/verify-request", {
+      const response = await fetch("/api/admin/verify-request", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, type }),
       });
-      const data = await res.json();
-      if (data.success) {
-        toast.success("Verification code sent!");
-        setView("verify");
-      } else {
-        setError(data.message || "Request failed. Try again.");
-      }
-    } catch (err) {
-      setError("Connection failed. Check your network.");
+      const data = await response.json();
+      if (!data.success) return setError(data.message || "We could not send the verification code.");
+      toast.success("Verification code sent to your email.");
+      setView("verify");
+    } catch {
+      setError("Connection failed. Please check your internet and try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleVerify = async (e) => {
-    if (e && e.preventDefault) e.preventDefault();
-    if (code.length < 6) return setError("Enter the 6-digit code.");
+  const handleVerify = async (event) => {
+    event?.preventDefault();
+    if (code.length !== 6) return setError("Enter the complete 6-digit code.");
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/admin/verify-code", {
+      const response = await fetch("/api/admin/verify-code", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, code }),
       });
-      const data = await res.json();
-      if (data.success) {
-        if (data.pendingApproval) {
-          toast.success("Verified! Waiting for admin approval.");
-          setView("pending");
-        } else {
-          setNewPasskey(data.passkey);
-          toast.success("Account setup successful.");
-          setView("success");
-        }
+      const data = await response.json();
+      if (!data.success) return setError(data.message || "That verification code is not valid.");
+      if (data.pendingApproval) {
+        toast.success("Email verified. Your request is awaiting approval.");
+        setView("pending");
       } else {
-        setError(data.message || "Invalid code.");
+        setNewPasskey(data.passkey);
+        toast.success("Your account is ready.");
+        setView("success");
       }
-    } catch (err) {
-      setError("Verification failed.");
+    } catch {
+      setError("Verification failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleLogin = async (e) => {
-    if (e && e.preventDefault) e.preventDefault();
+  const handleLogin = async (event) => {
+    event?.preventDefault();
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/admin/login", {
+      const response = await fetch("/api/admin/login", {
         method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, passkey }),
       });
-      const data = await res.json();
-      if (data.success) {
-        // ⭐ PROFESSIONAL: Store token in localStorage for client-side expiry checks
-        if (data.token) {
-          localStorage.setItem("admin_token", data.token);
-          localStorage.setItem("token", data.token);
-        }
-        toast.success("Identity verified. Welcome to Admin Portal.");
-        router.push(callbackUrl || "/admin/dashboard");
-      } else {
+      const data = await response.json();
+      if (!data.success) {
         if (data.code === "NOT_FOUND") setView("reverify");
-        else setError(data.message || "Wrong email or passkey.");
+        return setError(data.message || "The email or passkey is incorrect.");
       }
-    } catch (err) {
-      setError("Login failed. Try again.");
+      if (data.token) {
+        localStorage.setItem("admin_token", data.token);
+        localStorage.setItem("token", data.token);
+      }
+      toast.success("Welcome back.");
+      router.push(callbackUrl || "/admin/dashboard");
+      router.refresh();
+    } catch {
+      setError("Sign-in failed. Please check your connection and try again.");
     } finally {
       setLoading(false);
     }
@@ -219,505 +223,269 @@ export default function AuthContainer({
 
   const handleGoogleAuth = () => {
     setLoading(true);
-    const safeCallback =
-      callbackUrl && callbackUrl.startsWith("/") && !callbackUrl.startsWith("//")
-        ? callbackUrl
-        : "/admin/dashboard";
+    const safeCallback = callbackUrl?.startsWith("/") && !callbackUrl.startsWith("//")
+      ? callbackUrl
+      : "/admin/dashboard";
     window.location.href = `/api/auth/google?callbackUrl=${encodeURIComponent(safeCallback)}`;
   };
 
   const handleLinkGoogle = async () => {
-    if (!linkPasskey) {
-      setLinkError("Passkey confirmation is required.");
-      return;
-    }
-
+    if (!linkPasskey) return setLinkError("Enter your existing passkey to continue.");
     setLinkLoading(true);
     setLinkError("");
     try {
-      const res = await fetch("/api/auth/google/link", {
+      const response = await fetch("/api/auth/google/link", {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token: linkToken, passkey: linkPasskey }),
       });
-      const data = await res.json();
-
-      if (!data.success) {
-        setLinkError(data.message || "Google account linking failed.");
-        return;
-      }
-
+      const data = await response.json();
+      if (!data.success) return setLinkError(data.message || "Google account linking failed.");
       if (data.token) {
         localStorage.setItem("admin_token", data.token);
         localStorage.setItem("token", data.token);
       }
-      toast.success("Google account linked successfully.");
+      toast.success("Google sign-in linked. You can now use either login method.");
       window.location.href = data.redirectTo || callbackUrl || "/admin/dashboard";
-    } catch (e) {
+    } catch {
       setLinkError("Google account linking failed. Please try again.");
     } finally {
       setLinkLoading(false);
     }
   };
 
+  const copyPasskey = async () => {
+    try {
+      await navigator.clipboard.writeText(newPasskey);
+      setCopied(true);
+      toast.success("Passkey copied.");
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Could not copy the passkey.");
+    }
+  };
+
+  const requestMode = ["setup", "reset", "reverify", "denied"].includes(view);
+  const isSignup = view !== "login";
+  const inputClass = "w-full rounded-xl border border-white/10 bg-white/[0.045] py-3.5 pl-12 pr-4 text-[15px] text-white outline-none transition placeholder:text-slate-600 hover:border-white/15 focus:border-blue-400/60 focus:bg-blue-400/[0.05] focus:ring-4 focus:ring-blue-500/10";
+  const primaryButton = "flex w-full items-center justify-center gap-2.5 rounded-xl bg-blue-500 px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-950/30 transition hover:bg-blue-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 disabled:cursor-not-allowed disabled:opacity-60";
+
   return (
-    <div className="min-h-screen w-full bg-[#0a0f1c] flex flex-col font-sans overflow-x-hidden relative">
-
-      <div className="flex-1 w-full flex relative z-10">
-        
-        {/* PANEL CONTAINER */}
-        <div className="flex w-full min-h-full relative flex-col md:flex-row">
-            
-            {/* IMAGE AREA - Desktop Only (md and up) */}
-            <motion.div 
-                initial={false}
-                animate={{ 
-                    x: isAltMode && isDesktop ? "100%" : "0%",
-                    borderLeftWidth: isAltMode && isDesktop ? "1px" : "0px",
-                    borderRightWidth: isAltMode && isDesktop ? "0px" : "1px",
-                }}
-                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className="hidden lg:block absolute left-0 w-1/2 h-full bg-black z-20 shadow-2xl overflow-hidden border-white/5"
-            >
-                <div className="relative w-full h-full group">
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={isAltMode ? "signup" : "login"}
-                            initial={{ opacity: 0, scale: 1.05 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 1.02 }}
-                            transition={{ duration: 0.8 }}
-                            className="absolute inset-0"
-                        >
-                            <Image 
-                                src={isAltMode ? SIGNUP_IMAGE : LOGIN_IMAGE}
-                                alt="Muhyo Tech Administrative Control"
-                                fill
-                                className="object-cover transition-transform duration-[10s] group-hover:scale-110"
-                                priority
-                            />
-                        </motion.div>
-                    </AnimatePresence>
-
-                    {/* Minimal Vignette for Text Legibility */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f1c]/90 via-transparent to-transparent pointer-events-none" />
-                    
-                    <div className="absolute inset-x-0 bottom-0 p-12 lg:p-16 gap-8 lg:gap-10 flex flex-col justify-end">
-                        <motion.div 
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className="inline-flex items-center gap-3 px-5 py-2 glass rounded-full border border-white/10 w-fit backdrop-blur-md"
-                        >
-                            <div className="relative flex h-2 w-2">
-                                <div className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></div>
-                                <div className="relative inline-flex rounded-full h-2 w-2 bg-accent"></div>
-                            </div>
-                            <span className="text-[10px] font-black text-white uppercase tracking-[0.3em]">Authority Perimeter</span>
-                        </motion.div>
-
-                        <div className="space-y-4">
-                            <h2 className="text-4xl lg:text-5xl font-black text-white italic tracking-tighter uppercase leading-[0.9]">
-                                {isAltMode ? "Secure Onboarding" : "Administrative Gateway"}<br />
-                                <span className="text-accent underline decoration-white/10 underline-offset-[14px]">Muhyo Tech</span>
-                            </h2>
-                            <p className="text-slate-300 text-sm font-medium tracking-tight max-w-[340px] leading-relaxed opacity-70">
-                                {isAltMode 
-                                    ? "Initiating security clearance protocol for new administrative node establishment." 
-                                    : "Access high-level dashboard functions and manage infrastructure with verified credentials."
-                                }
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </motion.div>
-
-            {/* FORM AREA - Centered on Mobile, Half on Desktop */}
-            <motion.div 
-                initial={false}
-                animate={{ x: isAltMode && isDesktop ? "-100%" : "0%" }}
-                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className={`w-full ${linkToken ? "lg:w-full z-[80]" : "lg:w-1/2 z-10"} min-h-full flex flex-col items-center justify-center p-6 sm:p-12 md:p-16 lg:p-20 absolute right-0 bg-[#0a0f1c]`}
-            >
-                {/* EditorialBackground anchored to Form Side */}
-                <div className="absolute inset-0 z-0 pointer-events-none">
-                    <EditorialBackground text={view === "login" ? "LOGIN" : "SIGNUP"} />
-                </div>
-                {/* Form Container with better Tablet/Mobile max-width */}
-                <div className="w-full max-w-[440px] space-y-10 lg:space-y-12 relative z-10">
-                    
-                    {/* Header with Responsive Logo */}
-                    <div className="flex items-center gap-4 lg:gap-6">
-                        <div className="p-1 rounded-xl bg-gradient-to-tr from-accent/20 to-transparent flex-shrink-0">
-                            <div className="w-[40px] h-[40px] lg:w-[50px] lg:h-[50px] relative">
-                                <Image src="/logo.webp" alt="Muhyo Tech logo" fill sizes="48px" className="rounded-lg shadow-xl object-contain" />
-                            </div>
-                        </div>
-                        <div className="h-6 lg:h-8 w-[1px] bg-white/10" />
-                        <div className="overflow-hidden">
-                            <h3 className="text-[9px] lg:text-[10px] font-black uppercase text-accent tracking-[0.4em] whitespace-nowrap">Admin Operations Center</h3>
-                            <p className="text-[9px] lg:text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-none mt-1 opacity-70">Infrastructure Control V1</p>
-                        </div>
-                    </div>
-
-                    <AnimatePresence mode="wait">
-                        {view === "login" && (
-                            <motion.div
-                                key="login"
-                                initial={{ opacity: 0, y: 15 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -15 }}
-                                className="space-y-8 lg:space-y-12"
-                            >
-                                <div className="space-y-2 lg:space-y-4">
-                                    <h1 className="text-3xl lg:text-4xl font-black text-white tracking-tight leading-none uppercase italic">Sign In</h1>
-                                    <p className="text-slate-500 text-xs lg:text-sm font-medium">Verify your credentials to proceed.</p>
-                                </div>
-
-                                <form onSubmit={handleLogin} className="space-y-6 lg:space-y-10">
-                                    <div className="space-y-3">
-                                        <label className="text-[9px] lg:text-[10px] font-black uppercase text-accent tracking-widest ml-1 opacity-80">Email Anchor</label>
-                                        <div className="relative group">
-                                            <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-accent w-4 h-4 transition-all" />
-                                            <input
-                                                type="email"
-                                                value={email}
-                                                onChange={(e) => setEmail(e.target.value)}
-                                                placeholder="admin@muhyo.tech"
-                                                className="w-full bg-white/[0.04] border border-white/10 p-4 lg:p-5 pl-14 rounded-2xl lg:rounded-3xl text-white text-xs lg:text-sm outline-none focus:bg-accent/5 focus:border-accent/30 shadow-2xl transition-all duration-300"
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-3">
-                                        <div className="flex justify-between items-center px-1">
-                                            <label className="text-[9px] lg:text-[10px] font-black uppercase text-accent tracking-widest ml-1 opacity-80">Security Passkey</label>
-                                            <button type="button" onClick={() => setView("reset")} className="text-[9px] lg:text-[10px] font-bold text-slate-600 hover:text-accent transition-colors">Recover?</button>
-                                        </div>
-                                        <div className="relative group">
-                                            <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-accent w-4 h-4 transition-all" />
-                                            <input
-                                                type={showPasskey ? "text" : "password"}
-                                                value={passkey}
-                                                onChange={(e) => setPasskey(e.target.value)}
-                                                placeholder="••••••••••••"
-                                                className="w-full bg-white/[0.04] border border-white/10 p-4 lg:p-5 pl-14 pr-14 rounded-2xl lg:rounded-3xl text-white text-xs lg:text-sm outline-none focus:bg-accent/5 focus:border-accent/30 shadow-2xl transition-all duration-300 font-mono"
-                                                required
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={() => setShowPasskey(!showPasskey)}
-                                                className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-600 hover:text-white"
-                                            >
-                                                {showPasskey ? <EyeOff className="w-5 h-5 opacity-60" /> : <Eye className="w-5 h-5 opacity-60" />}
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    {error && (
-                                        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-4">
-                                            <ShieldAlert className="w-5 h-5 text-red-500 shrink-0" />
-                                            <p className="text-[10px] lg:text-[11px] font-black text-red-400 uppercase tracking-widest leading-none">{error}</p>
-                                        </motion.div>
-                                    )}
-
-                                    <div className="space-y-4 lg:space-y-6 pt-2">
-                                        <button
-                                            type="submit"
-                                            disabled={loading}
-                                            className="w-full py-4 lg:py-6 bg-accent text-[#030712] rounded-2xl lg:rounded-3xl font-black uppercase text-[10px] lg:text-xs tracking-[0.4em] hover:bg-white transition-all active:scale-95 shadow-2xl shadow-accent/20 flex items-center justify-center gap-3 group relative overflow-hidden"
-                                        >
-                                            {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : (
-                                                <>
-                                                    Establish Access
-                                                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" />
-                                                </>
-                                            )}
-                                        </button>
-                                        <div className="flex items-center gap-3">
-                                            <div className="h-px flex-1 bg-white/10" />
-                                            <span className="text-[9px] font-black uppercase tracking-[0.25em] text-slate-600">or continue with</span>
-                                            <div className="h-px flex-1 bg-white/10" />
-                                        </div>
-                                        <button
-                                            type="button"
-                                            onClick={handleGoogleAuth}
-                                            disabled={loading}
-                                            className="w-full py-4 lg:py-5 bg-white/[0.04] border border-white/10 text-white rounded-2xl lg:rounded-3xl font-black uppercase text-[10px] lg:text-xs tracking-[0.24em] hover:bg-white/10 hover:border-white/20 transition-all active:scale-95 shadow-xl flex items-center justify-center gap-3 disabled:opacity-50"
-                                        >
-                                            {loading ? (
-                                                <Loader2 className="w-5 h-5 animate-spin" />
-                                            ) : (
-                                                <>
-                                                    <GoogleIcon className="w-5 h-5" />
-                                                    Continue with Google
-                                                </>
-                                            )}
-                                        </button>
-                                        <button 
-                                            type="button"
-                                            onClick={() => setView("setup")}
-                                            className="w-full text-center text-[9px] lg:text-[10px] font-black uppercase tracking-[0.3em] text-slate-600 hover:text-white transition-all py-2"
-                                        >
-                                            Request Admission Node
-                                        </button>
-                                    </div>
-                                </form>
-                            </motion.div>
-                        )}
-
-                        {(view === "setup" || view === "reset" || view === "reverify" || view === "denied") && (
-                            <motion.div
-                                key="request"
-                                initial={{ opacity: 0, y: 15 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -15 }}
-                                className="space-y-8 lg:space-y-12"
-                            >
-                                <div className="space-y-2 lg:space-y-4">
-                                    <h1 className="text-3xl lg:text-4xl font-black text-white tracking-tight leading-none uppercase italic">
-                                        {view === "reset" ? "Restore" : view === "denied" ? "Denied" : "Register"}
-                                    </h1>
-                                    <p className="text-slate-500 text-xs lg:text-sm font-medium pl-1">Starting identity verification sequence.</p>
-                                </div>
-
-                                <form onSubmit={handleSendCode} className="space-y-8 lg:space-y-12">
-                                    <div className="space-y-3">
-                                        <label className="text-[9px] lg:text-[10px] font-black uppercase text-accent tracking-widest ml-1 opacity-80">Registration Node (Email)</label>
-                                        <div className="relative group">
-                                            <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-accent w-4 h-4 transition-all" />
-                                            <input
-                                                type="email"
-                                                value={email}
-                                                onChange={(e) => setEmail(e.target.value)}
-                                                placeholder="your@email.com"
-                                                className="w-full bg-white/[0.04] border border-white/10 p-4 lg:p-5 pl-14 rounded-2xl lg:rounded-3xl text-white text-xs lg:text-sm outline-none focus:bg-accent/5 focus:border-accent/30 shadow-2xl transition-all duration-300"
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-
-                                    {error && (
-                                        <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-4">
-                                            <ShieldAlert className="w-5 h-5 text-red-500 shrink-0" />
-                                            <p className="text-[10px] lg:text-[11px] font-black text-red-400 uppercase tracking-widest leading-none">{error}</p>
-                                        </div>
-                                    )}
-
-                                    <div className="space-y-4 lg:space-y-6 pt-2">
-                                        <button
-                                            type="submit"
-                                            disabled={loading}
-                                            className="w-full py-4 lg:py-6 bg-accent text-[#030712] rounded-2xl lg:rounded-3xl font-black uppercase text-[10px] lg:text-xs tracking-[0.4em] hover:bg-white transition-all active:scale-95 shadow-2xl shadow-accent/20"
-                                        >
-                                            {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Initiate Verification"}
-                                        </button>
-                                        <div className="flex items-center gap-3">
-                                            <div className="h-px flex-1 bg-white/10" />
-                                            <span className="text-[9px] font-black uppercase tracking-[0.25em] text-slate-600">or continue with</span>
-                                            <div className="h-px flex-1 bg-white/10" />
-                                        </div>
-                                        <button
-                                            type="button"
-                                            onClick={handleGoogleAuth}
-                                            disabled={loading}
-                                            className="w-full py-4 lg:py-5 bg-white/[0.04] border border-white/10 text-white rounded-2xl lg:rounded-3xl font-black uppercase text-[10px] lg:text-xs tracking-[0.24em] hover:bg-white/10 hover:border-white/20 transition-all active:scale-95 shadow-xl flex items-center justify-center gap-3 disabled:opacity-50"
-                                        >
-                                            {loading ? (
-                                                <Loader2 className="w-5 h-5 animate-spin" />
-                                            ) : (
-                                                <>
-                                                    <GoogleIcon className="w-5 h-5" />
-                                                    Continue with Google
-                                                </>
-                                            )}
-                                        </button>
-                                        <button 
-                                            type="button"
-                                            onClick={() => setView("login")}
-                                            className="w-full text-center text-[9px] lg:text-[10px] font-black uppercase tracking-[0.3em] text-slate-600 hover:text-white transition-all py-2"
-                                        >
-                                            Return to Portal Origin
-                                        </button>
-                                    </div>
-                                </form>
-                            </motion.div>
-                        )}
-                        
-                        {view === "verify" && (
-                            <motion.div key="verify" className="space-y-10 lg:space-y-14">
-                                <div className="space-y-4 text-center">
-                                    <h1 className="text-3xl lg:text-4xl font-black text-white tracking-tight leading-none uppercase italic underline decoration-accent/20 underline-offset-8">Verify</h1>
-                                    <p className="text-slate-500 text-[11px] lg:text-sm font-medium">Authentication token sent to: <br /><b className="text-accent">{email}</b></p>
-                                </div>
-                                <form onSubmit={handleVerify} className="space-y-8 lg:space-y-10 text-center">
-                                    <div className="relative group inline-block w-full">
-                                        <input
-                                            type="text"
-                                            maxLength={6}
-                                            value={code}
-                                            onChange={(e) => setCode(e.target.value)}
-                                            placeholder="000000"
-                                            className="w-full bg-white/[0.05] border border-white/10 p-6 lg:p-8 rounded-[2rem] text-white font-black text-4xl lg:text-6xl tracking-[0.4em] outline-none focus:border-accent/50 text-center shadow-inner relative z-10"
-                                            required
-                                        />
-                                    </div>
-                                    <button
-                                        type="submit"
-                                        disabled={loading}
-                                        className="w-full py-5 lg:py-6 bg-emerald-600 text-white rounded-[2rem] font-black uppercase text-[10px] lg:text-xs tracking-[0.3em] hover:bg-emerald-500 transition-all shadow-[0_20px_40px_rgba(16,185,129,0.1)]"
-                                    >
-                                        {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Confirm Node Uplink"}
-                                    </button>
-                                </form>
-                            </motion.div>
-                        )}
-
-                        {view === "pending" && (
-                            <motion.div key="pending" className="text-center space-y-10 lg:space-y-12">
-                                <div className="relative mx-auto w-20 h-20 lg:w-24 lg:h-24">
-                                    <div className="absolute inset-0 bg-yellow-500/20 blur-[50px] animate-pulse rounded-full" />
-                                    <div className="relative w-full h-full bg-[#030712] border-2 border-yellow-500/20 rounded-3xl flex items-center justify-center shadow-2xl">
-                                        <Clock className="w-10 h-10 lg:w-12 lg:h-12 text-yellow-500 animate-pulse" />
-                                    </div>
-                                </div>
-                                <div className="space-y-4 lg:space-y-5">
-                                    <h2 className="text-2xl lg:text-3xl font-black text-white uppercase italic tracking-tighter">Authorized Waiting</h2>
-                                    <p className="text-slate-500 text-[11px] lg:text-[13px] max-w-[280px] mx-auto leading-relaxed">Node verification complete. Stand by for manual administrative approval.</p>
-                                </div>
-                                <button onClick={() => setView("login")} className="text-accent text-[9px] lg:text-[11px] font-black uppercase tracking-[0.3em] hover:text-white transition-all py-2">Kill Connection</button>
-                            </motion.div>
-                        )}
-
-                        {view === "success" && (
-                            <motion.div key="success" className="text-center space-y-10 lg:space-y-12">
-                                <div className="relative mx-auto w-20 h-20 lg:w-24 lg:h-24">
-                                    <div className="absolute inset-0 bg-emerald-500/20 blur-[50px] rounded-full" />
-                                    <div className="relative w-full h-full bg-[#030712] border-2 border-emerald-500/20 rounded-3xl flex items-center justify-center shadow-2xl">
-                                        <CheckCircle2 className="w-10 h-10 lg:w-12 lg:h-12 text-emerald-500" />
-                                    </div>
-                                </div>
-                                <div className="space-y-6 lg:space-y-8">
-                                    <div className="p-8 lg:p-10 bg-white/[0.04] border border-white/10 rounded-[2rem] lg:rounded-[2.5rem] relative group select-all">
-                                        <p className="text-[9px] lg:text-[10px] font-black uppercase text-accent tracking-[0.4em] mb-3 opacity-70">Master Root Passkey</p>
-                                        <div className="text-3xl lg:text-5xl font-mono font-black text-white italic tracking-[0.2em] transition-all group-hover:scale-105">
-                                            {newPasskey}
-                                        </div>
-                                    </div>
-                                    <p className="text-amber-500 font-bold uppercase text-[8px] lg:text-[9px] tracking-[0.2em] leading-normal max-w-[240px] mx-auto bg-amber-500/5 py-3 px-6 rounded-full border border-amber-500/10">DESTROY KEY AFTER RECORDING</p>
-                                </div>
-                                <button onClick={() => setView("login")} className="w-full py-5 lg:py-6 bg-accent text-[#030712] rounded-[2rem] font-black uppercase text-[10px] lg:text-xs tracking-[0.4em] hover:bg-white transition-all shadow-xl shadow-accent/20">Finalize Entry</button>
-                            </motion.div>
-                        )}
-
-                    </AnimatePresence>
-
-                    <AnimatePresence>
-                        {linkToken && (
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-md"
-                            >
-                                <motion.div
-                                    initial={{ opacity: 0, scale: 0.94, y: 16 }}
-                                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                                    exit={{ opacity: 0, scale: 0.94, y: 16 }}
-                                    className="w-full max-w-md rounded-[2rem] border border-white/10 bg-[#0f172a] p-6 shadow-2xl"
-                                >
-                                    <div className="mb-6 flex items-center gap-4">
-                                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04]">
-                                            <GoogleIcon className="h-6 w-6" />
-                                        </div>
-                                        <div>
-                                            <h2 className="text-xl font-black uppercase italic tracking-tight text-white">
-                                                Account Already Exists
-                                            </h2>
-                                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-accent">
-                                                Secure linking required
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-4">
-                                        <p className="text-sm font-medium leading-relaxed text-slate-300">
-                                            This email currently uses manual passkey login. Confirm the existing passkey once to switch this account to Google-only login.
-                                        </p>
-                                        <p className="rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4 text-[11px] font-bold leading-relaxed text-amber-200">
-                                            After switching, manual passkey login will be disabled for this account. Other manual accounts remain unchanged.
-                                        </p>
-                                        {googleLinkEmail ? (
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-                                                Email: <span className="text-white">{googleLinkEmail}</span>
-                                            </p>
-                                        ) : null}
-                                        <div className="space-y-2">
-                                            <label className="ml-1 text-[10px] font-black uppercase tracking-widest text-accent">
-                                                Confirm Existing Passkey
-                                            </label>
-                                            <input
-                                                type="password"
-                                                value={linkPasskey}
-                                                onChange={(e) => setLinkPasskey(e.target.value)}
-                                                placeholder="Enter your existing passkey"
-                                                className="w-full rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-sm font-mono text-white outline-none transition-all focus:border-accent/40 focus:bg-accent/5"
-                                            />
-                                        </div>
-                                        {linkError ? (
-                                            <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-4 text-[11px] font-black uppercase tracking-widest text-red-300">
-                                                {linkError}
-                                            </div>
-                                        ) : null}
-                                    </div>
-
-                                    <div className="mt-6 grid gap-3">
-                                        <button
-                                            type="button"
-                                            onClick={handleLinkGoogle}
-                                            disabled={linkLoading}
-                                            className="flex w-full items-center justify-center gap-3 rounded-2xl bg-accent px-4 py-4 text-[10px] font-black uppercase tracking-[0.25em] text-[#030712] transition-all hover:bg-white disabled:opacity-50"
-                                        >
-                                            {linkLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <GoogleIcon className="h-4 w-4" />}
-                                            Switch to Google Login
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                setLinkToken("");
-                                                setView("login");
-                                            }}
-                                            className="w-full rounded-2xl border border-white/10 px-4 py-4 text-[10px] font-black uppercase tracking-[0.25em] text-white transition-all hover:bg-white/10"
-                                        >
-                                            Login with Password
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                setLinkToken("");
-                                                setLinkPasskey("");
-                                                setLinkError("");
-                                            }}
-                                            className="w-full px-4 py-2 text-[9px] font-black uppercase tracking-[0.25em] text-slate-600 transition-colors hover:text-slate-300"
-                                        >
-                                            Cancel
-                                        </button>
-                                    </div>
-                                </motion.div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-
-                    {/* Footer for Mobile (Copyright/Version) */}
-                    <div className="pt-8 lg:hidden flex flex-col items-center opacity-30 select-none">
-                        <div className="w-8 h-px bg-white/10 mb-4" />
-                        <p className="text-[8px] font-black text-slate-500 uppercase tracking-[0.6em]">Operations Protocol v1.0</p>
-                    </div>
-                </div>
-            </motion.div>
-
-        </div>
+    <main className="relative min-h-dvh overflow-hidden bg-[#070b14] text-white selection:bg-blue-500/30">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -left-40 -top-40 h-[480px] w-[480px] rounded-full bg-blue-600/10 blur-[120px]" />
+        <div className="absolute -bottom-52 right-0 h-[520px] w-[520px] rounded-full bg-indigo-600/10 blur-[140px]" />
       </div>
-    </div>
+
+      <div className="relative mx-auto min-h-dvh max-w-[1500px] overflow-hidden">
+        <aside className={`absolute left-0 top-0 hidden min-h-dvh w-1/2 overflow-hidden border-white/[0.07] transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] lg:flex lg:flex-col lg:justify-between lg:p-12 xl:p-16 ${isSignup ? "border-l lg:translate-x-full" : "border-r lg:translate-x-0"}`}>
+          <div className="absolute inset-0">
+            <Image
+              src={isSignup ? "/admin-signup-bg.png" : "/admin-auth-bg.png"}
+              alt=""
+              fill
+              priority
+              sizes="50vw"
+              className="object-cover opacity-30 transition duration-700"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-[#07101f]/75 via-[#07101f]/65 to-[#070b14]" />
+          </div>
+
+          <div className="relative flex items-center gap-3">
+            <div className="relative h-11 w-11 overflow-hidden rounded-xl border border-white/10 bg-white/5 p-1.5 shadow-xl">
+              <Image src="/logo.webp" alt="Muhyo Tech" fill sizes="44px" className="object-contain p-1.5" />
+            </div>
+            <div>
+              <p className="font-semibold tracking-tight">Muhyo Tech</p>
+              <p className="text-xs text-slate-400">Admin workspace</p>
+            </div>
+          </div>
+
+          <motion.div
+            key={isSignup ? "onboarding" : "workspace"}
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="relative max-w-lg"
+          >
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-300/15 bg-blue-400/10 px-3 py-1.5 text-xs font-medium text-blue-200 backdrop-blur">
+              <ShieldCheck className="h-3.5 w-3.5" />
+              Protected administrative access
+            </div>
+            <h1 className="max-w-md text-4xl font-semibold leading-[1.08] tracking-[-0.04em] xl:text-5xl">
+              {isSignup ? "Join your secure workspace." : "Everything you manage, in one place."}
+            </h1>
+            <p className="mt-5 max-w-md text-[15px] leading-7 text-slate-300/80">
+              {isSignup
+                ? "Create a verified admin profile and keep every important operation protected from day one."
+                : "Manage content, messages, analytics and AI publishing from a fast, focused control center."}
+            </p>
+            <div className="mt-9 grid max-w-md grid-cols-2 gap-3">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.055] p-4 backdrop-blur-md">
+                <BarChart3 className="mb-3 h-5 w-5 text-blue-300" />
+                <p className="text-sm font-medium">Live insights</p>
+                <p className="mt-1 text-xs leading-5 text-slate-400">Track performance at a glance.</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/[0.055] p-4 backdrop-blur-md">
+                <Sparkles className="mb-3 h-5 w-5 text-violet-300" />
+                <p className="text-sm font-medium">AI workflow</p>
+                <p className="mt-1 text-xs leading-5 text-slate-400">Create and publish with confidence.</p>
+              </div>
+            </div>
+          </motion.div>
+
+          <div className="relative flex items-center justify-between text-xs text-slate-500">
+            <span>© {new Date().getFullYear()} Muhyo Tech</span>
+            <span className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />Systems operational</span>
+          </div>
+        </aside>
+
+        <section className={`relative flex min-h-dvh w-full items-center justify-center px-5 py-8 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] sm:px-8 lg:absolute lg:right-0 lg:top-0 lg:w-1/2 lg:px-12 ${isSignup ? "lg:-translate-x-full" : "lg:translate-x-0"}`}>
+          <div className="w-full max-w-[440px]">
+            <div className="mb-9 flex items-center justify-between lg:hidden">
+              <div className="flex items-center gap-3">
+                <div className="relative h-10 w-10 overflow-hidden rounded-xl border border-white/10 bg-white/5">
+                  <Image src="/logo.webp" alt="Muhyo Tech" fill sizes="40px" className="object-contain p-1.5" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold">Muhyo Tech</p>
+                  <p className="text-[11px] text-slate-500">Admin workspace</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-1.5 text-[11px] text-emerald-300"><ShieldCheck className="h-3.5 w-3.5" />Secure</div>
+            </div>
+
+            <AnimatePresence mode="wait">
+              {view === "login" && (
+                <motion.div key="login" initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -12 }}>
+                  <header className="mb-8">
+                    <p className="mb-3 text-sm font-medium text-blue-400">Welcome back</p>
+                    <h2 className="text-3xl font-semibold tracking-[-0.035em] sm:text-[36px]">Sign in to your account</h2>
+                    <p className="mt-3 text-sm leading-6 text-slate-400">Use your approved admin credentials to continue.</p>
+                  </header>
+
+                  <form onSubmit={handleLogin} className="space-y-5">
+                    <Field icon={Mail} label="Email address">
+                      <input className={inputClass} type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="admin@example.com" required />
+                    </Field>
+                    <Field
+                      icon={LockKeyhole}
+                      label="Passkey"
+                      hint={<button type="button" onClick={() => changeView("reset")} className="text-xs font-medium text-blue-400 transition hover:text-blue-300">Forgot passkey?</button>}
+                    >
+                      <input className={`${inputClass} pr-12 font-mono`} type={showPasskey ? "text" : "password"} autoComplete="current-password" value={passkey} onChange={(e) => setPasskey(e.target.value)} placeholder="Enter your passkey" required />
+                      <button type="button" onClick={() => setShowPasskey((value) => !value)} aria-label={showPasskey ? "Hide passkey" : "Show passkey"} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 transition hover:text-white">
+                        {showPasskey ? <EyeOff className="h-[18px] w-[18px]" /> : <Eye className="h-[18px] w-[18px]" />}
+                      </button>
+                    </Field>
+                    <ErrorNotice message={error} />
+                    <button className={primaryButton} type="submit" disabled={loading}>
+                      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <>Sign in <ArrowRight className="h-4 w-4" /></>}
+                    </button>
+                    <Divider />
+                    <button type="button" onClick={handleGoogleAuth} disabled={loading} className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] px-5 py-3.5 text-sm font-medium text-slate-100 transition hover:border-white/20 hover:bg-white/[0.07] disabled:opacity-60">
+                      <GoogleIcon /> Continue with Google
+                    </button>
+                  </form>
+                  <p className="mt-8 text-center text-sm text-slate-500">Need admin access? <button onClick={() => changeView("setup")} className="font-medium text-blue-400 hover:text-blue-300">Create an account</button></p>
+                </motion.div>
+              )}
+
+              {requestMode && (
+                <motion.div key="request" initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -12 }}>
+                  <button type="button" onClick={() => changeView("login")} className="mb-7 flex items-center gap-2 text-sm text-slate-400 transition hover:text-white"><ArrowLeft className="h-4 w-4" /> Back to sign in</button>
+                  <header className="mb-8">
+                    <p className="mb-3 text-sm font-medium text-blue-400">{view === "reset" ? "Account recovery" : "Admin onboarding"}</p>
+                    <h2 className="text-3xl font-semibold tracking-[-0.035em] sm:text-[36px]">{view === "reset" ? "Recover your passkey" : view === "denied" ? "Request access again" : "Create your account"}</h2>
+                    <p className="mt-3 text-sm leading-6 text-slate-400">{view === "reset" ? "We’ll email you a secure verification code." : "Verify your email first. A super admin will review new access requests."}</p>
+                  </header>
+                  <form onSubmit={handleSendCode} className="space-y-5">
+                    <Field icon={Mail} label="Work email">
+                      <input className={inputClass} type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" required />
+                    </Field>
+                    <ErrorNotice message={error} />
+                    <button className={primaryButton} type="submit" disabled={loading}>
+                      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <>Send verification code <ArrowRight className="h-4 w-4" /></>}
+                    </button>
+                    {view === "setup" && <><Divider /><button type="button" onClick={handleGoogleAuth} disabled={loading} className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] px-5 py-3.5 text-sm font-medium text-slate-100 transition hover:border-white/20 hover:bg-white/[0.07] disabled:opacity-60"><GoogleIcon /> Continue with Google</button></>}
+                  </form>
+                  <p className="mt-8 text-center text-sm text-slate-500">Already approved? <button onClick={() => changeView("login")} className="font-medium text-blue-400 hover:text-blue-300">Sign in instead</button></p>
+                </motion.div>
+              )}
+
+              {view === "verify" && (
+                <motion.div key="verify" initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -12 }}>
+                  <button type="button" onClick={() => changeView(defaultView === "setup" ? "setup" : "login")} className="mb-7 flex items-center gap-2 text-sm text-slate-400 transition hover:text-white"><ArrowLeft className="h-4 w-4" /> Change email</button>
+                  <header className="mb-8">
+                    <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl border border-blue-400/20 bg-blue-400/10 text-blue-300"><Mail className="h-5 w-5" /></div>
+                    <h2 className="text-3xl font-semibold tracking-[-0.035em]">Check your inbox</h2>
+                    <p className="mt-3 text-sm leading-6 text-slate-400">Enter the 6-digit code sent to <span className="font-medium text-slate-200">{email}</span>.</p>
+                  </header>
+                  <form onSubmit={handleVerify} className="space-y-5">
+                    <Field icon={KeyRound} label="Verification code">
+                      <input className={`${inputClass} pl-12 text-center font-mono text-lg tracking-[0.45em]`} type="text" inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} placeholder="000000" required autoFocus />
+                    </Field>
+                    <ErrorNotice message={error} />
+                    <button className={primaryButton} type="submit" disabled={loading}>{loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Verify email"}</button>
+                    <button type="button" onClick={handleSendCode} disabled={loading} className="w-full py-2 text-sm font-medium text-slate-400 transition hover:text-white disabled:opacity-60">Didn’t receive it? Send again</button>
+                  </form>
+                </motion.div>
+              )}
+
+              {view === "pending" && (
+                <motion.div key="pending" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="text-center">
+                  <div className="relative mx-auto mb-7 flex h-16 w-16 items-center justify-center rounded-2xl border border-amber-300/20 bg-amber-300/10 text-amber-300"><span className="absolute inset-0 animate-ping rounded-2xl border border-amber-300/10" /><Clock3 className="h-7 w-7" /></div>
+                  <h2 className="text-3xl font-semibold tracking-[-0.035em]">Approval pending</h2>
+                  <p className="mx-auto mt-4 max-w-sm text-sm leading-6 text-slate-400">Your email is verified. A super admin needs to approve your request before you can sign in.</p>
+                  <div className="mt-7 rounded-xl border border-white/10 bg-white/[0.035] p-4 text-left">
+                    <p className="text-xs font-medium uppercase tracking-wider text-slate-500">Request submitted for</p>
+                    <p className="mt-1.5 truncate text-sm text-slate-200">{email}</p>
+                  </div>
+                  <p className="mt-5 flex items-center justify-center gap-2 text-xs text-slate-500"><Loader2 className="h-3.5 w-3.5 animate-spin" /> Checking approval status automatically</p>
+                  <button onClick={() => changeView("login")} className="mt-8 text-sm font-medium text-blue-400 hover:text-blue-300">Return to sign in</button>
+                </motion.div>
+              )}
+
+              {view === "success" && (
+                <motion.div key="success" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="text-center">
+                  <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-emerald-300/20 bg-emerald-300/10 text-emerald-300"><CheckCircle2 className="h-8 w-8" /></div>
+                  <h2 className="text-3xl font-semibold tracking-[-0.035em]">Account ready</h2>
+                  <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-slate-400">Save this passkey securely. You’ll need it when signing in manually.</p>
+                  <div className="mt-7 rounded-2xl border border-white/10 bg-white/[0.045] p-5 text-left">
+                    <div className="mb-3 flex items-center justify-between"><span className="text-xs font-medium uppercase tracking-wider text-slate-500">Your passkey</span><ShieldCheck className="h-4 w-4 text-emerald-400" /></div>
+                    <div className="flex items-center gap-3"><code className="min-w-0 flex-1 overflow-x-auto rounded-lg bg-black/20 px-3 py-3 text-center text-lg font-semibold tracking-wider text-white">{newPasskey}</code><button onClick={copyPasskey} aria-label="Copy passkey" className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-white/10 text-slate-300 transition hover:bg-white/10 hover:text-white">{copied ? <Check className="h-5 w-5 text-emerald-400" /> : <Copy className="h-5 w-5" />}</button></div>
+                  </div>
+                  <div className="mt-4 flex items-start gap-3 rounded-xl border border-amber-300/15 bg-amber-300/[0.06] p-4 text-left text-xs leading-5 text-amber-100/80"><ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" />For your security, this passkey will not be displayed again.</div>
+                  <button onClick={() => changeView("login")} className={`${primaryButton} mt-7`}>Continue to sign in <ArrowRight className="h-4 w-4" /></button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <div className="mt-10 flex items-center justify-center gap-5 text-[11px] text-slate-600 lg:hidden"><span>© {new Date().getFullYear()} Muhyo Tech</span><span>•</span><span>Secure admin access</span></div>
+          </div>
+        </section>
+      </div>
+
+      <AnimatePresence>
+        {linkToken && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-[#030712]/85 p-4 backdrop-blur-md">
+            <motion.div initial={{ opacity: 0, scale: 0.96, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96, y: 12 }} role="dialog" aria-modal="true" aria-labelledby="link-google-title" className="w-full max-w-md rounded-3xl border border-white/10 bg-[#0d1422] p-6 shadow-2xl sm:p-7">
+              <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-white"><GoogleIcon className="h-6 w-6" /></div>
+              <h2 id="link-google-title" className="text-2xl font-semibold tracking-tight">Link Google sign-in</h2>
+              <p className="mt-3 text-sm leading-6 text-slate-400">Enter the current passkey for <span className="font-medium text-white">{googleLinkEmail || "this account"}</span>. This one-time check securely links the Google identity.</p>
+              <div className="mt-5 rounded-xl border border-emerald-300/15 bg-emerald-300/[0.06] p-4 text-xs leading-5 text-emerald-100/80">After verification, both manual passkey and Google sign-in will remain available. This prompt will not appear again.</div>
+              <div className="mt-6">
+                <Field icon={LockKeyhole} label="Current passkey"><input className={inputClass} type="password" autoComplete="current-password" value={linkPasskey} onChange={(e) => setLinkPasskey(e.target.value)} placeholder="Enter your current passkey" /></Field>
+              </div>
+              <div className="mt-4"><ErrorNotice message={linkError} /></div>
+              <div className="mt-6 space-y-3">
+                <button type="button" onClick={handleLinkGoogle} disabled={linkLoading} className={primaryButton}>{linkLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><GoogleIcon className="h-4 w-4" /> Verify and link Google</>}</button>
+                <button type="button" onClick={() => { setLinkToken(""); setLinkPasskey(""); setLinkError(""); }} className="w-full rounded-xl border border-white/10 px-5 py-3.5 text-sm font-medium text-slate-300 transition hover:bg-white/[0.05] hover:text-white">Not now</button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </main>
   );
 }

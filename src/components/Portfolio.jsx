@@ -214,7 +214,7 @@ const Portfolio = ({ projects }) => {
                           }`}
                         />
                         {/* Overlay Gradient */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-transparent opacity-90" />
+                        <div className="theme-media-gradient absolute inset-0" />
                         <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-transparent opacity-70" />
 
                         {/* Card Info Overlay */}
@@ -341,7 +341,7 @@ const Portfolio = ({ projects }) => {
                       sizes="(max-width: 768px) 100vw, 33vw"
                       className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-80" />
+                    <div className="theme-media-gradient absolute inset-0" />
                     <div className="absolute left-4 top-4 rounded-lg border border-white/10 bg-black/35 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.16em] text-white/85 backdrop-blur-md">
                       Featured
                     </div>
@@ -604,7 +604,7 @@ const Portfolio = ({ projects }) => {
                             stiffness: 200,
                             damping: 20,
                           }}
-                          className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-[0_40px_80px_-20px_rgba(0,0,0,0.6)] border border-white/10 bg-background cursor-pointer"
+                          className="theme-media-frame relative w-full aspect-[4/3] rounded-2xl overflow-hidden border border-border/70 bg-background cursor-pointer"
                           onClick={() => openProjectDetail(project)}
                         >
                           {/* Background image with animated scale-in */}
@@ -623,8 +623,8 @@ const Portfolio = ({ projects }) => {
                               loading="lazy"
                               decoding="async"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-                            <div className="absolute inset-0 bg-black/20" />
+                            <div className="theme-media-gradient absolute inset-0" />
+                            <div className="theme-media-tint absolute inset-0" />
                           </motion.div>
 
                           {/* Overlay content at bottom */}

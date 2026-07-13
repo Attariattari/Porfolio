@@ -1,7 +1,8 @@
 "use client";
 
-import { Bell, Search, User, LogOut, ExternalLink, Settings, X, Check, Trash2, ShieldCheck, Mail, Cpu, UserCheck, MessageSquare, Loader2, Menu, Zap } from "lucide-react";
+import { Bell, Search, User, LogOut, ExternalLink, Settings, X, Check, Trash2, ShieldCheck, Mail, Cpu, UserCheck, MessageSquare, Loader2, Menu } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useRef, useEffect, useMemo } from "react";
 import useAdminStore from "@/lib/store/adminStore";
@@ -18,10 +19,13 @@ export default function Topbar() {
     fetchNotifications,
     updateNotification,
     deleteNotification,
-    settings,
     toggleSidebar,
   } = useAdminStore();
   const dropdownRef = useRef(null);
+  const displayName = session?.name
+    ? formatName(session.name)
+    : "Admin";
+  const isSuperAdmin = ["super-admin", "root-super-admin"].includes(session?.role);
 
   useEffect(() => {
     let cancelled = false;
@@ -170,11 +174,11 @@ export default function Topbar() {
   };
 
   return (
-    <nav className="h-20 border-b border-white/5 bg-[#0a0f1c]/80 backdrop-blur-xl sticky top-0 z-30 px-4 md:px-8 flex items-center justify-between">
+    <nav className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-border/60 bg-background/80 px-4 backdrop-blur-xl md:px-8">
       <div className="flex items-center gap-4 md:gap-6">
         <button
           onClick={toggleSidebar}
-          className="p-2.5 hover:bg-white/5 rounded-xl text-slate-500 hover:text-white transition-all lg:hidden"
+          className="p-2.5 hover:bg-muted/60 rounded-xl text-muted-foreground hover:text-foreground transition-all lg:hidden"
         >
           <Menu className="w-5 h-5" />
         </button>
@@ -184,7 +188,7 @@ export default function Topbar() {
           <input
             type="text"
             placeholder="Search resources..."
-            className="pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all w-64 lg:w-80 text-white"
+            className="pl-10 pr-4 py-2.5 bg-muted/45 border border-border/70 rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/50 transition-all w-64 lg:w-80"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={handleSearchSubmit}
@@ -193,11 +197,11 @@ export default function Topbar() {
       </div>
 
       <div className="flex items-center gap-2 md:gap-4">
-        <div className="hidden sm:flex items-center gap-2 mr-4 border-r border-white/10 pr-4">
+        <div className="hidden sm:flex items-center gap-2 mr-4 border-r border-border/70 pr-4">
           <Link
             href="/"
             target="_blank"
-            className="p-2.5 hover:bg-white/5 rounded-xl text-slate-500 hover:text-blue-500 transition-all flex items-center gap-2 text-xs font-bold uppercase tracking-widest"
+            className="p-2.5 hover:bg-muted/60 rounded-xl text-muted-foreground hover:text-accent transition-all flex items-center gap-2 text-xs font-bold uppercase tracking-widest"
           >
             <ExternalLink className="w-4 h-4" />
             <span className="hidden lg:inline">Live Site</span>
@@ -207,11 +211,11 @@ export default function Topbar() {
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setShowNotifications(!showNotifications)}
-            className={`relative p-2.5 hover:bg-white/5 rounded-xl transition-all ${showNotifications ? "bg-white/5 text-blue-500 shadow-xl" : "text-slate-500 hover:text-foreground"}`}
+            className={`relative p-2.5 hover:bg-muted/60 rounded-xl transition-all ${showNotifications ? "bg-muted/60 text-accent shadow-xl" : "text-muted-foreground hover:text-foreground"}`}
           >
             <Bell className="w-5 h-5" />
             {unreadCount > 0 && (
-              <span className="absolute top-2 right-2 w-4 h-4 bg-blue-500 text-[9px] font-black text-white rounded-full border-2 border-[#0a0f1c] flex items-center justify-center animate-bounce shadow-xl">
+              <span className="absolute top-2 right-2 w-4 h-4 bg-accent text-[9px] font-black text-accent-foreground rounded-full border-2 border-background flex items-center justify-center animate-bounce shadow-xl">
                 {unreadCount}
               </span>
             )}
@@ -223,10 +227,10 @@ export default function Topbar() {
                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                className="fixed top-24 left-4 right-4 md:absolute md:top-auto md:left-auto md:right-0 md:mt-4 md:w-[450px] bg-[#0d1526] border border-white/10 rounded-[2.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.6)] overflow-hidden z-50 backdrop-blur-3xl"
+                className="fixed left-4 right-4 top-24 z-50 overflow-hidden rounded-[2.5rem] border border-border/70 bg-card shadow-2xl backdrop-blur-3xl md:absolute md:left-auto md:right-0 md:top-auto md:mt-4 md:w-[450px]"
               >
                 <div className="p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
-                  <h3 className="text-sm font-black uppercase tracking-widest text-white italic italic-tighter">
+                  <h3 className="text-sm font-black uppercase tracking-widest text-foreground italic italic-tighter">
                     System Activity
                   </h3>
                   <span className="text-[10px] px-2 py-1 bg-blue-500/10 text-blue-500 rounded-md font-black uppercase tracking-widest border border-blue-500/20">
@@ -259,7 +263,7 @@ export default function Topbar() {
                             <div className="flex-1 min-w-0">
                               <div className="flex justify-between items-start gap-4 mb-1">
                                 <h4
-                                  className={`text-xs font-bold truncate ${isUnread ? "text-white" : "text-slate-500"}`}
+                                  className={`text-xs font-bold truncate ${isUnread ? "text-foreground" : "text-muted-foreground"}`}
                                 >
                                   {n.title}
                                 </h4>
@@ -338,35 +342,31 @@ export default function Topbar() {
           <Settings className="w-5 h-5" />
         </Link>
 
-        <div className="h-8 w-px bg-white/10 mx-2" />
+        <div className="h-8 w-px bg-border mx-2" />
 
         <div className="flex items-center gap-3 pl-2">
           <div className="hidden sm:flex flex-col items-end">
-            <span className="text-sm font-bold text-white tracking-tight leading-none mb-1">
-              {session?.name ? formatName(session.name) : settings.adminName}
+            <span className="text-sm font-bold text-foreground tracking-tight leading-none mb-1">
+              {displayName}
+              {isSuperAdmin && <span className="text-accent"> (Super Admin)</span>}
             </span>
-            <div className="flex items-center gap-1 opacity-90">
-              {session?.role === 'root-super-admin' ? (
-                <>
-                  <Zap className="w-3 h-3 text-amber-400 fill-amber-400" />
-                  <span className="text-[10px] text-amber-400 font-black uppercase tracking-widest">Root Admin</span>
-                </>
-              ) : session?.role === 'super-admin' ? (
-                <>
-                  <ShieldCheck className="w-3 h-3 text-blue-500" />
-                  <span className="text-[10px] text-blue-500 font-black uppercase tracking-widest">Super Admin</span>
-                </>
-              ) : (
-                <>
-                  <UserCheck className="w-3 h-3 text-slate-500" />
-                  <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest">{session?.role || "Synchronizing..."}</span>
-                </>
-              )}
-            </div>
+            <span className="max-w-64 truncate text-[10px] font-medium text-muted-foreground">
+              {session?.email || "Synchronizing..."}
+            </span>
           </div>
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 p-0.5 shadow-xl shadow-blue-500/20 group hover:scale-105 transition-transform">
-            <div className="w-full h-full rounded-[10px] bg-[#0a0f1c] flex items-center justify-center overflow-hidden">
-              <User className="w-5 h-5 text-blue-500" />
+            <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-[10px] bg-background">
+              {session?.avatar ? (
+                <Image
+                  src={session.avatar}
+                  alt={displayName}
+                  width={36}
+                  height={36}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <User className="w-5 h-5 text-blue-500" />
+              )}
             </div>
           </div>
         </div>

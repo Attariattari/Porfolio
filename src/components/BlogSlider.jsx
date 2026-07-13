@@ -72,8 +72,7 @@ const BlogSliderComponent = ({ posts }) => {
               priority
               sizes="(max-width: 768px) 100vw, 1200px"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-background via-background/60 to-transparent"></div>
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"></div>
+            <div className="theme-slider-wash absolute inset-0" />
           </div>
 
           {/* Content */}
@@ -82,6 +81,7 @@ const BlogSliderComponent = ({ posts }) => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.5 }}
+              className="theme-slider-copy"
             >
               <div className="flex items-center gap-4 mb-6">
                 <span className="px-4 py-1.5 rounded-full bg-accent text-accent-foreground text-[10px] font-black uppercase tracking-widest flex items-center gap-2">

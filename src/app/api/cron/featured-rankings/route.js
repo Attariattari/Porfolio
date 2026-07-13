@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { updateFeaturedRankings } from "@/lib/ai/featuredEngine";
+import { runDailyBlogPipeline } from "@/lib/cron/runDailyBlogPipeline";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -16,6 +17,19 @@ export async function GET(request) {
     }
   }
 
-  const result = await updateFeaturedRankings();
-  return NextResponse.json(result, { status: result.success ? 200 : 500 });
+  // This second daily cron doubles as a safe catch-up. Vercel does not retry
+  // failed cron invocations, while the shared workflow is idempotent per UTC
+  // day and therefore cannot create a duplicate scheduled blog.
+  const dailyBlog = await runDailyBlogPipeline({
+    baseUrl: new URL(request.url).origin,
+    source: "featured-backup",
+    backlogLimit: 0,
+  });
+  const rankings = await updateFeaturedRankings();
+  const success = dailyBlog.success && rankings.success;
+
+  return NextResponse.json(
+    { success, dailyBlog, rankings },
+    { status: success ? 200 : 500 },
+  );
 }

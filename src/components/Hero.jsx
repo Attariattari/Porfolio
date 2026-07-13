@@ -225,7 +225,7 @@ export default function Hero({ initialData = null }) {
             <DesktopTilt {...tiltOptions}>
               <div className="relative z-10 w-full aspect-square max-w-[500px] mx-auto">
                 {/* Main Visual - Borderless & Blended */}
-                <div className="relative w-full h-full [mask-image:radial-gradient(ellipse_at_center,black_50%,transparent_100%)]">
+                <div className="hero-media-blend relative w-full h-full">
                   <Image
                     src={data.visualImage || data.heroImage || "/hero-visual.webp"}
                     alt="Muhyo Tech full-stack development visual"
@@ -235,7 +235,7 @@ export default function Hero({ initialData = null }) {
                     sizes="500px"
                   />
                   {/* Subtle Glow to match the theme */}
-                  <div className="absolute inset-0 bg-accent/10 mix-blend-soft-light pointer-events-none" />
+                  <div className="theme-media-accent absolute inset-0 pointer-events-none" />
                 </div>
 
                 {/* Decorative Elements */}

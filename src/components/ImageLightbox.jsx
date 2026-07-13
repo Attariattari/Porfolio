@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ZoomIn, ZoomOut, Maximize2, Minimize2, Download, ChevronLeft, ChevronRight } from "lucide-react";
 import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
@@ -12,21 +13,31 @@ export const ImageLightbox = ({ isOpen, onClose, images, initialIndex = 0 }) => 
   const safeImages = (Array.isArray(images) ? images : []).map((image) => getSafeImageSrc(image));
 
   useEffect(() => {
-    setCurrentIndex(initialIndex);
-    setZoom(1);
-  }, [initialIndex]);
+    if (!isOpen) return undefined;
+
+    const resetFrame = window.requestAnimationFrame(() => {
+      setCurrentIndex(initialIndex);
+      setZoom(1);
+    });
+
+    return () => window.cancelAnimationFrame(resetFrame);
+  }, [initialIndex, isOpen]);
 
   useEffect(() => {
     if (isOpen) {
       document.body.classList.add("lightbox-open");
     } else {
       document.body.classList.remove("lightbox-open");
-      setZoom(1);
     }
     return () => {
       document.body.classList.remove("lightbox-open");
     };
   }, [isOpen]);
+
+  const handleClose = () => {
+    setZoom(1);
+    onClose();
+  };
 
   const handleNext = (e) => {
     e?.stopPropagation();
@@ -69,16 +80,16 @@ export const ImageLightbox = ({ isOpen, onClose, images, initialIndex = 0 }) => 
     }
   };
 
-  if (!isOpen || safeImages.length === 0) return null;
+  if (!isOpen || safeImages.length === 0 || typeof document === "undefined") return null;
 
-  return (
+  return createPortal(
     <AnimatePresence>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[200] flex items-end md:items-center justify-center bg-black/95 backdrop-blur-xl p-4 pt-24 md:p-0"
-        onClick={onClose}
+        className="fixed inset-0 z-[10050] isolate flex items-end md:items-center justify-center bg-black/95 backdrop-blur-xl p-4 pt-24 md:p-0"
+        onClick={handleClose}
       >
         {/* Controls Overlay */}
         <div className="absolute top-16 md:top-0 left-0 right-0 p-6 flex items-center justify-between z-[210] bg-gradient-to-b from-black/50 to-transparent pointer-events-none">
@@ -103,7 +114,7 @@ export const ImageLightbox = ({ isOpen, onClose, images, initialIndex = 0 }) => 
               {isFullScreen ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
             </button>
             <button 
-              onClick={onClose}
+              onClick={handleClose}
               className="w-10 h-10 rounded-full bg-white/20 hover:bg-red-500 text-white flex items-center justify-center transition-all backdrop-blur-md border border-white/10"
             >
               <X size={20} />
@@ -168,6 +179,7 @@ export const ImageLightbox = ({ isOpen, onClose, images, initialIndex = 0 }) => 
           ))}
         </div>
       </motion.div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 };

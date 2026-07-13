@@ -10,23 +10,35 @@ export function useSettingsSync() {
   const { fetchSettings } = useAdminStore();
 
   useEffect(() => {
-    try {
-      const socket = initializeSocket();
-      
-      if (!socket) return;
+    let active = true;
+    const syncSettings = () => {
+      if (active && document.visibilityState === "visible") fetchSettings();
+    };
 
+    const interval = window.setInterval(syncSettings, 10000);
+    window.addEventListener("focus", syncSettings);
+    document.addEventListener("visibilitychange", syncSettings);
+
+    let socket = null;
+    try {
+      socket = initializeSocket();
+      
       // Listen for settings updates from other clients
-      socket.on(SOCKET_EVENTS.SETTINGS_UPDATED, (updatedSettings) => {
+      socket?.on(SOCKET_EVENTS.SETTINGS_UPDATED, (updatedSettings) => {
         // Update store with real-time settings
         useAdminStore.setState({ settings: updatedSettings });
       });
-
-      return () => {
-        socket.off(SOCKET_EVENTS.SETTINGS_UPDATED);
-      };
     } catch (error) {
       console.error('Socket initialization failed:', error);
     }
+
+    return () => {
+      active = false;
+      window.clearInterval(interval);
+      window.removeEventListener("focus", syncSettings);
+      document.removeEventListener("visibilitychange", syncSettings);
+      socket?.off(SOCKET_EVENTS.SETTINGS_UPDATED);
+    };
   }, [fetchSettings]);
 }
 

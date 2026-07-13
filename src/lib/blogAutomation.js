@@ -750,6 +750,7 @@ export async function runBlogAutomationPipeline(
   onProgress = null,
   previousDraft = null,
   fixedTopic = null,
+  automationContext = null,
 ) {
   const report = (status, details = {}) => {
     if (onProgress) onProgress({ status, details, retryCount });
@@ -839,6 +840,7 @@ export async function runBlogAutomationPipeline(
         onProgress,
         { ...blogData, feedback: review.feedback },
         selectedTopic,
+        automationContext,
       );
     }
 
@@ -851,7 +853,13 @@ export async function runBlogAutomationPipeline(
     // 4. CHECK UNIQUENESS (Only if not a refinement of a known slug)
     const existing = await Blog.findOne({ slug: blogData.slug });
     if (existing && !previousDraft) {
-      return runBlogAutomationPipeline(retryCount + 1, onProgress);
+      return runBlogAutomationPipeline(
+        retryCount + 1,
+        onProgress,
+        null,
+        null,
+        automationContext,
+      );
     }
 
     // 5. SAVE
@@ -869,9 +877,32 @@ export async function runBlogAutomationPipeline(
         year: "numeric",
       }),
       createdAt: new Date(),
+      ...(automationContext?.automationSlot
+        ? {
+            automationSlot: automationContext.automationSlot,
+            automationSource: automationContext.automationSource || "vercel-cron",
+          }
+        : {}),
     });
 
-    await newBlog.save();
+    try {
+      await newBlog.save();
+    } catch (error) {
+      if (error?.code === 11000 && automationContext?.automationSlot) {
+        const existingSlotBlog = await Blog.findOne({
+          automationSlot: automationContext.automationSlot,
+        });
+        if (existingSlotBlog) {
+          return {
+            success: true,
+            blogId: existingSlotBlog._id,
+            step: 1,
+            duplicatePrevented: true,
+          };
+        }
+      }
+      throw error;
+    }
     await cacheManager.invalidateByTag("blogs");
 
     report("CONTENT_SAVED", {

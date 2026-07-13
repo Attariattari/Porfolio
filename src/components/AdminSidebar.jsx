@@ -13,7 +13,6 @@ import {
   Code2,
   Users,
   User,
-  ShieldCheck,
   Bell,
   Activity,
   Zap,
@@ -27,6 +26,7 @@ import {
   Target,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ADMIN_NAVIGATION_LINKS } from "@/lib/constants";
@@ -42,6 +42,7 @@ import {
   useRealTimeMessageUpdates,
 } from "@/app/(admin)/hooks/useMessages";
 import NetworkIndicator from "./admin/NetworkIndicator";
+import { formatName } from "@/lib/utils";
 
 const ICON_MAP = {
   LayoutDashboard,
@@ -69,6 +70,8 @@ export default function AdminSidebar() {
   const router = useRouter();
   const [session, setSession] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
+  const displayName = session?.name ? formatName(session.name) : "Admin";
+  const isSuperAdmin = ["super-admin", "root-super-admin"].includes(session?.role);
 
   const {
     notifications,
@@ -218,17 +221,17 @@ export default function AdminSidebar() {
           x: isMobile && !sidebarOpen ? -288 : 0,
         }}
         transition={{ type: "spring", damping: 20, stiffness: 150 }}
-        className={`fixed left-0 top-0 h-full bg-[#0a0f1c] border-r border-white/5 flex flex-col z-[70] shadow-2xl`}
+        className="fixed left-0 top-0 z-[70] flex h-full flex-col border-r border-border/60 bg-background shadow-2xl"
       >
         {/* Inner Wrapper for content transition safety */}
         <div className="flex-1 flex flex-col w-full h-full overflow-hidden relative">
           {/* Branding */}
           <div
-            className={`h-20 flex items-center px-6 border-b border-white/5 bg-gradient-to-br from-blue-500/5 to-transparent overflow-hidden shrink-0`}
+            className="flex h-20 shrink-0 items-center overflow-hidden border-b border-border/60 bg-gradient-to-br from-accent/5 to-transparent px-6"
           >
             <div className="flex items-center gap-3 min-w-max">
-              <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/20 shrink-0">
-                <Zap className="w-6 h-6 text-white" />
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent text-accent-foreground shadow-lg shadow-accent/20">
+                <Zap className="h-6 w-6" />
               </div>
               {!isCollapsed && (
                 <motion.div
@@ -236,7 +239,7 @@ export default function AdminSidebar() {
                   animate={{ opacity: 1, x: 0 }}
                   className="flex flex-col"
                 >
-                  <span className="font-black text-white tracking-widest uppercase italic text-sm leading-none">
+                  <span className="text-sm font-black uppercase italic leading-none tracking-widest text-foreground">
                     MUHYO
                   </span>
                   <span className="text-[8px] font-bold text-slate-500 tracking-[0.3em] uppercase leading-none mt-1">
@@ -250,7 +253,7 @@ export default function AdminSidebar() {
             {isMobile && (
               <button
                 onClick={() => setSidebarOpen(false)}
-                className="ml-auto p-2 text-slate-500 hover:text-white transition-colors"
+                className="ml-auto p-2 text-muted-foreground hover:text-foreground transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -269,7 +272,7 @@ export default function AdminSidebar() {
                     {section.label}
                   </h3>
                 )}
-                {isCollapsed && <div className="h-px bg-white/5 mx-4 my-4" />}
+                {isCollapsed && <div className="h-px bg-border mx-4 my-4" />}
 
                 <div className="space-y-1">
                   {section.links.map((link) => {
@@ -295,45 +298,42 @@ export default function AdminSidebar() {
           </nav>
 
           {/* User Profile & Logout */}
-          <div className="p-4 border-t border-white/5 space-y-4 shrink-0 bg-white/[0.01]">
+          <div className="p-4 border-t border-border/60 space-y-4 shrink-0 bg-card/35">
             <div
               className={`flex items-center gap-3 ${isCollapsed ? "justify-center" : "px-2"}`}
             >
               <div
                 className={`w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 p-0.5 shadow-lg shadow-blue-500/20 shrink-0`}
               >
-                <div className="w-full h-full rounded-[9px] bg-[#0a0f1c] flex items-center justify-center overflow-hidden">
-                  <User className="w-5 h-5 text-blue-400" />
+                <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-[9px] bg-background">
+                  {session?.avatar ? (
+                    <Image
+                      src={session.avatar}
+                      alt={displayName}
+                      width={36}
+                      height={36}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <User className="w-5 h-5 text-blue-400" />
+                  )}
                 </div>
               </div>
               {!isCollapsed && (
                 <div className="flex flex-col min-w-0">
-                  <span className="text-xs font-bold text-white truncate">
-                    {session?.name || "Admin"}
+                  <span className="text-xs font-bold text-foreground truncate">
+                    {displayName}
+                    {isSuperAdmin && <span className="text-accent"> (Super Admin)</span>}
                   </span>
-                  <span className="text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5">
-                    {session?.role === "root-super-admin" ? (
-                      <span className="text-amber-400 flex items-center gap-1">
-                        <Zap className="w-3 h-3 fill-amber-400" /> Root Admin
-                      </span>
-                    ) : session?.role === "super-admin" ? (
-                      <span className="text-accent flex items-center gap-1">
-                        <ShieldCheck className="w-3 h-3" /> Super Admin
-                      </span>
-                    ) : (
-                      <span className="text-slate-500">
-                        {session?.role === "admin"
-                          ? "👨💼 Admin"
-                          : session?.role || "Synchronizing..."}
-                      </span>
-                    )}
+                  <span className="truncate text-[10px] font-medium text-muted-foreground">
+                    {session?.email || "Synchronizing..."}
                   </span>
                 </div>
               )}
               {!isCollapsed && (
                 <button
                   onClick={handleLogout}
-                  className="ml-auto p-2 text-slate-500 hover:text-red-400 transition-colors bg-white/5 rounded-lg border border-white/5 hover:border-red-400/20"
+                  className="ml-auto p-2 text-muted-foreground hover:text-red-500 transition-colors bg-muted/50 rounded-lg border border-border/60 hover:border-red-500/30"
                   title="Logout"
                 >
                   <LogOut className="w-4 h-4" />
@@ -357,7 +357,7 @@ export default function AdminSidebar() {
         {!isMobile && (
           <button
             onClick={toggleSidebarCollapse}
-            className="absolute -right-3 top-24 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-lg z-[80] hover:scale-110 transition-transform active:scale-95 border border-white/10"
+            className="absolute -right-3 top-24 w-6 h-6 bg-accent rounded-full flex items-center justify-center text-accent-foreground shadow-lg z-[80] hover:scale-110 transition-transform active:scale-95 border border-border"
           >
             {sidebarCollapsed ? (
               <ChevronRight size={14} />
@@ -385,8 +385,8 @@ function SidebarItem({
       href={href}
       className={`group relative flex items-center h-12 rounded-xl transition-all duration-300 ${
         active
-          ? "bg-blue-600/10 text-blue-400"
-          : "text-slate-400 hover:text-white hover:bg-white/[0.03]"
+          ? "bg-accent/10 text-accent"
+          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
       }`}
     >
       {/* Active Indicator Line */}
@@ -408,14 +408,14 @@ function SidebarItem({
           {/* Badge for Collapsed View */}
           {collapsed && badge && (
             <span
-              className={`absolute -top-1 -right-1 w-2 h-2 rounded-full ${badgeColor || "bg-blue-600"} border border-[#0a0f1c]`}
+              className={`absolute -right-1 -top-1 h-2 w-2 rounded-full ${badgeColor || "bg-accent"} border border-background`}
             />
           )}
         </div>
 
         {!collapsed && (
           <span
-            className={`text-[13px] font-semibold tracking-wide transition-all ${active ? "text-white" : ""}`}
+            className={`text-[13px] font-semibold tracking-wide transition-all ${active ? "text-foreground" : ""}`}
           >
             {label}
           </span>

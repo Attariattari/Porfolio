@@ -510,25 +510,12 @@ const useAdminStore = create((set, get) => ({
   // SETTINGS
   fetchSettings: async () => {
     try {
-      // P6 OPTIMIZATION: Check sessionStorage cache first (5 minute TTL)
       const cacheKey = "muhyo_settings_cache";
-      const cached = typeof window !== "undefined" ? sessionStorage.getItem(cacheKey) : null;
-      
-      if (cached) {
-        const { data, timestamp } = JSON.parse(cached);
-        const now = Date.now();
-        const fiveMinutes = 5 * 60 * 1000;
-        
-        // Return cached data if still valid
-        if (now - timestamp < fiveMinutes) {
-          console.log("[Settings] Using cached data");
-          set({ settings: data });
-          return;
-        }
-      }
-      
-      // Cache miss or expired - fetch from API
-      const res = await fetch("/api/settings");
+      const res = await fetch("/api/settings", {
+        cache: "no-store",
+        credentials: "include",
+        headers: { "Cache-Control": "no-cache" },
+      });
       const result = await res.json();
       
       if (result.success && result.data) {
@@ -556,6 +543,7 @@ const useAdminStore = create((set, get) => ({
     try {
       const res = await fetch("/api/settings", {
           method: "PATCH",
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data),
       });
@@ -569,6 +557,12 @@ const useAdminStore = create((set, get) => ({
       if (result.success) {
           toast.success("Settings updated successfully!");
           set({ settings: result.data });
+          if (typeof window !== "undefined") {
+            sessionStorage.setItem(
+              "muhyo_settings_cache",
+              JSON.stringify({ data: result.data, timestamp: Date.now() }),
+            );
+          }
           return { success: true, data: result.data };
       } else {
           const errorMsg = result.error || "Failed to update settings";

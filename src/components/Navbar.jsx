@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { ThemeToggle } from "./ThemeToggle";
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -68,7 +67,6 @@ export default function Navbar() {
               {link.name}
             </Link>
           ))}
-          <ThemeToggle />
           <Link
             href={cta.href}
             prefetch={true}
@@ -80,7 +78,6 @@ export default function Navbar() {
 
         {/* Mobile Toggle */}
         <div className="md:hidden flex items-center gap-4">
-          <ThemeToggle />
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="text-foreground p-1"

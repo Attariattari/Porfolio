@@ -169,7 +169,7 @@ const ProjectRow = ({ project, index, setSelectedProject }) => {
           whileHover={{ scale: 1.02 }}
           transition={{ type: "spring", stiffness: 200, damping: 20 }}
           onClick={openProjectDetail}
-          className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-[0_40px_80px_-20px_rgba(0,0,0,0.6)] border border-white/10 bg-background cursor-pointer"
+          className="theme-media-frame relative w-full aspect-[4/3] rounded-2xl overflow-hidden border border-border/70 bg-background cursor-pointer"
         >
           <Image
             src={getSafeImageSrc(project.thumbnail || project.thumbnailImage || project.image)}
@@ -181,8 +181,8 @@ const ProjectRow = ({ project, index, setSelectedProject }) => {
             className="object-cover transition-transform duration-1000 group-hover/img-side:scale-110"
           />
 
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10" />
-          <div className="absolute inset-0 bg-black/20 z-10" />
+          <div className="theme-media-gradient absolute inset-0 z-10" />
+          <div className="theme-media-tint absolute inset-0 z-10" />
 
           <div className="absolute inset-0 p-8 md:p-10 flex flex-col justify-end pointer-events-none z-20">
             <div className="relative z-10">

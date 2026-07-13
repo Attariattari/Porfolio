@@ -5,7 +5,7 @@ import { useTheme } from "./ThemeProvider";
 import { motion, useReducedMotion } from "framer-motion";
 
 const AnimatedBackgroundComponent = () => {
-  const { isDark } = useTheme();
+  const { isBlack, isDark } = useTheme();
   const prefersReducedMotion = useReducedMotion();
   const [isMobile, setIsMobile] = useState(false);
 
@@ -23,10 +23,12 @@ const AnimatedBackgroundComponent = () => {
     <div className="fixed inset-0 -z-50 overflow-hidden bg-background pointer-events-none">
       {/* Base Gradient Background */}
       <div
-        className={`absolute inset-0 opacity-40 transition-colors duration-1000 ${
-          isDark
-            ? "bg-gradient-to-br from-[#0a0f1c] via-[#111827] to-[#0a0f1c]"
-            : "bg-gradient-to-br from-slate-50 via-white to-blue-50"
+        className={`absolute inset-0 transition-colors duration-1000 ${
+          isBlack
+            ? "black-atmosphere opacity-100"
+            : isDark
+              ? "bg-gradient-to-br from-[#0a0f1c] via-[#111827] to-[#0a0f1c] opacity-40"
+              : "bg-gradient-to-br from-slate-50 via-white to-blue-50 opacity-40"
         }`}
       />
 
@@ -35,56 +37,60 @@ const AnimatedBackgroundComponent = () => {
         <motion.div
           animate={
             shouldAnimate
-              ? {
-                  scale: [1, 1.2, 1],
-                  rotate: [0, 90, 0],
-                  x: [0, 50, 0],
-                  y: [0, -30, 0],
-                }
+              ? isBlack
+                ? { scale: [1, 1.08, 1], x: [0, 24, 0], y: [0, -18, 0] }
+                : { scale: [1, 1.2, 1], rotate: [0, 90, 0], x: [0, 50, 0], y: [0, -30, 0] }
               : undefined
           }
           transition={
             shouldAnimate
               ? {
-                  duration: 20,
+                  duration: isBlack ? 36 : 20,
                   repeat: Infinity,
                   ease: "easeInOut",
                 }
               : undefined
           }
-          className={`absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full blur-[120px] opacity-20 ${
-            isDark ? "bg-accent" : "bg-blue-300"
+          className={`absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full blur-[120px] ${
+            isBlack
+              ? "bg-cyan-400 opacity-[0.18]"
+              : isDark
+                ? "bg-accent opacity-20"
+                : "bg-blue-300 opacity-20"
           }`}
         />
         <motion.div
           animate={
             shouldAnimate
-              ? {
-                  scale: [1.2, 1, 1.2],
-                  rotate: [0, -60, 0],
-                  x: [0, -40, 0],
-                  y: [0, 60, 0],
-                }
+              ? isBlack
+                ? { scale: [1.05, 1, 1.05], x: [0, -20, 0], y: [0, 26, 0] }
+                : { scale: [1.2, 1, 1.2], rotate: [0, -60, 0], x: [0, -40, 0], y: [0, 60, 0] }
               : undefined
           }
           transition={
             shouldAnimate
               ? {
-                  duration: 25,
+                  duration: isBlack ? 44 : 25,
                   repeat: Infinity,
                   ease: "easeInOut",
                 }
               : undefined
           }
-          className={`absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full blur-[140px] opacity-10 ${
-            isDark ? "bg-blue-600" : "bg-cyan-200"
+          className={`absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full blur-[140px] ${
+            isBlack
+              ? "bg-blue-500 opacity-[0.12]"
+              : isDark
+                ? "bg-blue-600 opacity-10"
+                : "bg-cyan-200 opacity-10"
           }`}
         />
       </div>
 
+      {isBlack && <div className="black-tech-grid absolute inset-0" />}
+
       {/* Flowing SVG Lines */}
       <svg
-        className="absolute inset-0 w-full h-full opacity-20"
+        className={`absolute inset-0 w-full h-full ${isBlack ? "opacity-[0.26]" : "opacity-20"}`}
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
@@ -97,7 +103,7 @@ const AnimatedBackgroundComponent = () => {
             <stop
               offset="50%"
               stopColor={isDark ? "var(--color-accent)" : "#3b82f6"}
-              stopOpacity="0.5"
+              stopOpacity={isBlack ? "0.58" : "0.5"}
             />
             <stop
               offset="100%"
@@ -122,7 +128,11 @@ const AnimatedBackgroundComponent = () => {
           d="M -200 800 Q 400 600 1000 800 T 2200 800"
           fill="none"
           stroke={
-            isDark ? "rgba(14, 165, 233, 0.15)" : "rgba(59, 130, 246, 0.1)"
+            isBlack
+              ? "rgba(34, 211, 255, 0.22)"
+              : isDark
+                ? "rgba(14, 165, 233, 0.15)"
+                : "rgba(59, 130, 246, 0.1)"
           }
           strokeWidth="3"
         >
@@ -139,9 +149,7 @@ const AnimatedBackgroundComponent = () => {
 
       {/* Grid Pattern Overlay */}
       <div
-        className={`absolute inset-0 opacity-[0.03] ${
-          isDark ? "bg-[url('/noise.svg')]" : "bg-[url('/noise.svg')]"
-        } pointer-events-none bg-[length:200px_200px]`}
+        className={`absolute inset-0 ${isBlack ? "opacity-[0.035]" : "opacity-[0.03]"} bg-[url('/noise.svg')] pointer-events-none bg-[length:200px_200px]`}
       />
     </div>
   );

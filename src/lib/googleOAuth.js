@@ -147,16 +147,36 @@ function isPrivilegedAdmin(user) {
   );
 }
 
+function normalizeGoogleName(value) {
+  return String(value || "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .slice(0, 120);
+}
+
 function addOrUpdateGoogleProvider(user, profile) {
+  const googleName = normalizeGoogleName(profile.name);
   user.googleId = profile.googleId;
+  if (googleName) user.name = googleName;
   user.avatar = profile.avatar || user.avatar;
   user.emailVerified = true;
-  // Authentication methods are exclusive: once Google is confirmed it
-  // becomes the account's only login provider.
-  user.provider = "google";
+  // Keep credentials and Google as independent login methods. `provider` is a
+  // legacy primary-provider field, so credential accounts retain that value.
+  user.provider = user.passkey ? "credentials" : "google";
   user.isOAuthUser = true;
   user.lastLoginAt = new Date();
   user.authProviders = Array.isArray(user.authProviders) ? user.authProviders : [];
+
+  if (user.passkey && !user.authProviders.some(
+    (provider) => provider.provider === "credentials",
+  )) {
+    user.authProviders.push({
+      provider: "credentials",
+      providerId: user.email,
+      email: user.email,
+      linkedAt: user.createdAt || new Date(),
+    });
+  }
 
   const existing = user.authProviders.find(
     (provider) => provider.provider === "google",
@@ -174,9 +194,6 @@ function addOrUpdateGoogleProvider(user, profile) {
     });
   }
 
-  user.authProviders = user.authProviders.filter(
-    (provider) => provider.provider === "google",
-  );
 }
 
 async function logOAuth(action, user, details) {
@@ -262,22 +279,22 @@ export async function handleGoogleProfile(profile, callbackUrl) {
       };
     }
 
-    // Never silently combine credentials and Google. The existing passkey is
-    // required once to explicitly switch this account to Google-only login.
+    // Never silently link identities. The existing passkey is required once;
+    // after confirmation both credentials and Google remain available.
     const { rawToken } = await createGoogleLinkRequest({ profile, callbackUrl });
     await logOAuth(
       "google_account_link_requested",
       existingUser,
       isPrivilegedAdmin(existingUser)
         ? "Google login matched an existing privileged account and requires passkey confirmation."
-        : "Google login matched an existing credentials account and requires provider-switch confirmation.",
+        : "Google login matched an existing credentials account and requires one-time link confirmation.",
     );
     return { type: "link_required", linkToken: rawToken, email: profile.email };
   }
 
   const user = await User.create({
     email: profile.email,
-    name: profile.name || formatName(profile.email.split("@")[0]),
+    name: normalizeGoogleName(profile.name) || formatName(profile.email.split("@")[0]),
     role: "user",
     status: "approved",
     googleId: profile.googleId,

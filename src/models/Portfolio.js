@@ -158,6 +158,13 @@ const BlogSchema = new mongoose.Schema({
     readTime: { type: String },
     order: { type: Number, default: 0, index: true },
     aiGenerated: { type: Boolean, default: false },
+    automationSlot: {
+        type: String,
+        unique: true,
+        sparse: true,
+        index: true,
+    },
+    automationSource: { type: String },
     image_prompt: { type: String },
     imagePrompt: { type: String },
     imageNegativePrompt: { type: String },
@@ -413,6 +420,12 @@ const SiteConfigSchema = new mongoose.Schema({
         required: true,
         default: "Tech",
         trim: true,
+    },
+    siteTheme: {
+        type: String,
+        enum: ["light", "dark", "black"],
+        default: "black",
+        required: true,
     },
 
     // Admin Information

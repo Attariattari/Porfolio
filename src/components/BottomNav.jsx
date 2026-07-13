@@ -46,7 +46,7 @@ export const BottomNav = () => {
   if (isModalOpen) return null;
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-[100] px-4 pb-6 pt-2 bg-gradient-to-t from-background via-background/95 to-transparent pointer-events-none">
+    <nav className="site-bottom-nav md:hidden fixed bottom-0 left-0 right-0 z-[100] px-4 pb-6 pt-2 bg-gradient-to-t from-background via-background/95 to-transparent pointer-events-none">
       <div className="flex items-center justify-between p-2 bg-card/80 backdrop-blur-3xl border border-border/40 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] pointer-events-auto w-full max-w-md mx-auto">
         {navItems.map((item) => {
           const isActive =

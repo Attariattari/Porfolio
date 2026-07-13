@@ -18,7 +18,7 @@ export const metadata = {
 
 export default function AdminLayout({ children }) {
   return (
-    <div className={`${montserrat.className} bg-background transition-colors min-h-screen text-foreground`}>
+    <div className={`${montserrat.className} admin-theme-scope min-h-screen bg-background text-foreground transition-colors`}>
       <Providers>
         {children}
       </Providers>

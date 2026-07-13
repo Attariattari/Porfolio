@@ -305,7 +305,7 @@ const ArticleCard = ({ blog, index, onImageClick }) => (
     transition={{ delay: index * 0.05, duration: 0.55 }}
     className="h-full group"
   >
-    <article className="relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-border/60 bg-background/70 shadow-lg shadow-black/5 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-accent/40 hover:shadow-2xl hover:shadow-accent/10">
+    <article className="theme-surface-depth relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-border/60 bg-background/70 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-accent/40">
       <button
         type="button"
         onClick={() => onImageClick(index)}
@@ -320,7 +320,7 @@ const ArticleCard = ({ blog, index, onImageClick }) => (
           sizes="(max-width: 768px) 100vw, 33vw"
           className="object-cover transition-transform duration-700 group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/10 to-transparent" />
+        <div className="theme-image-wash absolute inset-0" />
         <div className="absolute left-4 top-4 flex flex-wrap gap-2">
           {blog.featured && (
             <span className="rounded-full bg-accent px-3 py-1.5 text-[10px] font-bold text-accent-foreground shadow-lg shadow-accent/20">
@@ -383,7 +383,7 @@ const HomeArticleCard = ({ blog, index, onImageClick }) => {
       transition={{ delay: index * 0.08, duration: 0.55 }}
       className="group h-full"
     >
-      <div className="relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-border/60 bg-background/70 shadow-lg shadow-black/5 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-accent/40 hover:shadow-2xl hover:shadow-accent/10">
+      <div className="theme-surface-depth relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-border/60 bg-background/70 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-accent/40">
         <button
           type="button"
           onClick={() => onImageClick(index)}
@@ -398,7 +398,7 @@ const HomeArticleCard = ({ blog, index, onImageClick }) => {
             sizes="(max-width: 768px) 100vw, 33vw"
             className="object-cover transition-transform duration-700 group-hover:scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-background/85 via-background/5 to-transparent" />
+          <div className="theme-image-wash absolute inset-0" />
           <div className="absolute left-4 top-4 flex flex-wrap gap-2">
             {isFeatured && (
               <span className="rounded-full bg-accent px-3 py-1.5 text-[10px] font-bold text-accent-foreground shadow-lg shadow-accent/20">

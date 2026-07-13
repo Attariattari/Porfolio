@@ -237,7 +237,7 @@ const Contact = ({ isHomePage = false }) => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.1 }}
-                  className="group relative p-6 bg-card/40 backdrop-blur-3xl rounded-[2rem] border border-border/50 hover:border-accent/50 hover:-translate-y-2 transition-all duration-500 shadow-2xl overflow-hidden"
+                  className="theme-surface-depth group relative p-6 bg-card/40 backdrop-blur-3xl rounded-[2rem] border border-border/50 hover:border-accent/50 hover:-translate-y-2 transition-all duration-500 overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-accent/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
@@ -306,7 +306,7 @@ const Contact = ({ isHomePage = false }) => {
               <div className="absolute -inset-0.5 bg-gradient-to-r from-accent/20 to-accent/20 rounded-[2.8rem] opacity-0 group-hover/form:opacity-100 blur-2xl transition-all duration-700" />
 
               {/* Form Content */}
-              <div className="relative z-10 p-8 md:p-12 bg-card backdrop-blur-3xl rounded-[2.8rem] border border-border/50 shadow-2xl h-full flex flex-col">
+              <div className="theme-surface-depth relative z-10 p-8 md:p-12 bg-card backdrop-blur-3xl rounded-[2.8rem] border border-border/50 h-full flex flex-col">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
                   <div>
                     <h2 className="text-3xl font-bold tracking-tight text-foreground italic">
@@ -638,7 +638,7 @@ const Contact = ({ isHomePage = false }) => {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: idx * 0.1 }}
-                    className="relative p-8 glass rounded-[2.5rem] border border-border group hover:border-accent/30 transition-all shadow-xl"
+                    className="theme-surface-depth relative p-8 glass rounded-[2.5rem] border border-border group hover:border-accent/30 transition-all"
                   >
                     <div className="text-5xl font-black text-foreground/5 group-hover:text-accent/10 transition-colors absolute top-6 right-8">
                       {item.step}
@@ -714,7 +714,7 @@ const Contact = ({ isHomePage = false }) => {
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="mt-12 relative h-[500px] glass p-2 rounded-[3.5rem] overflow-hidden group shadow-2xl"
+              className="theme-surface-depth mt-12 relative h-[500px] glass p-2 rounded-[3.5rem] overflow-hidden group"
             >
               <iframe
                 src="https://www.google.com/maps?q=Chota,+Mohlanwal+Road,+Badu+Pura+Chung,+Lahore,+53720,+Pakistan&output=embed"

@@ -58,7 +58,7 @@ export default function FeaturedBlogSlider({ featuredBlogs, onImageClick }) {
         {featuredBlogs?.map((blog, idx) => (
           <SwiperSlide key={blog.id}>
             {/* Main Featured Card */}
-            <div className="relative bg-background border border-border/40 rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.15)] transition-all duration-700 hover:shadow-[0_40px_80px_rgba(0,0,0,0.2)] group-hover:border-accent/30">
+            <div className="theme-surface-depth relative bg-background border border-border/40 rounded-[2.5rem] overflow-hidden transition-all duration-700 group-hover:border-accent/30">
               {/* Thumbnail Area */}
               <div className="relative aspect-[4/3] overflow-hidden">
                 <Image
@@ -71,7 +71,7 @@ export default function FeaturedBlogSlider({ featuredBlogs, onImageClick }) {
                   className="object-cover transition-transform duration-1000 group-hover:scale-110 cursor-zoom-in"
                   onClick={() => onImageClick(idx)}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent" />
+                <div className="theme-image-wash absolute inset-0" />
 
                 {/* Badge */}
                 <div className="absolute top-8 left-8">

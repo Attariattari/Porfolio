@@ -59,6 +59,7 @@ export async function createAdminSession(user, source = "credentials") {
             email: normalizedEmail,
             userId: user._id.toString(),
             name: user.name,
+            avatar: user.avatar || "",
             authSource: source,
         })
         .setProtectedHeader({ alg: "HS256" })
@@ -89,6 +90,7 @@ export async function createAdminSession(user, source = "credentials") {
         email: normalizedEmail,
         role: finalRole,
         name: user.name,
+        avatar: user.avatar || "",
     };
 }
 
@@ -290,11 +292,13 @@ export async function login(email, passkey) {
         };
     }
 
-    if (user.provider === "google") {
+    // A Google-linked credentials account can still sign in manually. Only a
+    // Google-origin account with no passkey must continue through Google.
+    if (!user.passkey) {
         return {
             success: false,
             code: "GOOGLE_ONLY",
-            message: "This account uses Google login. Continue with Google instead.",
+            message: "No manual passkey is set for this account. Continue with Google instead.",
         };
     }
 
@@ -581,6 +585,7 @@ export async function getAuthSession() {
                     email: ROOT_ADMIN_EMAIL,
                     role: "root-super-admin",
                     name: user?.name || "Root Super Admin",
+                    avatar: user?.avatar || "",
                     permissions: { all: true },
                 };
             }
@@ -606,6 +611,7 @@ export async function getAuthSession() {
             email: user.email,
             role: finalRole,
             name: user.name,
+            avatar: user.avatar || "",
             permissions: user.permissions || {},
         };
     } catch (e) {

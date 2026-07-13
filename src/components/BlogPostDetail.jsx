@@ -144,7 +144,7 @@ export default function BlogPostDetail({ blog, shareUrl }) {
             className="relative mt-10"
           >
             <div className="absolute -inset-3 rounded-[2rem] bg-accent/10 blur-2xl" />
-            <div className="relative overflow-hidden rounded-[1.75rem] border border-white/12 bg-white/5 shadow-2xl shadow-black/45">
+            <div className="theme-media-frame relative overflow-hidden rounded-[1.75rem] border border-border/70 bg-white/5">
               <div className="relative aspect-[16/8.4] min-h-[260px] md:min-h-[430px]">
                 <Image
                   src={coverImage}
