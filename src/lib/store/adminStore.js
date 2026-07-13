@@ -2,11 +2,16 @@ import { create } from 'zustand';
 import { toast } from 'sonner';
 import { portfolioData as initialData } from '@/lib/data';
 
+const ADMIN_BLOG_CACHE_TTL = 5 * 60 * 1000;
+let pendingBlogsRequest = null;
+
 const useAdminStore = create((set, get) => ({
   // Core Data (Flat for direct reactivity)
   projects: initialData.projects || [],
   services: initialData.services || [],
   blogs: initialData.blogs || [],
+  blogsCacheHydrated: false,
+  blogsLastFetchedAt: 0,
   skills: initialData.skills || [],
   resumeData: initialData.resume || {
     experience: [],
@@ -187,19 +192,49 @@ const useAdminStore = create((set, get) => ({
   },
 
   // BLOGS
-  fetchBlogs: async () => {
-    try {
-      const res = await fetch("/api/blogs?includeContent=true", { cache: "no-store" });
-      const result = await res.json();
-      if (result.success && result.data?.length > 0) {
-        set({ blogs: result.data });
-      } else {
-        set({ blogs: initialData.blogs || [] });
-      }
-    } catch (error) { 
+  fetchBlogs: async ({ force = false } = {}) => {
+    const state = get();
+    const cacheIsFresh =
+      state.blogsCacheHydrated &&
+      Date.now() - state.blogsLastFetchedAt < ADMIN_BLOG_CACHE_TTL;
+
+    if (!force && cacheIsFresh) return state.blogs;
+    if (!force && pendingBlogsRequest) return pendingBlogsRequest;
+
+    const request = (async () => {
+      try {
+        const res = await fetch("/api/blogs?includeContent=true", {
+          cache: force ? "reload" : "default",
+          credentials: "same-origin",
+        });
+        const result = await res.json();
+
+        if (!res.ok || !result.success) {
+          throw new Error(result.error || `Blog request failed (${res.status})`);
+        }
+
+        const blogs = result.data?.length > 0
+          ? result.data
+          : initialData.blogs || [];
+        set({
+          blogs,
+          blogsCacheHydrated: true,
+          blogsLastFetchedAt: Date.now(),
+        });
+        return blogs;
+      } catch (error) {
         console.error("[STORE] Blog fetch failure:", error);
-        set({ blogs: initialData.blogs || [] });
-    }
+        if (!get().blogsCacheHydrated) {
+          set({ blogs: initialData.blogs || [] });
+        }
+        return get().blogs;
+      } finally {
+        if (pendingBlogsRequest === request) pendingBlogsRequest = null;
+      }
+    })();
+
+    pendingBlogsRequest = request;
+    return request;
   },
 
   addBlog: async (data) => {
@@ -211,7 +246,7 @@ const useAdminStore = create((set, get) => ({
     const result = await res.json();
     if (result.success) {
         toast.success("Article broadcasted to network.");
-        await get().fetchBlogs();
+        await get().fetchBlogs({ force: true });
         return { success: true };
     } else {
         toast.error(result.error || "Broadcast failure.");
@@ -228,7 +263,7 @@ const useAdminStore = create((set, get) => ({
     const result = await res.json();
     if (result.success) {
         toast.success("Post updated and re-indexed.");
-        await get().fetchBlogs();
+        await get().fetchBlogs({ force: true });
         return { success: true };
     } else {
         toast.error(result.error || "Index update rejected.");
@@ -254,7 +289,7 @@ const useAdminStore = create((set, get) => ({
         
         if (result.success) {
             toast.success("Article deleted from index.");
-            await get().fetchBlogs();
+            await get().fetchBlogs({ force: true });
             return { success: true };
         } else {
             console.error("[STORE] Blog deletion rejection:", result.error);

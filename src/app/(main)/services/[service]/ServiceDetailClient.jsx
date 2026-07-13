@@ -1,9 +1,5 @@
-"use client";
-
-import { useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
 import {
   ArrowLeft,
   ArrowRight,
@@ -13,8 +9,6 @@ import {
   ClipboardList,
   HelpCircle,
   MessageSquare,
-  Minus,
-  Plus,
   Rocket,
   ShieldCheck,
   Sparkles,
@@ -23,12 +17,15 @@ import {
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui";
-import dynamic from "next/dynamic";
 import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
-
-const BookingModal = dynamic(() => import("@/components/BookingModal"), {
-  ssr: false,
-});
+import {
+  FAQItem,
+  HeroMotion,
+  ListMotionCard,
+  PreviewMotion,
+  Reveal,
+  ServiceBookingButton,
+} from "./ServiceDetailInteractions";
 
 const professionalCopy = {
   "web-development": {
@@ -244,11 +241,6 @@ const defaultFaq = [
   },
 ];
 
-const sectionVariants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0 },
-};
-
 const normalizeArray = (value) => {
   if (!value) return [];
   if (Array.isArray(value)) return value.filter(Boolean);
@@ -286,57 +278,11 @@ const SectionHeader = ({ eyebrow, title, description }) => (
   </div>
 );
 
-const Reveal = ({ children, className = "" }) => (
-  <motion.section
-    variants={sectionVariants}
-    initial="hidden"
-    whileInView="visible"
-    viewport={{ once: true, margin: "-80px" }}
-    transition={{ duration: 0.55 }}
-    className={className}
-  >
-    {children}
-  </motion.section>
-);
-
-const FAQItem = ({ question, answer }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <div className="rounded-2xl border border-border/60 bg-card/45 px-5 py-4 backdrop-blur-xl">
-      <button
-        type="button"
-        onClick={() => setIsOpen((current) => !current)}
-        className="flex w-full items-center justify-between gap-4 text-left"
-      >
-        <span className="text-sm font-bold text-foreground md:text-base">
-          {question}
-        </span>
-        {isOpen ? (
-          <Minus className="h-4 w-4 shrink-0 text-accent" />
-        ) : (
-          <Plus className="h-4 w-4 shrink-0 text-muted-foreground" />
-        )}
-      </button>
-      <motion.div
-        initial={false}
-        animate={{ height: isOpen ? "auto" : 0, opacity: isOpen ? 1 : 0 }}
-        className="overflow-hidden"
-      >
-        <p className="pt-4 text-sm leading-relaxed text-muted-foreground">
-          {answer}
-        </p>
-      </motion.div>
-    </div>
-  );
-};
-
 export default function ServiceDetailClient({
   service,
   relatedProjects = [],
   relatedServices = [],
 }) {
-  const [bookingOpen, setBookingOpen] = useState(false);
   const content = professionalCopy[service.slug] || {};
   const displayTitle =
     service.slug === "maintenance-support"
@@ -395,20 +341,14 @@ export default function ServiceDetailClient({
     service.ctaDescription ||
     "Share your idea, business goal, or website requirement, and Muhyo Tech will guide you with the right solution.";
   const category = service.category || content.eyebrow || "Muhyo Tech Service";
-  const initialService = service.title || service.slug || "";
   const bookCallHref = `/book-a-call?service=${encodeURIComponent(service.slug || "")}`;
 
-  const outcomes = useMemo(
-    () => [
-      "Better first impression",
-      "Clearer visitor journey",
-      "Stronger technical foundation",
-      "Practical room to scale",
-    ],
-    [],
-  );
-
-  const openBooking = () => setBookingOpen(true);
+  const outcomes = [
+    "Better first impression",
+    "Clearer visitor journey",
+    "Stronger technical foundation",
+    "Practical room to scale",
+  ];
 
   return (
     <main className="min-h-screen text-foreground">
@@ -416,12 +356,7 @@ export default function ServiceDetailClient({
         <div className="absolute inset-0 " />
 
         <div className="relative mx-auto grid min-h-[calc(100svh-1px)] max-w-7xl grid-cols-1 items-center gap-12 px-6 py-24 lg:grid-cols-[minmax(0,1fr)_minmax(380px,520px)] lg:py-28">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            className="lg:max-w-4xl"
-          >
+          <HeroMotion className="lg:max-w-4xl">
             <Link
               href="/services"
               className="mb-8 inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs font-bold text-muted-foreground shadow-lg shadow-accent/5 transition-colors hover:border-accent/50 hover:text-foreground"
@@ -455,10 +390,10 @@ export default function ServiceDetailClient({
             </div>
 
             <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-              <Button onClick={openBooking}>
+              <ServiceBookingButton service={service}>
                 Book a Call
                 <ArrowRight className="h-4 w-4" />
-              </Button>
+              </ServiceBookingButton>
               <Link href="/services">
                 <Button variant="secondary">View All Services</Button>
               </Link>
@@ -466,14 +401,9 @@ export default function ServiceDetailClient({
                 <Button variant="outline">Book This Service</Button>
               </Link>
             </div>
-          </motion.div>
+          </HeroMotion>
 
-          <motion.aside
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-            className="relative rounded-3xl border border-border bg-card p-4 shadow-2xl shadow-accent/10"
-          >
+          <PreviewMotion className="relative rounded-3xl border border-border bg-card p-4 shadow-2xl shadow-accent/10">
             <div className="absolute -inset-3 -z-10 rounded-3xl border border-accent/20 bg-accent/10 blur-2xl" />
             <div className="overflow-hidden rounded-2xl border border-border bg-background">
               <div className="flex items-center justify-between border-b border-border bg-muted/40 px-4 py-3">
@@ -530,7 +460,7 @@ export default function ServiceDetailClient({
                 </p>
               </div>
             </div>
-          </motion.aside>
+          </PreviewMotion>
         </div>
       </section>
 
@@ -589,10 +519,10 @@ export default function ServiceDetailClient({
               </p>
 
               <div className="mt-6 space-y-3">
-                <Button className="w-full" onClick={openBooking}>
+                <ServiceBookingButton service={service} className="w-full">
                   Book a Call
                   <Zap className="h-4 w-4" />
-                </Button>
+                </ServiceBookingButton>
                 <Link href={bookCallHref} className="block">
                   <Button variant="secondary" className="w-full">
                     Book This Service
@@ -684,12 +614,9 @@ export default function ServiceDetailClient({
               />
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 {benefits.map((benefit, index) => (
-                  <motion.div
+                  <ListMotionCard
                     key={itemTitle(benefit)}
-                    initial={{ opacity: 0, y: 18 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.04 }}
+                    delay={index * 0.04}
                     className="rounded-2xl border border-border/60 bg-card/45 p-5 transition-colors hover:border-accent/35"
                   >
                     <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-accent/10 text-accent">
@@ -703,7 +630,7 @@ export default function ServiceDetailClient({
                         {itemDescription(benefit)}
                       </p>
                     )}
-                  </motion.div>
+                  </ListMotionCard>
                 ))}
               </div>
             </Reveal>
@@ -716,12 +643,9 @@ export default function ServiceDetailClient({
               />
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 {process.map((step, index) => (
-                  <motion.div
+                  <ListMotionCard
                     key={`${step.title}-${index}`}
-                    initial={{ opacity: 0, y: 18 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.06 }}
+                    delay={index * 0.06}
                     className="rounded-2xl border border-border/60 bg-card/45 p-6 transition-colors hover:border-accent/35"
                   >
                     <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-accent/10 text-sm font-black text-accent">
@@ -735,7 +659,7 @@ export default function ServiceDetailClient({
                         {step.description}
                       </p>
                     )}
-                  </motion.div>
+                  </ListMotionCard>
                 ))}
               </div>
             </Reveal>
@@ -951,10 +875,10 @@ export default function ServiceDetailClient({
                 {ctaDescription}
               </p>
               <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
-                <Button onClick={openBooking}>
+                <ServiceBookingButton service={service}>
                   Book a Call for a Custom Quote
                   <ArrowRight className="h-4 w-4" />
-                </Button>
+                </ServiceBookingButton>
                 <Link href={bookCallHref}>
                   <Button variant="secondary">Book a Call Page</Button>
                 </Link>
@@ -974,16 +898,6 @@ export default function ServiceDetailClient({
         </div>
       </section>
 
-      {bookingOpen && (
-        <BookingModal
-          isOpen
-          onClose={() => setBookingOpen(false)}
-          initialServiceSlug={service.slug}
-          initialService={initialService}
-          sourcePage="service-detail"
-          contextTitle={service.title}
-        />
-      )}
     </main>
   );
 }

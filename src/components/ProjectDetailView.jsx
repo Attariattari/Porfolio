@@ -1,9 +1,5 @@
-"use client";
-
-import React, { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import {
   ArrowLeft,
   ArrowRight,
@@ -22,17 +18,14 @@ import {
   Target,
 } from "lucide-react";
 import { Button } from "@/components/ui";
-import dynamic from "next/dynamic";
 import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
-
-const ImageLightbox = dynamic(
-  () => import("@/components/ImageLightbox").then((mod) => mod.ImageLightbox),
-  { ssr: false },
-);
-
-const BookingModal = dynamic(() => import("@/components/BookingModal"), {
-  ssr: false,
-});
+import {
+  GlassCard,
+  ProjectBookingButton,
+  ProjectHeroMotion,
+  ProjectLightboxButton,
+  SectionHeading,
+} from "@/components/ProjectDetailInteractions";
 
 const iconMap = {
   Award,
@@ -70,46 +63,6 @@ const uniqueImages = (items = []) => {
   });
 };
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.55 } },
-};
-
-const SectionHeading = ({ eyebrow, title, description }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    className="mb-10"
-  >
-    {eyebrow && (
-      <p className="mb-3 text-xs font-bold tracking-normal text-accent">
-        {eyebrow}
-      </p>
-    )}
-    <h2 className="text-3xl font-bold tracking-tight text-foreground md:text-5xl">
-      {title}
-    </h2>
-    {description && (
-      <p className="mt-4 max-w-2xl text-sm font-medium leading-relaxed text-muted-foreground md:text-base">
-        {description}
-      </p>
-    )}
-  </motion.div>
-);
-
-const GlassCard = ({ children, className = "" }) => (
-  <motion.div
-    variants={fadeUp}
-    initial="hidden"
-    whileInView="visible"
-    viewport={{ once: true }}
-    className={`glass rounded-[2rem] border border-white/10 p-6 transition-all hover:border-accent/30 md:p-8 ${className}`}
-  >
-    {children}
-  </motion.div>
-);
-
 const FeatureCard = ({ item }) => {
   const Icon = iconMap[item.icon] || CheckCircle2;
   return (
@@ -130,9 +83,7 @@ export default function ProjectDetailView({
   relatedProjects = [],
   relatedServices = [],
 }) {
-  const [lightboxIndex, setLightboxIndex] = useState(null);
-  const [bookingOpen, setBookingOpen] = useState(false);
-  const galleryImages = useMemo(() => {
+  const galleryImages = (() => {
     const gallery = asArray(project.galleryImages).length
       ? asArray(project.galleryImages)
       : [
@@ -146,7 +97,7 @@ export default function ProjectDetailView({
         ];
 
     return uniqueImages(gallery);
-  }, [project]);
+  })();
 
   const lightboxImages = galleryImages.map(imageUrl);
   const heroImage = text(
@@ -192,11 +143,7 @@ export default function ProjectDetailView({
         </Link>
 
         <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-16">
-          <motion.div
-            initial={{ opacity: 0, x: -28 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.75 }}
-          >
+          <ProjectHeroMotion>
             <div className="mb-6 flex flex-wrap gap-3">
               {[project.category, project.projectType || project.purpose, project.status || project.publishStatus]
                 .filter(Boolean)
@@ -243,24 +190,21 @@ export default function ProjectDetailView({
                   </Button>
                 </Link>
               )}
-              <Button
-                type="button"
-                onClick={() => setBookingOpen(true)}
+              <ProjectBookingButton
+                projectTitle={project.title}
                 variant={liveUrl ? "secondary" : "primary"}
                 className="w-full rounded-2xl sm:w-auto"
               >
                 Similar Project
-              </Button>
+              </ProjectBookingButton>
             </div>
-          </motion.div>
+          </ProjectHeroMotion>
 
           {heroImage && (
-            <motion.button
-              type="button"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.75, delay: 0.1 }}
-              onClick={() => setLightboxIndex(0)}
+            <ProjectLightboxButton
+              images={lightboxImages}
+              initialIndex={0}
+              variant="hero"
               className="theme-media-frame group relative aspect-[4/3] overflow-hidden rounded-[2rem] border border-border/70 bg-card text-left"
             >
               <Image
@@ -272,7 +216,7 @@ export default function ProjectDetailView({
                 className="object-cover transition-transform duration-1000 group-hover:scale-105"
               />
               <div className="theme-image-wash absolute inset-0" />
-            </motion.button>
+            </ProjectLightboxButton>
           )}
         </div>
       </section>
@@ -404,13 +348,10 @@ export default function ProjectDetailView({
             <SectionHeading eyebrow="Screenshots" title="Project gallery" />
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               {galleryImages.map((image, index) => (
-                <motion.button
+                <ProjectLightboxButton
                   key={`${imageUrl(image)}-${index}`}
-                  type="button"
-                  initial={{ opacity: 0, y: 24 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  onClick={() => setLightboxIndex(index)}
+                  images={lightboxImages}
+                  initialIndex={index}
                   className="group relative aspect-[16/10] overflow-hidden rounded-[2rem] border border-white/10 bg-card text-left"
                 >
                   <Image
@@ -426,7 +367,7 @@ export default function ProjectDetailView({
                       <p className="text-sm font-bold text-foreground">{image.caption}</p>
                     </div>
                   )}
-                </motion.button>
+                </ProjectLightboxButton>
               ))}
             </div>
           </section>
@@ -549,13 +490,12 @@ export default function ProjectDetailView({
             Let&apos;s discuss your idea and build a modern, scalable, and professional web solution for your business.
           </p>
           <div className="flex flex-col justify-center gap-4 sm:flex-row">
-            <Button
-              type="button"
-              onClick={() => setBookingOpen(true)}
+            <ProjectBookingButton
+              projectTitle={project.title}
               className="w-full rounded-2xl sm:w-auto"
             >
-                Book a Call <ArrowRight className="h-4 w-4" />
-            </Button>
+              Book a Call <ArrowRight className="h-4 w-4" />
+            </ProjectBookingButton>
             <Link href="/contact">
               <Button variant="outline" className="w-full rounded-2xl sm:w-auto">
                 Send Message
@@ -570,22 +510,6 @@ export default function ProjectDetailView({
         </section>
       </section>
 
-      {lightboxIndex !== null && (
-        <ImageLightbox
-          isOpen
-          onClose={() => setLightboxIndex(null)}
-          images={lightboxImages}
-          initialIndex={lightboxIndex || 0}
-        />
-      )}
-      {bookingOpen && (
-        <BookingModal
-          isOpen
-          onClose={() => setBookingOpen(false)}
-          sourcePage="project-detail"
-          contextTitle={project.title}
-        />
-      )}
     </main>
   );
 }

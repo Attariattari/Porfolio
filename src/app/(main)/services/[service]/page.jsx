@@ -3,6 +3,15 @@ import { ServiceController } from "@/controllers/ServiceController";
 import { ProjectController } from "@/controllers/ProjectController";
 import ServiceDetailClient from "./ServiceDetailClient";
 
+export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  const services = await ServiceController.getAll(true).catch(() => []);
+  return services
+    .filter((service) => service.slug)
+    .map((service) => ({ service: service.slug }));
+}
+
 const normalizeArray = (value) => {
   if (!value) return [];
   if (Array.isArray(value)) {

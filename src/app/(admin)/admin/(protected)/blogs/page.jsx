@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import useAdminStore from "@/lib/store/adminStore";
+import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
 import DataTable from "@/components/admin/DataTable";
 import FormModal from "@/components/admin/FormModal";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
@@ -31,8 +33,15 @@ const blogSchema = z.object({
 });
 
 export default function BlogsPage() {
-  const { blogs, fetchBlogs, addBlog, updateBlog, deleteBlog, reorderBlogs } =
-    useAdminStore();
+  const {
+    blogs,
+    blogsLastFetchedAt,
+    fetchBlogs,
+    addBlog,
+    updateBlog,
+    deleteBlog,
+    reorderBlogs,
+  } = useAdminStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isAIProgressOpen, setIsAIProgressOpen] = useState(false);
@@ -48,7 +57,12 @@ export default function BlogsPage() {
 
   useEffect(() => {
     const saved = window.localStorage.getItem("admin:autoGenerateBlogImages");
-    setAutoGenerateImages(saved === "true");
+    if (saved !== "true") return undefined;
+
+    const frame = window.requestAnimationFrame(() => {
+      setAutoGenerateImages(true);
+    });
+    return () => window.cancelAnimationFrame(frame);
   }, []);
 
   const handleAutoImageToggle = () => {
@@ -124,9 +138,12 @@ export default function BlogsPage() {
       label: "Visual",
       render: (item) => (
         <div className="w-16 h-10 rounded-lg overflow-hidden border border-white/10 shadow-lg bg-white/5 flex items-center justify-center">
-          <img
-            src={item.image || item.images?.[0]}
+          <Image
+            src={getSafeImageSrc(item.image || item.images?.[0])}
             alt={item.title}
+            width={64}
+            height={40}
+            sizes="64px"
             className="w-full h-full object-cover"
           />
         </div>
@@ -206,7 +223,7 @@ export default function BlogsPage() {
                       toast.success(`Image workflow: ${data.status}`, {
                         id: toastId,
                       });
-                      fetchBlogs();
+                      fetchBlogs({ force: true });
                     } else {
                       toast.error(data.message || "Image regeneration failed.", {
                         id: toastId,
@@ -431,7 +448,9 @@ export default function BlogsPage() {
     ].includes(imageStepStatus);
     const createdTime = new Date(b.generatedAt || b.createdAt || 0).getTime();
     const isFreshAiBlog =
-      Number.isFinite(createdTime) && Date.now() - createdTime < 24 * 60 * 60 * 1000;
+      Number.isFinite(createdTime) &&
+      blogsLastFetchedAt > 0 &&
+      blogsLastFetchedAt - createdTime < 24 * 60 * 60 * 1000;
 
     return (
       b.aiGenerated &&
@@ -582,7 +601,7 @@ export default function BlogsPage() {
               setIsAIProgressOpen(false);
               setSelectedBlogForImage(null);
             }}
-            onComplete={() => fetchBlogs()}
+            onComplete={() => fetchBlogs({ force: true })}
             mode={selectedBlogForImage || pendingImageBlog ? "image" : "text"}
             blogId={selectedBlogForImage?._id || pendingImageBlog?._id}
             autoGenerateImages={autoGenerateImages}

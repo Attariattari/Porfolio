@@ -102,7 +102,8 @@ export const BlogController = {
                         publishStatus: "published",
                     }));
                 },
-                300, ["blogs", filterPublished ? "public:blogs" : "admin:blogs"],
+                filterPublished ? 900 : 300,
+                ["blogs", filterPublished ? "public:blogs" : "admin:blogs"],
             );
         } catch (error) {
             console.error(
@@ -153,7 +154,7 @@ export const BlogController = {
 
                     return null;
                 },
-                900,
+                3600,
                 ["blogs", "public:blogs"],
             );
         } catch (error) {
@@ -229,6 +230,7 @@ export const BlogController = {
                 try {
                     revalidatePath("/");
                     revalidatePath("/blog");
+                    revalidatePath(`/blog/${updated.slug}`);
                 } catch (e) {}
             }
 

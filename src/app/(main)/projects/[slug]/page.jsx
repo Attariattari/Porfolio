@@ -55,13 +55,15 @@ export async function generateMetadata({ params }) {
 
 export default async function ProjectPage({ params }) {
   const { slug } = await params;
-  const project = await ProjectController.getOne(slug);
+  const [project, allProjects] = await Promise.all([
+    ProjectController.getOne(slug),
+    ProjectController.getAll(true).catch(() => []),
+  ]);
 
   if (!project || !["published", undefined, null].includes(project.publishStatus || project.status)) {
     notFound();
   }
 
-  const allProjects = await ProjectController.getAll(true).catch(() => []);
   const serializedProjects = serializeDoc(allProjects || []);
   const relatedProjects = serializedProjects
     .filter((item) => item.slug && item.slug !== project.slug)

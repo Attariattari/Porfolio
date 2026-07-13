@@ -21,7 +21,16 @@ export async function GET(request) {
     }
 
     const blogs = await BlogController.getAll(false, { includeContent });
-    return NextResponse.json({ success: true, count: blogs.length, data: blogs });
+    const response = NextResponse.json({ success: true, count: blogs.length, data: blogs });
+
+    if (includeContent) {
+      // Authenticated admin payloads may be reused by this browser only. Never
+      // place draft/full article content in Vercel's shared CDN cache.
+      response.headers.set("Cache-Control", "private, max-age=60, stale-while-revalidate=240");
+      response.headers.set("Vary", "Cookie");
+    }
+
+    return response;
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
