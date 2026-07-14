@@ -35,25 +35,6 @@ export const metadata = {
   },
 };
 
-const serviceSchema = {
-  "@context": "https://schema.org",
-  "@type": "Service",
-  name: "Web Development Services in Lahore",
-  provider: {
-    "@type": "Organization",
-    name: "Muhyo Tech",
-    url: SITE_URL,
-  },
-  url: buildCanonical("/services"),
-  image: getSeoImage("/services-preview.png"),
-  serviceType:
-    "Web Development, Next.js Development, MERN Stack Development, Admin Dashboard Development, Custom Website Development",
-  areaServed: {
-    "@type": "Place",
-    name: "Lahore, Pakistan",
-  },
-};
-
 export default async function ServicesPage() {
   // Get merged services: MongoDB + unused data.js items - IMPORTANT: Serialize Mongoose documents
   const dbServices = await ServiceController.getAll(true).catch(() => []);
@@ -65,12 +46,43 @@ export default async function ServicesPage() {
     serviceProcess: portfolioData.serviceProcess,
     servicesPage: portfolioData.siteConfig.servicesPage,
   };
+  const servicesPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Web Development Services in Lahore",
+    description: metadata.description,
+    url: buildCanonical("/services"),
+    image: getSeoImage("/services-preview.png"),
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: services.length,
+      itemListElement: services.map((service, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        url: buildCanonical(`/services/${service.slug}`),
+        item: {
+          "@type": "Service",
+          name: service.title,
+          description: service.shortDescription || service.description,
+          provider: {
+            "@type": "Organization",
+            name: "Muhyo Tech",
+            url: SITE_URL,
+          },
+          areaServed: {
+            "@type": "Country",
+            name: "Pakistan",
+          },
+        },
+      })),
+    },
+  };
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(servicesPageSchema) }}
       />
       <BreadcrumbSchema
         items={[

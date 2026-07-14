@@ -176,6 +176,29 @@ const uniqueServicesBySlug = (services = []) => {
   });
 };
 
+const getCanonicalSeedService = (slug = "") =>
+  servicesSeedData.find(
+    (service) =>
+      service.slug === slug ||
+      (Array.isArray(service.legacySlugs) && service.legacySlugs.includes(slug)),
+  );
+
+const canonicalizePublicService = (service = {}) => {
+  const normalized = normalizeServiceData(service);
+  const canonicalSeedService = getCanonicalSeedService(normalized.slug);
+
+  if (!canonicalSeedService || canonicalSeedService.slug === normalized.slug) {
+    return normalized;
+  }
+
+  return {
+    ...normalizeServiceData(canonicalSeedService),
+    _dbId: normalized._id || normalized._dbId || null,
+    createdAt: normalized.createdAt,
+    updatedAt: normalized.updatedAt,
+  };
+};
+
 export const ServiceController = {
   async getAll(filterPublished = false) {
     const cacheKey = filterPublished ? "services:list:published" : "admin:services:list";
@@ -203,7 +226,12 @@ export const ServiceController = {
             return uniqueServicesBySlug(serializeDoc(dbServices).map(normalizeServiceData));
           }
 
-          const uploadedSlugs = new Set(dbServices.map((service) => service.slug));
+          const normalizedDbServices = serializeDoc(dbServices).map(
+            canonicalizePublicService,
+          );
+          const uploadedSlugs = new Set(
+            normalizedDbServices.map((service) => service.slug),
+          );
           const fallbackServices = servicesSeedData
             .filter((service) => !uploadedSlugs.has(service.slug))
             .map((service) => ({
@@ -215,7 +243,7 @@ export const ServiceController = {
             }));
 
           return uniqueServicesBySlug([
-            ...serializeDoc(dbServices).map(normalizeServiceData),
+            ...normalizedDbServices,
             ...fallbackServices,
           ]);
         },

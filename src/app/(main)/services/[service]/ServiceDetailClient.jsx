@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui";
 import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
+import { getServiceSearchContent } from "@/lib/serviceSearchContent";
 import {
   FAQItem,
   HeroMotion,
@@ -285,12 +286,17 @@ export default function ServiceDetailClient({
   relatedServices = [],
 }) {
   const content = professionalCopy[service.slug] || {};
+  const searchContent = getServiceSearchContent(service.slug);
   const displayTitle =
-    service.slug === "maintenance-support"
+    searchContent?.h1 ||
+    (service.slug === "maintenance-support"
       ? "Website Maintenance & Support in Pakistan"
-      : service.title;
+      : service.title);
   const description =
-    service.shortDescription || content.description || service.description;
+    searchContent?.metaDescription ||
+    service.shortDescription ||
+    content.description ||
+    service.description;
   const overview =
     service.overview ||
     service.fullDescription ||
@@ -313,11 +319,16 @@ export default function ServiceDetailClient({
     : normalizeArray(service.process).length
       ? normalizeArray(service.process)
       : defaultProcess;
-  const faq = normalizeFaq(service.faqs).length
+  const baseFaq = normalizeFaq(service.faqs).length
     ? normalizeFaq(service.faqs)
     : normalizeFaq(service.faq).length
       ? normalizeFaq(service.faq)
       : defaultFaq;
+  const faq = [...(searchContent?.faqs || []), ...baseFaq].filter(
+    (item, index, items) =>
+      items.findIndex((candidate) => candidate.question === item.question) ===
+      index,
+  );
   const techStack = normalizeArray(service.technologies).length
     ? normalizeArray(service.technologies)
     : normalizeArray(service.techStack);
@@ -502,6 +513,44 @@ export default function ServiceDetailClient({
                 </div>
               </div>
             </Reveal>
+
+            {searchContent && (
+              <Reveal>
+                <SectionHeader
+                  eyebrow="Service expertise"
+                  title={searchContent.sectionTitle}
+                  description={`Clear guidance for businesses comparing ${searchContent.primaryKeyword} and related development options.`}
+                />
+                <div className="rounded-2xl border border-border/60 bg-card/45 p-6 backdrop-blur-xl md:p-8">
+                  <div className="space-y-5">
+                    {searchContent.paragraphs.map((paragraph) => (
+                      <p
+                        key={paragraph}
+                        className="text-base leading-relaxed text-muted-foreground md:text-lg"
+                      >
+                        {paragraph}
+                      </p>
+                    ))}
+                  </div>
+                  <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
+                    {searchContent.idealFor.map((item) => (
+                      <article
+                        key={item.title}
+                        className="rounded-xl border border-border/60 bg-background/45 p-5"
+                      >
+                        <Target className="mb-4 h-5 w-5 text-accent" />
+                        <h3 className="text-base font-bold text-foreground">
+                          {item.title}
+                        </h3>
+                        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                          {item.description}
+                        </p>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+              </Reveal>
+            )}
           </div>
 
           <aside className="lg:sticky lg:top-24 lg:h-fit">
@@ -895,6 +944,7 @@ export default function ServiceDetailClient({
                 </Link>
               </div>
             </Reveal>
+
           </div>
         </div>
       </section>

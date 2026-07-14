@@ -3,6 +3,9 @@ import { portfolioData } from "@/lib/data";
 import { BlogController } from "@/controllers/BlogController";
 import { serializeDoc } from "@/lib/mongooseHelper";
 import { buildCanonical, getSeoImage } from "@/lib/seo";
+import { SITE_URL } from "@/lib/config";
+import { getBlogPublishedDate, getBlogSeoDescription } from "@/lib/blogSeo";
+import BreadcrumbSchema from "@/components/seo/BreadcrumbSchema";
 
 // P1 OPTIMIZATION: Enable ISR (Incremental Static Regeneration)
 // Revalidate every 5 minutes = Cache hits for 95%+ of users
@@ -14,6 +17,16 @@ export const metadata = {
   description:
     "Read practical engineering guides on Next.js, Node.js, web performance, SEO, backend architecture, deployment, and modern product development.",
   alternates: { canonical: buildCanonical("/blog") },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   openGraph: {
     title: "Muhyo Tech Blog - Engineering, SEO & Web Development",
     description:
@@ -36,10 +49,49 @@ export default async function BlogPage() {
   const blogs = await BlogController.getAll(true).catch(
     () => portfolioData.blogs,
   );
+  const blogCollectionSchema = {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    name: "Muhyo Tech Engineering Blog",
+    description: metadata.description,
+    url: buildCanonical("/blog"),
+    publisher: {
+      "@type": "Organization",
+      name: "Muhyo Tech",
+      url: SITE_URL,
+    },
+    blogPost: blogs
+      .filter((blog) => blog.slug)
+      .slice(0, 30)
+      .map((blog) => ({
+        "@type": "BlogPosting",
+        headline: blog.title,
+        description: getBlogSeoDescription(blog),
+        url: buildCanonical(`/blog/${blog.slug}`),
+        datePublished: getBlogPublishedDate(blog),
+        author: {
+          "@type": "Person",
+          name: blog.author || "Pir Ghulam Muhyo Din",
+          url: buildCanonical("/about"),
+        },
+      })),
+  };
 
   return (
-    <div className="pt-0">
-      <Blog data={blogs} />
-    </div>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogCollectionSchema) }}
+      />
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: SITE_URL },
+          { name: "Blog", url: buildCanonical("/blog") },
+        ]}
+      />
+      <div className="pt-0">
+        <Blog data={blogs} />
+      </div>
+    </>
   );
 }

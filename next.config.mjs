@@ -19,6 +19,56 @@ const nextConfig = {
     async redirects() {
         return [
             {
+                source: "/blog/why-we-retired-custom-auth-systems",
+                destination: "/blog/why-we-stopped-building-our-own-authentication-systems",
+                permanent: true,
+            },
+            {
+                source: "/blog/why-we-finally-sharded-our-database",
+                destination: "/blog/database-sharding-when-and-why-we-finally-pulled-the-trigger",
+                permanent: true,
+            },
+            {
+                source: "/blog/mongodb-aggregation-real-world-performance",
+                destination: "/blog/mongodb-aggregation-complex-data-production",
+                permanent: true,
+            },
+            {
+                source: "/blog/how-we-cured-post-merge-panic-devops-automation",
+                destination: "/blog/deployment-anxiety-devops-automation",
+                permanent: true,
+            },
+            {
+                source: "/services/web-development",
+                destination: "/services/custom-website-development",
+                permanent: true,
+            },
+            {
+                source: "/services/mobile-app-development",
+                destination: "/services/full-stack-web-app-development",
+                permanent: true,
+            },
+            {
+                source: "/services/ui-ux-design",
+                destination: "/services/landing-page-design",
+                permanent: true,
+            },
+            {
+                source: "/services/api-development",
+                destination: "/services/api-integration",
+                permanent: true,
+            },
+            {
+                source: "/services/seo-digital-growth",
+                destination: "/services/seo-friendly-website-setup",
+                permanent: true,
+            },
+            {
+                source: "/services/cloud-devops",
+                destination: "/services/maintenance-support",
+                permanent: true,
+            },
+            {
                 source: "/contact",
                 has: [
                     {

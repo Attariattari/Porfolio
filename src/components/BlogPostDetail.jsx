@@ -19,7 +19,12 @@ import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
 import { getBlogImageAlt } from "@/lib/blogImageAlt";
 import { ensureMuhyoTechAlt } from "@/lib/mediaAlt";
 
-export default function BlogPostDetail({ blog, shareUrl, trendingBlogs = [] }) {
+export default function BlogPostDetail({
+  blog,
+  shareUrl,
+  relatedBlogs = [],
+  relatedServices = [],
+}) {
   if (!blog) return null;
 
   const coverImage = getSafeImageSrc(blog.image || blog.featuredImage?.url, "/portfolio-hero.png");
@@ -117,7 +122,10 @@ export default function BlogPostDetail({ blog, shareUrl, trendingBlogs = [] }) {
                 </p>
               ) : <span />}
 
-              <div className="flex items-center gap-4 lg:justify-end">
+              <Link
+                href="/about"
+                className="flex items-center gap-4 lg:justify-end"
+              >
                 <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full border-2 border-accent/30">
                   <Image
                     src={getSafeImageSrc("https://res.cloudinary.com/dg5gwixf1/image/upload/v1772736622/ChatGPT_Image_Mar_5_2026_11_36_42_AM_auw4uw.png", "/logo.png")}
@@ -135,7 +143,7 @@ export default function BlogPostDetail({ blog, shareUrl, trendingBlogs = [] }) {
                     {blog.authorRole}
                   </p>
                 </div>
-              </div>
+              </Link>
             </div>
           </motion.div>
 
@@ -191,16 +199,51 @@ export default function BlogPostDetail({ blog, shareUrl, trendingBlogs = [] }) {
             {/* Tags */}
             <div className="mt-16 pt-8 border-t border-border/10">
               <div className="flex flex-wrap gap-3">
-                {blog.tags.map((tag) => (
-                  <span
+                {(blog.tags || []).map((tag) => (
+                  <Link
                     key={tag}
+                    href={`/blog?tag=${encodeURIComponent(tag)}`}
                     className="px-4 py-2 rounded-xl bg-muted/20 text-muted-foreground text-xs font-bold hover:bg-accent/10 hover:text-accent transition-colors cursor-pointer"
                   >
                     #{tag}
-                  </span>
+                  </Link>
                 ))}
               </div>
             </div>
+
+            {relatedServices.length > 0 && (
+              <section className="mt-16 border-t border-border/10 pt-10">
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-accent">
+                  Put the insight into practice
+                </p>
+                <h2 className="mt-3 text-3xl font-bold tracking-tight text-foreground">
+                  Related Muhyo Tech services
+                </h2>
+                <p className="mt-4 max-w-3xl text-base leading-relaxed text-muted-foreground">
+                  These services connect the article&apos;s engineering topic to a
+                  practical website, application, performance, or business outcome.
+                </p>
+                <div className="mt-7 grid gap-4 md:grid-cols-3">
+                  {relatedServices.map((service) => (
+                    <Link
+                      key={service.slug}
+                      href={service.href}
+                      className="group rounded-2xl border border-border/60 bg-card/45 p-5 transition-colors hover:border-accent/40"
+                    >
+                      <h3 className="text-base font-bold leading-snug text-foreground group-hover:text-accent">
+                        {service.title}
+                      </h3>
+                      <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                        {service.description}
+                      </p>
+                      <span className="mt-5 inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-accent">
+                        Explore service <ArrowRight className="h-4 w-4" />
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            )}
 
             {/* CTA Section */}
             <div className="mt-20 p-8 md:p-12 rounded-3xl bg-gradient-to-br from-accent/10 to-blue-600/5 border border-accent/20 flex flex-col md:flex-row items-center justify-between gap-8">
@@ -287,7 +330,7 @@ export default function BlogPostDetail({ blog, shareUrl, trendingBlogs = [] }) {
               </div>
             </motion.div>
 
-            {trendingBlogs.length > 0 && (
+            {relatedBlogs.length > 0 && (
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -297,17 +340,17 @@ export default function BlogPostDetail({ blog, shareUrl, trendingBlogs = [] }) {
                 <div className="mb-5 flex items-center justify-between gap-3">
                   <h4 className="mb-0 flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70">
                     <span className="h-px w-8 bg-border" />
-                    Trending Now
+                    Related Reading
                   </h4>
                   <span className="rounded-full border border-accent/20 bg-accent/10 px-2 py-1 text-[8px] font-bold uppercase tracking-wider text-accent">
-                    AI ranked
+                    Topic match
                   </span>
                 </div>
                 <div className="space-y-5">
-                  {trendingBlogs.map((trendingBlog, index) => (
+                  {relatedBlogs.map((relatedBlog, index) => (
                     <Link
-                      key={trendingBlog.slug || trendingBlog._id || index}
-                      href={`/blog/${trendingBlog.slug}`}
+                      key={relatedBlog.slug || relatedBlog._id || index}
+                      href={`/blog/${relatedBlog.slug}`}
                       className="group relative flex gap-4"
                     >
                       <span className="text-2xl font-black text-foreground/10 transition-colors duration-500 group-hover:text-accent/30 tabular-nums">
@@ -316,10 +359,10 @@ export default function BlogPostDetail({ blog, shareUrl, trendingBlogs = [] }) {
                       <span className="min-w-0 space-y-2">
                         <span className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-accent/70">
                           <span className="h-1.5 w-1.5 rounded-full bg-accent shadow-[0_0_10px_rgba(var(--accent-rgb),0.6)]" />
-                          {trendingBlog.category || "Insights"}
+                          {relatedBlog.category || "Insights"}
                         </span>
                         <span className="block text-sm font-bold leading-snug text-foreground transition-colors duration-300 line-clamp-2 group-hover:text-accent">
-                          {trendingBlog.title}
+                          {relatedBlog.title}
                         </span>
                       </span>
                     </Link>

@@ -11,6 +11,7 @@ import {
     triggerFeaturedUpdate,
 } from "@/lib/ai/featuredEngine";
 import { revalidatePath } from "next/cache";
+import { isLegacyBlogSlug } from "@/lib/blogSeo";
 
 const isPublicBlog = (blog = {}) => {
     const status = blog.publishStatus ?? blog.status ?? "published";
@@ -26,7 +27,7 @@ export const BlogController = {
     async getAll(filterPublished = false, options = {}) {
         const includeContent = options.includeContent === true;
         const cacheKey = filterPublished
-            ? "blogs:list:published"
+            ? `blogs:list:published:${includeContent ? "full" : "summary"}`
             : `admin:blogs:list:${includeContent ? "full" : "summary"}`;
 
         try {
@@ -52,17 +53,24 @@ export const BlogController = {
                             "slug",
                             "summary",
                             ...(includeContent ? ["content"] : []),
+                            "seoTitle",
+                            "seoDescription",
+                            "focusKeyword",
+                            "searchIntent",
+                            "relatedServiceSlugs",
                             "image",
                             "featuredImage",
                             "category",
                             "tags",
                             "date",
                             "createdAt",
+                            "updatedAt",
                             "featured",
                             "featuredOrder",
                             "featuredScore",
                             "qualityScore",
                             "qualityMetrics",
+                            "qualityStatus",
                             "order",
                             "publishStatus",
                             "author",
@@ -82,13 +90,24 @@ export const BlogController = {
                         .lean();
 
                     if (dbBlogs.length > 0) {
-                        return serializeDoc(dbBlogs);
+                        const serializedBlogs = serializeDoc(dbBlogs);
+                        return filterPublished
+                            ? serializedBlogs.filter((blog) => !isLegacyBlogSlug(blog.slug))
+                            : serializedBlogs;
                     }
 
-                    return portfolioData.blogs.map((b) => ({
+                    return portfolioData.blogs
+                      .filter((blog) => !filterPublished || !isLegacyBlogSlug(blog.slug))
+                      .map((b) => ({
                         title: b.title,
                         slug: b.slug,
                         summary: b.summary,
+                        ...(includeContent ? { content: b.content } : {}),
+                        seoTitle: b.seoTitle,
+                        seoDescription: b.seoDescription,
+                        focusKeyword: b.focusKeyword,
+                        searchIntent: b.searchIntent,
+                        relatedServiceSlugs: b.relatedServiceSlugs || [],
                         image: b.image,
                         category: b.category,
                         tags: b.tags || [],
@@ -100,7 +119,7 @@ export const BlogController = {
                         _isFromDataJs: true,
                         _dbId: null,
                         publishStatus: "published",
-                    }));
+                      }));
                 },
                 filterPublished ? 900 : 300,
                 ["blogs", filterPublished ? "public:blogs" : "admin:blogs"],
@@ -111,7 +130,9 @@ export const BlogController = {
                 error.message,
             );
             // Fallback to static data if DB is offline
-            return portfolioData.blogs.map((b) => ({...b, _isFromDataJs: true }));
+            return portfolioData.blogs
+                .filter((blog) => !filterPublished || !isLegacyBlogSlug(blog.slug))
+                .map((b) => ({...b, _isFromDataJs: true }));
         }
     },
 
@@ -219,7 +240,10 @@ export const BlogController = {
     async update(id, data) {
         try {
             await dbConnect();
-            const updated = await Blog.findByIdAndUpdate(id, data, {
+            const updated = await Blog.findByIdAndUpdate(id, {
+                ...data,
+                updatedAt: new Date(),
+            }, {
                 new: true,
                 runValidators: true,
             }).lean();

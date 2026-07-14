@@ -7,8 +7,29 @@ import dbConnect from "./dbConnect.js";
 import { cacheManager } from "./cache.js";
 import { ensureBlogImage } from "./ai/blog/ensureBlogImage.js";
 import { revalidatePath } from "next/cache";
+import {
+  findNearDuplicateBlog,
+  getBlogWordCount,
+} from "./blogSeo.js";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const ALLOWED_RELATED_SERVICE_SLUGS = new Set([
+  "custom-website-development",
+  "mern-stack-web-development",
+  "nextjs-website-development",
+  "full-stack-web-app-development",
+  "admin-dashboard-development",
+  "e-commerce-website-development",
+  "portfolio-website-development",
+  "landing-page-design",
+  "website-redesign",
+  "api-integration",
+  "database-integration",
+  "seo-friendly-website-setup",
+  "website-speed-optimization",
+  "maintenance-support",
+]);
 
 function withTimeout(promise, timeoutMs, fallbackValue, label = "Operation") {
   let timeoutId;
@@ -392,6 +413,9 @@ async function generateEditorialContent(
     - Make the blog useful and attractive for both founders and developers so it can bring qualified attention to the website.
     - Include 1-2 natural lines showing how this thinking shapes Muhyo Tech's work or standards, without sounding like an ad.
     - Mention client/business outcomes naturally: faster launches, fewer bugs, better UX, less downtime, cleaner operations, stronger SEO, or easier scaling.
+    - Choose ONE clear primary search query that the article answers. Use it naturally; never repeat it mechanically.
+    - Do not invent a production incident, client engagement, metric, testimonial, or result. Clearly describe hypothetical scenarios as examples.
+    - Link the topic to 1-3 genuinely relevant Muhyo Tech services using only the allowed service slugs below.
     - Avoid "AI-isms" and common tropes.
     - The Image Prompt must be REALISTIC and EDITORIAL (No neon, no cyberpunk).
 
@@ -403,6 +427,11 @@ async function generateEditorialContent(
       "title": "Human and intriguing title",
       "slug": "url-friendly-slug",
       "summary": "Compelling editorial summary (150-160 chars).",
+      "seoTitle": "Clear unique search title, ideally 45-65 characters.",
+      "seoDescription": "Accurate search description between 120 and 155 characters.",
+      "focusKeyword": "One natural primary search query.",
+      "searchIntent": "informational | commercial | transactional | navigational",
+      "relatedServiceSlugs": ["1 to 3 relevant slugs chosen only from: custom-website-development, mern-stack-web-development, nextjs-website-development, full-stack-web-app-development, admin-dashboard-development, e-commerce-website-development, portfolio-website-development, landing-page-design, website-redesign, api-integration, database-integration, seo-friendly-website-setup, website-speed-optimization, maintenance-support"],
       "category": "Engineering | Design | Backend | SEO | Technology | Architecture | Culture | Security | Infrastructure",
       "tags": ["tag1", "tag2", "tag3"],
       "content": "Full HTML article body with <p>, <h2>, <ul>/<li> where useful. 900-1400 words. 2-3 sentences per paragraph ONLY.",
@@ -428,12 +457,34 @@ async function generateEditorialContent(
     const content = typeof parsed.content === "string" ? parsed.content.trim() : "";
     const hasHtmlBlocks = /<(p|h2|h3|ul|ol|blockquote)\b/i.test(content);
     const sectionCount = (content.match(/<h2\b/gi) || []).length;
+    const wordCount = getBlogWordCount({ content });
+    const seoDescriptionLength = String(parsed.seoDescription || "").trim().length;
+    const summaryLength = String(parsed.summary || "").trim().length;
+    const validSearchIntent = [
+      "informational",
+      "commercial",
+      "transactional",
+      "navigational",
+    ].includes(parsed.searchIntent);
 
-    if (content.length < 2500 || !hasHtmlBlocks || sectionCount < 3) {
+    if (
+      content.length < 2500 ||
+      wordCount < 700 ||
+      !hasHtmlBlocks ||
+      sectionCount < 5 ||
+      !parsed.title ||
+      !parsed.slug ||
+      summaryLength < 100 ||
+      !parsed.focusKeyword ||
+      !parsed.seoTitle ||
+      seoDescriptionLength < 120 ||
+      seoDescriptionLength > 155 ||
+      !validSearchIntent
+    ) {
       if (retryCount < 2) {
         return generateEditorialContent(
           topic,
-          "The previous output did not include a complete Full Narrative Content body. Regenerate a full 900-1400 word HTML article with multiple <h2> sections and rich <p> paragraphs.",
+          "Regenerate a complete 900-1400 word article with at least five useful H2 sections, one clear focus keyword, a valid search intent, a unique SEO title, and a 120-155 character SEO description.",
           retryCount + 1,
           null,
           recentTopics,
@@ -441,6 +492,23 @@ async function generateEditorialContent(
       }
       throw new Error("Generated blog content was incomplete or not valid HTML.");
     }
+
+    parsed.slug = String(parsed.slug || parsed.title || "")
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+    parsed.tags = Array.isArray(parsed.tags)
+      ? [...new Set(parsed.tags.map((tag) => String(tag).trim()).filter(Boolean))].slice(0, 8)
+      : [];
+    parsed.relatedServiceSlugs = Array.isArray(parsed.relatedServiceSlugs)
+      ? [...new Set(parsed.relatedServiceSlugs)]
+          .filter((slug) => ALLOWED_RELATED_SERVICE_SLUGS.has(slug))
+          .slice(0, 3)
+      : [];
+    parsed.seoTitle = String(parsed.seoTitle).trim();
+    parsed.seoDescription = String(parsed.seoDescription).trim();
+    parsed.focusKeyword = String(parsed.focusKeyword).trim();
 
     return parsed;
   } catch (e) {
@@ -903,6 +971,28 @@ export async function runBlogAutomationPipeline(
         null,
         automationContext,
       );
+    }
+
+    if (!previousDraft) {
+      const recentCandidates = await Blog.find()
+        .sort({ createdAt: -1 })
+        .limit(50)
+        .select("title slug summary category tags focusKeyword")
+        .lean();
+      const nearDuplicate = findNearDuplicateBlog(blogData, recentCandidates);
+
+      if (nearDuplicate) {
+        report("DUPLICATE_TOPIC_REJECTED", {
+          message: `Topic overlaps too closely with: ${nearDuplicate.title}`,
+        });
+        return runBlogAutomationPipeline(
+          retryCount + 1,
+          onProgress,
+          null,
+          null,
+          automationContext,
+        );
+      }
     }
 
     // 5. SAVE

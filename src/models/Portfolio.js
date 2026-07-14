@@ -134,6 +134,14 @@ const BlogSchema = new mongoose.Schema({
     title: { type: String, required: true },
     summary: { type: String },
     content: { type: String }, // HTML or Markdown
+    seoTitle: { type: String },
+    seoDescription: { type: String },
+    focusKeyword: { type: String, index: true },
+    searchIntent: {
+        type: String,
+        enum: ["informational", "commercial", "transactional", "navigational"],
+    },
+    relatedServiceSlugs: [{ type: String }],
     date: { type: String },
     author: { type: String, default: "Pir Ghulam Muhyo Din" },
     authorRole: { type: String, default: "Founder" },
@@ -227,6 +235,7 @@ const BlogSchema = new mongoose.Schema({
     imageRetryCount: { type: Number, default: 0 }, // Total retry attempts
     imageError: { type: String }, // Last error message if generation failed
     createdAt: { type: Date, default: Date.now, index: true },
+    updatedAt: { type: Date, default: Date.now },
 });
 
 // 4. SKILL SCHEMA
