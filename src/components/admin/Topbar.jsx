@@ -54,60 +54,6 @@ export default function Topbar() {
     };
   }, [fetchNotifications]);
 
-  // PATCH: Token expiration check (every 45 seconds)
-  useEffect(() => {
-    const checkTokenExpiry = async () => {
-      try {
-        const token = localStorage.getItem("admin_token");
-        if (!token) return;
-
-        // Parse JWT payload manually to check exp claim
-        const parts = token.split(".");
-        if (parts.length !== 3) return;
-
-        const payload = JSON.parse(atob(parts[1]));
-        const expiryTime = payload.exp; // in seconds
-
-        if (!expiryTime) return;
-
-        // Compare with current time (convert ms to s)
-        const now = Math.floor(Date.now() / 1000);
-        const timeUntilExpiry = expiryTime - now;
-
-        // If token expired or expiring within 30 seconds
-        if (timeUntilExpiry <= 30) {
-          console.warn("[AUTH] Token expiring soon, triggering auto-logout");
-          toast.error("Session Expired", {
-            description: "Your session has expired. Please login again.",
-          });
-          
-          // Clear auth data
-          localStorage.removeItem("admin_token");
-          document.cookie = "admin_auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-          document.cookie = "admin_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-          
-          // Call backend logout
-          await fetch("/api/admin/logout", { method: "POST" });
-          
-          // Redirect to login
-          setTimeout(() => {
-            window.location.href = "/admin/login";
-          }, 1500);
-        }
-      } catch (err) {
-        console.error("[AUTH] Token expiry check error:", err);
-      }
-    };
-
-    // Check every 45 seconds
-    const interval = setInterval(checkTokenExpiry, 45 * 1000);
-    
-    // Also check immediately on mount
-    checkTokenExpiry();
-
-    return () => clearInterval(interval);
-  }, []);
-
   const unreadCount = useMemo(
     () => notifications.filter((n) => n.status === "unread").length,
     [notifications],

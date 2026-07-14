@@ -37,11 +37,12 @@ export const setupFetchInterceptor = () => {
       try {
         const response = await originalFetch(...args);
         
-        // Auto-redirect to login if unauthorized in admin area
-        // ⭐ PROFESSIONAL: Exclude login API and only redirect if NOT already on login page
-        if (response.status === 401 && 
-            url && url.toString().includes("/api/admin/") && 
-            !url.toString().includes("/api/admin/login") &&
+        // Only the dedicated session endpoint may decide that authentication
+        // expired. Route-specific 401s must not cause a login redirect loop.
+        const requestUrl = url?.toString() || "";
+        const isSessionCheck = requestUrl.includes("/api/admin/me");
+        if (response.status === 401 &&
+            isSessionCheck &&
             typeof window !== "undefined" && 
             window.location.pathname !== "/admin/login" &&
             !window.location.pathname.includes("/admin/security/change-passkey")) {

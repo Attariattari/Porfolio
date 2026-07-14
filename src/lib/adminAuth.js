@@ -6,6 +6,7 @@
 import { jwtVerify } from "jose";
 import dbConnect from "@/lib/dbConnect";
 import User from "@/models/AdminModels";
+import { getAuthSession } from "@/lib/auth";
 
 const SECRET = new TextEncoder().encode(
   process.env.AUTH_SECRET || "fallback_muhyo_secret_32_chars_long_!!!",
@@ -18,6 +19,19 @@ const ROOT_ADMIN_EMAIL = (process.env.SUPER_ADMIN_EMAIL || "attariattari549@gmai
  */
 export async function verifyAuth(request) {
   try {
+    // Use the same cookie-backed session validation as /api/admin/me first.
+    // This keeps protected API routes consistent with the admin UI and also
+    // preserves the root-admin handling implemented by getAuthSession().
+    const session = await getAuthSession();
+    if (session) {
+      return {
+        authorized: true,
+        userId: session.userId,
+        role: session.role,
+        user: session,
+      };
+    }
+
     // Try multiple methods to get the token
     let token = null;
 
