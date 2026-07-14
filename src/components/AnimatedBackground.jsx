@@ -72,6 +72,7 @@ const AnimatedBackgroundComponent = () => {
         {[...Array(2)].map((_, i) => (
           <path
             key={i}
+            className={`animated-bg-line animated-bg-line-${i}`}
             d={`M -500 ${200 + i * 150} Q 0 ${100 + i * 100} 500 ${200 + i * 150} T 1500 ${200 + i * 150}`}
             fill="none"
             stroke="url(#lineGradient)"
@@ -81,6 +82,7 @@ const AnimatedBackgroundComponent = () => {
         ))}
 
         <path
+          className="animated-bg-line animated-bg-line-2"
           d="M -200 800 Q 400 600 1000 800 T 2200 800"
           fill="none"
           stroke={
@@ -91,6 +93,7 @@ const AnimatedBackgroundComponent = () => {
                 : "rgba(37, 99, 235, 0.26)"
           }
           strokeWidth={isDark ? "3" : "2.5"}
+          pathLength="1"
         >
         </path>
       </svg>
