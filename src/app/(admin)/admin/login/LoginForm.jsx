@@ -20,6 +20,25 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+function playSuccessSound() {
+  try {
+    const context = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+    oscillator.connect(gain);
+    gain.connect(context.destination);
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(1046.5, context.currentTime);
+    gain.gain.setValueAtTime(0, context.currentTime);
+    gain.gain.linearRampToValueAtTime(0.2, context.currentTime + 0.1);
+    gain.gain.linearRampToValueAtTime(0, context.currentTime + 0.5);
+    oscillator.start();
+    oscillator.stop(context.currentTime + 0.5);
+  } catch {
+    // Audio feedback is optional.
+  }
+}
+
 export default function LoginForm() {
   const [view, setView] = useState("login"); // login, setup, verify, pending, success, denied, reverify
   const [email, setEmail] = useState("");
@@ -60,25 +79,6 @@ export default function LoginForm() {
       clearInterval(interval);
     };
   }, [view, email]);
-
-  const playSuccessSound = () => {
-    try {
-      const context = new (window.AudioContext || window.webkitAudioContext)();
-      const oscillator = context.createOscillator();
-      const gain = context.createGain();
-      oscillator.connect(gain);
-      gain.connect(context.destination);
-      oscillator.type = "sine";
-      oscillator.frequency.setValueAtTime(1046.5, context.currentTime);
-      gain.gain.setValueAtTime(0, context.currentTime);
-      gain.gain.linearRampToValueAtTime(0.2, context.currentTime + 0.1);
-      gain.gain.linearRampToValueAtTime(0, context.currentTime + 0.5);
-      oscillator.start();
-      oscillator.stop(context.currentTime + 0.5);
-    } catch (e) {
-      /* Audio */
-    }
-  };
 
   const handleSendCode = async (e) => {
     if (e && e.preventDefault) e.preventDefault();

@@ -86,11 +86,13 @@ export default function AboutForm() {
   const [isHighlighted, setIsHighlighted] = useState(false);
 
   useEffect(() => {
-    if (highlightId) {
-      setIsHighlighted(true);
-      const timer = setTimeout(() => setIsHighlighted(false), 4000);
-      return () => clearTimeout(timer);
-    }
+    if (!highlightId) return;
+    const startTimer = window.setTimeout(() => setIsHighlighted(true), 0);
+    const endTimer = window.setTimeout(() => setIsHighlighted(false), 4000);
+    return () => {
+      window.clearTimeout(startTimer);
+      window.clearTimeout(endTimer);
+    };
   }, [highlightId]);
 
   const {
@@ -112,7 +114,8 @@ export default function AboutForm() {
   }, [fetchAbout]);
 
   useEffect(() => {
-    if (about && Object.keys(about).length > 0) {
+    const timer = window.setTimeout(() => {
+      if (!about || Object.keys(about).length === 0) return;
       const source = { ...aboutData, ...about };
       reset({
         ...source,
@@ -138,7 +141,8 @@ export default function AboutForm() {
         finalCTA: JSON.stringify(source.finalCTA || aboutData.finalCTA, null, 2),
         keywords: JSON.stringify(source.keywords || aboutData.keywords, null, 2),
       });
-    }
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [about, reset]);
 
   const { fields: expFields, append: appendExp, remove: removeExp } = useFieldArray({

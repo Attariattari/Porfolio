@@ -61,11 +61,14 @@ export default function SocialLinks({
 
   useEffect(() => {
     if (!initialSocials) {
-      fetchLinks();
+      const initialTimer = window.setTimeout(fetchLinks, 0);
 
       // Polling for "real-time" sync (every 60 seconds)
       const interval = setInterval(fetchLinks, 60000);
-      return () => clearInterval(interval);
+      return () => {
+        window.clearTimeout(initialTimer);
+        clearInterval(interval);
+      };
     }
   }, [initialSocials]);
 

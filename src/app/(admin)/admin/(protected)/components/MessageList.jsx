@@ -185,7 +185,7 @@ export default function MessageList({
                     </div>
 
                     <p className="text-[11px] text-slate-300 line-clamp-2 font-medium bg-white/[0.02] px-3 py-2 rounded-lg border border-white/5 italic">
-                      "{message.subject || message.message}"
+                      &ldquo;{message.subject || message.message}&rdquo;
                     </p>
 
                     <div className="flex items-center gap-2 text-[8px] font-black uppercase tracking-[0.1em] text-slate-500">

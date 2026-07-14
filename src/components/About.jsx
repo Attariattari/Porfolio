@@ -772,21 +772,9 @@ export default function About({ data: initialData = null, isHomePage = false }) 
 
       <div className="absolute inset-0 pointer-events-none -z-20">
         {particleClasses.map((particleClass, i) => (
-          <motion.div
+          <div
             key={i}
-            animate={{
-              y: [0, -40, 0],
-              x: [0, 20, 0],
-              opacity: [0.03, 0.1, 0.03],
-              scale: [1, 1.2, 1],
-            }}
-            transition={{
-              duration: 5 + (i % 5),
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: i * 0.8,
-            }}
-            className={`absolute w-1.5 h-1.5 rounded-full bg-accent ${particleClass}`}
+            className={`absolute w-1.5 h-1.5 rounded-full bg-accent opacity-[0.06] ${particleClass}`}
           />
         ))}
       </div>

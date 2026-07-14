@@ -84,7 +84,8 @@ export const useMessages = (options = {}) => {
   }, [page, limit, service, status, search, sortBy]);
 
   useEffect(() => {
-    fetchMessages();
+    const timer = window.setTimeout(fetchMessages, 0);
+    return () => window.clearTimeout(timer);
   }, [fetchMessages]);
 
   return { messages, pagination, loading, error, refetch: fetchMessages };
@@ -141,7 +142,8 @@ export const useMessageDetail = (messageId) => {
   }, [messageId]);
 
   useEffect(() => {
-    fetchMessage();
+    const timer = window.setTimeout(fetchMessage, 0);
+    return () => window.clearTimeout(timer);
   }, [fetchMessage]);
 
   return { message, loading, error, refetch: fetchMessage };
@@ -295,7 +297,8 @@ export const useMessageStats = (enabled = true) => {
   }, [enabled]);
 
   useEffect(() => {
-    fetchStats();
+    const timer = window.setTimeout(fetchStats, 0);
+    return () => window.clearTimeout(timer);
   }, [fetchStats]);
 
   return { stats, setStats, loading, error, refetch: fetchStats };

@@ -1,23 +1,10 @@
 "use client";
 
-import { memo, useEffect, useState } from "react";
+import { memo } from "react";
 import { useTheme } from "./ThemeProvider";
-import { motion, useReducedMotion } from "framer-motion";
 
 const AnimatedBackgroundComponent = () => {
   const { isBlack, isDark } = useTheme();
-  const prefersReducedMotion = useReducedMotion();
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const query = window.matchMedia("(max-width: 767px)");
-    const update = () => setIsMobile(query.matches);
-    update();
-    query.addEventListener("change", update);
-    return () => query.removeEventListener("change", update);
-  }, []);
-
-  const shouldAnimate = !prefersReducedMotion && !isMobile;
 
   return (
     <div className="fixed inset-0 -z-50 overflow-hidden bg-background pointer-events-none">
@@ -34,23 +21,7 @@ const AnimatedBackgroundComponent = () => {
 
       {/* Animated Glowing Orbs */}
       <div className="absolute inset-0">
-        <motion.div
-          animate={
-            shouldAnimate
-              ? isBlack
-                ? { scale: [1, 1.08, 1], x: [0, 24, 0], y: [0, -18, 0] }
-                : { scale: [1, 1.2, 1], rotate: [0, 90, 0], x: [0, 50, 0], y: [0, -30, 0] }
-              : undefined
-          }
-          transition={
-            shouldAnimate
-              ? {
-                  duration: isBlack ? 36 : 20,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }
-              : undefined
-          }
+        <div
           className={`absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full blur-[120px] ${
             isBlack
               ? "bg-cyan-400 opacity-[0.18]"
@@ -59,23 +30,7 @@ const AnimatedBackgroundComponent = () => {
                 : "bg-blue-300 opacity-20"
           }`}
         />
-        <motion.div
-          animate={
-            shouldAnimate
-              ? isBlack
-                ? { scale: [1.05, 1, 1.05], x: [0, -20, 0], y: [0, 26, 0] }
-                : { scale: [1.2, 1, 1.2], rotate: [0, -60, 0], x: [0, -40, 0], y: [0, 60, 0] }
-              : undefined
-          }
-          transition={
-            shouldAnimate
-              ? {
-                  duration: isBlack ? 44 : 25,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }
-              : undefined
-          }
+        <div
           className={`absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full blur-[140px] ${
             isBlack
               ? "bg-blue-500 opacity-[0.12]"
@@ -114,7 +69,7 @@ const AnimatedBackgroundComponent = () => {
             />
           </linearGradient>
         </defs>
-        {(shouldAnimate ? [...Array(6)] : [...Array(2)]).map((_, i) => (
+        {[...Array(2)].map((_, i) => (
           <path
             key={i}
             d={`M -500 ${200 + i * 150} Q 0 ${100 + i * 100} 500 ${200 + i * 150} T 1500 ${200 + i * 150}`}
@@ -122,7 +77,6 @@ const AnimatedBackgroundComponent = () => {
             stroke="url(#lineGradient)"
             strokeWidth={isDark ? "1.5" : "1.75"}
             pathLength="1"
-            className={shouldAnimate ? `animated-bg-line animated-bg-line-${i}` : undefined}
           />
         ))}
 
@@ -138,14 +92,6 @@ const AnimatedBackgroundComponent = () => {
           }
           strokeWidth={isDark ? "3" : "2.5"}
         >
-          {shouldAnimate && (
-            <animate
-              attributeName="d"
-              values="M -200 800 Q 400 600 1000 800 T 2200 800; M -200 750 Q 500 850 1100 750 T 2200 750; M -200 800 Q 400 600 1000 800 T 2200 800"
-              dur="12s"
-              repeatCount="indefinite"
-            />
-          )}
         </path>
       </svg>
 

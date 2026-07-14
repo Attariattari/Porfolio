@@ -59,6 +59,8 @@ export const BottomNav = () => {
               key={item.name}
               href={item.href}
               prefetch={false}
+              aria-label={item.name}
+              aria-current={isActive ? "page" : undefined}
               className={`relative flex items-center justify-center transition-all duration-500 ease-out ${
                 isActive
                   ? "flex-[2] bg-accent/10 rounded-2xl py-2.5 px-3"
@@ -67,6 +69,7 @@ export const BottomNav = () => {
             >
               <div className="flex items-center gap-2">
                 <Icon
+                  aria-hidden="true"
                   size={isActive ? 18 : 20}
                   className={`transition-all duration-300 ${
                     isActive ? "text-accent" : "text-muted-foreground/50"

@@ -356,7 +356,10 @@ export default function AdminSidebar() {
         {/* Collapse Toggle Button (Desktop) - PLACED OUTSIDE OVERFLOW HIDDEN CONTAINER */}
         {!isMobile && (
           <button
+            type="button"
             onClick={toggleSidebarCollapse}
+            aria-label={sidebarCollapsed ? "Expand admin sidebar" : "Collapse admin sidebar"}
+            aria-expanded={!sidebarCollapsed}
             className="absolute -right-3 top-24 w-6 h-6 bg-accent rounded-full flex items-center justify-center text-accent-foreground shadow-lg z-[80] hover:scale-110 transition-transform active:scale-95 border border-border"
           >
             {sidebarCollapsed ? (

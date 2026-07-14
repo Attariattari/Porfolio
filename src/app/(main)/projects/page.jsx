@@ -9,9 +9,9 @@ import { buildCanonical, getSeoImage } from "@/lib/seo";
 export const revalidate = 300;
 
 export const metadata = {
-  title: "Projects | Muhyo Tech",
+  title: "Projects",
   description:
-    "Explore Muhyo Tech projects including modern websites, full-stack web applications, admin dashboards, and scalable digital solutions built with Next.js, React, Node.js, and MongoDB.",
+    "Explore Muhyo Tech projects including modern websites, full-stack applications, admin dashboards, and scalable solutions built with Next.js and MERN.",
   alternates: { canonical: buildCanonical("/projects") },
   openGraph: {
     title: "Projects | Muhyo Tech",

@@ -2,7 +2,6 @@
 
 import {
   motion,
-  useReducedMotion,
 } from "framer-motion";
 import {
   ArrowRight,
@@ -50,9 +49,6 @@ export default function Hero({ initialData = null }) {
       homeData.hero.highlights,
   };
   const containerRef = useRef(null);
-  // PHASE 3: Respect prefers-reduced-motion
-  const shouldReduceMotion = useReducedMotion();
-
   // Icon mapping for feature icons
   const iconMap = {
     Terminal,
@@ -184,22 +180,11 @@ export default function Hero({ initialData = null }) {
               opacity: 1,
               scale: 1,
               rotate: 0,
-              // PHASE 3: disable infinite float when reduced-motion is preferred
-              ...(shouldReduceMotion ? {} : { y: [0, -20, 0] }),
             }}
             transition={{
               duration: 1.2,
               delay: 0.4,
               ease: [0.16, 1, 0.3, 1],
-              ...(shouldReduceMotion
-                ? {}
-                : {
-                    y: {
-                      duration: 6,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    },
-                  }),
             }}
             className="relative hidden lg:block"
           >
@@ -221,27 +206,10 @@ export default function Hero({ initialData = null }) {
 
                 {/* Decorative Elements */}
                 {/* PHASE 3: Decorative blobs only animate when motion is allowed */}
-                <motion.div
-                  animate={shouldReduceMotion ? {} : { y: [0, -15, 0] }}
-                  transition={
-                    shouldReduceMotion
-                      ? { duration: 0 }
-                      : { duration: 4, repeat: Infinity, ease: "easeInOut" }
-                  }
+                <div
                   className="absolute -top-10 -right-10 w-32 h-32 bg-accent/20 rounded-full blur-3xl"
                 />
-                <motion.div
-                  animate={shouldReduceMotion ? {} : { y: [0, 15, 0] }}
-                  transition={
-                    shouldReduceMotion
-                      ? { duration: 0 }
-                      : {
-                          duration: 5,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                          delay: 1,
-                        }
-                  }
+                <div
                   className="absolute -bottom-10 -left-10 w-40 h-40 bg-accent/20 rounded-full blur-3xl"
                 />
 
@@ -251,16 +219,10 @@ export default function Hero({ initialData = null }) {
                   animate={{
                     x: 0,
                     opacity: 1,
-                    y: [0, 10, 0],
                   }}
                   transition={{
                     delay: 1.5,
                     duration: 0.8,
-                    y: {
-                      duration: 4,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    },
                   }}
                   className="absolute -right-6 top-1/4 glass p-4 rounded-xl border-accent/30 shadow-xl hidden xl:block"
                 >
@@ -297,10 +259,10 @@ export default function Hero({ initialData = null }) {
                 <feature.icon className="w-5 h-5" />
               </div>
               <div className="text-left">
-                <h3 className="text-sm font-bold text-foreground tracking-tight">
+                <p className="text-sm font-bold text-foreground tracking-tight">
                   {feature.label}
-                </h3>
-                <p className="text-xs text-muted-foreground mt-1 font-medium opacity-70">
+                </p>
+                <p className="text-xs text-muted-foreground mt-1 font-medium">
                   {feature.description}
                 </p>
               </div>
@@ -314,11 +276,7 @@ export default function Hero({ initialData = null }) {
         className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-3"
       >
         <div className="w-[1px] h-20 bg-gradient-to-b from-accent/50 to-transparent relative overflow-hidden">
-          <motion.div
-            animate={{ y: ["-100%", "400%"] }}
-            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-0 left-0 w-full h-[20%] bg-accent"
-          />
+          <div className="absolute top-0 left-0 w-full h-[20%] bg-accent opacity-80" />
         </div>
       </motion.div>
     </section>

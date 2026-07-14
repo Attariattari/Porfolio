@@ -109,7 +109,7 @@ export default function ResumeClient({ resumeData = {} }) {
                   <Target className="w-5 h-5" />
                   <span className="text-sm font-bold tracking-normal">Career mission</span>
                 </div>
-                <p className="text-lg text-foreground italic leading-relaxed">"{data.about}"</p>
+                <p className="text-lg text-foreground italic leading-relaxed">&ldquo;{data.about}&rdquo;</p>
               </div>
             </motion.div>
 
@@ -190,7 +190,7 @@ export default function ResumeClient({ resumeData = {} }) {
                             <span key={tIdx} className="text-[10px] font-bold text-accent/70 tracking-normal">{t}</span>
                           ))}
                         </div>
-                        <p className="text-sm text-muted-foreground font-medium leading-relaxed italic">"{project.outcome}"</p>
+                        <p className="text-sm text-muted-foreground font-medium leading-relaxed italic">&ldquo;{project.outcome}&rdquo;</p>
                       </div>
                     </Card>
                   ))

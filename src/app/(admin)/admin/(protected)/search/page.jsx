@@ -25,28 +25,33 @@ export default function AdminSearchPage() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (query) {
-      performSearch(query);
-    }
-  }, [query]);
+    if (!query) return;
 
-  const performSearch = async (q) => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const res = await fetch(`/api/admin/search?q=${encodeURIComponent(q)}`);
-      const data = await res.json();
-      if (data.success) {
-        setResults(data.data);
-      } else {
-        setError(data.error);
+    let cancelled = false;
+    const performSearch = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const res = await fetch(`/api/admin/search?q=${encodeURIComponent(query)}`);
+        const data = await res.json();
+        if (!cancelled && data.success) {
+          setResults(data.data);
+        } else if (!cancelled) {
+          setError(data.error);
+        }
+      } catch {
+        if (!cancelled) setError("Failed to fetch search results.");
+      } finally {
+        if (!cancelled) setIsLoading(false);
       }
-    } catch (err) {
-      setError("Failed to fetch search results.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
+
+    const timer = window.setTimeout(performSearch, 0);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [query]);
 
   const groupedResults = results.reduce((acc, curr) => {
     if (!acc[curr.type]) acc[curr.type] = [];
@@ -80,7 +85,7 @@ export default function AdminSearchPage() {
         <div className="px-6 py-3 bg-white/5 border border-white/10 rounded-2xl flex items-center gap-3">
           <Search className="w-4 h-4 text-slate-500" />
           <span className="text-xs font-black text-white/50 uppercase tracking-widest">
-            Results for: <span className="text-accent italic">"{query}"</span>
+            Results for: <span className="text-accent italic">&ldquo;{query}&rdquo;</span>
           </span>
         </div>
       </div>

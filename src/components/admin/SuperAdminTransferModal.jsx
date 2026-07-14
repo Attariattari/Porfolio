@@ -42,8 +42,11 @@ export default function SuperAdminTransferModal({ isOpen, onClose, currentEmail 
   useEffect(() => {
     if (step === STEPS.VERIFY_CURRENT || step === STEPS.VERIFY_NEW) {
       if (timeLeft <= 0) {
-        setError("OTP expired. Please start over.");
-        return;
+        const timer = window.setTimeout(
+          () => setError("OTP expired. Please start over."),
+          0,
+        );
+        return () => window.clearTimeout(timer);
       }
 
       const interval = setInterval(() => {
@@ -57,7 +60,8 @@ export default function SuperAdminTransferModal({ isOpen, onClose, currentEmail 
   // Reset timer when step changes
   useEffect(() => {
     if (step === STEPS.VERIFY_CURRENT || step === STEPS.VERIFY_NEW) {
-      setTimeLeft(180);
+      const timer = window.setTimeout(() => setTimeLeft(180), 0);
+      return () => window.clearTimeout(timer);
     }
   }, [step]);
 

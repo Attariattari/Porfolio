@@ -1,7 +1,7 @@
 import LegalDocumentPage from "@/components/legal/LegalDocumentPage";
 
 export const metadata = {
-  title: "Privacy Policy | Muhyo Tech",
+  title: "Privacy Policy",
   description:
     "How Muhyo Tech collects, uses, protects, retains, and shares information across its website, forms, bookings, newsletter, and analytics.",
   alternates: { canonical: "/privacy" },

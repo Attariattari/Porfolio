@@ -249,7 +249,7 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
                 </h4>
               </div>
               <p className="text-lg md:text-xl font-semibold text-foreground leading-relaxed">
-                "{selectedProject.impact}"
+                &ldquo;{selectedProject.impact}&rdquo;
               </p>
               <div className="flex gap-6 md:gap-8 pt-2">
                 <div className="space-y-1">

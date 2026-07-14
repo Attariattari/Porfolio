@@ -6,9 +6,9 @@ import { serializeDoc } from "@/lib/mongooseHelper";
 import { buildCanonical, getSeoImage } from "@/lib/seo";
 
 export const metadata = {
-  title: "Professional Journey | Pir Ghulam Muhyo Din - Muhyo Tech",
+  title: { absolute: "Resume | Pir Ghulam Muhyo Din - Muhyo Tech" },
   description:
-    "Explore the career evolution, skills, and projects of Pir Ghulam Muhyo Din, a full-stack developer and project strategist dedicated to building impactful digital solutions.",
+    "Explore the experience, skills, and projects of Pir Ghulam Muhyo Din, a full-stack developer building modern websites and business applications.",
   alternates: { canonical: buildCanonical("/resume") },
   openGraph: {
     title: "Resume | Pir Ghulam Muhyo Din - Full Stack Web Developer",

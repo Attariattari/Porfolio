@@ -79,11 +79,11 @@ export default function SubscribersPage() {
   }, []);
 
   useEffect(() => {
-    if (activeTab === 'subscribers') {
-        fetchSubscribers();
-    } else {
-        fetchLogs();
-    }
+    const timer = window.setTimeout(() => {
+      if (activeTab === 'subscribers') fetchSubscribers();
+      else fetchLogs();
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [fetchSubscribers, fetchLogs, activeTab]);
 
   useEffect(() => {
@@ -95,12 +95,14 @@ export default function SubscribersPage() {
   const viewId = searchParams.get("view");
 
   useEffect(() => {
-    if (viewId && subscribers.length > 0) {
+    const timer = window.setTimeout(() => {
+      if (!viewId || subscribers.length === 0) return;
       const target = subscribers.find(s => s._id === viewId);
       if (target) {
         setViewingItem(target);
       }
-    }
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [viewId, subscribers]);
 
   const handleSelectAll = (checked) => {
@@ -186,7 +188,7 @@ export default function SubscribersPage() {
         render: (item) => (
             <div className="flex flex-col max-w-xs">
                 <span className="text-white font-medium truncate">{item.subject}</span>
-                {item.contentSummary && <span className="text-[9px] text-slate-500 truncate mt-1 italic">"{item.contentSummary}"</span>}
+                {item.contentSummary && <span className="text-[9px] text-slate-500 truncate mt-1 italic">&ldquo;{item.contentSummary}&rdquo;</span>}
             </div>
         )
     },

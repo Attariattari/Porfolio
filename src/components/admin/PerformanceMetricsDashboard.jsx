@@ -172,7 +172,7 @@ export default function PerformanceMetricsDashboard() {
 
       {/* Debug Info */}
       <div className="bg-background border border-border rounded-lg p-4 text-xs font-mono text-muted-foreground">
-        <p>💡 Tip: Set sessionStorage.setItem('show-perf-metrics', 'true') in console to see detailed metrics logs</p>
+        <p>💡 Tip: Set sessionStorage.setItem(&apos;show-perf-metrics&apos;, &apos;true&apos;) in the console to see detailed metrics logs.</p>
       </div>
     </div>
   );

@@ -7,7 +7,7 @@ import { SITE_URL } from "@/lib/config";
 import { buildCanonical, getSeoImage } from "@/lib/seo";
 import FAQSchema from "@/components/seo/FAQSchema";
 import BreadcrumbSchema from "@/components/seo/BreadcrumbSchema";
-import { servicesPageFaqs } from "@/lib/servicesSeo";
+import { getCanonicalServices, servicesPageFaqs } from "@/lib/servicesSeo";
 
 // P1 OPTIMIZATION: Enable ISR (Incremental Static Regeneration)
 // Revalidate every 5 minutes for optimal performance
@@ -38,9 +38,10 @@ export const metadata = {
 export default async function ServicesPage() {
   // Get merged services: MongoDB + unused data.js items - IMPORTANT: Serialize Mongoose documents
   const dbServices = await ServiceController.getAll(true).catch(() => []);
-  const services =
+  const allServices =
     (dbServices?.length > 0 ? serializeDoc(dbServices) : null) ||
     portfolioData.services;
+  const services = getCanonicalServices(allServices);
   const servicesPageData = {
     serviceFeatures: portfolioData.serviceFeatures,
     serviceProcess: portfolioData.serviceProcess,

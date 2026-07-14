@@ -346,7 +346,10 @@ export default function Sidebar({ data }) {
 
         {/* Improved Toggle Button */}
         <button
+          type="button"
           onClick={toggleSidebar}
+          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          aria-expanded={!isCollapsed}
           className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-24 bg-card border border-border/50 rounded-full flex items-center justify-center text-muted-foreground hover:text-accent hover:border-accent/30 transition-all hover:scale-105 group/toggle shadow-xl z-50 backdrop-blur-xl"
         >
           <div className="transition-transform duration-500 group-hover/toggle:rotate-180">

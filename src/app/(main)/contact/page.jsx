@@ -4,7 +4,7 @@ import EditorialBackground from "@/components/ui/EditorialBackground";
 import { buildCanonical, getSeoImage } from "@/lib/seo";
 
 export const metadata = {
-  title: "Contact Muhyo Tech | Start Your Web Development Project",
+  title: { absolute: "Contact Muhyo Tech | Start a Web Development Project" },
   description:
     "Contact Muhyo Tech for Next.js websites, SaaS dashboards, backend systems, SEO optimization, and professional web development services.",
   alternates: { canonical: buildCanonical("/contact") },

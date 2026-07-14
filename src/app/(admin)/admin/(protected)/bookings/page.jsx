@@ -49,13 +49,15 @@ export default function BookingsPage() {
   const viewId = searchParams.get("view");
 
   useEffect(() => {
-    if (viewId && bookingsQuery.data?.bookings) {
+    const timer = window.setTimeout(() => {
+      if (!viewId || !bookingsQuery.data?.bookings) return;
       const target = bookingsQuery.data.bookings.find(b => b._id === viewId);
       if (target) {
         setSelectedBooking(target);
         setIsDetailOpen(true);
       }
-    }
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [viewId, bookingsQuery.data]);
 
   return (

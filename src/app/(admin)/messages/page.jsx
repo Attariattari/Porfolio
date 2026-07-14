@@ -81,7 +81,7 @@ export default function MessagesManagement() {
                 </div>
               </div>
               <p className="text-sm font-medium text-slate-300 leading-relaxed italic border-l-4 border-slate-800 pl-6 py-2 bg-slate-800/20 rounded-r-xl">
-                "{m.message}"
+                &ldquo;{m.message}&rdquo;
               </p>
 
               <div className="pt-4 flex gap-4">

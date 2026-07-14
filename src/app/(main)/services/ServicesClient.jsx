@@ -46,30 +46,15 @@ const resolveIcon = (icon) => {
 
 const ServiceSlider = ({ services }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [progress, setProgress] = useState(0);
   const serviceCount = services?.length || 0;
 
   useEffect(() => {
     if (serviceCount === 0) return;
-    const interval = 5000;
-    const step = 100;
-
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % serviceCount);
-      setProgress(0);
-    }, interval);
+    }, 5000);
 
-    const progressTimer = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) return 0;
-        return prev + 100 / (interval / step);
-      });
-    }, step);
-
-    return () => {
-      clearInterval(timer);
-      clearInterval(progressTimer);
-    };
+    return () => clearInterval(timer);
   }, [serviceCount]);
 
   if (!services || services.length === 0) return null;
@@ -162,18 +147,17 @@ const ServiceSlider = ({ services }) => {
           {services.map((_, idx) => (
             <button
               key={idx}
-              onClick={() => {
-                setCurrentIndex(idx);
-                setProgress(0);
-              }}
+              type="button"
+              aria-label={`Show service ${idx + 1}: ${services[idx].title}`}
+              aria-current={idx === currentIndex ? "true" : undefined}
+              onClick={() => setCurrentIndex(idx)}
               className="group relative h-12 w-1 flex items-center justify-center cursor-pointer"
             >
               <div className="h-full w-full bg-white/20 rounded-full overflow-hidden transition-all group-hover:bg-white/40">
                 {idx === currentIndex && (
-                  <motion.div
-                    initial={{ height: "0%" }}
-                    animate={{ height: `${progress}%` }}
-                    className="absolute inset-0 bg-accent"
+                  <div
+                    key={currentIndex}
+                    className="service-slider-progress absolute inset-x-0 top-0 bg-accent"
                   />
                 )}
               </div>

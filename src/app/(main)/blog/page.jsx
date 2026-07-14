@@ -13,7 +13,7 @@ import BreadcrumbSchema from "@/components/seo/BreadcrumbSchema";
 export const revalidate = 300;
 
 export const metadata = {
-  title: "Tech Blog | Engineering Insights by Muhyo Tech",
+  title: { absolute: "Web Development & Engineering Blog | Muhyo Tech" },
   description:
     "Read practical engineering guides on Next.js, Node.js, web performance, SEO, backend architecture, deployment, and modern product development.",
   alternates: { canonical: buildCanonical("/blog") },

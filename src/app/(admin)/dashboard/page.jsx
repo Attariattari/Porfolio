@@ -165,7 +165,7 @@ export default function DashboardPage() {
               </div>
               
               <p className="text-sm text-blue-100/70 leading-relaxed mb-8 font-medium">
-                Your platform's overall engagement metric is outperforming last month's averages. The content strategy is yielding positive results.
+                Your platform&apos;s overall engagement metric is outperforming last month&apos;s averages. The content strategy is yielding positive results.
               </p>
               
               <button className="w-full py-4 rounded-2xl bg-white text-indigo-900 font-black tracking-wide overflow-hidden relative group/btn shadow-xl shadow-black/10 hover:shadow-2xl hover:-translate-y-0.5 transition-all outline-none focus:ring-4 focus:ring-blue-400/50">

@@ -10,6 +10,7 @@ export default async function SkillsPage() {
 
   return (
     <div className="pt-20">
+      <h1 className="sr-only">Full-Stack Web Development Skills and Technology Expertise</h1>
       <Skills data={skills} />
     </div>
   );

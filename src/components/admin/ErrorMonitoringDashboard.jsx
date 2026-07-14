@@ -37,9 +37,12 @@ export function ErrorMonitoringDashboard() {
   };
 
   useEffect(() => {
-    fetchErrorData();
+    const initialTimer = window.setTimeout(fetchErrorData, 0);
     const interval = setInterval(fetchErrorData, 30000);
-    return () => clearInterval(interval);
+    return () => {
+      window.clearTimeout(initialTimer);
+      clearInterval(interval);
+    };
   }, [selectedTab]);
 
   if (loading && !data) {

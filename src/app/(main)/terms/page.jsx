@@ -1,7 +1,7 @@
 import LegalDocumentPage from "@/components/legal/LegalDocumentPage";
 
 export const metadata = {
-  title: "Terms of Service | Muhyo Tech",
+  title: "Terms of Service",
   description:
     "Terms governing use of the Muhyo Tech website, project inquiries, software services, content, and professional engagements.",
   alternates: { canonical: "/terms" },

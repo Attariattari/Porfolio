@@ -40,7 +40,7 @@ export const metadata = {
     siteName: "Muhyo Tech",
     images: [
       {
-        url: getSeoImage("/portfolio-hero.png"),
+        url: getSeoImage("/home-preview.png"),
         width: 1200,
         height: 630,
         alt: "Muhyo Tech",

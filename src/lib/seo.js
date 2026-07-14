@@ -7,7 +7,7 @@ export const defaultSeoData = {
   keywords:
     "Muhyo Tech, Full Stack Developer, Next.js Developer, React Developer, Node.js Developer, Web Development Pakistan, SaaS Dashboard, SEO Web Design",
   author: "Pir Ghulam Muhyo Din",
-  ogImage: "/portfolio-hero.png",
+  ogImage: "/home-preview.png",
   twitterHandle: "@muhyotech",
 };
 
@@ -18,11 +18,17 @@ export function absoluteUrl(path = "") {
 }
 
 export function cleanSeoText(value = "", maxLength = 155) {
-  return String(value)
+  const text = String(value)
     .replace(/<[^>]+>/g, " ")
     .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, maxLength);
+    .trim();
+
+  if (text.length <= maxLength) return text;
+
+  const shortened = text.slice(0, Math.max(1, maxLength - 1));
+  const boundary = shortened.lastIndexOf(" ");
+  const end = boundary > maxLength * 0.7 ? boundary : shortened.length;
+  return `${shortened.slice(0, end).trim()}…`;
 }
 
 export function buildCanonical(path = "") {

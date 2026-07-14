@@ -104,12 +104,14 @@ export default function MessagesPage() {
   const viewId = searchParams.get("view");
 
   useEffect(() => {
-    if (viewId && messages.length > 0) {
+    const timer = window.setTimeout(() => {
+      if (!viewId || messages.length === 0) return;
       const target = messages.find(m => m._id === viewId);
       if (target) {
         handleSelectMessage(target);
       }
-    }
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [viewId, messages]);
 
   // Handle success after delete
@@ -254,4 +256,4 @@ function StatsCard({ label, value, icon: Icon, color, loading, highlight }) {
       <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-current opacity-[0.03] blur-3xl rounded-full" />
     </motion.div>
   );
-}
+}

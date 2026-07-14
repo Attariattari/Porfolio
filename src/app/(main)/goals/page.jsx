@@ -8,7 +8,7 @@ import { buildCanonical, getSeoImage } from "@/lib/seo";
 export const revalidate = 300; // ISR: Revalidate every 5 minutes
 
 export const metadata = {
-  title: "Goals & Roadmap | Muhyo Tech",
+  title: "Goals & Roadmap",
   description:
     "Explore Muhyo Tech goals, roadmap, real active projects, SiteCraft AI development, QR Profile Connect, LeadFlow AI, and future digital product direction.",
   alternates: { canonical: buildCanonical("/goals") },

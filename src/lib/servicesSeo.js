@@ -1,3 +1,36 @@
+export const serviceRedirectTargets = {
+  "web-development": "custom-website-development",
+  "mobile-app-development": "full-stack-web-app-development",
+  "ui-ux-design": "landing-page-design",
+  "api-development": "api-integration",
+  "seo-digital-growth": "seo-friendly-website-setup",
+  "cloud-devops": "maintenance-support",
+};
+
+export const redirectedServiceSlugs = new Set(
+  Object.keys(serviceRedirectTargets),
+);
+
+export const isCanonicalService = (service = {}) =>
+  Boolean(service.slug) && !redirectedServiceSlugs.has(service.slug);
+
+export const getCanonicalServices = (services = []) => {
+  const bySlug = new Map();
+
+  for (const service of Array.isArray(services) ? services : []) {
+    if (!service?.slug) continue;
+    const canonicalSlug = serviceRedirectTargets[service.slug] || service.slug;
+    const normalized = { ...service, slug: canonicalSlug };
+    const existing = bySlug.get(canonicalSlug);
+
+    if (!existing || !redirectedServiceSlugs.has(service.slug)) {
+      bySlug.set(canonicalSlug, normalized);
+    }
+  }
+
+  return [...bySlug.values()];
+};
+
 export const servicesPageSeo = {
   primaryKeyword: "Web Development Services in Lahore",
   secondaryKeywords: [

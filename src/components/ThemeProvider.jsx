@@ -129,7 +129,7 @@ export const ThemeProvider = ({ children }) => {
     document.addEventListener("visibilitychange", handleVisibility);
     channel?.addEventListener("message", handleChannelMessage);
 
-    const interval = window.setInterval(refreshTheme, 10000);
+    const interval = window.setInterval(refreshTheme, 300000);
     return () => {
       window.cancelAnimationFrame(frame);
       window.clearInterval(interval);

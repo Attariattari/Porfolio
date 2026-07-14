@@ -207,7 +207,8 @@ export default function DataTable({
   const dndId = useId();
 
   useEffect(() => {
-    setIsMounted(true);
+    const timer = window.setTimeout(() => setIsMounted(true), 0);
+    return () => window.clearTimeout(timer);
   }, []);
 
   const [internalSearchTerm, setInternalSearchTerm] = useState("");
@@ -228,7 +229,8 @@ export default function DataTable({
   };
 
   useEffect(() => {
-    if (highlightId && data.length > 0) {
+    const startTimer = window.setTimeout(() => {
+      if (!highlightId || data.length === 0) return;
       const itemIndex = data.findIndex(
         (item) => (item._id || item.id) === highlightId
       );
@@ -241,7 +243,7 @@ export default function DataTable({
       }
 
       setHighlightedItem(highlightId);
-      const timer = setTimeout(() => setHighlightedItem(null), 4000);
+      window.setTimeout(() => setHighlightedItem(null), 4000);
 
       setTimeout(() => {
         const element = rowRefs.current[highlightId];
@@ -250,8 +252,8 @@ export default function DataTable({
         }
       }, 800);
 
-      return () => clearTimeout(timer);
-    }
+    }, 0);
+    return () => window.clearTimeout(startTimer);
   }, [highlightId, data, itemsPerPage]);
 
   const filteredData = isExternal

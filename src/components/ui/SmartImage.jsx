@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { ImageIcon, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
 import { ensureMuhyoTechAlt } from "@/lib/mediaAlt";
 
-export default function SmartImage({
+function SmartImageContent({
   src,
   alt,
   className,
@@ -18,12 +18,6 @@ export default function SmartImage({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
   const [currentSrc, setCurrentSrc] = useState(getSafeImageSrc(src, fallbackSrc));
-
-  useEffect(() => {
-    setCurrentSrc(getSafeImageSrc(src, fallbackSrc));
-    setError(false);
-    setIsLoading(true);
-  }, [src, fallbackSrc]);
 
   const handleError = () => {
     if (!error) {
@@ -65,5 +59,14 @@ export default function SmartImage({
         {...props}
       />
     </div>
+  );
+}
+
+export default function SmartImage(props) {
+  return (
+    <SmartImageContent
+      key={`${props.src || ""}|${props.fallbackSrc || "/logo.webp"}`}
+      {...props}
+    />
   );
 }

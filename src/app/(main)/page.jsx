@@ -18,23 +18,24 @@ import { AboutController } from "@/controllers/AboutController";
 import { HeroController } from "@/controllers/HeroController";
 import { resolveFeaturedBlogs } from "@/lib/blogUtils";
 import { buildCanonical, getSeoImage } from "@/lib/seo";
+import { getCanonicalServices } from "@/lib/servicesSeo";
 
 // ISR (Incremental Static Regeneration) - High Speed
 export const revalidate = 3600;
 
 export const metadata = {
-  title: "Muhyo Tech | Full-Stack Web Developer, NextJS & MERN Stack Projects",
+  title: { absolute: "Full-Stack Web Developer in Lahore | Muhyo Tech" },
   description:
-    "Pir Ghulam Muhyo Din at Muhyo Tech provides expert website development. Explore modern full-stack web apps, NextJS, and MERN stack projects. Book a call today!",
+    "Muhyo Tech builds fast websites, Next.js applications, MERN stack platforms, and admin dashboards for businesses in Lahore and beyond.",
   alternates: {
     canonical: buildCanonical("/"),
   },
   openGraph: {
-    title: "Muhyo Tech | Full-Stack Web Developer, NextJS & MERN Stack Projects",
+    title: "Full-Stack Web Developer in Lahore | Muhyo Tech",
     description:
       "Pir Ghulam Muhyo Din at Muhyo Tech provides expert website development. Explore modern full-stack web apps, NextJS, and MERN stack projects.",
     url: buildCanonical("/"),
-    images: [{ url: getSeoImage("/portfolio-hero.png"), width: 1200, height: 630, alt: "Muhyo Tech portfolio" }],
+    images: [{ url: getSeoImage("/home-preview.png"), width: 1200, height: 630, alt: "Muhyo Tech full-stack web development portfolio" }],
     type: "website",
   },
 };
@@ -61,10 +62,11 @@ export default async function HomePage() {
   const dbFeaturedServices = (dbServices || []).filter(
     (s) => s.featured && s.publishStatus === "published" && !s._isFromDataJs,
   );
-  const services =
+  const services = getCanonicalServices(
     dbFeaturedServices.length > 0
       ? dbFeaturedServices
-      : portfolioData.services.filter((s) => s.featured);
+      : portfolioData.services.filter((s) => s.featured),
+  );
 
   // 2. PROJECTS: Check DB featured first, fallback to data.js featured
   const dbFeaturedProjects = (dbProjects || []).filter(

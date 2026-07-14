@@ -87,7 +87,7 @@ export default function NotFound() {
           </h1>
           
           <p className="text-muted-foreground text-base md:text-lg mb-12 max-w-lg mx-auto font-medium opacity-80 leading-relaxed italic">
-            "The destination you are seeking appears to have vanished into the digital void. Your request matched no known routes in our system."
+            &ldquo;The destination you are seeking appears to have vanished into the digital void. Your request matched no known routes in our system.&rdquo;
           </p>
 
           {/* Interactive Action Navigation */}

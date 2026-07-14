@@ -3,6 +3,7 @@ import { BlogController } from "@/controllers/BlogController";
 import { ProjectController } from "@/controllers/ProjectController";
 import { ServiceController } from "@/controllers/ServiceController";
 import { isBlogIndexable } from "@/lib/blogSeo";
+import { getCanonicalServices } from "@/lib/servicesSeo";
 
 export default async function sitemap() {
     const baseUrl = SITE_URL;
@@ -39,8 +40,7 @@ export default async function sitemap() {
             priority: 0.75,
         }, p));
 
-    const serviceUrls = services
-        .filter((s) => s.slug)
+    const serviceUrls = getCanonicalServices(services)
         .map((s) => withLastModified({
             url: `${baseUrl}/services/${s.slug}`,
             changeFrequency: "monthly",
@@ -55,7 +55,11 @@ export default async function sitemap() {
         { url: `${baseUrl}/contact`, changeFrequency: "monthly", priority: 0.85 },
         { url: `${baseUrl}/book-a-call`, changeFrequency: "monthly", priority: 0.85 },
         { url: `${baseUrl}/about`, changeFrequency: "monthly", priority: 0.8 },
+        { url: `${baseUrl}/skills`, changeFrequency: "monthly", priority: 0.75 },
+        { url: `${baseUrl}/goals`, changeFrequency: "monthly", priority: 0.65 },
         { url: `${baseUrl}/resume`, changeFrequency: "monthly", priority: 0.6 },
+        { url: `${baseUrl}/privacy`, changeFrequency: "yearly", priority: 0.3 },
+        { url: `${baseUrl}/terms`, changeFrequency: "yearly", priority: 0.3 },
     ];
 
     return uniqueByUrl([...staticUrls, ...blogUrls, ...projectUrls, ...serviceUrls]);

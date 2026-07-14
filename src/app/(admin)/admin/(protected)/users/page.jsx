@@ -180,7 +180,8 @@ export default function UserManagementPage() {
     }, []);
 
     useEffect(() => {
-        if (highlightId && users.length > 0) {
+        const startTimer = window.setTimeout(() => {
+          if (!highlightId || users.length === 0) return;
             setHighlightedItem(highlightId);
             
             const timer = setTimeout(() => {
@@ -194,8 +195,8 @@ export default function UserManagementPage() {
                 }
             }, 500);
 
-            return () => clearTimeout(timer);
-        }
+        }, 0);
+        return () => window.clearTimeout(startTimer);
     }, [highlightId, users]);
 
     useEffect(() => {

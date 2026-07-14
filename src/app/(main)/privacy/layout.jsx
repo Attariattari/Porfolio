@@ -1,7 +1,7 @@
 import { buildCanonical, getSeoImage } from "@/lib/seo";
 
 export const metadata = {
-  title: "Privacy Policy | Muhyo Tech",
+  title: "Privacy Policy",
   description:
     "Read Muhyo Tech's Privacy Policy. High-fidelity data protection framework defining our digital integrity standards and how we handle your personal information.",
   alternates: { canonical: buildCanonical("/privacy") },

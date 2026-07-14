@@ -113,12 +113,14 @@ export default function ImageUploader({ images = [], onChange }) {
   const dndId = React.useId();
 
   useEffect(() => {
-    setIsMounted(true);
+    const timer = window.setTimeout(() => setIsMounted(true), 0);
+    return () => window.clearTimeout(timer);
   }, []);
 
   // Sync state with props
   useEffect(() => {
-    if (Array.isArray(images)) {
+    const timer = window.setTimeout(() => {
+      if (!Array.isArray(images)) return;
       // Create objects with IDs for dnd-kit if they are strings
       // or use existing objects if they have ids
       const items = images.map((item, index) => {
@@ -129,7 +131,8 @@ export default function ImageUploader({ images = [], onChange }) {
         return { ...item, id: item.url };
       });
       setImageList(items);
-    }
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [images]);
 
   const sensors = useSensors(

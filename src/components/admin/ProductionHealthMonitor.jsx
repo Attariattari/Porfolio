@@ -11,6 +11,46 @@ import {
   Database,
 } from "lucide-react";
 
+const getMetricHealth = (current, rawTarget, lowerIsBetter = true) => {
+  const target = typeof rawTarget === "string" ? parseFloat(rawTarget) : rawTarget;
+  if (lowerIsBetter) {
+    if (current <= target) return "good";
+    if (current <= target * 1.5) return "fair";
+    return "poor";
+  }
+  if (current >= target) return "good";
+  if (current >= target * 0.8) return "fair";
+  return "poor";
+};
+
+const MetricCard = ({ icon: Icon, label, current, unit, target, lowerIsBetter = true }) => {
+  const metricHealth = getMetricHealth(current, target, lowerIsBetter);
+  const healthColor =
+    metricHealth === "good" ? "text-green-400" : metricHealth === "fair" ? "text-yellow-400" : "text-red-400";
+
+  return (
+    <div className="bg-slate-700/50 rounded p-4">
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-gray-400 text-xs mb-2 uppercase tracking-wide flex items-center gap-2">
+            <Icon className="w-3 h-3" />
+            {label}
+          </p>
+          <p className={`text-2xl font-bold ${healthColor}`}>
+            {current.toFixed(1)}{unit}
+          </p>
+          {target && (
+            <p className="text-xs text-gray-500 mt-1">Target: {target}{unit}</p>
+          )}
+        </div>
+        {metricHealth === "good" && <CheckCircle className="w-4 h-4 text-green-400" />}
+        {metricHealth === "fair" && <AlertTriangle className="w-4 h-4 text-yellow-400" />}
+        {metricHealth === "poor" && <AlertCircle className="w-4 h-4 text-red-400" />}
+      </div>
+    </div>
+  );
+};
+
 export function ProductionHealthMonitor() {
   const [health, setHealth] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -39,9 +79,12 @@ export function ProductionHealthMonitor() {
   };
 
   useEffect(() => {
-    fetchHealth();
+    const initialTimer = window.setTimeout(fetchHealth, 0);
     const interval = setInterval(fetchHealth, 30000);
-    return () => clearInterval(interval);
+    return () => {
+      window.clearTimeout(initialTimer);
+      clearInterval(interval);
+    };
   }, []);
 
   if (loading && !health) {
@@ -73,49 +116,6 @@ export function ProductionHealthMonitor() {
   if (!health) return null;
 
   const { metrics } = health;
-
-  const getMetricHealth = (current, target, lowerIsBetter = true) => {
-    if (typeof target === "string") {
-      target = parseFloat(target);
-    }
-    if (lowerIsBetter) {
-      if (current <= target) return "good";
-      if (current <= target * 1.5) return "fair";
-      return "poor";
-    } else {
-      if (current >= target) return "good";
-      if (current >= target * 0.8) return "fair";
-      return "poor";
-    }
-  };
-
-  const MetricCard = ({ icon: Icon, label, current, unit, target, lowerIsBetter = true }) => {
-    const metricHealth = getMetricHealth(current, target, lowerIsBetter);
-    const healthColor =
-      metricHealth === "good" ? "text-green-400" : metricHealth === "fair" ? "text-yellow-400" : "text-red-400";
-
-    return (
-      <div className="bg-slate-700/50 rounded p-4">
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-gray-400 text-xs mb-2 uppercase tracking-wide flex items-center gap-2">
-              <Icon className="w-3 h-3" />
-              {label}
-            </p>
-            <p className={`text-2xl font-bold ${healthColor}`}>
-              {current.toFixed(1)}{unit}
-            </p>
-            {target && (
-              <p className="text-xs text-gray-500 mt-1">Target: {target}{unit}</p>
-            )}
-          </div>
-          {metricHealth === "good" && <CheckCircle className="w-4 h-4 text-green-400" />}
-          {metricHealth === "fair" && <AlertTriangle className="w-4 h-4 text-yellow-400" />}
-          {metricHealth === "poor" && <AlertCircle className="w-4 h-4 text-red-400" />}
-        </div>
-      </div>
-    );
-  };
 
   return (
     <div className="space-y-4">

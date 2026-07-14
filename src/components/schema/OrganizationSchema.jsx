@@ -10,6 +10,8 @@ import { SITE_URL } from "@/lib/config";
 import { getSeoImage } from "@/lib/seo";
 
 export async function OrganizationSchema() {
+  let schema;
+
   try {
     await dbConnect();
 
@@ -57,7 +59,7 @@ export async function OrganizationSchema() {
           alternateName: "Muhyo Tech",
           url: SITE_URL,
           logo: getSeoImage("/logo.png"),
-          image: getSeoImage("/portfolio-hero.png"),
+          image: getSeoImage("/home-preview.png"),
           description:
             config.seo?.description ||
             "Full-stack web development, Next.js websites, admin dashboards, and scalable digital solutions.",
@@ -87,7 +89,7 @@ export async function OrganizationSchema() {
           "@id": `${SITE_URL}/#localbusiness`,
           name: "Muhyo Tech",
           url: SITE_URL,
-          image: getSeoImage("/portfolio-hero.png"),
+          image: getSeoImage("/home-preview.png"),
           logo: getSeoImage("/logo.png"),
           telephone: "+92-322-4458481",
           location: "Lahore, Punjab, Pakistan",
@@ -134,12 +136,7 @@ export async function OrganizationSchema() {
       ],
     };
 
-    return (
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
-      />
-    );
+    schema = organizationSchema;
   } catch (error) {
     if (error.message?.includes("querySrv")) {
       console.warn("[OrganizationSchema] Warning: Database connection failed (querySrv), using minimal schema.");
@@ -171,7 +168,7 @@ export async function OrganizationSchema() {
           name: "Muhyo Tech",
           url: SITE_URL,
           logo: getSeoImage("/logo.png"),
-          image: getSeoImage("/portfolio-hero.png"),
+          image: getSeoImage("/home-preview.png"),
           telephone: "+92 322 4458481",
           address: {
             "@type": "PostalAddress",
@@ -189,14 +186,13 @@ export async function OrganizationSchema() {
       ],
     };
 
-    // Return minimal local business graph on error
-    return (
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(fallbackGraph),
-        }}
-      />
-    );
+    schema = fallbackGraph;
   }
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
 }

@@ -18,6 +18,7 @@ import { SectionWrapper, Button } from "@/components/ui";
 import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
 import { getBlogImageAlt } from "@/lib/blogImageAlt";
 import { ensureMuhyoTechAlt } from "@/lib/mediaAlt";
+import { SITE_URL } from "@/lib/config";
 
 export default function BlogPostDetail({
   blog,
@@ -27,13 +28,9 @@ export default function BlogPostDetail({
 }) {
   if (!blog) return null;
 
-  const coverImage = getSafeImageSrc(blog.image || blog.featuredImage?.url, "/portfolio-hero.png");
+  const coverImage = getSafeImageSrc(blog.image || blog.featuredImage?.url, "/blog-preview.png");
   const blogPath = `/blog/${blog.slug}`;
-  const fullShareUrl =
-    shareUrl ||
-    (typeof window !== "undefined"
-      ? `${window.location.origin}${blogPath}`
-      : blogPath);
+  const fullShareUrl = shareUrl || `${SITE_URL}${blogPath}`;
   const encodedShareUrl = encodeURIComponent(fullShareUrl);
   const encodedShareTitle = encodeURIComponent(blog.title || "Muhyo Tech Blog");
   const shareOptions = [

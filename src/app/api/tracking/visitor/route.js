@@ -119,9 +119,12 @@ export async function POST(req) {
         });
     } catch (error) {
         console.error("[Visitor Tracking API] Error:", error.message);
+        // Visitor analytics must never make the public page appear broken when
+        // the database is temporarily unavailable. The failure remains logged
+        // server-side for observability and can be retried by the next heartbeat.
         return NextResponse.json(
-            { success: false, error: error.message },
-            { status: 500 }
+            { success: false, error: "Visitor analytics temporarily unavailable" },
+            { status: 202 }
         );
     }
 }

@@ -71,7 +71,7 @@ export default function BlogsManagement() {
                 )}
               </div>
               <p className="text-sm font-medium text-slate-500 line-clamp-2 leading-relaxed italic">
-                "{b.summary}"
+                &ldquo;{b.summary}&rdquo;
               </p>
             </div>
 

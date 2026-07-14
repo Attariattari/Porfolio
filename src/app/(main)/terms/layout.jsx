@@ -1,7 +1,7 @@
 import { buildCanonical, getSeoImage } from "@/lib/seo";
 
 export const metadata = {
-  title: "Terms of Service | Muhyo Tech",
+  title: "Terms of Service",
   description:
     "Read Muhyo Tech's Terms of Service. Strategic framework governing the technical collaboration and professional engagement at Muhyo Tech.",
   alternates: { canonical: buildCanonical("/terms") },

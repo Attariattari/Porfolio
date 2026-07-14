@@ -43,9 +43,12 @@ export function SEOValidationDashboard() {
   };
 
   useEffect(() => {
-    fetchSeoData();
+    const initialTimer = window.setTimeout(fetchSeoData, 0);
     const interval = setInterval(fetchSeoData, 60000);
-    return () => clearInterval(interval);
+    return () => {
+      window.clearTimeout(initialTimer);
+      clearInterval(interval);
+    };
   }, []);
 
   if (loading && !health) {

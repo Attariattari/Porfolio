@@ -2,7 +2,7 @@ import BookCallClient from "./BookCallClient";
 import { buildCanonical } from "@/lib/seo";
 
 export const metadata = {
-  title: "Book a Call | Muhyo Tech",
+  title: "Book a Call",
   description:
     "Book a strategy call with Muhyo Tech to discuss your website, web app, dashboard, SEO, or software project.",
   alternates: { canonical: buildCanonical("/book-a-call") },

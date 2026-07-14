@@ -102,36 +102,40 @@ export default function ChangePasskeyPage() {
 
   // Analyze passkey strength
   useEffect(() => {
-    if (!newPasskey) {
-      setPasskeyStrength(null);
-      return;
-    }
+    const timer = window.setTimeout(() => {
+      if (!newPasskey) {
+        setPasskeyStrength(null);
+        return;
+      }
 
-    const hasUpperCase = /[A-Z]/.test(newPasskey);
-    const hasLowerCase = /[a-z]/.test(newPasskey);
-    const hasNumbers = /\d/.test(newPasskey);
-    const hasSpecialChars = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(newPasskey);
-    const isLongEnough = newPasskey.length >= 8;
+      const hasUpperCase = /[A-Z]/.test(newPasskey);
+      const hasLowerCase = /[a-z]/.test(newPasskey);
+      const hasNumbers = /\d/.test(newPasskey);
+      const hasSpecialChars = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(newPasskey);
+      const isLongEnough = newPasskey.length >= 8;
 
-    let strength = 'weak';
-    if (hasUpperCase && hasLowerCase && hasNumbers && isLongEnough) {
-      strength = 'medium';
-    }
-    if (hasUpperCase && hasLowerCase && hasNumbers && hasSpecialChars && isLongEnough) {
-      strength = 'strong';
-    }
+      let strength = 'weak';
+      if (hasUpperCase && hasLowerCase && hasNumbers && isLongEnough) {
+        strength = 'medium';
+      }
+      if (hasUpperCase && hasLowerCase && hasNumbers && hasSpecialChars && isLongEnough) {
+        strength = 'strong';
+      }
 
-    setPasskeyStrength({
-      strength,
-      metrics: {
-        length: `${newPasskey.length}/128 chars`,
-        hasUpperCase,
-        hasLowerCase,
-        hasNumbers,
-        hasSpecialChars,
-        isLongEnough,
-      },
-    });
+      setPasskeyStrength({
+        strength,
+        metrics: {
+          length: `${newPasskey.length}/128 chars`,
+          hasUpperCase,
+          hasLowerCase,
+          hasNumbers,
+          hasSpecialChars,
+          isLongEnough,
+        },
+      });
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, [newPasskey]);
 
   // Handle form submission
@@ -305,7 +309,7 @@ export default function ChangePasskeyPage() {
             </h1>
           </div>
           <p className="text-muted-foreground text-lg">
-            You're now the Super Admin of Muhyo Tech. Set your own secure passkey.
+            You&apos;re now the Super Admin of Muhyo Tech. Set your own secure passkey.
           </p>
         </div>
 
@@ -471,7 +475,7 @@ export default function ChangePasskeyPage() {
                   ) : (
                     <div className="flex items-center gap-2 text-red-400 text-sm">
                       <AlertCircle className="w-4 h-4" />
-                      <span>Passkeys don't match</span>
+                      <span>Passkeys don&apos;t match</span>
                     </div>
                   )}
                 </div>
@@ -519,7 +523,7 @@ export default function ChangePasskeyPage() {
 
         {/* Footer Info */}
         <div className="text-center text-sm text-muted-foreground">
-          <p>After setting your passkey, you'll be redirected to your dashboard.</p>
+          <p>After setting your passkey, you&apos;ll be redirected to your dashboard.</p>
         </div>
       </motion.div>
     </div>

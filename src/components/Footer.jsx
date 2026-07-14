@@ -231,7 +231,7 @@ export default function Footer({ data }) {
                     <Link
                       href="/contact#contact-form"
                       className="group flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-accent"
-                      aria-label={`Contact ${displayName}`}
+                      aria-label="Contact form"
                     >
                       Contact form
                       <ExternalLink

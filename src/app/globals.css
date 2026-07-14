@@ -493,7 +493,7 @@
         -webkit-mask-image: radial-gradient(ellipse at 50% 30%, black 0%, transparent 72%);
         mask-image: radial-gradient(ellipse at 50% 30%, black 0%, transparent 72%);
         opacity: 0.38;
-        animation: black-grid-drift 48s linear infinite;
+        background-position: 0 0;
     }
     /* Large blurred accent blobs read as dirty shadows on a light canvas.
        They remain available in dark mode, where they add useful depth. */
@@ -538,6 +538,15 @@
         transform: scaleX(1);
         opacity: 0.5;
     }
+}
+
+@keyframes service-slider-progress {
+    from { height: 0; }
+    to { height: 100%; }
+}
+
+.service-slider-progress {
+    animation: service-slider-progress 5s linear forwards;
 }
 
 @keyframes black-grid-drift {

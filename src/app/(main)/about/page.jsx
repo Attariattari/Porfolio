@@ -7,9 +7,9 @@ import { buildCanonical, getSeoImage } from "@/lib/seo";
 import { getAboutPageData } from "@/lib/content/getAboutPageData";
 
 export const metadata = {
-  title: "About | Muhyo Tech",
+  title: { absolute: "About Muhyo Tech | Full-Stack Developer in Lahore" },
   description:
-    "Learn more about Muhyo Tech and Pir Ghulam Muhyo Din, a Full-Stack Web Developer building modern websites, web applications, dashboards, and scalable digital solutions with Next.js and MERN stack.",
+    "Meet Pir Ghulam Muhyo Din, the full-stack developer behind Muhyo Tech, building Next.js websites, MERN applications, and business dashboards in Lahore.",
   alternates: { canonical: buildCanonical("/about") },
   openGraph: {
     title: "About Muhyo Tech | Pir Ghulam Muhyo Din - Full-Stack Web Developer",

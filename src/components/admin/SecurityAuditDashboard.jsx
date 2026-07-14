@@ -38,9 +38,12 @@ export function SecurityAuditDashboard() {
   };
 
   useEffect(() => {
-    fetchSecurityData();
+    const initialTimer = window.setTimeout(fetchSecurityData, 0);
     const interval = setInterval(fetchSecurityData, 60000);
-    return () => clearInterval(interval);
+    return () => {
+      window.clearTimeout(initialTimer);
+      clearInterval(interval);
+    };
   }, []);
 
   if (loading && !audit) {

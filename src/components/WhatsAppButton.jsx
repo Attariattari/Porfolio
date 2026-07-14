@@ -59,6 +59,8 @@ const WhatsAppButton = () => {
             <div className="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
 
             <button
+              type="button"
+              aria-label="Close WhatsApp chat panel"
               onClick={() => setIsOpen(false)}
               className="absolute top-4 right-4 p-1 rounded-full hover:bg-muted transition-colors cursor-pointer z-10"
             >
@@ -81,7 +83,7 @@ const WhatsAppButton = () => {
               </div>
 
               <p className="text-xs font-medium text-muted-foreground leading-relaxed">
-                Hi there! 👋 Need help with a project? Let's chat on WhatsApp.
+                Hi there! Need help with a project? Let us chat on WhatsApp.
               </p>
 
               <a
@@ -99,6 +101,9 @@ const WhatsAppButton = () => {
       </AnimatePresence>
 
       <motion.button
+        type="button"
+        aria-label={isOpen ? "Close WhatsApp chat panel" : "Open WhatsApp chat panel"}
+        aria-expanded={isOpen}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={() => setIsOpen(!isOpen)}

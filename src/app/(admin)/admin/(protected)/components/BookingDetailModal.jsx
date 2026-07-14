@@ -47,13 +47,15 @@ export default function BookingDetailModal({ booking: initialBooking, isOpen, on
   const isFinalized = booking?.status === 'completed' || booking?.status === 'rejected' || booking?.status === 'cancelled';
 
   useEffect(() => {
-    if (booking) {
+    const timer = window.setTimeout(() => {
+      if (!booking) return;
       setEditData({
         meetingLink: booking.meetingLink || "",
         adminNote: booking.adminNote || "",
       });
       setRejectionReason(booking.rejectionReason || "");
-    }
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [booking]);
 
   if (!booking) return null;
@@ -186,7 +188,7 @@ export default function BookingDetailModal({ booking: initialBooking, isOpen, on
                  <div className="space-y-4">
                     <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-600">Client Message</h3>
                     <p className="relative text-sm text-slate-400 leading-relaxed bg-white/[0.02] p-6 rounded-2xl border border-white/5 italic font-medium">
-                        "{booking.message}"
+                        &ldquo;{booking.message}&rdquo;
                     </p>
                  </div>
               )}

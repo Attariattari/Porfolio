@@ -63,7 +63,7 @@ export default function GoalsAdminPage() {
     fetchData();
   }, []);
 
-  const fetchData = async () => {
+  async function fetchData() {
     try {
       setIsLoading(true);
       const [goalsRes, roadmapRes, milestonesRes, progressRes] = await Promise.all([
@@ -252,7 +252,7 @@ export default function GoalsAdminPage() {
     } finally {
       setIsUpdatingConfig(false);
     }
-  };
+  }
 
   const resetProgressForm = () => {
     setEditingProgress(null);
@@ -835,7 +835,7 @@ export default function GoalsAdminPage() {
                       Studio Health Strategy
                     </h3>
                     <p className="text-sm text-foreground/60 italic">
-                      Define howMuhyo Tech's overall health score is determined.
+                      Define how Muhyo Tech&apos;s overall health score is determined.
                     </p>
                   </div>
 

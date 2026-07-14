@@ -14,41 +14,46 @@ export function SystemHealthDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchHealthSummary();
-    const interval = setInterval(fetchHealthSummary, 60000);
-    return () => clearInterval(interval);
-  }, []);
+    let cancelled = false;
+    const fetchHealthSummary = async () => {
+      try {
+        setLoading(true);
+        const [cache, production, security, seo] = await Promise.all([
+          fetch("/api/internal/cache-health"),
+          fetch("/api/internal/observability?action=health"),
+          fetch("/api/internal/security-audit?action=audit"),
+          fetch("/api/internal/seo-audit?action=health"),
+        ]);
 
-  const fetchHealthSummary = async () => {
-    try {
-      setLoading(true);
-      const [cache, production, security, seo] = await Promise.all([
-        fetch("/api/internal/cache-health"),
-        fetch("/api/internal/observability?action=health"),
-        fetch("/api/internal/security-audit?action=audit"),
-        fetch("/api/internal/seo-audit?action=health"),
-      ]);
+        const cacheData = await cache.json();
+        const prodData = await production.json();
+        const secData = await security.json();
+        const seoData = await seo.json();
 
-      const cacheData = await cache.json();
-      const prodData = await production.json();
-      const secData = await security.json();
-      const seoData = await seo.json();
-
-      if (cacheData.success && prodData.success && secData.success && seoData.success) {
-        setHealthSummary({
-          cache: cacheData.data,
-          production: prodData.data,
-          security: secData.data,
-          seo: seoData.data,
-          timestamp: new Date().toLocaleTimeString(),
-        });
+        if (!cancelled && cacheData.success && prodData.success && secData.success && seoData.success) {
+          setHealthSummary({
+            cache: cacheData.data,
+            production: prodData.data,
+            security: secData.data,
+            seo: seoData.data,
+            timestamp: new Date().toLocaleTimeString(),
+          });
+        }
+      } catch (error) {
+        console.error("Health summary fetch error:", error);
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-    } catch (error) {
-      console.error("Health summary fetch error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+
+    const initialTimer = window.setTimeout(fetchHealthSummary, 0);
+    const interval = window.setInterval(fetchHealthSummary, 60000);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(initialTimer);
+      window.clearInterval(interval);
+    };
+  }, []);
 
   const getHealthColor = (status) => {
     if (!status) return "bg-gray-600";
