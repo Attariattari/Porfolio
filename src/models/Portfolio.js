@@ -165,6 +165,7 @@ const BlogSchema = new mongoose.Schema({
         index: true,
     },
     automationSource: { type: String },
+    editorialCampaign: { type: String, index: true },
     image_prompt: { type: String },
     imagePrompt: { type: String },
     imageNegativePrompt: { type: String },

@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { initializeSocket, SOCKET_EVENTS } from "@/lib/socket";
+import useAdminStore from "@/lib/store/adminStore";
 import { toast } from "sonner";
 
 /**
@@ -12,6 +13,7 @@ import { toast } from "sonner";
  */
 export default function SocketRefresh() {
   const router = useRouter();
+  const fetchBlogs = useAdminStore((state) => state.fetchBlogs);
 
   useEffect(() => {
     // Only initialize socket if user is authenticated
@@ -56,6 +58,11 @@ export default function SocketRefresh() {
 
     // Listen for new content additions
     socket.on(SOCKET_EVENTS.NEW_BLOG, () => router.refresh());
+    const syncUploadedBlogImage = () => {
+      fetchBlogs({ force: true });
+      toast.success("Blog image updated in real time.", { duration: 2500 });
+    };
+    socket.on(SOCKET_EVENTS.BLOG_IMAGE_UPLOADED, syncUploadedBlogImage);
     socket.on(SOCKET_EVENTS.NEW_PROJECT, () => router.refresh());
     socket.on(SOCKET_EVENTS.NEW_SERVICE, () => router.refresh());
     socket.on(SOCKET_EVENTS.SETTINGS_UPDATED, () => router.refresh());
@@ -63,7 +70,7 @@ export default function SocketRefresh() {
     return () => {
       socket.disconnect();
     };
-  }, [router]);
+  }, [fetchBlogs, router]);
 
   return null;
 }

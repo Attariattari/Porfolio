@@ -94,6 +94,27 @@ const TOPIC_FAMILIES = [
   },
 ];
 
+const MONTHLY_MUHYO_TECH_CAMPAIGN = "muhyo-tech-monthly";
+
+function getUtcMonthContext(now = new Date()) {
+  const year = now.getUTCFullYear();
+  const month = now.getUTCMonth();
+
+  return {
+    start: new Date(Date.UTC(year, month, 1)),
+    end: new Date(Date.UTC(year, month + 1, 1)),
+    label: new Intl.DateTimeFormat("en-US", {
+      month: "long",
+      year: "numeric",
+      timeZone: "UTC",
+    }).format(now),
+  };
+}
+
+function buildMonthlyMuhyoTechTopic(monthLabel) {
+  return `Muhyo Tech monthly brand spotlight for ${monthLabel}: explain who Muhyo Tech is, what we build, the website and web-app services we provide, how we solve real client problems, and the practical value clients receive. Choose a fresh, human, non-salesy editorial angle and an original title for this month.`;
+}
+
 function normalizeTopicText(value = "") {
   return String(value)
     .toLowerCase()
@@ -776,6 +797,28 @@ export async function runBlogAutomationPipeline(
     let recentTitles = [];
     let recentBlogMeta = [];
 
+    // Add one brand-focused article per UTC calendar month. If this month's
+    // spotlight already exists, the original AI topic-selection flow continues
+    // unchanged below.
+    if (!selectedTopic) {
+      const month = getUtcMonthContext();
+      const monthlySpotlightExists = await Blog.exists({
+        editorialCampaign: MONTHLY_MUHYO_TECH_CAMPAIGN,
+        createdAt: { $gte: month.start, $lt: month.end },
+      });
+
+      if (!monthlySpotlightExists) {
+        selectedTopic = buildMonthlyMuhyoTechTopic(month.label);
+        automationContext = {
+          ...(automationContext || {}),
+          editorialCampaign: MONTHLY_MUHYO_TECH_CAMPAIGN,
+        };
+        report("MONTHLY_BRAND_TOPIC", {
+          message: `Using this month's Muhyo Tech spotlight topic for ${month.label}.`,
+        });
+      }
+    }
+
     if (!selectedTopic) {
       report("SELECTING_TOPIC", {
         message: "AI strategist is selecting a fresh Muhyo Tech topic...",
@@ -882,6 +925,9 @@ export async function runBlogAutomationPipeline(
             automationSlot: automationContext.automationSlot,
             automationSource: automationContext.automationSource || "vercel-cron",
           }
+        : {}),
+      ...(automationContext?.editorialCampaign
+        ? { editorialCampaign: automationContext.editorialCampaign }
         : {}),
     });
 

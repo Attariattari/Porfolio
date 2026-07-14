@@ -11,7 +11,7 @@ import {
   validateBlogImageFile,
 } from "@/lib/server/cloudinary/uploadBlogImage";
 import { cacheManager } from "@/lib/cache";
-import { emitSocketEvent } from "@/lib/socket";
+import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socket";
 import { ActivityController } from "@/controllers/ActivityController";
 import { revalidatePath } from "next/cache";
 import { triggerFeaturedUpdate } from "@/lib/ai/featuredEngine";
@@ -117,10 +117,12 @@ export async function POST(request, { params }) {
     revalidatePath("/");
     revalidatePath("/blog");
     revalidatePath(`/blog/${updatedBlog.slug}`);
-    emitSocketEvent("blog:image-uploaded", {
+    emitSocketEvent(SOCKET_EVENTS.BLOG_IMAGE_UPLOADED, {
       blogId: updatedBlog._id.toString(),
     });
-    emitSocketEvent("blog:updated", { blogId: updatedBlog._id.toString() });
+    emitSocketEvent(SOCKET_EVENTS.BLOG_UPDATED, {
+      blogId: updatedBlog._id.toString(),
+    });
 
     return NextResponse.json({
       success: true,

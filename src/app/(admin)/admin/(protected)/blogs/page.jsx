@@ -55,6 +55,32 @@ export default function BlogsPage() {
     fetchBlogs();
   }, [fetchBlogs]);
 
+  // Socket.IO provides the immediate update. While an emailed image is still
+  // pending, this small polling fallback keeps Vercel/serverless deployments in
+  // sync too, where a persistent socket server may be intentionally disabled.
+  useEffect(() => {
+    const hasPendingExternalUpload = blogs.some((blog) => {
+      const hasImage = Boolean(blog.image || blog.featuredImage?.url);
+      return (
+        blog.aiGenerated &&
+        !hasImage &&
+        ["pending", "failed", "manual_required", "retry_pending"].includes(
+          blog.imageStatus || "pending",
+        )
+      );
+    });
+
+    if (!hasPendingExternalUpload) return undefined;
+
+    const intervalId = window.setInterval(() => {
+      if (document.visibilityState === "visible") {
+        fetchBlogs({ force: true });
+      }
+    }, 5000);
+
+    return () => window.clearInterval(intervalId);
+  }, [blogs, fetchBlogs]);
+
   useEffect(() => {
     const saved = window.localStorage.getItem("admin:autoGenerateBlogImages");
     if (saved !== "true") return undefined;

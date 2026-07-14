@@ -25,6 +25,8 @@ export const SOCKET_EVENTS = {
   BOOKING_SEEN: 'booking_seen',
   NEW_SUBSCRIBER: 'new_subscriber',
   NEW_BLOG: 'new_blog',
+  BLOG_UPDATED: 'blog:updated',
+  BLOG_IMAGE_UPLOADED: 'blog:image-uploaded',
   NEW_SERVICE: 'new_service',
   SERVICE_CREATED: 'service:created',
   SERVICE_UPDATED: 'service:updated',
