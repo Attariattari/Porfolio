@@ -1,15 +1,17 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertCircle,
   Calendar,
   CheckCircle2,
+  ChevronDown,
   Clock,
   Loader2,
   Mail,
   MessageSquare,
   Phone,
+  Sparkles,
   User,
   BookOpen,
 } from "lucide-react";
@@ -42,6 +44,9 @@ const FieldShell = ({ icon: Icon, children }) => (
   </div>
 );
 
+const ErrorText = ({ error }) =>
+  error ? <p className="mt-1 text-xs font-semibold text-red-400">{error}</p> : null;
+
 const baseInputClass =
   "w-full rounded-xl border border-border/70 bg-background/70 px-12 py-3 text-sm text-foreground outline-none transition-all placeholder:text-muted-foreground/60 focus:border-accent/60 focus:bg-background/90";
 
@@ -61,16 +66,13 @@ export default function BookingForm({
   const [services, setServices] = useState([]);
   const [serviceLoading, setServiceLoading] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState("");
+  const [descriptionSource, setDescriptionSource] = useState("manual");
+  const aiSourceNotesRef = useRef("");
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-
-  useEffect(() => {
-    setFormData((current) => ({
-      ...current,
-      serviceSlug: serviceValue(initialServiceSlug),
-    }));
-  }, [initialServiceSlug]);
 
   useEffect(() => {
     let active = true;
@@ -98,10 +100,29 @@ export default function BookingForm({
     [formData.serviceSlug, services],
   );
 
+  const projectTypeOptions = selectedService?.projectTypes || [];
+
   const updateField = (name, value) => {
     setFormData((current) => ({ ...current, [name]: value }));
     setErrors((current) => ({ ...current, [name]: "" }));
     setErrorMessage("");
+    if (name === "message") {
+      setAiError("");
+      setDescriptionSource("manual");
+    }
+  };
+
+  const handleServiceChange = (value) => {
+    setFormData((current) => ({
+      ...current,
+      serviceSlug: value,
+      projectType: "",
+    }));
+    setErrors((current) => ({ ...current, serviceSlug: "", projectType: "" }));
+    setErrorMessage("");
+    setAiError("");
+    setDescriptionSource("manual");
+    aiSourceNotesRef.current = "";
   };
 
   const validate = () => {
@@ -116,6 +137,7 @@ export default function BookingForm({
       nextErrors.phone = "Enter a valid phone number.";
     }
     if (!formData.serviceSlug) nextErrors.serviceSlug = "Select a service.";
+    if (!formData.projectType) nextErrors.projectType = "Select a project type.";
     if (!formData.preferredDate) nextErrors.preferredDate = "Select a preferred date.";
     if (!formData.preferredTime) nextErrors.preferredTime = "Select a preferred time.";
     if (formData.message.trim().length < 10) {
@@ -124,6 +146,62 @@ export default function BookingForm({
 
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
+  };
+
+  const handleGenerateDescription = async ({ projectType, automatic = false } = {}) => {
+    const requestedProjectType = projectType || formData.projectType;
+    if (!selectedService || !requestedProjectType || aiLoading) return;
+
+    const sourceNotes = automatic ? aiSourceNotesRef.current : formData.message;
+    if (!automatic) aiSourceNotesRef.current = formData.message;
+
+    setAiLoading(true);
+    setAiError("");
+    setErrors((current) => ({ ...current, message: "" }));
+
+    try {
+      const response = await fetch("/api/ai/booking-description", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          serviceSlug: selectedService.slug,
+          projectType: requestedProjectType,
+          timelinePreference: formData.timelinePreference,
+          currentDescription: sourceNotes,
+        }),
+      });
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok || !result.success || !result.data?.description) {
+        throw new Error(result.message || "AI could not generate a description.");
+      }
+
+      setFormData((current) => ({
+        ...current,
+        message: result.data.description,
+      }));
+      setDescriptionSource("ai");
+    } catch (error) {
+      setAiError(
+        error.message || "AI could not prepare the description. You can still write it manually.",
+      );
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const handleProjectTypeChange = (value) => {
+    const shouldRegenerate =
+      Boolean(value) && descriptionSource === "ai" && Boolean(formData.message.trim());
+
+    setFormData((current) => ({ ...current, projectType: value }));
+    setErrors((current) => ({ ...current, projectType: "" }));
+    setErrorMessage("");
+    setAiError("");
+
+    if (shouldRegenerate) {
+      void handleGenerateDescription({ projectType: value, automatic: true });
+    }
   };
 
   const handleSubmit = async (event) => {
@@ -159,6 +237,8 @@ export default function BookingForm({
         "Your booking request has been submitted successfully. I'll review your project details and get back to you as soon as possible.";
       setSuccessMessage(message);
       setFormData({ ...initialFormState, serviceSlug: serviceValue(initialServiceSlug) });
+      setDescriptionSource("manual");
+      aiSourceNotesRef.current = "";
       onSuccess?.(result.data);
     } catch (error) {
       setErrorMessage(error.message || "Something went wrong. Please try again.");
@@ -166,9 +246,6 @@ export default function BookingForm({
       setLoading(false);
     }
   };
-
-  const ErrorText = ({ name }) =>
-    errors[name] ? <p className="mt-1 text-xs font-semibold text-red-400">{errors[name]}</p> : null;
 
   return (
     <form onSubmit={handleSubmit} className={`space-y-6 ${className}`}>
@@ -220,7 +297,7 @@ export default function BookingForm({
               className={baseInputClass}
             />
           </FieldShell>
-          <ErrorText name="name" />
+          <ErrorText error={errors.name} />
         </div>
 
         <div>
@@ -237,7 +314,7 @@ export default function BookingForm({
               className={baseInputClass}
             />
           </FieldShell>
-          <ErrorText name="email" />
+          <ErrorText error={errors.email} />
         </div>
       </div>
 
@@ -256,7 +333,7 @@ export default function BookingForm({
               className={baseInputClass}
             />
           </FieldShell>
-          <ErrorText name="phone" />
+          <ErrorText error={errors.phone} />
         </div>
 
         <div>
@@ -267,9 +344,9 @@ export default function BookingForm({
             <select
               name="serviceSlug"
               value={formData.serviceSlug}
-              onChange={(e) => updateField("serviceSlug", e.target.value)}
+              onChange={(e) => handleServiceChange(e.target.value)}
               disabled={serviceLoading}
-              className={`${baseInputClass} appearance-none cursor-pointer disabled:opacity-60`}
+              className={`${baseInputClass} cursor-pointer appearance-none pr-11 disabled:opacity-60`}
             >
               <option value="">{serviceLoading ? "Loading services..." : "Select service"}</option>
               {services.map((service) => (
@@ -278,8 +355,12 @@ export default function BookingForm({
                 </option>
               ))}
             </select>
+            <ChevronDown
+              aria-hidden="true"
+              className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+            />
           </FieldShell>
-          <ErrorText name="serviceSlug" />
+          <ErrorText error={errors.serviceSlug} />
         </div>
       </div>
 
@@ -297,7 +378,7 @@ export default function BookingForm({
               className={baseInputClass}
             />
           </FieldShell>
-          <ErrorText name="preferredDate" />
+          <ErrorText error={errors.preferredDate} />
         </div>
 
         <div>
@@ -313,7 +394,7 @@ export default function BookingForm({
               className={baseInputClass}
             />
           </FieldShell>
-          <ErrorText name="preferredTime" />
+          <ErrorText error={errors.preferredTime} />
         </div>
       </div>
 
@@ -322,71 +403,129 @@ export default function BookingForm({
           <label className="mb-2 ml-2 block text-[10px] font-black uppercase tracking-widest text-accent/80">
             Project Type
           </label>
-          <input
-            type="text"
-            name="projectType"
-            value={formData.projectType}
-            onChange={(e) => updateField("projectType", e.target.value)}
-            placeholder="Redesign, app, dashboard..."
-            className="w-full rounded-xl border border-border/70 bg-background/70 px-4 py-3 text-sm text-foreground outline-none transition-all placeholder:text-muted-foreground/60 focus:border-accent/60 focus:bg-background/90"
-          />
+          <div className="relative">
+            <select
+              name="projectType"
+              value={formData.projectType}
+              onChange={(e) => handleProjectTypeChange(e.target.value)}
+              disabled={aiLoading}
+              className="w-full cursor-pointer appearance-none rounded-xl border border-border/70 bg-background/70 py-3 pl-4 pr-11 text-sm text-foreground outline-none transition-all focus:border-accent/60 focus:bg-background/90 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <option value="">
+                {selectedService ? "Select project type" : "First select a service"}
+              </option>
+              {projectTypeOptions.map((projectType) => (
+                <option key={projectType} value={projectType}>
+                  {projectType}
+                </option>
+              ))}
+            </select>
+            <ChevronDown
+              aria-hidden="true"
+              className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+            />
+          </div>
+          <ErrorText error={errors.projectType} />
         </div>
 
         <div>
           <label className="mb-2 ml-2 block text-[10px] font-black uppercase tracking-widest text-accent/80">
             Timeline
           </label>
-          <select
-            name="timelinePreference"
-            value={formData.timelinePreference}
-            onChange={(e) => updateField("timelinePreference", e.target.value)}
-            className="w-full rounded-xl border border-border/70 bg-background/70 px-4 py-3 text-sm text-foreground outline-none transition-all focus:border-accent/60 focus:bg-background/90"
-          >
-            <option value="">Not sure yet</option>
-            <option value="as-soon-as-possible">As soon as possible</option>
-            <option value="this-month">This month</option>
-            <option value="next-month">Next month</option>
-            <option value="flexible">Flexible</option>
-          </select>
+          <div className="relative">
+            <select
+              name="timelinePreference"
+              value={formData.timelinePreference}
+              onChange={(e) => updateField("timelinePreference", e.target.value)}
+              className="w-full appearance-none rounded-xl border border-border/70 bg-background/70 py-3 pl-4 pr-11 text-sm text-foreground outline-none transition-all focus:border-accent/60 focus:bg-background/90"
+            >
+              <option value="">Not sure yet</option>
+              <option value="as-soon-as-possible">As soon as possible</option>
+              <option value="this-month">This month</option>
+              <option value="next-month">Next month</option>
+              <option value="flexible">Flexible</option>
+            </select>
+            <ChevronDown
+              aria-hidden="true"
+              className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+            />
+          </div>
         </div>
 
         <div>
           <label className="mb-2 ml-2 block text-[10px] font-black uppercase tracking-widest text-accent/80">
             Contact Preference
           </label>
-          <select
-            name="contactPreference"
-            value={formData.contactPreference}
-            onChange={(e) => updateField("contactPreference", e.target.value)}
-            className="w-full rounded-xl border border-border/70 bg-background/70 px-4 py-3 text-sm text-foreground outline-none transition-all focus:border-accent/60 focus:bg-background/90"
-          >
-            <option value="">Any method</option>
-            <option value="email">Email</option>
-            <option value="phone">Phone</option>
-            <option value="whatsapp">WhatsApp</option>
-          </select>
+          <div className="relative">
+            <select
+              name="contactPreference"
+              value={formData.contactPreference}
+              onChange={(e) => updateField("contactPreference", e.target.value)}
+              className="w-full appearance-none rounded-xl border border-border/70 bg-background/70 py-3 pl-4 pr-11 text-sm text-foreground outline-none transition-all focus:border-accent/60 focus:bg-background/90"
+            >
+              <option value="">Any method</option>
+              <option value="email">Email</option>
+              <option value="phone">Phone</option>
+              <option value="whatsapp">WhatsApp</option>
+            </select>
+            <ChevronDown
+              aria-hidden="true"
+              className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+            />
+          </div>
         </div>
       </div>
 
       <div>
-        <label className="mb-2 ml-2 block text-[10px] font-black uppercase tracking-widest text-accent/80">
-          Project Details
-        </label>
+        <div className="mb-2 flex flex-wrap items-center justify-between gap-2 pl-2">
+          <label
+            htmlFor="booking-project-details"
+            className="text-[10px] font-black uppercase tracking-widest text-accent/80"
+          >
+            Project Details
+          </label>
+          {selectedService && formData.projectType && (
+            <button
+              type="button"
+              onClick={() => handleGenerateDescription()}
+              disabled={aiLoading}
+              className="inline-flex items-center gap-2 rounded-full border border-accent/25 bg-accent/10 px-3 py-1.5 text-[11px] font-bold text-accent transition-colors hover:bg-accent/15 disabled:cursor-wait disabled:opacity-70"
+              aria-label={formData.message.trim() ? "Improve project details with AI" : "Generate project details with AI"}
+            >
+              {aiLoading ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Sparkles className="h-3.5 w-3.5" />
+              )}
+              {aiLoading
+                ? "Writing..."
+                : formData.message.trim()
+                  ? "Improve with AI"
+                  : "Generate with AI"}
+            </button>
+          )}
+        </div>
         <div className="relative group">
           <MessageSquare className="absolute left-4 top-4 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-accent" />
           <textarea
+            id="booking-project-details"
             name="message"
-            rows={4}
+            rows={6}
             value={formData.message}
             onChange={(e) => updateField("message", e.target.value)}
-            placeholder="Tell me about your project goals, pages, features, or current website..."
+            placeholder={
+              selectedService && formData.projectType
+                ? "Add any specific goals or requirements, then use AI to turn them into a professional brief..."
+                : "Select a service and project type, then describe your goals and requirements..."
+            }
             className="w-full resize-none rounded-xl border border-border/70 bg-background/70 px-12 py-3 text-sm text-foreground outline-none transition-all placeholder:text-muted-foreground/60 focus:border-accent/60 focus:bg-background/90"
           />
         </div>
-        <ErrorText name="message" />
+        {aiError && <p className="mt-2 text-xs font-semibold text-amber-400">{aiError}</p>}
+        <ErrorText error={errors.message} />
       </div>
 
-      <Button type="submit" className="w-full" disabled={loading || serviceLoading}>
+      <Button type="submit" className="w-full" disabled={loading || serviceLoading || aiLoading}>
         {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : submitLabel}
       </Button>
     </form>

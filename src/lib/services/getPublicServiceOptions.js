@@ -1,4 +1,5 @@
 import { ServiceController } from "@/controllers/ServiceController";
+import { getProjectTypesForService } from "@/lib/bookings/projectTypes";
 
 const isPublished = (service = {}) => {
   const status = service.status || service.publishStatus || "published";
@@ -15,6 +16,7 @@ const toSafeOption = (service = {}) => {
     title,
     slug,
     category: service.category || "",
+    projectTypes: getProjectTypesForService({ slug, category: service.category, title }),
   };
 };
 

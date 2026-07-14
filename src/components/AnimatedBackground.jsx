@@ -90,24 +90,26 @@ const AnimatedBackgroundComponent = () => {
 
       {/* Flowing SVG Lines */}
       <svg
-        className={`absolute inset-0 w-full h-full ${isBlack ? "opacity-[0.26]" : "opacity-20"}`}
+        className={`absolute inset-0 h-full w-full ${
+          isBlack ? "opacity-[0.26]" : isDark ? "opacity-20" : "opacity-[0.38]"
+        }`}
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
           <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop
               offset="0%"
-              stopColor={isDark ? "var(--color-accent)" : "#3b82f6"}
+              stopColor={isDark ? "var(--color-accent)" : "#2563eb"}
               stopOpacity="0"
             />
             <stop
               offset="50%"
-              stopColor={isDark ? "var(--color-accent)" : "#3b82f6"}
-              stopOpacity={isBlack ? "0.58" : "0.5"}
+              stopColor={isDark ? "var(--color-accent)" : "#2563eb"}
+              stopOpacity={isBlack ? "0.58" : isDark ? "0.5" : "0.72"}
             />
             <stop
               offset="100%"
-              stopColor={isDark ? "var(--color-accent)" : "#3b82f6"}
+              stopColor={isDark ? "var(--color-accent)" : "#2563eb"}
               stopOpacity="0"
             />
           </linearGradient>
@@ -118,7 +120,7 @@ const AnimatedBackgroundComponent = () => {
             d={`M -500 ${200 + i * 150} Q 0 ${100 + i * 100} 500 ${200 + i * 150} T 1500 ${200 + i * 150}`}
             fill="none"
             stroke="url(#lineGradient)"
-            strokeWidth="1.5"
+            strokeWidth={isDark ? "1.5" : "1.75"}
             pathLength="1"
             className={shouldAnimate ? `animated-bg-line animated-bg-line-${i}` : undefined}
           />
@@ -132,9 +134,9 @@ const AnimatedBackgroundComponent = () => {
               ? "rgba(34, 211, 255, 0.22)"
               : isDark
                 ? "rgba(14, 165, 233, 0.15)"
-                : "rgba(59, 130, 246, 0.1)"
+                : "rgba(37, 99, 235, 0.26)"
           }
-          strokeWidth="3"
+          strokeWidth={isDark ? "3" : "2.5"}
         >
           {shouldAnimate && (
             <animate

@@ -26,7 +26,7 @@ const BookingRequestSchema = z.object({
   serviceTitle: optionalText(160),
   preferredDate: z.string().min(1).max(40).trim(),
   preferredTime: z.string().min(1).max(40).trim(),
-  projectType: optionalText(120),
+  projectType: z.string().min(1).max(120).trim(),
   timelinePreference: optionalText(80),
   contactPreference: optionalText(80),
   message: z.string().min(10).max(5000).trim(),
