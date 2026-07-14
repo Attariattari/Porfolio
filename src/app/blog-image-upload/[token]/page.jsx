@@ -8,13 +8,13 @@ export const dynamic = "force-dynamic";
 
 function Panel({ icon, title, children }) {
   return (
-    <main className="min-h-screen bg-slate-950 px-5 py-10 text-white">
-      <section className="mx-auto max-w-3xl rounded-3xl border border-white/10 bg-slate-900/80 p-8 shadow-2xl">
-        <div className="mb-5 inline-flex rounded-2xl bg-emerald-400/10 p-3 text-emerald-300">
+    <main className="min-h-screen bg-background px-5 py-10 text-foreground transition-colors">
+      <section className="mx-auto max-w-3xl rounded-3xl border border-border bg-card p-8 text-card-foreground shadow-2xl">
+        <div className="mb-5 inline-flex rounded-2xl bg-accent/10 p-3 text-accent">
           {icon}
         </div>
         <h1 className="text-3xl font-black tracking-tight">{title}</h1>
-        <div className="mt-5 text-slate-300">{children}</div>
+        <div className="mt-5 text-muted-foreground">{children}</div>
       </section>
     </main>
   );
@@ -38,7 +38,7 @@ export default async function BlogImageUploadPage({ params }) {
         </p>
         <Link
           href="/admin/login"
-          className="mt-6 inline-flex rounded-2xl bg-emerald-400 px-5 py-3 text-sm font-black uppercase tracking-[0.2em] text-slate-950"
+          className="mt-6 inline-flex rounded-2xl bg-accent px-5 py-3 text-sm font-black uppercase tracking-[0.2em] text-accent-foreground"
         >
           Admin Login
         </Link>
@@ -57,7 +57,7 @@ export default async function BlogImageUploadPage({ params }) {
         </p>
         <Link
           href={`/admin/login?callbackUrl=${encodeURIComponent(callbackUrl)}`}
-          className="mt-6 inline-flex rounded-2xl bg-emerald-400 px-5 py-3 text-sm font-black uppercase tracking-[0.2em] text-slate-950"
+          className="mt-6 inline-flex rounded-2xl bg-accent px-5 py-3 text-sm font-black uppercase tracking-[0.2em] text-accent-foreground"
         >
           Login and Return
         </Link>
@@ -84,23 +84,23 @@ export default async function BlogImageUploadPage({ params }) {
   const blog = tokenResult.blog;
 
   return (
-    <main className="min-h-screen bg-slate-950 px-5 py-10 text-white">
-      <section className="mx-auto max-w-4xl rounded-3xl border border-white/10 bg-slate-900/80 p-6 shadow-2xl md:p-8">
+    <main className="min-h-screen bg-background px-5 py-10 text-foreground transition-colors">
+      <section className="mx-auto max-w-4xl rounded-3xl border border-border bg-card p-6 text-card-foreground shadow-2xl md:p-8">
         <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.25em] text-emerald-300">
+            <p className="text-xs font-black uppercase tracking-[0.25em] text-accent">
               Secure Blog Image Upload
             </p>
             <h1 className="mt-3 text-3xl font-black tracking-tight">
               {blog.title}
             </h1>
-            <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-300">
+            <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">
               {blog.summary}
             </p>
           </div>
           <Link
             href={`/admin/blogs`}
-            className="rounded-2xl border border-white/10 px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-white hover:bg-white/10"
+            className="rounded-2xl border border-border px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-card-foreground transition-colors hover:border-accent/50 hover:bg-accent/10"
           >
             Open Review
           </Link>
@@ -112,7 +112,7 @@ export default async function BlogImageUploadPage({ params }) {
           negativePrompt={blog.imageNegativePrompt || ""}
         />
 
-        <p className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-xs leading-6 text-slate-400">
+        <p className="mt-6 rounded-2xl border border-border bg-muted/50 p-4 text-xs leading-6 text-muted-foreground">
           Security note: this link is one-time use, tied to this blog, and expires automatically.
         </p>
       </section>

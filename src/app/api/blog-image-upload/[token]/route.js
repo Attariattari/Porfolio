@@ -126,6 +126,7 @@ export async function POST(request, { params }) {
       success: true,
       message: "Blog image uploaded successfully.",
       imageUrl: uploaded.url,
+      redirectUrl: `/blog/${encodeURIComponent(updatedBlog.slug)}`,
     });
   } catch (error) {
     console.error("[BlogImageUpload] Safe upload failure:", error.message);
