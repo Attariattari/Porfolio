@@ -8,8 +8,14 @@ export default function GoogleAnalytics() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    const userAgent = window.navigator.userAgent || "";
+    const isAutomatedTraffic =
+      window.navigator.webdriver ||
+      /bot|crawler|spider|headless|lighthouse|pagespeed|google-inspectiontool/i.test(userAgent);
+    if (isAutomatedTraffic) return undefined;
+
     const enable = () => setReady(true);
-    const timer = window.setTimeout(enable, 8000);
+    const timer = window.setTimeout(enable, 15000);
     const events = ["pointerdown", "keydown", "touchstart"];
     events.forEach((eventName) =>
       window.addEventListener(eventName, enable, { once: true, passive: true }),

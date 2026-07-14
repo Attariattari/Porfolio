@@ -19,7 +19,7 @@ const ProjectModal = dynamic(() => import("./ProjectModal"), {
   ssr: false,
 });
 
-const ProjectRow = ({ project, index, setSelectedProject }) => {
+const ProjectRow = ({ project, index, setSelectedProject, showViewAll }) => {
   const router = useRouter();
   const isReversed = index % 2 !== 0;
   const openProjectDetail = () => {
@@ -178,8 +178,8 @@ const ProjectRow = ({ project, index, setSelectedProject }) => {
             src={getSafeImageSrc(project.thumbnail || project.thumbnailImage || project.image)}
             alt={getProjectMediaAlt(project)}
             fill
-            priority={index === 0}
-            loading={index === 0 ? undefined : "lazy"}
+            priority={!showViewAll && index === 0}
+            loading={showViewAll || index !== 0 ? "lazy" : undefined}
             sizes="(max-width: 1024px) 100vw, 50vw"
             className="object-cover transition-transform duration-1000 group-hover/img-side:scale-110"
           />
@@ -243,6 +243,7 @@ export default function Projects({ data, showViewAll = false }) {
                 project={project}
                 index={index}
                 setSelectedProject={setSelectedProject}
+                showViewAll={showViewAll}
               />
             ))}
           </AnimatePresence>

@@ -26,7 +26,7 @@ export default function InitialLoader() {
     const timer = setTimeout(() => {
       setLoading(false);
       sessionStorage.setItem("hasVisited", "true");
-    }, compactMobile ? 650 : 1000);
+    }, compactMobile ? 400 : 700);
 
     return () => {
       window.cancelAnimationFrame(frame);
@@ -42,20 +42,13 @@ export default function InitialLoader() {
           exit={{
             opacity: 0,
             transition: {
-              duration: isCompactMobile ? 0.35 : 0.8,
+              duration: isCompactMobile ? 0.25 : 0.45,
               ease: "easeInOut",
             },
           }}
           className="initial-loader-shell fixed inset-0 z-[10000] flex items-center justify-center bg-background"
         >
-          <motion.div
-            animate={{
-              scale: [1, 1.2, 1],
-              opacity: [0.1, 0.2, 0.1],
-            }}
-            transition={{ duration: 4, repeat: Infinity }}
-            className="absolute w-[600px] h-[600px] bg-accent/20 rounded-full blur-[150px]"
-          />
+          <div className="absolute h-[600px] w-[600px] rounded-full bg-accent/20 opacity-15 blur-[150px]" />
 
           <div className="relative flex flex-col items-center">
             {/* Logo Animation */}
@@ -74,15 +67,7 @@ export default function InitialLoader() {
                   className="w-20 h-20 object-contain animate-pulse"
                   priority
                 />
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{
-                    duration: 12,
-                    repeat: Infinity,
-                    ease: "linear",
-                  }}
-                  className="absolute inset-[-30px] border border-accent/10 rounded-full border-dashed"
-                />
+                <div className="absolute inset-[-30px] animate-spin rounded-full border border-dashed border-accent/10 [animation-duration:12s]" />
               </div>
             </motion.div>
 
@@ -109,17 +94,13 @@ export default function InitialLoader() {
                   Loading
                   <span className="flex ml-1">
                     {[0, 1, 2].map((i) => (
-                      <motion.span
+                      <span
                         key={i}
-                        animate={{ opacity: [0, 1, 0] }}
-                        transition={{
-                          duration: 1.5,
-                          repeat: Infinity,
-                          delay: i * 0.2,
-                        }}
+                        className="animate-pulse"
+                        style={{ animationDelay: `${i * 0.2}s` }}
                       >
                         .
-                      </motion.span>
+                      </span>
                     ))}
                   </span>
                 </motion.span>

@@ -4,8 +4,8 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import ScrollToTop from "@/components/ScrollToTop";
-import { Toaster } from "sonner";
 import DeferredRuntimeWidgets from "@/components/DeferredRuntimeWidgets";
+import DeferredToaster from "@/components/DeferredToaster";
 import { OrganizationSchema } from "@/components/schema/OrganizationSchema";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import { SITE_URL } from "@/lib/config";
@@ -56,6 +56,13 @@ export default function RootLayout({ children }) {
       <head>
         <link rel="icon" href="/logo.png" />
         <link rel="apple-touch-icon" href="/logo.png" />
+        <link
+          rel="preload"
+          href="/_next/static/media/e4af272ccee01ff0-s.p.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
         <OrganizationSchema />
         <GoogleAnalytics />
         <script
@@ -97,18 +104,7 @@ export default function RootLayout({ children }) {
           <DeferredRuntimeWidgets />
           <ScrollToTop />
           {children}
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              style: {
-                background: "color-mix(in srgb, var(--popover) 95%, transparent)",
-                color: "var(--popover-foreground)",
-                backdropFilter: "blur(10px)",
-                border: "1px solid var(--border)",
-              },
-              className: "rounded-xl shadow-2xl",
-            }}
-          />
+          <DeferredToaster />
           {enableVercelAnalytics && (
             <>
               <Analytics />

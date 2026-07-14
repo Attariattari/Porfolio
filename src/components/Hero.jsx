@@ -15,7 +15,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import Link from "next/link";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { getHeroMediaAlt } from "@/lib/mediaAlt";
 import dynamic from "next/dynamic";
@@ -34,6 +34,16 @@ const DesktopTilt = dynamic(() => import("./DesktopTilt"), {
 });
 
 export default function Hero({ initialData = null }) {
+  const [showDesktopVisual, setShowDesktopVisual] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(min-width: 1024px)");
+    const syncDesktopVisual = () => setShowDesktopVisual(mediaQuery.matches);
+    syncDesktopVisual();
+    mediaQuery.addEventListener?.("change", syncDesktopVisual);
+    return () => mediaQuery.removeEventListener?.("change", syncDesktopVisual);
+  }, []);
+
   // Priority: Database Data > Static Data
   const data = {
     ...homeData.hero,
@@ -86,9 +96,7 @@ export default function Hero({ initialData = null }) {
           {/* Left Content Column */}
           <div className="hero-critical-content flex flex-col items-start text-left">
             {/* Elite Status Badge */}
-            <motion.div
-              className="mb-8 inline-flex items-center gap-2.5 px-5 py-2 glass rounded-full border border-accent/20 shadow-[0_0_20px_rgba(var(--accent),0.1)]"
-            >
+            <div className="mb-8 inline-flex items-center gap-2.5 px-5 py-2 glass rounded-full border border-accent/20 shadow-[0_0_20px_rgba(var(--accent),0.1)]">
               <div className="relative flex h-2 w-2">
                 <div className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></div>
                 <div className="relative inline-flex rounded-full h-2 w-2 bg-accent"></div>
@@ -96,47 +104,37 @@ export default function Hero({ initialData = null }) {
               <span className="text-[10px] sm:text-xs font-semibold text-accent tracking-normal">
                 {data.badge || "Ready for your next project"}
               </span>
-            </motion.div>
+            </div>
 
             {/* Intro Text */}
-            <motion.div
-              className="mb-4 h-6"
-            >
+            <div className="mb-4 h-6">
               <span className="text-accent font-semibold tracking-normal text-sm">
                 Hello, I am{" "}
                 <span className="inline-block min-w-[18ch] text-foreground">
                   <HeroTypewriter words={data.typewriterWords} />
                 </span>
               </span>
-            </motion.div>
+            </div>
 
             {/* Hero Typography */}
-            <motion.div
-              className="relative mb-8"
-            >
+            <div className="relative mb-8">
               <h1 className="text-3xl md:text-5xl font-bold text-foreground leading-tight tracking-tight">
                 Full-Stack Web Developer{" "}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-accent/80 to-accent animate-gradient-flow bg-[length:200%_auto] italic">& NextJS MERN Expert</span>
               </h1>
-            </motion.div>
+            </div>
 
             {/* Value Proposition */}
-            <motion.p
-              className="text-muted-foreground text-base md:text-lg max-w-xl mb-10 leading-relaxed font-medium opacity-80"
-            >
+            <p className="text-muted-foreground text-base md:text-lg max-w-xl mb-10 leading-relaxed font-medium opacity-80">
               {data.description}
-            </motion.p>
+            </p>
 
-            <motion.p
-              className="mb-8 max-w-xl text-sm font-semibold text-foreground/80"
-            >
+            <p className="mb-8 max-w-xl text-sm font-semibold text-foreground/80">
               Building modern websites, dashboards, and full-stack applications
               for businesses, startups, and personal brands.
-            </motion.p>
+            </p>
 
-            <motion.div
-              className="mb-8 flex flex-wrap gap-3"
-            >
+            <div className="mb-8 flex flex-wrap gap-3">
               {(data.highlights || []).map((highlight) => (
                 <span
                   key={highlight}
@@ -146,12 +144,10 @@ export default function Hero({ initialData = null }) {
                   {highlight}
                 </span>
               ))}
-            </motion.div>
+            </div>
 
             {/* Strategic CTA Section */}
-            <motion.div
-              className="flex flex-col md:flex-row items-center gap-5 w-full md:w-auto"
-            >
+            <div className="flex flex-col md:flex-row items-center gap-5 w-full md:w-auto">
               {(data.ctas || []).map((cta, index) => (
                 <Link
                   key={`${cta.href}-${cta.label}`}
@@ -170,11 +166,11 @@ export default function Hero({ initialData = null }) {
                   </Button>
                 </Link>
               ))}
-            </motion.div>
+            </div>
           </div>
 
           {/* Right Visual Column */}
-          <motion.div
+          {showDesktopVisual && <motion.div
             initial={{ opacity: 0, scale: 0.8, rotate: 5 }}
             animate={{
               opacity: 1,
@@ -239,7 +235,7 @@ export default function Hero({ initialData = null }) {
                 </motion.div>
               </div>
             </DesktopTilt>
-          </motion.div>
+          </motion.div>}
         </div>
 
         {/* Engineering Principles Grid */}
@@ -272,13 +268,13 @@ export default function Hero({ initialData = null }) {
       </div>
 
       {/* Elegant Scroll Indicator */}
-      <motion.div
+      <div
         className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-3"
       >
         <div className="w-[1px] h-20 bg-gradient-to-b from-accent/50 to-transparent relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-[20%] bg-accent opacity-80" />
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 }

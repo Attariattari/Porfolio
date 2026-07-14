@@ -1,4 +1,5 @@
 @import "tailwindcss";
+
 @layer base {
      :root {
         /* Light Theme */
@@ -929,7 +930,13 @@ html.not-found-active .site-main-shell {
      * compositor timeline instead of waiting for React's busy main thread.
      */
     .initial-loader-shell {
-        animation: initial-loader-mobile-exit 350ms ease-in-out 650ms forwards;
+        animation: initial-loader-mobile-exit 250ms ease-in-out 400ms forwards;
+    }
+
+    /* The final hero design is unchanged; only its costly first-load reveal is
+       skipped on constrained screens so critical text can paint immediately. */
+    .hero-critical-content > * {
+        animation: none !important;
     }
 
 }

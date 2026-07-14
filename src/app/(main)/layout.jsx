@@ -1,4 +1,3 @@
-import { Inter } from "next/font/google";
 import Sidebar from "@/components/Sidebar";
 import { BottomNav } from "@/components/BottomNav";
 import Footer from "@/components/Footer";
@@ -6,19 +5,12 @@ import { AnimatedBackground } from "@/components/AnimatedBackground";
 import InitialLoader from "@/components/InitialLoader";
 import DeferredWhatsAppButton from "@/components/DeferredWhatsAppButton";
 import ScrollProgress from "@/components/ScrollProgress";
-import NavigationWatcher from "@/components/NavigationWatcher";
+import DeferredNavigationWatcher from "@/components/DeferredNavigationWatcher";
 import { AboutController } from "@/controllers/AboutController";
 import { portfolioData } from "@/lib/data";
 import { serializeDoc } from "@/lib/mongooseHelper";
-import { OrganizationSchema } from "@/components/schema/OrganizationSchema";
 import { SITE_URL } from "@/lib/config";
 import { getSeoImage } from "@/lib/seo";
-
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  adjustFontFallback: true,
-});
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
@@ -88,10 +80,10 @@ export default async function MainLayout({ children }) {
 
   return (
     <div
-      className={`${inter.className} transition-colors duration-300 relative pb-32 md:pb-0`}
+      className="relative pb-32 transition-colors duration-300 md:pb-0"
     >
       <InitialLoader />
-      <NavigationWatcher />
+      <DeferredNavigationWatcher />
       <ScrollProgress />
       <Sidebar data={globalAbout} />
       <BottomNav />

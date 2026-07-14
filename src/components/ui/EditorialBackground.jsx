@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { useTheme } from "@/components/ThemeProvider";
 
 const particleClasses = [
@@ -12,6 +13,33 @@ const particleClasses = [
 
 const EditorialBackground = ({ text }) => {
   const { isBlack } = useTheme();
+  const wordmarkRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = wordmarkRef.current;
+    if (!canvas) return undefined;
+    const desktopQuery = window.matchMedia("(min-width: 768px)");
+    if (desktopQuery.matches) return undefined;
+
+    const drawWordmark = () => {
+      const context = canvas.getContext("2d");
+      if (!context) return;
+
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.save();
+      context.translate(0, 32.5);
+      context.scale(0.875, 0.875);
+      context.fillStyle = getComputedStyle(canvas).color;
+      context.font = "italic 700 224px Inter, Arial, sans-serif";
+      context.fillText(text, 0, 370);
+      context.restore();
+    };
+
+    drawWordmark();
+    document.fonts?.ready.then(drawWordmark);
+
+    return undefined;
+  }, [isBlack, text]);
 
   return (
     <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden select-none">
@@ -26,17 +54,24 @@ const EditorialBackground = ({ text }) => {
           isBlack ? "opacity-[0.065]" : "opacity-[0.04] dark:opacity-[0.06]"
         }`}
       >
+        <canvas
+          ref={wordmarkRef}
+          aria-hidden="true"
+          width="1050"
+          height="520"
+          className="w-[1050px] h-[520px] -rotate-12 translate-x-[-10%] translate-y-[-10%] overflow-visible text-foreground opacity-[0.8] md:hidden"
+        />
         <svg
           aria-hidden="true"
           focusable="false"
           viewBox="0 0 1200 520"
-          className="w-[1050px] h-[520px] -rotate-12 translate-x-[-10%] translate-y-[-10%] overflow-visible text-foreground opacity-[0.8]"
+          className="hidden w-[1050px] h-[520px] -rotate-12 translate-x-[-10%] translate-y-[-10%] overflow-visible text-foreground opacity-[0.8] md:block"
         >
           <text
             x="0"
             y="370"
             fill="currentColor"
-            className="text-[14rem] md:text-[22rem] font-bold tracking-tighter italic"
+            className="text-[22rem] font-bold tracking-tighter italic"
           >
             {text}
           </text>

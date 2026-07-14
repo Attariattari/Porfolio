@@ -201,7 +201,7 @@ const CtaButton = ({ cta, fallbackVariant = "primary" }) => {
   );
 };
 
-const ProfileCard = ({ data }) => (
+const ProfileCard = ({ data, isHomePage }) => (
   <motion.div
     initial={{ opacity: 0, x: -45 }}
     whileInView={{ opacity: 1, x: 0 }}
@@ -218,7 +218,8 @@ const ProfileCard = ({ data }) => (
           fill
           sizes="(min-width: 1024px) 44vw, 100vw"
           className="object-cover transition-transform duration-1000 group-hover:scale-110"
-          priority
+          priority={!isHomePage}
+          loading={isHomePage ? "lazy" : undefined}
         />
         <div className="theme-image-wash absolute inset-0 transition-opacity duration-700 dark:opacity-80 dark:group-hover:opacity-45" />
         <div className="theme-surface-depth absolute bottom-6 left-6 right-6 sm:bottom-10 sm:left-10 sm:right-auto p-4 glass rounded-2xl border border-border backdrop-blur-xl translate-y-8 group-hover:translate-y-0 transition-transform duration-500">
@@ -257,7 +258,7 @@ const HeroSection = ({ data, isHomePage }) => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-24 items-center relative z-10">
-      <ProfileCard data={data} />
+      <ProfileCard data={data} isHomePage={isHomePage} />
 
       <motion.div
         variants={stagger}
