@@ -169,6 +169,7 @@ const EditorialHeader = ({
                 <Link
                   key={tag}
                   href={`/blog?tag=${tag}`}
+                  prefetch={false}
                   className="px-6 py-2.5 rounded-full bg-card/40 border border-border/50 hover:border-accent/40 text-[9px] font-black text-muted-foreground hover:text-accent uppercase tracking-widest whitespace-nowrap transition-all duration-300 backdrop-blur-sm"
                 >
                   #{tag}
@@ -349,7 +350,7 @@ const ArticleCard = ({ blog, index, onImageClick }) => (
           </span>
         </div>
 
-        <Link href={`/blog/${blog.slug}`} className="block">
+        <Link href={`/blog/${blog.slug}`} prefetch={false} className="block">
           <h3 className="mb-3 text-xl font-bold leading-tight tracking-tight text-foreground transition-colors group-hover:text-accent">
             {blog.title}
           </h3>
@@ -366,6 +367,7 @@ const ArticleCard = ({ blog, index, onImageClick }) => (
           </div>
           <Link
             href={`/blog/${blog.slug}`}
+            prefetch={false}
             className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border/60 text-foreground transition-all group-hover:border-accent group-hover:bg-accent group-hover:text-accent-foreground"
             aria-label={`Read ${blog.title}`}
           >
@@ -427,7 +429,7 @@ const HomeArticleCard = ({ blog, index, onImageClick }) => {
             </span>
           </div>
 
-          <Link href={`/blog/${blog.slug}`} className="block">
+          <Link href={`/blog/${blog.slug}`} prefetch={false} className="block">
             <h3 className="mb-3 text-xl font-bold leading-tight tracking-tight text-foreground transition-colors group-hover:text-accent">
               {blog.title}
             </h3>
@@ -444,6 +446,7 @@ const HomeArticleCard = ({ blog, index, onImageClick }) => {
             </div>
             <Link
               href={`/blog/${blog.slug}`}
+              prefetch={false}
               className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border/60 text-foreground transition-all group-hover:border-accent group-hover:bg-accent group-hover:text-accent-foreground"
               aria-label={`Read ${blog.title}`}
             >
@@ -636,6 +639,7 @@ export default function Blog({ data, isHomePage = false }) {
             >
               <Link
                 href="/blog"
+                prefetch={false}
                 className="group relative px-8 py-4 bg-accent text-accent-foreground font-bold text-sm rounded-2xl overflow-hidden transition-all hover:pr-12 shadow-lg shadow-accent/20"
               >
                 <span className="relative z-10 flex items-center gap-2">

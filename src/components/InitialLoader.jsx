@@ -6,23 +6,32 @@ import Image from "next/image";
 
 export default function InitialLoader() {
   const [loading, setLoading] = useState(true);
+  const [isCompactMobile, setIsCompactMobile] = useState(false);
 
   useEffect(() => {
     // P0 OPTIMIZATION: Skip loader on repeat visits (same session)
     const hasVisited = sessionStorage.getItem("hasVisited");
+    const compactMobile = window.matchMedia("(max-width: 767px)").matches;
+    const frame = window.requestAnimationFrame(() => {
+      setIsCompactMobile(compactMobile);
+      if (hasVisited) setLoading(false);
+    });
+
     if (hasVisited) {
-      setLoading(false);
-      return;
+      return () => window.cancelAnimationFrame(frame);
     }
 
-    // First visit: show loader for max 1000ms (reduced from 2500ms)
-    // TTI target: 1000ms (reduced by 60%)
+    // Keep the complete loader experience, but use a shorter presentation on
+    // smaller screens where prolonged animation competes with hydration.
     const timer = setTimeout(() => {
       setLoading(false);
       sessionStorage.setItem("hasVisited", "true");
-    }, 1000);
+    }, compactMobile ? 650 : 1000);
 
-    return () => clearTimeout(timer);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      clearTimeout(timer);
+    };
   }, []);
 
   return (
@@ -32,9 +41,12 @@ export default function InitialLoader() {
           initial={{ opacity: 1 }}
           exit={{
             opacity: 0,
-            transition: { duration: 0.8, ease: "easeInOut" },
+            transition: {
+              duration: isCompactMobile ? 0.35 : 0.8,
+              ease: "easeInOut",
+            },
           }}
-          className="fixed inset-0 z-[10000] flex items-center justify-center bg-background"
+          className="initial-loader-shell fixed inset-0 z-[10000] flex items-center justify-center bg-background"
         >
           <motion.div
             animate={{
@@ -80,7 +92,10 @@ export default function InitialLoader() {
                 <motion.div
                   initial={{ width: "0%" }}
                   animate={{ width: "100%" }}
-                  transition={{ duration: 0.9, ease: "easeInOut" }}
+                  transition={{
+                    duration: isCompactMobile ? 0.58 : 0.9,
+                    ease: "easeInOut",
+                  }}
                   className="absolute top-0 left-0 h-full bg-accent shadow-[0_0_15px_rgba(var(--accent-rgb),0.4)]"
                 />
               </div>

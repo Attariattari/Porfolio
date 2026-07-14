@@ -47,14 +47,15 @@ const resolveIcon = (icon) => {
 const ServiceSlider = ({ services }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0);
+  const serviceCount = services?.length || 0;
 
   useEffect(() => {
-    if (!services || services.length === 0) return;
+    if (serviceCount === 0) return;
     const interval = 5000;
     const step = 100;
 
     const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % services.length);
+      setCurrentIndex((prev) => (prev + 1) % serviceCount);
       setProgress(0);
     }, interval);
 
@@ -69,7 +70,7 @@ const ServiceSlider = ({ services }) => {
       clearInterval(timer);
       clearInterval(progressTimer);
     };
-  }, [services?.length]);
+  }, [serviceCount]);
 
   if (!services || services.length === 0) return null;
 
@@ -187,9 +188,8 @@ const ServiceSlider = ({ services }) => {
   );
 };
 
-export default function ServicesClient({ services, initialData }) {
-  const { serviceFeatures, serviceProcess, siteConfig } = initialData;
-  const { servicesPage } = siteConfig;
+export default function ServicesClient({ services, pageData }) {
+  const { serviceFeatures, serviceProcess, servicesPage } = pageData;
   const { hero, stats, cta: servicesCta } = servicesPage;
   const [bookingOpen, setBookingOpen] = useState(false);
   const [selectedService, setSelectedService] = useState("");

@@ -58,6 +58,7 @@ export const BottomNav = () => {
             <Link
               key={item.name}
               href={item.href}
+              prefetch={false}
               className={`relative flex items-center justify-center transition-all duration-500 ease-out ${
                 isActive
                   ? "flex-[2] bg-accent/10 rounded-2xl py-2.5 px-3"

@@ -165,7 +165,10 @@ const ServiceRow = ({ service, index, onImageClick }) => {
         <div
           className={`mt-2 flex flex-col sm:flex-row gap-3 ${isReversed ? "" : "lg:justify-end"}`}
         >
-          <Link href={`/services/${service.slug || service.id}`}>
+          <Link
+            href={`/services/${service.slug || service.id}`}
+            prefetch={false}
+          >
             <motion.button
               whileHover={{ x: isReversed ? 5 : -5 }}
               whileTap={{ scale: 0.95 }}
@@ -177,7 +180,7 @@ const ServiceRow = ({ service, index, onImageClick }) => {
               />
             </motion.button>
           </Link>
-          <Link href="/book-a-call">
+          <Link href="/book-a-call" prefetch={false}>
             <motion.button
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.95 }}
@@ -314,6 +317,7 @@ export default function Services({ data, showViewAll = false }) {
         >
           <Link
             href="/services"
+            prefetch={false}
             className="group relative px-8 py-4 bg-accent text-accent-foreground font-bold text-sm rounded-full overflow-hidden transition-all hover:pr-12 shadow-xl hover:shadow-accent/40"
           >
             <span className="relative z-10 flex items-center gap-2">

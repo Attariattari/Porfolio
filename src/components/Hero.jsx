@@ -88,12 +88,9 @@ export default function Hero({ initialData = null }) {
       <div className="container mx-auto max-w-7xl relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left Content Column */}
-          <div className="flex flex-col items-start text-left">
+          <div className="hero-critical-content flex flex-col items-start text-left">
             {/* Elite Status Badge */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
               className="mb-8 inline-flex items-center gap-2.5 px-5 py-2 glass rounded-full border border-accent/20 shadow-[0_0_20px_rgba(var(--accent),0.1)]"
             >
               <div className="relative flex h-2 w-2">
@@ -107,9 +104,6 @@ export default function Hero({ initialData = null }) {
 
             {/* Intro Text */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.1 }}
               className="mb-4 h-6"
             >
               <span className="text-accent font-semibold tracking-normal text-sm">
@@ -122,9 +116,6 @@ export default function Hero({ initialData = null }) {
 
             {/* Hero Typography */}
             <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
               className="relative mb-8"
             >
               <h1 className="text-3xl md:text-5xl font-bold text-foreground leading-tight tracking-tight">
@@ -135,18 +126,12 @@ export default function Hero({ initialData = null }) {
 
             {/* Value Proposition */}
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
               className="text-muted-foreground text-base md:text-lg max-w-xl mb-10 leading-relaxed font-medium opacity-80"
             >
               {data.description}
             </motion.p>
 
             <motion.p
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.6 }}
               className="mb-8 max-w-xl text-sm font-semibold text-foreground/80"
             >
               Building modern websites, dashboards, and full-stack applications
@@ -154,9 +139,6 @@ export default function Hero({ initialData = null }) {
             </motion.p>
 
             <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.65 }}
               className="mb-8 flex flex-wrap gap-3"
             >
               {(data.highlights || []).map((highlight) => (
@@ -172,15 +154,13 @@ export default function Hero({ initialData = null }) {
 
             {/* Strategic CTA Section */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.7 }}
               className="flex flex-col md:flex-row items-center gap-5 w-full md:w-auto"
             >
               {(data.ctas || []).map((cta, index) => (
                 <Link
                   key={`${cta.href}-${cta.label}`}
                   href={cta.href}
+                  prefetch={false}
                   className="w-full md:w-auto"
                 >
                   <Button
@@ -232,7 +212,7 @@ export default function Hero({ initialData = null }) {
                     alt={getHeroMediaAlt(data)}
                     fill
                     className="object-cover"
-                    priority
+                    loading="lazy"
                     sizes="500px"
                   />
                   {/* Subtle Glow to match the theme */}

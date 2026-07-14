@@ -60,6 +60,11 @@ export default async function ServicesPage() {
   const services =
     (dbServices?.length > 0 ? serializeDoc(dbServices) : null) ||
     portfolioData.services;
+  const servicesPageData = {
+    serviceFeatures: portfolioData.serviceFeatures,
+    serviceProcess: portfolioData.serviceProcess,
+    servicesPage: portfolioData.siteConfig.servicesPage,
+  };
 
   return (
     <>
@@ -74,7 +79,7 @@ export default async function ServicesPage() {
         ]}
       />
       <FAQSchema faqs={servicesPageFaqs} />
-      <ServicesClient services={services} initialData={portfolioData} />
+      <ServicesClient services={services} pageData={servicesPageData} />
     </>
   );
 }

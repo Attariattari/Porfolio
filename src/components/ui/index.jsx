@@ -12,7 +12,7 @@ export const SectionWrapper = ({
   return (
     <section
       id={id}
-      className={`py-12 px-4 md:px-8 lg:px-12 mx-auto max-w-7xl overflow-hidden ${className}`}
+      className={`performance-section py-12 px-4 md:px-8 lg:px-12 mx-auto max-w-7xl overflow-hidden ${className}`}
     >
       {title && (
         <motion.div

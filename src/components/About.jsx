@@ -46,6 +46,7 @@ import { Button, SectionWrapper } from "./ui";
 import EditorialBackground from "./ui/EditorialBackground";
 import SocialLinks from "./SocialLinks";
 import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
+import { createElement } from "react";
 
 const particleClasses = [
   "top-[12%] left-[8%]",
@@ -150,8 +151,6 @@ const SectionHeading = ({ eyebrow, title, description }) => (
 );
 
 const IconCard = ({ item, index, compact = false }) => {
-  const Icon = resolveIcon(item.icon);
-
   return (
     <motion.div
       variants={fadeUp}
@@ -164,7 +163,7 @@ const IconCard = ({ item, index, compact = false }) => {
       <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
       <div className="relative z-10">
         <div className="w-12 h-12 rounded-2xl bg-accent/10 text-accent border border-accent/20 flex items-center justify-center mb-6 group-hover:bg-accent group-hover:text-accent-foreground transition-all duration-300">
-          <Icon className="w-6 h-6" />
+          {createElement(resolveIcon(item.icon), { className: "w-6 h-6" })}
         </div>
         <h3 className="text-lg font-bold text-foreground mb-3 group-hover:text-accent transition-colors">
           {item.title}
@@ -175,6 +174,7 @@ const IconCard = ({ item, index, compact = false }) => {
         {item.link && (
           <Link
             href={item.link}
+            prefetch={false}
             className="mt-5 inline-flex items-center gap-2 text-xs font-bold text-accent hover:underline"
           >
             Explore <ArrowRight className="w-3.5 h-3.5" />
@@ -189,7 +189,7 @@ const CtaButton = ({ cta, fallbackVariant = "primary" }) => {
   if (!cta?.href || !cta?.label) return null;
 
   return (
-    <Link href={cta.href} className="w-full sm:w-auto">
+    <Link href={cta.href} prefetch={false} className="w-full sm:w-auto">
       <Button
         variant={cta.variant || fallbackVariant}
         className="w-full sm:w-auto rounded-2xl"
@@ -334,7 +334,7 @@ const HeroSection = ({ data, isHomePage }) => {
             />
           ))}
           {isHomePage && (
-            <Link href="/about" className="w-full sm:w-auto">
+            <Link href="/about" prefetch={false} className="w-full sm:w-auto">
               <Button variant="outline" className="w-full sm:w-auto rounded-2xl">
                 Full About Page
                 <ArrowRight className="w-4 h-4" />
@@ -537,7 +537,7 @@ const AvailabilitySection = ({ data }) => {
         <p className="text-muted-foreground leading-relaxed font-medium mb-8">
           {data.availability.description}
         </p>
-        <Link href="/book-a-call">
+        <Link href="/book-a-call" prefetch={false}>
           <Button className="rounded-2xl">
             Book a Call <ArrowRight className="w-4 h-4" />
           </Button>

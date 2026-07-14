@@ -10,7 +10,7 @@ export default function HomeFinalCTA() {
   const data = homeData.finalCTA;
 
   return (
-    <section className="relative px-4 md:px-8 lg:px-12 pb-20">
+    <section className="performance-section relative px-4 md:px-8 lg:px-12 pb-20">
       <motion.div
         initial={{ opacity: 0, y: 32 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -39,6 +39,7 @@ export default function HomeFinalCTA() {
               <Link
                 key={`${button.href}-${button.label}`}
                 href={button.href}
+                prefetch={false}
                 className="w-full sm:w-auto"
               >
                 <Button

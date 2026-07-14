@@ -151,7 +151,7 @@ export default function Sidebar({ data }) {
     <>
       {/* Mobile Glass Header */}
       <div className="site-sidebar-shell md:hidden fixed top-0 left-0 w-full h-16 bg-background/80 backdrop-blur-xl border-b border-border/50 z-[60] px-4 flex items-center justify-between gap-3">
-        <Link href="/" className="group flex items-center gap-3">
+        <Link href="/" prefetch={false} className="group flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center overflow-hidden shadow-lg shadow-accent/20 transition-transform group-active:scale-95">
             <Image
               src="/logo.webp"

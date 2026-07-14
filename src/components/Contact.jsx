@@ -215,10 +215,10 @@ const Contact = ({ isHomePage = false }) => {
                 </span>
               </div>
               <HeadingTag className="text-5xl md:text-7xl font-bold tracking-tight leading-none text-foreground px-4 py-2 border-l-4 border-accent bg-accent/5 rounded-r-2xl italic">
-                Let's connect
+                Let&apos;s connect
               </HeadingTag>
               <p className="text-muted-foreground text-lg font-medium leading-relaxed max-w-md">
-                Have an idea or project requirement? Share the details and I'll
+                Have an idea or project requirement? Share the details and I&apos;ll
                 review your message to guide you with the right solution.
               </p>
             </motion.div>
@@ -285,6 +285,7 @@ const Contact = ({ isHomePage = false }) => {
                     <Link
                       key={button.href}
                       href={button.href}
+                      prefetch={false}
                       className="rounded-xl border border-border/60 bg-card/60 px-4 py-3 text-xs font-bold text-foreground transition-all hover:border-accent/40 hover:text-accent"
                     >
                       {button.label}
@@ -673,7 +674,7 @@ const Contact = ({ isHomePage = false }) => {
                           Need more help?
                         </span>
                       </div>
-                      <Link href="/services">
+                      <Link href="/services" prefetch={false}>
                         <motion.div whileHover={{ scale: 1.02 }}>
                           <Button variant="outline">
                             Explore our Services

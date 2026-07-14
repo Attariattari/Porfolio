@@ -761,3 +761,102 @@ html.not-found-active .site-main-shell {
     padding-top: 0 !important;
     padding-bottom: 0 !important;
 }
+
+/*
+ * Mobile rendering containment: sections keep their exact markup and styling,
+ * while the browser can postpone layout/paint work until they approach the
+ * viewport. Desktop rendering remains unchanged.
+ */
+@media (max-width: 767px) {
+    .performance-section {
+        content-visibility: auto;
+        contain-intrinsic-size: auto 900px;
+    }
+
+    /*
+     * The loader keeps the same presentation, but its mobile fade runs on the
+     * compositor timeline instead of waiting for React's busy main thread.
+     */
+    .initial-loader-shell {
+        animation: initial-loader-mobile-exit 350ms ease-in-out 650ms forwards;
+    }
+
+}
+
+@keyframes initial-loader-mobile-exit {
+    from {
+        opacity: 1;
+        visibility: visible;
+    }
+    to {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+    }
+}
+
+/* Same hero reveal sequence as before, now independent of React hydration. */
+.hero-critical-content > :first-child {
+    animation: hero-badge-reveal 800ms ease-out both;
+}
+
+.hero-critical-content > :nth-child(2) {
+    animation: hero-reveal-20 800ms ease-out 100ms both;
+}
+
+.hero-critical-content > :nth-child(3) {
+    animation: hero-reveal-40 1000ms cubic-bezier(0.16, 1, 0.3, 1) 200ms both;
+}
+
+.hero-critical-content > :nth-child(4) {
+    animation: hero-reveal-20-visible 800ms ease-out 500ms both;
+}
+
+.hero-critical-content > :nth-child(5) {
+    animation: hero-reveal-16 800ms ease-out 600ms both;
+}
+
+.hero-critical-content > :nth-child(6) {
+    animation: hero-reveal-16 800ms ease-out 650ms both;
+}
+
+.hero-critical-content > :nth-child(7) {
+    animation: hero-reveal-20 800ms ease-out 700ms both;
+}
+
+@keyframes hero-badge-reveal {
+    from { opacity: 0.01; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes hero-reveal-16 {
+    from { opacity: 0.01; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes hero-reveal-20 {
+    from {
+        opacity: 0.01;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes hero-reveal-20-visible {
+    from { opacity: 1; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes hero-reveal-40 {
+    from { opacity: 0.01; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-critical-content > * {
+        animation: none !important;
+    }
+}

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Github,
@@ -108,6 +108,7 @@ const ProjectRow = ({ project, index, setSelectedProject }) => {
             {project.slug ? (
               <Link
                 href={`/projects/${project.slug}`}
+                prefetch={false}
                 className="group/link relative flex items-center gap-3 px-6 py-4 rounded-2xl bg-accent text-accent-foreground border border-accent/40 text-xs font-bold tracking-normal transition-all cursor-pointer overflow-hidden hover:-translate-y-0.5"
               >
                 <span className="relative z-10">View Project</span>
@@ -125,6 +126,7 @@ const ProjectRow = ({ project, index, setSelectedProject }) => {
             {project.slug ? (
               <Link
                 href={`/projects/${project.slug}`}
+                prefetch={false}
                 className="group/link relative flex items-center gap-3 px-6 py-4 rounded-2xl bg-foreground/5 dark:bg-white/5 border border-foreground/10 dark:border-white/10 text-xs font-bold tracking-normal text-foreground hover:text-accent hover:border-accent/40 transition-all cursor-pointer overflow-hidden"
               >
                 <span className="relative z-10">Case study</span>
@@ -224,14 +226,6 @@ export default function Projects({ data, showViewAll = false }) {
     [data, showViewAll],
   );
 
-  useEffect(() => {
-    displayData
-      .filter((project) => project.slug)
-      .forEach((project) => {
-        router.prefetch(`/projects/${project.slug}`);
-      });
-  }, [displayData, router]);
-  
   if (!data) return null;
 
   return (
@@ -265,6 +259,7 @@ export default function Projects({ data, showViewAll = false }) {
         >
           <Link
             href="/projects"
+            prefetch={false}
             className="group relative px-8 py-4 bg-accent text-accent-foreground font-bold text-sm rounded-full overflow-hidden transition-all hover:pr-12"
           >
             <span className="relative z-10 flex items-center gap-2">
