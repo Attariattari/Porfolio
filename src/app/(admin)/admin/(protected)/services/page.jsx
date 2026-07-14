@@ -14,6 +14,7 @@ import { useFieldArray } from "react-hook-form";
 import { AnimatePresence } from "framer-motion";
 import { Download, Plus, Trash2 } from "lucide-react";
 import StatusBadge from "@/components/ui/StatusBadge";
+import { getServiceMediaAlt } from "@/lib/mediaAlt";
 
 const serviceSchema = z.object({
   title: z.string().min(5, "Title is too short"),
@@ -191,7 +192,7 @@ export default function ServicesPage() {
         <div className="w-16 h-10 rounded-lg overflow-hidden border border-white/10 shadow-lg bg-white/5 flex items-center justify-center">
           <img
             src={item.heroImage || item.banner || item.images?.[0] || item.gallery?.[0]}
-            alt={item.title}
+            alt={getServiceMediaAlt(item)}
             className="w-full h-full object-cover"
           />
         </div>

@@ -11,6 +11,7 @@ import { SectionWrapper } from "./ui";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { getProjectMediaAlt } from "@/lib/mediaAlt";
 import dynamic from "next/dynamic";
 import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
 
@@ -173,7 +174,7 @@ const ProjectRow = ({ project, index, setSelectedProject }) => {
         >
           <Image
             src={getSafeImageSrc(project.thumbnail || project.thumbnailImage || project.image)}
-            alt={project.title ? `Project screenshot for ${project.title}` : "Project screenshot"}
+            alt={getProjectMediaAlt(project)}
             fill
             priority={index === 0}
             loading={index === 0 ? undefined : "lazy"}

@@ -11,6 +11,7 @@ import { generateBlogImage } from "./generateBlogImage";
 import { createBlogImageUploadLink } from "@/lib/server/blogImageUploadToken";
 import { sendBlogImagePromptEmail } from "@/lib/server/email/sendBlogImagePromptEmail";
 import { triggerFeaturedUpdate } from "@/lib/ai/featuredEngine";
+import { ensureBlogImageAlt } from "@/lib/blogImageAlt";
 
 function safeErrorMessage(error) {
   if (!error) return "Image generation failed.";
@@ -90,7 +91,7 @@ export async function ensureBlogImage(blogId, options = {}) {
       blog.featuredImage = {
         url: imageResult.image.url,
         publicId: imageResult.image.publicId,
-        alt: imagePrompt.altText,
+        alt: ensureBlogImageAlt(imagePrompt.altText, blog.title),
         source: "ai_generated",
       };
       blog.imageGenerated = true;

@@ -265,7 +265,7 @@ export default function AIBlogProgress({
               {imagePreview ? (
                 <img
                   src={imagePreview}
-                  alt="Generated AI"
+                  alt="Muhyo Tech AI-generated blog cover preview"
                   className="w-full h-full object-cover animate-in fade-in duration-1000"
                 />
               ) : (

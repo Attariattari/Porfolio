@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
   Mail,
@@ -19,6 +20,7 @@ import SocialLinks from "./SocialLinks";
 import { portfolioData } from "@/lib/data";
 
 export default function Footer({ data }) {
+  const pathname = usePathname();
   const footerData = portfolioData.siteConfig.footer;
   const about = data || portfolioData.about;
   const displayName = `${about.firstName || "Muhyo"} ${about.lastName || "Tech"}`;
@@ -283,20 +285,33 @@ export default function Footer({ data }) {
                   LEGAL
                 </h4>
                 <ul className="space-y-3">
-                  {footerLinks.legal.map((link) => (
-                    <li key={link.name}>
-                      <Link
-                        href={link.href}
-                        className="group flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-accent"
-                      >
-                        {link.name}
-                        <ChevronRight
-                          size={12}
-                          className="opacity-0 -translate-x-2 transition-all group-hover:translate-x-1 group-hover:opacity-100"
-                        />
-                      </Link>
-                    </li>
-                  ))}
+                  {footerLinks.legal.map((link) => {
+                    const isActive = pathname === link.href;
+
+                    return (
+                      <li key={link.name}>
+                        <Link
+                          href={link.href}
+                          aria-current={isActive ? "page" : undefined}
+                          className={`group -ml-2 flex w-fit items-center rounded-lg px-2 py-1 text-sm font-medium transition-colors ${
+                            isActive
+                              ? "bg-accent/10 text-accent"
+                              : "text-muted-foreground hover:text-accent"
+                          }`}
+                        >
+                          {link.name}
+                          <ChevronRight
+                            size={12}
+                            className={`transition-all ${
+                              isActive
+                                ? "translate-x-1 opacity-100"
+                                : "-translate-x-2 opacity-0 group-hover:translate-x-1 group-hover:opacity-100"
+                            }`}
+                          />
+                        </Link>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
 

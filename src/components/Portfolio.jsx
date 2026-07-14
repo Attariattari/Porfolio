@@ -19,6 +19,7 @@ import { SectionWrapper, Button } from "./ui";
 import EditorialBackground from "./ui/EditorialBackground";
 import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
 import Image from "next/image";
+import { getProjectMediaAlt } from "@/lib/mediaAlt";
 import dynamic from "next/dynamic";
 
 const ProjectModal = dynamic(() => import("./ProjectModal"), {
@@ -202,7 +203,7 @@ const Portfolio = ({ projects }) => {
                       <div className="relative h-full w-full pt-12">
                         <Image
                           src={getSafeImageSrc(project.thumbnail || project.thumbnailImage || project.image)}
-                          alt={project.title ? `Project screenshot for ${project.title}` : "Project screenshot"}
+                          alt={getProjectMediaAlt(project)}
                           fill
                           priority={idx === 0}
                           loading={idx === 0 ? undefined : "lazy"}
@@ -334,7 +335,7 @@ const Portfolio = ({ projects }) => {
                   <div className="relative m-5 mb-0 aspect-[16/10] overflow-hidden rounded-xl border border-white/10 bg-background">
                     <Image
                       src={getSafeImageSrc(project.thumbnail || project.thumbnailImage || project.image)}
-                      alt={project.title ? `Project screenshot for ${project.title}` : "Project screenshot"}
+                      alt={getProjectMediaAlt(project)}
                       fill
                       priority={idx === 0}
                       loading={idx === 0 ? undefined : "lazy"}
@@ -618,7 +619,7 @@ const Portfolio = ({ projects }) => {
                             {/* Dark gradient overlay — same as ServiceSlider */}
                             <img
                               src={getSafeImageSrc(project.thumbnail || project.thumbnailImage || project.image)}
-                              alt=""
+                              alt={getProjectMediaAlt(project)}
                               className="absolute inset-0 h-full w-full object-cover"
                               loading="lazy"
                               decoding="async"

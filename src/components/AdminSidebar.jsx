@@ -309,7 +309,7 @@ export default function AdminSidebar() {
                   {session?.avatar ? (
                     <Image
                       src={session.avatar}
-                      alt={displayName}
+                      alt={`Muhyo Tech administrator ${displayName}`}
                       width={36}
                       height={36}
                       className="h-full w-full object-cover"

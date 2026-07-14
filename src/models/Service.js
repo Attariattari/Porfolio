@@ -44,6 +44,7 @@ const ServiceSchema = new mongoose.Schema(
     category: { type: String, trim: true },
     icon: { type: String, trim: true },
     heroImage: { type: String },
+    heroImageAlt: { type: String },
     overview: { type: String },
     problemsSolved: [TextObjectSchema],
     deliverables: [TextObjectSchema],
@@ -87,6 +88,7 @@ const ServiceSchema = new mongoose.Schema(
     banner: { type: String },
     image: { type: String },
     images: [{ type: String }],
+    imageAlts: [{ type: String }],
     faq: [FaqSchema],
     publishStatus: {
       type: String,

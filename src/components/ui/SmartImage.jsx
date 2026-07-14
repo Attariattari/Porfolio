@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ImageIcon, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
+import { ensureMuhyoTechAlt } from "@/lib/mediaAlt";
 
 export default function SmartImage({
   src,
@@ -50,7 +51,7 @@ export default function SmartImage({
 
       <Image
         src={getSafeImageSrc(currentSrc, fallbackSrc)}
-        alt={alt || "Image"}
+        alt={ensureMuhyoTechAlt(alt, "website media")}
         className={cn(
           "object-cover transition-all duration-700 ease-in-out",
           isLoading ? "scale-110 blur-xl grayscale" : "scale-100 blur-0 grayscale-0",

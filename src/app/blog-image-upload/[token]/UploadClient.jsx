@@ -144,7 +144,7 @@ export default function UploadClient({ token, imagePrompt, negativePrompt }) {
         <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-border">
           <Image
             src={preview}
-            alt="Selected blog cover preview"
+            alt="Muhyo Tech selected blog cover preview"
             fill
             unoptimized
             className="object-cover"

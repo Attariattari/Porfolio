@@ -13,6 +13,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "./ui";
 import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
+import { getBlogImageAlt } from "@/lib/blogImageAlt";
 
 const BlogSliderComponent = ({ posts }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -66,7 +67,7 @@ const BlogSliderComponent = ({ posts }) => {
           <div className="absolute inset-0">
             <Image
               src={getSafeImageSrc(currentPost.image || currentPost.featuredImage?.url, "/portfolio-hero.png")}
-              alt={currentPost.title ? `Blog cover image for ${currentPost.title}` : "Blog cover image"}
+              alt={getBlogImageAlt(currentPost)}
               fill
               className="object-cover transition-transform duration-[2000ms] group-hover:scale-105"
               priority

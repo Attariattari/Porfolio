@@ -1,211 +1,227 @@
-"use client";
+import LegalDocumentPage from "@/components/legal/LegalDocumentPage";
 
-import { motion } from "framer-motion";
-import EditorialBackground from "@/components/ui/EditorialBackground";
-import {
-  Shield,
-  Lock,
-  Eye,
-  FileText,
-  ChevronRight,
-  Circle,
-} from "lucide-react";
-import { portfolioData } from "@/lib/data";
-import Link from "next/link";
-
-const IconMap = {
-  Shield,
-  Lock,
-  Eye,
-  FileText
+export const metadata = {
+  title: "Privacy Policy | Muhyo Tech",
+  description:
+    "How Muhyo Tech collects, uses, protects, retains, and shares information across its website, forms, bookings, newsletter, and analytics.",
+  alternates: { canonical: "/privacy" },
+  keywords: [
+    "Muhyo Tech privacy policy",
+    "website privacy policy",
+    "data protection Muhyo Tech",
+    "Muhyo Tech Lahore",
+  ],
+  openGraph: {
+    title: "Privacy Policy | Muhyo Tech",
+    description:
+      "Learn how Muhyo Tech handles website, inquiry, booking, newsletter, analytics, and uploaded-media information.",
+    url: "https://www.muhyotech.com/privacy",
+    siteName: "Muhyo Tech",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Privacy Policy | Muhyo Tech",
+    description: "Clear information about privacy, data use, security, retention, and your choices at Muhyo Tech.",
+  },
+  robots: { index: true, follow: true },
 };
 
-const resolveIcon = (icon) => {
-  if (typeof icon === 'string') {
-    return IconMap[icon] || Shield;
-  }
-  return icon;
+const privacyDocument = {
+  type: "Privacy Policy",
+  slug: "privacy",
+  title: "Privacy explained without the fine-print fog.",
+  description:
+    "This Policy explains what information Muhyo Tech collects through its website, why it is used, which service providers may process it, and the choices available to you.",
+  effectiveDate: "July 14, 2026",
+  updatedDate: "July 14, 2026",
+  version: "2.0",
+  readTime: "10 minutes",
+  highlights: [
+    { icon: "fingerprint", title: "Purpose-led collection", text: "We collect information needed to respond, arrange calls, deliver services, secure the site, and understand performance." },
+    { icon: "lock", title: "Protected operations", text: "Access controls, validation, rate limits, authentication, and reputable infrastructure help protect stored information." },
+    { icon: "shield", title: "Meaningful choices", text: "You can unsubscribe and may request access, correction, or deletion where applicable." },
+  ],
+  sections: [
+    {
+      id: "who-we-are",
+      icon: "fingerprint",
+      title: "Who we are",
+      paragraphs: [
+        "Muhyo Tech is a software and web-engineering business based in Lahore, Pakistan. For information submitted through muhyotech.com, Muhyo Tech determines how and why that information is used unless a project agreement states otherwise.",
+        "Privacy questions or requests can be sent through our contact page. We may ask for reasonable verification before acting on a request to protect your information from unauthorised access.",
+      ],
+    },
+    {
+      id: "information-collected",
+      icon: "scroll",
+      title: "Information we collect",
+      paragraphs: ["The information collected depends on how you use the website and which information you choose to provide."],
+      items: [
+        "Contact information such as your name, email address, phone number, company, and preferred contact method.",
+        "Inquiry and project information such as service interest, objectives, budget or timeline context, messages, attachments, and communication history.",
+        "Booking information such as requested service, preferred date and time, project type, source page, and booking status.",
+        "Newsletter information such as email address, subscription status, subscription date, and email-delivery history.",
+        "Authorised admin information such as account details, role, authentication records, security events, and activity logs.",
+        "Technical and usage information such as IP address, browser and device information, user agent, pages viewed, referrer, session identifier, session duration, clicks, interaction count, and scroll depth.",
+        "Media or other files you intentionally upload through an authorised feature or secure upload link.",
+      ],
+    },
+    {
+      id: "collection-methods",
+      icon: "globe",
+      title: "How information is collected",
+      paragraphs: [
+        "Information is collected directly when you complete a form, book a call, subscribe, communicate with us, provide project material, or use an authorised account. Some technical information is collected automatically when the website loads or as you interact with it.",
+        "We may also receive limited information from service providers, referral sources, social platforms, or business partners when you choose to interact through those services.",
+      ],
+    },
+    {
+      id: "how-we-use-data",
+      icon: "check",
+      title: "How we use information",
+      items: [
+        "Respond to questions, qualify project requests, prepare proposals, and communicate about services.",
+        "Schedule, confirm, manage, and follow up on calls or project discussions.",
+        "Deliver agreed software services, manage client relationships, and maintain business records.",
+        "Send newsletters or updates you requested and process unsubscribe choices.",
+        "Operate, personalise, troubleshoot, secure, monitor, and improve the website and admin systems.",
+        "Measure page performance, traffic, engagement, content usefulness, and conversion journeys.",
+        "Prevent spam, abuse, fraud, unauthorised access, and other security threats.",
+        "Meet legal obligations, enforce agreements, resolve disputes, and protect legitimate rights.",
+      ],
+    },
+    {
+      id: "legal-bases",
+      icon: "scale",
+      title: "Reasons we process information",
+      paragraphs: [
+        "Where privacy law requires a legal basis, processing may rely on your consent, steps requested before entering a contract, performance of a contract, compliance with legal obligations, or legitimate interests such as responding to business inquiries, maintaining security, and improving services.",
+        "You can withdraw consent for future processing where consent is the basis, including by unsubscribing from marketing email. Withdrawal does not make earlier lawful processing unlawful.",
+      ],
+    },
+    {
+      id: "cookies-analytics",
+      icon: "fingerprint",
+      title: "Cookies, local storage, and analytics",
+      paragraphs: [
+        "The website uses browser storage and similar technologies for functionality, security, session continuity, preferences, and visitor measurement. A visitor session identifier and session start time may be stored locally to understand aggregate site use.",
+      ],
+      items: [
+        "Google Analytics may load when a measurement ID is configured and may process device, page, and interaction information under Google's own policies.",
+        "Vercel Analytics and Speed Insights may collect performance and usage measurements to help us improve reliability and speed.",
+        "Authentication cookies and browser storage support authorised admin sessions and security controls.",
+        "You can limit cookies or clear browser storage through browser settings, but some protected or preference-based features may stop working correctly.",
+      ],
+      note: "The website does not currently respond to a universal browser “Do Not Track” signal because there is no consistently adopted standard. Available browser and provider controls can still be used.",
+    },
+    {
+      id: "sharing",
+      icon: "globe",
+      title: "Service providers and sharing",
+      paragraphs: [
+        "We do not sell personal information. We may disclose limited information to providers that help operate the website and business, only for relevant services and subject to their own contractual and legal responsibilities.",
+      ],
+      items: [
+        "Vercel or comparable infrastructure providers for hosting, delivery, analytics, and performance monitoring.",
+        "MongoDB or comparable database providers for application and business records.",
+        "Cloudinary for uploaded and website media storage and delivery.",
+        "Email delivery providers and Nodemailer-compatible infrastructure for inquiries, confirmations, security messages, and newsletters.",
+        "Google Analytics when configured for website measurement.",
+        "Professional advisers, authorities, or counterparties when reasonably required by law, security, a dispute, or a business transaction.",
+      ],
+    },
+    {
+      id: "international-transfers",
+      icon: "globe",
+      title: "International processing",
+      paragraphs: [
+        "Some providers operate infrastructure in multiple countries, so information may be processed outside your country. Where required, we use available contractual, organisational, or provider safeguards and consider the nature of the information and service involved.",
+      ],
+    },
+    {
+      id: "retention",
+      icon: "scroll",
+      title: "Data retention",
+      paragraphs: [
+        "We retain information only for as long as reasonably needed for the purpose collected, an active business relationship, security, dispute handling, backups, or legal and accounting obligations. Retention depends on the information and context.",
+      ],
+      items: [
+        "Unsuccessful or inactive inquiries may be removed when no longer useful for follow-up, security, or recordkeeping.",
+        "Project and transaction records may be retained longer to support contracts, accounting, warranties, and disputes.",
+        "Newsletter records remain active until you unsubscribe or the address is disabled, subject to limited suppression records needed to honour the choice.",
+        "Security, analytics, and technical records may be retained for shorter operational periods or in aggregated form.",
+      ],
+    },
+    {
+      id: "security",
+      icon: "lock",
+      title: "Security",
+      paragraphs: [
+        "Muhyo Tech uses reasonable technical and organisational safeguards appropriate to the website, including access controls, authentication, permissions, input validation, rate limiting, secure upload links, logging, and managed infrastructure.",
+        "No internet transmission, storage platform, or security method is completely risk-free. Please avoid sending unnecessary sensitive information through public forms and contact us promptly if you suspect misuse.",
+      ],
+    },
+    {
+      id: "your-rights",
+      icon: "shield",
+      title: "Your choices and rights",
+      paragraphs: ["Depending on your location and applicable law, you may have some or all of the following rights:"],
+      items: [
+        "Ask whether we hold personal information about you and request access to it.",
+        "Request correction of inaccurate or incomplete information.",
+        "Request deletion or restriction where there is no overriding reason to retain or process the information.",
+        "Object to certain processing or withdraw consent for future processing.",
+        "Request a portable copy of information you provided where applicable.",
+        "Unsubscribe from marketing email using the link in the message or by contacting us.",
+        "Complain to an appropriate privacy or data-protection authority where that right is available.",
+      ],
+      note: "Rights are not absolute. We may need to verify identity, retain limited records, protect another person's rights, or decline a request where permitted by law.",
+    },
+    {
+      id: "children",
+      icon: "shield",
+      title: "Children's privacy",
+      paragraphs: [
+        "Muhyo Tech provides business and professional technology services and the website is not directed to children under 16. We do not knowingly request personal information from children. If you believe a child submitted information, contact us so we can review and delete it where appropriate.",
+      ],
+    },
+    {
+      id: "ai-processing",
+      icon: "sparkle",
+      title: "AI-assisted processing",
+      paragraphs: [
+        "AI-assisted tools may support content drafting, image generation, workflow automation, technical analysis, or service delivery. We aim to avoid placing unnecessary personal information into such tools and apply human judgement where output affects client work.",
+        "The public website does not use solely automated decision-making that produces legal or similarly significant effects for visitors.",
+      ],
+    },
+    {
+      id: "external-sites",
+      icon: "globe",
+      title: "External websites",
+      paragraphs: [
+        "Links to social networks, repositories, messaging services, client websites, and other external platforms are governed by those providers' privacy practices. Review their notices before providing information to them.",
+      ],
+    },
+    {
+      id: "policy-updates",
+      icon: "scroll",
+      title: "Updates to this Policy",
+      paragraphs: [
+        "We may update this Policy when website features, providers, business practices, or legal requirements change. Material revisions will be reflected by a new updated date and version on this page. Please review it periodically.",
+      ],
+    },
+    {
+      id: "privacy-contact",
+      icon: "fingerprint",
+      title: "Privacy contact",
+      paragraphs: [
+        "Submit privacy questions or requests through the Muhyo Tech contact page and clearly mark the message as a privacy request. Include the email address or other detail associated with your interaction so we can locate relevant records after appropriate verification.",
+      ],
+    },
+  ],
 };
 
-export default function PrivacyPolicy() {
-  const { privacyPage } = portfolioData.siteConfig;
-  const { sections, title, subtitle, description, finalStatement } =
-    privacyPage;
-
-  return (
-    <div className="min-h-screen pt-32 pb-40 px-6 lg:px-24 relative overflow-hidden text-foreground selection:bg-accent/30 font-sans">
-      <EditorialBackground text="Muhyo Tech" />
-
-      <div className="container mx-auto max-w-6xl relative z-10">
-        {/* Header Section */}
-        <div className="mb-40 space-y-8">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.5em] text-accent"
-          >
-            <Link href="/" className="hover:opacity-70 transition-opacity">
-              Muhyo Tech
-            </Link>
-            <ChevronRight size={10} className="text-muted-foreground" />
-            <span className="text-muted-foreground/50">{subtitle}</span>
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-            className="text-6xl md:text-[10rem] font-black italic tracking-tighter uppercase leading-[0.8] mix-blend-difference"
-          >
-            {title.split(" ").slice(0, 1).join(" ")}{" "}
-            <span className="text-accent underline decoration-accent/20 underline-offset-[1rem]">
-              {title.split(" ").slice(1).join(" ")}
-            </span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-muted-foreground text-xl lg:text-2xl italic max-w-3xl leading-relaxed pl-6 border-l-2 border-accent"
-          >
-            {description}
-          </motion.p>
-        </div>
-
-        {/* Minimalist Tree Visualization */}
-        <div className="relative">
-          {/* Trunk SVG with Path Animation */}
-          <div className="absolute left-6 lg:left-1/2 top-0 bottom-0 w-px lg:-translate-x-1/2 overflow-visible">
-            <svg
-              width="2"
-              height="100%"
-              className="overflow-visible h-full w-[2px]"
-            >
-              <motion.line
-                x1="1"
-                y1="0"
-                x2="1"
-                y2="100%"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeDasharray="4 4"
-                className="text-accent/40"
-                initial={{ pathLength: 0 }}
-                whileInView={{ pathLength: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 2 }}
-              />
-              <motion.circle
-                cx="1"
-                cy="0"
-                r="3"
-                className="fill-accent shadow-accent animate-pulse"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-              />
-            </svg>
-          </div>
-
-          <div className="space-y-40">
-            {sections.map((section, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1, delay: idx * 0.1 }}
-                viewport={{ once: true, margin: "-100px" }}
-                className={`relative flex flex-col md:flex-row items-center gap-12 lg:gap-24 ${
-                  idx % 2 !== 0 ? "md:flex-row-reverse" : ""
-                }`}
-              >
-                {/* Visual Branch Connection */}
-                <div
-                  className={`absolute left-6 lg:left-1/2 top-6 h-px bg-gradient-to-r ${
-                    idx % 2 === 0
-                      ? "from-accent/60 to-transparent lg:right-1/2 lg:left-auto"
-                      : "from-transparent to-accent/60 lg:left-1/2 lg:right-auto"
-                  } w-24 hidden lg:block`}
-                />
-
-                {/* Node Point Glower */}
-                <div className="absolute left-6 lg:left-1/2 top-6 w-2.5 h-2.5 rounded-full bg-accent animate-pulse lg:-translate-x-1.25 z-20 shadow-[0_0_12px_rgba(var(--accent-rgb),0.8)]" />
-
-                {/* Information Block (No Card) */}
-                <div
-                  className={`w-full md:w-[45%] ${idx % 2 === 0 ? "md:text-right" : "md:text-left"} pl-16 md:pl-0`}
-                >
-                  <div className="space-y-6">
-                    <div
-                      className={`flex items-center gap-4 ${idx % 2 === 0 ? "md:flex-row-reverse" : ""}`}
-                    >
-                      <div className="text-accent w-12 h-12 flex items-center justify-center rounded-2xl bg-accent/10 border border-accent/20 backdrop-blur-md">
-                        {(() => {
-                           const Icon = resolveIcon(section.icon);
-                           return <Icon size={20} />;
-                        })()}
-                      </div>
-                      <h3 className="text-3xl font-black uppercase italic tracking-tighter text-foreground leading-none">
-                        {section.title}
-                      </h3>
-                    </div>
-
-                    <p className="text-muted-foreground/80 text-lg italic leading-snug max-w-md ml-auto mr-0 md:ml-0 md:mr-auto font-light">
-                      {section.content}
-                    </p>
-
-                    <div
-                      className={`flex flex-wrap gap-x-6 gap-y-3 ${idx % 2 === 0 ? "md:justify-end" : "md:justify-start"}`}
-                    >
-                      {section.details.map((detail, dIdx) => (
-                        <div
-                          key={dIdx}
-                          className="flex items-center gap-2 group cursor-default"
-                        >
-                          <Circle
-                            size={4}
-                            className="text-accent group-hover:scale-150 transition-all duration-300"
-                            fill="currentColor"
-                          />
-                          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground opacity-40 group-hover:opacity-100 group-hover:text-accent transition-all duration-300">
-                            {detail}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="hidden md:block md:w-[45%]" />
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
-        {/* Final Statement */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="mt-60 text-center space-y-12"
-        >
-          <div className="h-px w-24 bg-accent/40 mx-auto" />
-          <h2 className="text-4xl md:text-7xl font-black italic uppercase tracking-tighter text-foreground">
-            {finalStatement.title.split(" ").slice(0, 1).join(" ")}{" "}
-            <span className="text-accent">
-              {finalStatement.title.split(" ").slice(1).join(" ")}
-            </span>
-          </h2>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-8">
-            <Link
-              href="/contact"
-              className="px-10 py-4 h-14 rounded-full bg-accent text-background text-[10px] font-black uppercase tracking-[0.4em] hover:scale-105 transition-transform flex items-center justify-center"
-            >
-              {finalStatement.cta}
-            </Link>
-          </div>
-        </motion.div>
-      </div>
-    </div>
-  );
+export default function PrivacyPage() {
+  return <LegalDocumentPage document={privacyDocument} />;
 }

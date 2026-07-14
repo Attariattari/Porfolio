@@ -16,6 +16,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { SectionWrapper, Button } from "@/components/ui";
 import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
+import { getBlogImageAlt } from "@/lib/blogImageAlt";
+import { ensureMuhyoTechAlt } from "@/lib/mediaAlt";
 
 export default function BlogPostDetail({ blog, shareUrl, trendingBlogs = [] }) {
   if (!blog) return null;
@@ -119,7 +121,7 @@ export default function BlogPostDetail({ blog, shareUrl, trendingBlogs = [] }) {
                 <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full border-2 border-accent/30">
                   <Image
                     src={getSafeImageSrc("https://res.cloudinary.com/dg5gwixf1/image/upload/v1772736622/ChatGPT_Image_Mar_5_2026_11_36_42_AM_auw4uw.png", "/logo.png")}
-                    alt={blog.author}
+                    alt={ensureMuhyoTechAlt("", `portrait of ${blog.author || "the author"}`)}
                     width={48}
                     height={48}
                     className="object-cover"
@@ -148,7 +150,7 @@ export default function BlogPostDetail({ blog, shareUrl, trendingBlogs = [] }) {
               <div className="relative aspect-[16/8.4] min-h-[260px] md:min-h-[430px]">
                 <Image
                   src={coverImage}
-                  alt={blog.title}
+                  alt={getBlogImageAlt(blog)}
                   fill
                   className="object-cover"
                   priority

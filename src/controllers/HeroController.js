@@ -2,6 +2,7 @@ import dbConnect from "@/lib/dbConnect";
 import { Hero } from "@/models/Portfolio";
 import { serializeDoc } from "@/lib/mongooseHelper";
 import { cacheManager, withCache } from "@/lib/cache";
+import { getHeroMediaAlt } from "@/lib/mediaAlt";
 
 export const HeroController = {
     // 1. Get Hero Data - Optimized with lean() + caching
@@ -28,6 +29,12 @@ export const HeroController = {
     async update(data) {
         try {
             await dbConnect();
+            const existing = await Hero.findOne({}).lean();
+            data.visualImageAlt = getHeroMediaAlt({
+                ...(existing || {}),
+                ...data,
+                visualImageAlt: data.visualImageAlt || existing?.visualImageAlt,
+            });
             data.updatedAt = new Date();
 
             const hero = await Hero.findOneAndUpdate({}, data, {

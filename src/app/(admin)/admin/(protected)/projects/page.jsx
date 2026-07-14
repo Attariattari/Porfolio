@@ -12,6 +12,7 @@ import { uploadPendingImages } from "@/lib/uploadHelper";
 import ImageUploader from "@/components/admin/ImageUploader";
 import { Controller } from "react-hook-form";
 import { AnimatePresence } from "framer-motion";
+import { getProjectMediaAlt } from "@/lib/mediaAlt";
 
 const projectSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
@@ -144,7 +145,7 @@ export default function ProjectsPage() {
             {preview && (
               <Image
                 src={preview}
-                alt={item.title}
+                alt={getProjectMediaAlt(item)}
                 fill
                 sizes="64px"
                 className="object-cover"

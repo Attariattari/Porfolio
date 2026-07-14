@@ -15,6 +15,7 @@ import { SectionWrapper, Card } from "./ui";
 import Link from "next/link";
 import React from "react";
 import Image from "next/image";
+import { getServiceMediaAlt } from "@/lib/mediaAlt";
 import dynamic from "next/dynamic";
 
 const ImageLightbox = dynamic(
@@ -212,7 +213,7 @@ const ServiceRow = ({ service, index, onImageClick }) => {
             {image && (
               <Image
                 src={image}
-                alt={`${service.title} service by Muhyo Tech`}
+                alt={getServiceMediaAlt(service)}
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                 className="object-cover transition-transform duration-1000 group-hover/img-side:scale-110"
@@ -265,6 +266,9 @@ export default function Services({ data, showViewAll = false }) {
 
   const displayData = showViewAll ? data.slice(0, 3) : data;
   const galleryImages = displayData.map((s) => s.heroImage || s.banner || s.image).filter(Boolean);
+  const galleryAlts = displayData
+    .filter((s) => s.heroImage || s.banner || s.image)
+    .map(getServiceMediaAlt);
 
   return (
     <SectionWrapper
@@ -294,6 +298,8 @@ export default function Services({ data, showViewAll = false }) {
           isOpen
           onClose={() => setLightboxIndex(null)}
           images={galleryImages}
+          alts={galleryAlts}
+          alt="Muhyo Tech service visual"
           initialIndex={lightboxIndex || 0}
         />
       )}

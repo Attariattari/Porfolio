@@ -25,6 +25,7 @@ import { portfolioData } from "@/lib/data";
 import React from "react";
 import dynamic from "next/dynamic";
 import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
+import { getBlogImageAlt } from "@/lib/blogImageAlt";
 
 const ImageLightbox = dynamic(
   () => import("./ImageLightbox").then((mod) => mod.ImageLightbox),
@@ -319,7 +320,7 @@ const ArticleCard = ({ blog, index, onImageClick }) => (
       >
         <Image
           src={getSafeImageSrc(blog.image || blog.featuredImage?.url, "/portfolio-hero.png")}
-          alt={blog.title ? `Blog cover image for ${blog.title}` : "Blog cover image"}
+          alt={getBlogImageAlt(blog)}
           fill
           loading="lazy"
           sizes="(max-width: 768px) 100vw, 33vw"
@@ -397,7 +398,7 @@ const HomeArticleCard = ({ blog, index, onImageClick }) => {
         >
           <Image
             src={image}
-            alt={blog.title ? `Blog cover image for ${blog.title}` : "Blog cover image"}
+            alt={getBlogImageAlt(blog)}
             fill
             loading="lazy"
             sizes="(max-width: 768px) 100vw, 33vw"
@@ -578,6 +579,7 @@ export default function Blog({ data, isHomePage = false }) {
   const [activeTab, setActiveTab] = useState("latest");
   const [lightboxIndex, setLightboxIndex] = useState(null);
   const [lightboxImages, setLightboxImages] = useState([]);
+  const [lightboxAlts, setLightboxAlts] = useState([]);
 
   const categories = useMemo(
     () => ["All", ...new Set(data?.map((b) => b.category) || [])],
@@ -619,6 +621,7 @@ export default function Blog({ data, isHomePage = false }) {
                           b.image || b.featuredImage?.url || "/portfolio-hero.png",
                       ),
                     );
+                    setLightboxAlts(homeBlogs.map(getBlogImageAlt));
                     setLightboxIndex(idx);
                   }}
                 />
@@ -649,6 +652,8 @@ export default function Blog({ data, isHomePage = false }) {
             isOpen
             onClose={() => setLightboxIndex(null)}
             images={lightboxImages}
+            alts={lightboxAlts}
+            alt="Muhyo Tech blog cover"
             initialIndex={lightboxIndex || 0}
           />
         )}
@@ -689,6 +694,7 @@ export default function Blog({ data, isHomePage = false }) {
         onImageClick={(idx) => {
           const featured = resolveFeaturedBlogs(data, portfolioData.blogs);
           setLightboxImages(featured.map((b) => b.image));
+          setLightboxAlts(featured.map(getBlogImageAlt));
           setLightboxIndex(idx);
         }}
       />
@@ -721,6 +727,7 @@ export default function Blog({ data, isHomePage = false }) {
                     index={i}
                     onImageClick={(idx) => {
                       setLightboxImages(displayPosts.map((b) => b.image));
+                      setLightboxAlts(displayPosts.map(getBlogImageAlt));
                       setLightboxIndex(idx);
                     }}
                   />
@@ -764,6 +771,8 @@ export default function Blog({ data, isHomePage = false }) {
           isOpen
           onClose={() => setLightboxIndex(null)}
           images={lightboxImages}
+          alts={lightboxAlts}
+          alt="Muhyo Tech blog cover"
           initialIndex={lightboxIndex || 0}
         />
       )}

@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui";
 import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
+import { ensureMuhyoTechAlt, getProjectMediaAlt } from "@/lib/mediaAlt";
 import {
   GlassCard,
   ProjectBookingButton,
@@ -100,6 +101,12 @@ export default function ProjectDetailView({
   })();
 
   const lightboxImages = galleryImages.map(imageUrl);
+  const lightboxAlts = galleryImages.map((image, index) =>
+    ensureMuhyoTechAlt(
+      image?.alt,
+      getProjectMediaAlt(project, "gallery", index),
+    ),
+  );
   const heroImage = text(
     project.heroImage,
     project.thumbnailImage,
@@ -203,13 +210,15 @@ export default function ProjectDetailView({
           {heroImage && (
             <ProjectLightboxButton
               images={lightboxImages}
+              alts={lightboxAlts}
+              imageAlt={getProjectMediaAlt(project, "hero")}
               initialIndex={0}
               variant="hero"
               className="theme-media-frame group relative aspect-[4/3] overflow-hidden rounded-[2rem] border border-border/70 bg-card text-left"
             >
               <Image
                 src={getSafeImageSrc(heroImage)}
-                alt={project.title ? `Project hero screenshot for ${project.title}` : "Project hero screenshot"}
+                alt={getProjectMediaAlt(project, "hero")}
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -351,12 +360,17 @@ export default function ProjectDetailView({
                 <ProjectLightboxButton
                   key={`${imageUrl(image)}-${index}`}
                   images={lightboxImages}
+                  alts={lightboxAlts}
+                  imageAlt={getProjectMediaAlt(project, "gallery", index)}
                   initialIndex={index}
                   className="group relative aspect-[16/10] overflow-hidden rounded-[2rem] border border-white/10 bg-card text-left"
                 >
                   <Image
                     src={safeImageUrl(image)}
-                    alt={image.alt || `Project screenshot for ${project.title}`}
+                    alt={ensureMuhyoTechAlt(
+                      image.alt,
+                      getProjectMediaAlt(project, "gallery", index),
+                    )}
                     fill
                     loading="lazy"
                     sizes="(max-width: 768px) 100vw, 50vw"
@@ -463,7 +477,7 @@ export default function ProjectDetailView({
                     <div className="relative aspect-[16/10]">
                       <Image
                         src={getSafeImageSrc(item.thumbnail || item.thumbnailImage || item.image)}
-                        alt={item.title ? `Related project screenshot for ${item.title}` : "Related project screenshot"}
+                        alt={getProjectMediaAlt(item)}
                         fill
                         loading="lazy"
                         sizes="(max-width: 768px) 100vw, 33vw"

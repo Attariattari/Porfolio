@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { getProjectMediaAlt, getServiceMediaAlt } from "@/lib/mediaAlt";
 import {
   ArrowLeft,
   ArrowRight,
@@ -420,7 +421,7 @@ export default function ServiceDetailClient({
               <div className="relative aspect-[16/10] bg-muted">
                 <Image
                   src={banner}
-                  alt={`${displayTitle} service by Muhyo Tech`}
+                  alt={getServiceMediaAlt({ ...service, title: displayTitle })}
                   fill
                   priority
                   sizes="(max-width: 1024px) 100vw, 520px"
@@ -758,7 +759,7 @@ export default function ServiceDetailClient({
                         <div className="relative min-h-36 overflow-hidden bg-muted">
                           <Image
                             src={getSafeImageSrc(project.thumbnail || project.thumbnailImage || project.image)}
-                            alt={`${project.title} project by Muhyo Tech`}
+                            alt={getProjectMediaAlt(project)}
                             fill
                             loading="lazy"
                             sizes="116px"

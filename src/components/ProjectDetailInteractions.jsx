@@ -73,6 +73,8 @@ export function ProjectHeroMotion({ children }) {
 export function ProjectLightboxButton({
   children,
   images,
+  alts = [],
+  imageAlt,
   initialIndex = 0,
   variant = "gallery",
   className = "",
@@ -106,6 +108,8 @@ export function ProjectLightboxButton({
           isOpen
           onClose={() => setIsOpen(false)}
           images={images}
+          alts={alts}
+          alt={imageAlt}
           initialIndex={initialIndex}
         />
       )}

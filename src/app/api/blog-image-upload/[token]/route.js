@@ -15,6 +15,7 @@ import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socket";
 import { ActivityController } from "@/controllers/ActivityController";
 import { revalidatePath } from "next/cache";
 import { triggerFeaturedUpdate } from "@/lib/ai/featuredEngine";
+import { ensureBlogImageAlt } from "@/lib/blogImageAlt";
 
 function isSuperAdmin(session) {
   return session?.role === "super-admin" || session?.role === "root-super-admin";
@@ -92,9 +93,10 @@ export async function POST(request, { params }) {
         featuredImage: {
           url: uploaded.url,
           publicId: uploaded.publicId,
-          alt:
-            tokenResult.blog.featuredImage?.alt ||
-            `${tokenResult.blog.title} blog cover image`,
+          alt: ensureBlogImageAlt(
+            tokenResult.blog.featuredImage?.alt,
+            tokenResult.blog.title,
+          ),
           width: uploaded.width,
           height: uploaded.height,
           source: "manual_upload",

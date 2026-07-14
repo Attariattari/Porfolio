@@ -5,12 +5,23 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ZoomIn, ZoomOut, Maximize2, Minimize2, Download, ChevronLeft, ChevronRight } from "lucide-react";
 import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
+import { ensureMuhyoTechAlt } from "@/lib/mediaAlt";
 
-export const ImageLightbox = ({ isOpen, onClose, images, initialIndex = 0 }) => {
+export const ImageLightbox = ({
+  isOpen,
+  onClose,
+  images,
+  initialIndex = 0,
+  alt = "Muhyo Tech media gallery image",
+  alts = [],
+}) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [zoom, setZoom] = useState(1);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const safeImages = (Array.isArray(images) ? images : []).map((image) => getSafeImageSrc(image));
+  const imageAlts = safeImages.map((_, index) =>
+    ensureMuhyoTechAlt(alts[index], `${alt} ${index + 1}`),
+  );
 
   useEffect(() => {
     if (!isOpen) return undefined;
@@ -150,7 +161,7 @@ export const ImageLightbox = ({ isOpen, onClose, images, initialIndex = 0 }) => 
           <motion.img
             key={currentIndex}
             src={safeImages[currentIndex]}
-            alt="Gallery Detail"
+            alt={imageAlts[currentIndex]}
             className={`max-w-full max-h-full object-contain rounded-sm shadow-2xl ${
               zoom > 1 ? "cursor-zoom-out" : "cursor-zoom-in"
             }`}
@@ -174,7 +185,11 @@ export const ImageLightbox = ({ isOpen, onClose, images, initialIndex = 0 }) => 
                 i === currentIndex ? "border-accent scale-110 shadow-lg shadow-accent/20" : "border-transparent opacity-40 hover:opacity-100"
               }`}
             >
-              <img src={img} alt="Thumb" className="w-full h-full object-cover" />
+              <img
+                src={img}
+                alt={`${imageAlts[i]} thumbnail`}
+                className="w-full h-full object-cover"
+              />
             </button>
           ))}
         </div>

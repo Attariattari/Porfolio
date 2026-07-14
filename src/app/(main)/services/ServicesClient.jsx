@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { getServiceMediaAlt } from "@/lib/mediaAlt";
 import EditorialBackground from "@/components/ui/EditorialBackground";
 import dynamic from "next/dynamic";
 import {
@@ -103,11 +104,7 @@ const ServiceSlider = ({ services }) => {
                     services[currentIndex].banner ||
                     services[currentIndex].image
                   }
-                  alt={
-                    services[currentIndex].title
-                      ? `${services[currentIndex].title} service by Muhyo Tech`
-                      : "Muhyo Tech web development service"
-                  }
+                  alt={getServiceMediaAlt(services[currentIndex])}
                   fill
                   sizes="(max-width: 768px) 100vw, 600px"
                   className="object-cover transition-transform duration-1000 group-hover/img-side:scale-110"

@@ -17,6 +17,7 @@ import "swiper/css/pagination";
 import "swiper/css/effect-fade";
 import "swiper/css/effect-creative";
 import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
+import { getBlogImageAlt } from "@/lib/blogImageAlt";
 
 /**
  * FeaturedBlogSlider - Lazy-loaded component for featured blogs
@@ -63,7 +64,7 @@ export default function FeaturedBlogSlider({ featuredBlogs, onImageClick }) {
               <div className="relative aspect-[4/3] overflow-hidden">
                 <Image
                   src={getSafeImageSrc(blog.image || blog.featuredImage?.url, "/portfolio-hero.png")}
-                  alt={blog.title ? `Blog cover image for ${blog.title}` : "Blog cover image"}
+                  alt={getBlogImageAlt(blog)}
                   fill
                   priority={idx === 0}
                   loading={idx === 0 ? undefined : "lazy"}

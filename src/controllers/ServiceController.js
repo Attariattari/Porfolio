@@ -6,6 +6,7 @@ import { serializeDoc } from "@/lib/mongooseHelper";
 import { sendNewsletterEmail } from "@/lib/newsletter";
 import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socket";
 import { cacheManager, withCache } from "@/lib/cache";
+import { ensureMuhyoTechAlt, getServiceMediaAlt } from "@/lib/mediaAlt";
 
 const QUOTE_NOTE =
   "Pricing depends on project requirements, features, timeline, and scope. Book a call to discuss your project and receive a custom quote.";
@@ -80,6 +81,7 @@ export const normalizeServiceData = (service = {}) => {
     : toStringArray(service.keywords);
   const localKeywords = toStringArray(service.localKeywords);
   const relatedServices = toStringArray(service.relatedServices);
+  const images = Array.isArray(service.images) ? service.images : [];
 
   return {
     ...service,
@@ -87,6 +89,13 @@ export const normalizeServiceData = (service = {}) => {
     shortDescription,
     description: shortDescription,
     heroImage,
+    heroImageAlt: getServiceMediaAlt(service),
+    imageAlts: images.map((_, index) =>
+      ensureMuhyoTechAlt(
+        service.imageAlts?.[index],
+        `${service.title || "web development"} service image ${index + 1}`,
+      ),
+    ),
     banner: heroImage,
     image: heroImage,
     overview: service.overview || service.fullDescription || service.description || shortDescription,
@@ -290,6 +299,11 @@ export const ServiceController = {
       const existing = await Service.findOne({ slug: normalized.slug }).lean();
 
       if (existing) {
+        normalized.heroImageAlt = getServiceMediaAlt({
+          ...normalized,
+          heroImageAlt: data.heroImageAlt || existing.heroImageAlt,
+        });
+        normalized.imageAlts = data.imageAlts || existing.imageAlts || [];
         const updated = await Service.findByIdAndUpdate(
           existing._id,
           { ...normalized, updatedAt: new Date() },
@@ -332,7 +346,14 @@ export const ServiceController = {
       const query = mongoose.Types.ObjectId.isValid(id)
         ? { _id: id }
         : { slug: id };
-      const updated = await Service.findOneAndUpdate(query, normalizeServiceData(data), {
+      const existing = await Service.findOne(query).lean();
+      if (!existing) return null;
+      const normalized = normalizeServiceData({
+        ...data,
+        heroImageAlt: data.heroImageAlt || existing.heroImageAlt,
+        imageAlts: data.imageAlts || existing.imageAlts,
+      });
+      const updated = await Service.findOneAndUpdate(query, normalized, {
         new: true,
         runValidators: true,
       }).lean();

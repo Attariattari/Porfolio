@@ -175,7 +175,7 @@ export default function ProjectsManagement() {
                       <img
                         src={p.thumbnail || p.images?.[0] || `https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=200`}
                         className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-700"
-                        alt={p.title}
+                        alt={`Muhyo Tech project preview for ${p.title}`}
                       />
                     </div>
                     <div>

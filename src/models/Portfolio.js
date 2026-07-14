@@ -23,8 +23,11 @@ const ProjectSchema = new mongoose.Schema({
     year: { type: String },
     thumbnail: { type: String },
     thumbnailImage: { type: String },
+    thumbnailAlt: { type: String },
     heroImage: { type: String },
+    heroImageAlt: { type: String },
     gallery: [{ type: String }],
+    galleryImageAlts: [{ type: String }],
     galleryImages: [{ type: mongoose.Schema.Types.Mixed }],
     liveUrl: { type: String },
     githubUrl: { type: String },
@@ -61,6 +64,7 @@ const ServiceSchema = new mongoose.Schema({
     category: { type: String },
     icon: { type: String },
     heroImage: { type: String },
+    heroImageAlt: { type: String },
     overview: { type: String },
     problemSolved: { type: String },
     problemsSolved: [{ type: mongoose.Schema.Types.Mixed }],
@@ -119,6 +123,7 @@ const ServiceSchema = new mongoose.Schema({
         index: true,
     },
     images: [{ type: String }],
+    imageAlts: [{ type: String }],
     createdAt: { type: Date, default: Date.now, index: true },
     updatedAt: { type: Date, default: Date.now },
 }, { strict: false });
@@ -238,6 +243,7 @@ const AboutSchema = new mongoose.Schema({
     company: { type: String, required: true },
     role: { type: String, required: true },
     avatar: { type: String, required: true },
+    avatarAlt: { type: String },
 
     // ==== CONTENT ====
     bio: { type: String }, // Short 1-2 line bio
@@ -399,6 +405,7 @@ const HeroSchema = new mongoose.Schema({
     typewriterWords: [{ type: String }],
     description: { type: String },
     visualImage: { type: String },
+    visualImageAlt: { type: String },
     features: [{
         icon: String,
         label: String,

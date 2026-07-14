@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import useAdminStore from "@/lib/store/adminStore";
 import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
+import { getBlogImageAlt } from "@/lib/blogImageAlt";
 import DataTable from "@/components/admin/DataTable";
 import FormModal from "@/components/admin/FormModal";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
@@ -166,7 +167,7 @@ export default function BlogsPage() {
         <div className="w-16 h-10 rounded-lg overflow-hidden border border-white/10 shadow-lg bg-white/5 flex items-center justify-center">
           <Image
             src={getSafeImageSrc(item.image || item.images?.[0])}
-            alt={item.title}
+            alt={getBlogImageAlt(item)}
             width={64}
             height={40}
             sizes="64px"

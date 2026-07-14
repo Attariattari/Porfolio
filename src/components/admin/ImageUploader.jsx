@@ -56,7 +56,7 @@ function SortableImageItem({ id, url, onRemove, onReplace }) {
       style={style}
       className={`relative rounded-3xl overflow-hidden aspect-square group border border-white/10 bg-slate-800/20 shadow-2xl transition-all duration-500 hover:border-accent/40 ${isDragging ? 'ring-2 ring-accent shadow-accent/20' : ''}`}
     >
-      <img src={url} alt="Image" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+      <img src={url} alt="Muhyo Tech uploaded media preview" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
       
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-3 backdrop-blur-[2px]">
@@ -378,7 +378,7 @@ export default function ImageUploader({ images = [], onChange }) {
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
             {imageList.map((item) => (
               <div key={item.id} className="relative rounded-3xl overflow-hidden aspect-square border border-white/10 bg-slate-800/20 shadow-2xl">
-                <img src={item.url} alt="Image" className="w-full h-full object-cover" />
+                <img src={item.url} alt="Muhyo Tech uploaded media preview" className="w-full h-full object-cover" />
               </div>
             ))}
           </div>

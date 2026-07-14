@@ -1,4 +1,5 @@
 import { generateGeminiResponse } from "@/lib/geminiService";
+import { ensureBlogImageAlt } from "@/lib/blogImageAlt";
 
 const FALLBACK_NEGATIVE_PROMPT =
   "No fake logos, no watermarks, no fake brand names, no gibberish text, no unreadable labels, no copyrighted characters, no misleading claims, no cluttered UI, no neon cyberpunk, no obvious AI-art cliches.";
@@ -29,7 +30,7 @@ export async function generateBlogImagePrompt(blog, options = {}) {
 
   const fallback = {
     prompt: `Create a premium 16:9 technical editorial blog cover image for a Muhyo Tech article titled "${blog.title}". Communicate the article's core idea through a realistic software-engineering visual narrative, not generic stock imagery. Use believable web-development and product-delivery artifacts: architecture cards, deployment pipelines, monitoring dashboards, server/product details, data-flow paths, or before/after workflow states when relevant. Short readable UI labels or status cards are allowed if they clarify the story; avoid fake logos, gibberish, watermarks, and long text. Composition: strong central focal point, balanced foreground/background depth, clean negative space for a blog header crop, attractive social-preview readability. Lighting: realistic professional product or office lighting with crisp detail and trustworthy contrast. Palette: deep navy, slate, emerald, cyan accents, and restrained warm highlights. Style: premium realistic technical/product publication cover, sharp, modern, grounded, high-resolution, suitable for a professional software agency blog. Avoid neon cyberpunk, floating code clouds, plastic AI gloss, clutter, cartoons, random robots, and template-like scenes.`,
-    altText: `${blog.title} blog cover image`,
+    altText: ensureBlogImageAlt("", blog.title),
     visualDirection:
       "Premium 16:9 technical editorial cover with realistic software-engineering artifacts, clear problem-to-outcome narrative, and clean blog/social crop space.",
     negativePrompt: FALLBACK_NEGATIVE_PROMPT,
@@ -64,6 +65,7 @@ export async function generateBlogImagePrompt(blog, options = {}) {
       - Include aspect ratio 16:9.
       - Include subject, composition, foreground/background, technical artifacts, mood, lighting, depth, palette, style, and quality.
       - Make it specific to this exact blog topic and content excerpt.
+      - The altText must be professional, accurately describe the visual/topic, and include the words "Muhyo Tech" naturally.
       - Clean SaaS/web development feel, premium software-engineering/product publication style.
       - Suitable for a blog featured image and social preview crop.
       - Prefer realistic technical storytelling: architecture cards, dashboard panels, data-flow paths, pipeline stages, product screens, servers, devices, or before/after transformation scenes when relevant.
@@ -93,7 +95,7 @@ export async function generateBlogImagePrompt(blog, options = {}) {
 
     const normalized = {
       prompt: parsed.prompt || fallback.prompt,
-      altText: parsed.altText || fallback.altText,
+      altText: ensureBlogImageAlt(parsed.altText, blog.title),
       visualDirection: parsed.visualDirection || fallback.visualDirection,
       negativePrompt: parsed.negativePrompt || FALLBACK_NEGATIVE_PROMPT,
     };

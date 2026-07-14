@@ -18,6 +18,7 @@ import {
 import Link from "next/link";
 import { useRef } from "react";
 import Image from "next/image";
+import { getHeroMediaAlt } from "@/lib/mediaAlt";
 import dynamic from "next/dynamic";
 import { Button } from "@/components/ui";
 import EditorialBackground from "@/components/ui/EditorialBackground";
@@ -228,7 +229,7 @@ export default function Hero({ initialData = null }) {
                 <div className="hero-media-blend relative w-full h-full">
                   <Image
                     src={data.visualImage || data.heroImage || "/hero-visual.webp"}
-                    alt="Muhyo Tech full-stack development visual"
+                    alt={getHeroMediaAlt(data)}
                     fill
                     className="object-cover"
                     priority

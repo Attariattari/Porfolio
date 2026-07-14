@@ -14,6 +14,7 @@ import {
 import { Button } from "./ui";
 import dynamic from "next/dynamic";
 import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
+import { getProjectMediaAlt } from "@/lib/mediaAlt";
 
 const ImageLightbox = dynamic(
   () => import("./ImageLightbox").then((mod) => mod.ImageLightbox),
@@ -41,6 +42,9 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
     selectedProject.thumbnail || selectedProject.thumbnailImage || selectedProject.image,
     ...(selectedProject.gallery || []),
   ].map((image) => getSafeImageSrc(image)).filter(Boolean);
+  const galleryAlts = galleryImages.map((_, index) =>
+    getProjectMediaAlt(selectedProject, index === 0 ? "thumbnail" : "gallery", Math.max(0, index - 1)),
+  );
 
   const openLightbox = (index) => setLightboxIndex(index);
 
@@ -146,7 +150,7 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
                     >
                       <img
                         src={getSafeImageSrc(img)}
-                        alt={`Project ${i}`}
+                        alt={getProjectMediaAlt(selectedProject, "gallery", i)}
                         className="w-full aspect-[16/10] object-cover rounded-2xl border border-border shadow-md select-none pointer-events-none"
                       />
                     </motion.div>
@@ -295,7 +299,7 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
                 >
                   <img
                     src={getSafeImageSrc(selectedProject.thumbnail || selectedProject.thumbnailImage || selectedProject.image)}
-                    alt="Main"
+                    alt={getProjectMediaAlt(selectedProject)}
                     className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 </div>
@@ -307,7 +311,7 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
                   >
                     <img
                       src={getSafeImageSrc(img)}
-                      alt={`Gallery ${i}`}
+                      alt={getProjectMediaAlt(selectedProject, "gallery", i)}
                       className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                   </div>
@@ -323,6 +327,8 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
           isOpen
           onClose={() => setLightboxIndex(null)}
           images={galleryImages}
+          alts={galleryAlts}
+          alt={getProjectMediaAlt(selectedProject, "gallery")}
           initialIndex={lightboxIndex || 0}
         />
       )}

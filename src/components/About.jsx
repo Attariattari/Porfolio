@@ -37,6 +37,7 @@ import {
   Zap,
 } from "lucide-react";
 import Image from "next/image";
+import { getAboutMediaAlt } from "@/lib/mediaAlt";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { portfolioData } from "@/lib/data";
@@ -213,7 +214,7 @@ const ProfileCard = ({ data }) => (
       <div className="theme-media-frame relative w-full aspect-[4/5] rounded-[1rem] overflow-hidden">
         <Image
           src={getSafeImageSrc(data.hero?.image, "/about-portrait-new.jpg")}
-          alt={data.name}
+          alt={getAboutMediaAlt(data)}
           fill
           sizes="(min-width: 1024px) 44vw, 100vw"
           className="object-cover transition-transform duration-1000 group-hover:scale-110"

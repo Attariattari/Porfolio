@@ -6,6 +6,7 @@ import { serializeDoc } from "@/lib/mongooseHelper";
 import { sendNewsletterEmail } from "@/lib/newsletter";
 import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socket";
 import { cacheManager, withCache } from "@/lib/cache";
+import { getProjectMediaAlt } from "@/lib/mediaAlt";
 
 const detailFields = [
     "shortDescription",
@@ -79,6 +80,20 @@ const toFallbackProject = (project) =>
 const isPublicProject = (project = {}) => {
     const status = project.publishStatus ?? project.status ?? "published";
     return status === "published";
+};
+
+const withProjectImageAlts = (project = {}, existing = {}) => {
+    const merged = { ...existing, ...project };
+    const gallery = Array.isArray(merged.gallery) ? merged.gallery : [];
+
+    return {
+        ...project,
+        thumbnailAlt: getProjectMediaAlt(merged, "thumbnail"),
+        heroImageAlt: getProjectMediaAlt(merged, "hero"),
+        galleryImageAlts: gallery.map((_, index) =>
+            getProjectMediaAlt(merged, "gallery", index),
+        ),
+    };
 };
 
 const mergeWithSeedCaseStudy = (project) => {
@@ -214,7 +229,7 @@ export const ProjectController = {
                     .replace(/^-+|-+$/g, "");
             }
 
-            const savedProject = await Project.create(data);
+            const savedProject = await Project.create(withProjectImageAlts(data));
             const serialized = serializeDoc(savedProject);
 
             // Background tasks
@@ -234,10 +249,17 @@ export const ProjectController = {
     async update(id, data) {
         try {
             await dbConnect();
-            const updatedProject = await Project.findByIdAndUpdate(id, data, {
+            const existingProject = await Project.findById(id).lean();
+            if (!existingProject) return null;
+
+            const updatedProject = await Project.findByIdAndUpdate(
+                id,
+                withProjectImageAlts(data, existingProject),
+                {
                 new: true,
                 runValidators: true,
-            }).lean();
+                },
+            ).lean();
 
             if (!updatedProject) return null;
 
