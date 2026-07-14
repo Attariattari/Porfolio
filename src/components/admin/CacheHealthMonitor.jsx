@@ -41,11 +41,11 @@ export function CacheHealthMonitor() {
 
   if (loading) {
     return (
-      <div className="bg-slate-800 rounded-lg p-6 border border-slate-700 animate-pulse">
-        <div className="h-6 bg-slate-700 rounded w-1/3 mb-4"></div>
+      <div className="bg-muted rounded-lg p-6 border border-border animate-pulse">
+        <div className="h-6 bg-muted rounded w-1/3 mb-4"></div>
         <div className="space-y-3">
-          <div className="h-4 bg-slate-700 rounded w-2/3"></div>
-          <div className="h-4 bg-slate-700 rounded w-1/2"></div>
+          <div className="h-4 bg-muted rounded w-2/3"></div>
+          <div className="h-4 bg-muted rounded w-1/2"></div>
         </div>
       </div>
     );
@@ -69,7 +69,7 @@ export function CacheHealthMonitor() {
     healthy: "text-green-400",
     degraded: "text-yellow-400",
     unhealthy: "text-red-400",
-    idle: "text-gray-400",
+    idle: "text-muted-foreground",
   };
 
   return (
@@ -77,59 +77,59 @@ export function CacheHealthMonitor() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
             <Activity className="w-5 h-5" />
             Cache Health Monitor
           </h3>
-          <p className="text-sm text-gray-400 mt-1">Last updated: {lastUpdate}</p>
+          <p className="text-sm text-muted-foreground mt-1">Last updated: {lastUpdate}</p>
         </div>
         <button
           onClick={fetchCacheHealth}
-          className="px-3 py-2 bg-blue-600 hover:bg-blue-700 rounded text-sm font-medium transition"
+          className="px-3 py-2 bg-accent hover:bg-accent rounded text-sm font-medium transition"
         >
           Refresh
         </button>
       </div>
 
       {/* Main Status Card */}
-      <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+      <div className="bg-muted rounded-lg p-6 border border-border">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <p className="text-gray-400 text-sm mb-1">Overall Status</p>
+            <p className="text-muted-foreground text-sm mb-1">Overall Status</p>
             <div className={`text-2xl font-bold ${statusColors[health.status]}`}>
               {health.health}
             </div>
           </div>
           <div className="text-right">
-            <p className="text-gray-400 text-sm mb-1">Uptime</p>
-            <p className="text-xl font-semibold text-white">{health.uptime}</p>
+            <p className="text-muted-foreground text-sm mb-1">Uptime</p>
+            <p className="text-xl font-semibold text-foreground">{health.uptime}</p>
           </div>
         </div>
 
         {/* Key Metrics Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {/* Hit Rate */}
-          <div className="bg-slate-700/50 rounded p-4">
-            <p className="text-gray-400 text-xs mb-2 uppercase tracking-wide">Hit Rate</p>
-            <p className="text-2xl font-bold text-blue-400">{health.metrics.hitRate}</p>
-            <p className="text-xs text-gray-500 mt-1">{health.metrics.totalRequests} total</p>
+          <div className="bg-muted/70 rounded p-4">
+            <p className="text-muted-foreground text-xs mb-2 uppercase tracking-wide">Hit Rate</p>
+            <p className="text-2xl font-bold text-accent">{health.metrics.hitRate}</p>
+            <p className="text-xs text-muted-foreground/80 mt-1">{health.metrics.totalRequests} total</p>
           </div>
 
           {/* Cache Hits */}
-          <div className="bg-slate-700/50 rounded p-4">
-            <p className="text-gray-400 text-xs mb-2 uppercase tracking-wide">Cache Hits</p>
+          <div className="bg-muted/70 rounded p-4">
+            <p className="text-muted-foreground text-xs mb-2 uppercase tracking-wide">Cache Hits</p>
             <p className="text-2xl font-bold text-green-400">{health.metrics.cacheHits}</p>
           </div>
 
           {/* Cache Misses */}
-          <div className="bg-slate-700/50 rounded p-4">
-            <p className="text-gray-400 text-xs mb-2 uppercase tracking-wide">Cache Misses</p>
+          <div className="bg-muted/70 rounded p-4">
+            <p className="text-muted-foreground text-xs mb-2 uppercase tracking-wide">Cache Misses</p>
             <p className="text-2xl font-bold text-orange-400">{health.metrics.cacheMisses}</p>
           </div>
 
           {/* Cache Errors */}
-          <div className="bg-slate-700/50 rounded p-4">
-            <p className="text-gray-400 text-xs mb-2 uppercase tracking-wide">Errors</p>
+          <div className="bg-muted/70 rounded p-4">
+            <p className="text-muted-foreground text-xs mb-2 uppercase tracking-wide">Errors</p>
             <p className="text-2xl font-bold text-red-400">{health.metrics.cacheErrors}</p>
           </div>
         </div>
@@ -138,36 +138,36 @@ export function CacheHealthMonitor() {
       {/* Details Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Cache Statistics */}
-        <div className="bg-slate-800 rounded-lg p-4 border border-slate-700">
-          <p className="font-semibold text-white mb-4 flex items-center gap-2">
+        <div className="bg-muted rounded-lg p-4 border border-border">
+          <p className="font-semibold text-foreground mb-4 flex items-center gap-2">
             <Database className="w-4 h-4" />
             Cache Statistics
           </p>
           <div className="space-y-3">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-400">Total Writes:</span>
-              <span className="font-semibold text-white">{health.metrics.cacheWrites}</span>
+              <span className="text-muted-foreground">Total Writes:</span>
+              <span className="font-semibold text-foreground">{health.metrics.cacheWrites}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-400">Invalidations:</span>
-              <span className="font-semibold text-white">{health.metrics.cacheInvalidations}</span>
+              <span className="text-muted-foreground">Invalidations:</span>
+              <span className="font-semibold text-foreground">{health.metrics.cacheInvalidations}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-400">Memory Cache Size:</span>
-              <span className="font-semibold text-white">{health.memory.cacheSize} entries</span>
+              <span className="text-muted-foreground">Memory Cache Size:</span>
+              <span className="font-semibold text-foreground">{health.memory.cacheSize} entries</span>
             </div>
           </div>
         </div>
 
         {/* Redis Status */}
-        <div className="bg-slate-800 rounded-lg p-4 border border-slate-700">
-          <p className="font-semibold text-white mb-4 flex items-center gap-2">
+        <div className="bg-muted rounded-lg p-4 border border-border">
+          <p className="font-semibold text-foreground mb-4 flex items-center gap-2">
             <Database className="w-4 h-4" />
             Redis Status
           </p>
           <div className="space-y-3">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-400">Configured:</span>
+              <span className="text-muted-foreground">Configured:</span>
               <span className="font-semibold">
                 {health.redis.configured ? (
                   <span className="text-green-400">✓ Yes</span>
@@ -177,7 +177,7 @@ export function CacheHealthMonitor() {
               </span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-400">Connected:</span>
+              <span className="text-muted-foreground">Connected:</span>
               <span className="font-semibold">
                 {health.redis.connected ? (
                   <span className="text-green-400">✓ Yes</span>
@@ -197,8 +197,8 @@ export function CacheHealthMonitor() {
 
       {/* Recommendations */}
       {health.recommendations && health.recommendations.length > 0 && (
-        <div className="bg-slate-800 rounded-lg p-4 border border-slate-700">
-          <p className="font-semibold text-white mb-3">Recommendations</p>
+        <div className="bg-muted rounded-lg p-4 border border-border">
+          <p className="font-semibold text-foreground mb-3">Recommendations</p>
           <div className="space-y-2">
             {health.recommendations.map((rec, idx) => (
               <div
@@ -210,7 +210,7 @@ export function CacheHealthMonitor() {
                       ? "bg-yellow-900/20 border-yellow-700/50"
                       : rec.type === "success"
                         ? "bg-green-900/20 border-green-700/50"
-                        : "bg-blue-900/20 border-blue-700/50"
+                        : "bg-accent/20 border-accent/50"
                 }`}
               >
                 {rec.type === "error" && <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />}
@@ -218,7 +218,7 @@ export function CacheHealthMonitor() {
                 {(rec.type === "success" || rec.type === "info") && (
                   <CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
                 )}
-                <p className="text-sm text-gray-200">{rec.message}</p>
+                <p className="text-sm text-foreground">{rec.message}</p>
               </div>
             ))}
           </div>

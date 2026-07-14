@@ -3,6 +3,7 @@ import { AboutController } from "@/controllers/AboutController";
 import { getAuthSession, checkPermission } from "@/lib/auth";
 import { serializeDoc } from "@/lib/mongooseHelper";
 import { getAboutPageData } from "@/lib/content/getAboutPageData";
+import { revalidatePath } from "next/cache";
 
 // GET PROFILE (Public)
 export async function GET() {
@@ -29,6 +30,8 @@ export async function PATCH(request) {
 
     const body = await request.json();
     const updatedProfile = await AboutController.update(body);
+    revalidatePath("/");
+    revalidatePath("/about");
     return NextResponse.json({ success: true, data: serializeDoc(updatedProfile) });
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 400 });

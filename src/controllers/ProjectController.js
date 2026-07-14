@@ -82,6 +82,16 @@ const isPublicProject = (project = {}) => {
     return status === "published";
 };
 
+const isCompletePublicProject = (project = {}) => Boolean(
+    project.title &&
+    project.slug &&
+    project.shortDescription &&
+    project.longDescription &&
+    project.heroImage &&
+    project.seoTitle &&
+    project.seoDescription
+);
+
 const withProjectImageAlts = (project = {}, existing = {}) => {
     const merged = { ...existing, ...project };
     const gallery = Array.isArray(merged.gallery) ? merged.gallery : [];
@@ -158,7 +168,8 @@ export const ProjectController = {
                     const mergedDbProjects = serializeDoc(dbProjects).map(mergeWithSeedCaseStudy);
 
                     // Combine and return serialized results
-                    return [...mergedDbProjects, ...fallbackProjects];
+                    const result = [...mergedDbProjects, ...fallbackProjects];
+                    return filterPublished ? result.filter(isCompletePublicProject) : result;
                 },
                 300, // 5 minute cache
                 ["projects", filterPublished ? "public:projects" : "admin:projects"]
@@ -192,7 +203,7 @@ export const ProjectController = {
 
                     if (project) {
                         const serialized = mergeWithSeedCaseStudy(serializeDoc(project));
-                        if (!isPublicProject(serialized)) {
+                        if (!isPublicProject(serialized) || !isCompletePublicProject(serialized)) {
                             return null;
                         }
                         return serialized;
@@ -229,6 +240,10 @@ export const ProjectController = {
                     .replace(/^-+|-+$/g, "");
             }
 
+            if ((data.publishStatus || data.status) === "published" && !isCompletePublicProject(data)) {
+                throw new Error("Published projects require complete descriptions, a hero image, and SEO metadata");
+            }
+
             const savedProject = await Project.create(withProjectImageAlts(data));
             const serialized = serializeDoc(savedProject);
 
@@ -251,6 +266,11 @@ export const ProjectController = {
             await dbConnect();
             const existingProject = await Project.findById(id).lean();
             if (!existingProject) return null;
+
+            const candidate = { ...existingProject, ...data };
+            if ((candidate.publishStatus || candidate.status) === "published" && !isCompletePublicProject(candidate)) {
+                throw new Error("Published projects require complete descriptions, a hero image, and SEO metadata");
+            }
 
             const updatedProject = await Project.findByIdAndUpdate(
                 id,

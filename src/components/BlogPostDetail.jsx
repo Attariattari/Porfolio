@@ -43,7 +43,7 @@ export default function BlogPostDetail({
         </svg>
       ),
       href: `https://twitter.com/intent/tweet?text=${encodedShareTitle}&url=${encodedShareUrl}`,
-      hoverClass: "hover:border-white hover:bg-white hover:text-black",
+      hoverClass: "hover:border-foreground hover:bg-foreground hover:text-background",
     },
     {
       name: "Share on LinkedIn",
@@ -73,15 +73,15 @@ export default function BlogPostDetail({
   };
 
   return (
-    <div className="min-h-screen pb-20">
+    <div className="min-h-screen bg-background pb-20 text-foreground transition-colors">
       {/* Article Header */}
-      <header className="relative overflow-hidden border-b border-white/10 ">
+      <header className="relative overflow-hidden border-b border-border/70">
         <div className="absolute inset-0 " />
         <div className="relative mx-auto max-w-7xl px-4 pt-12 pb-10 md:px-8 md:pt-12 md:pb-14 lg:px-12">
           <div className="mb-8 flex items-center justify-between">
             <Link
               href="/blog"
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold text-white/85 backdrop-blur-md transition-transform hover:translate-x-[-4px] hover:text-white"
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-card/70 px-4 py-2 text-xs font-semibold text-foreground backdrop-blur-md transition-all hover:-translate-x-1 hover:border-accent/40 hover:text-accent"
             >
               <ArrowLeft className="w-4 h-4" /> Back to insights
             </Link>
@@ -97,10 +97,10 @@ export default function BlogPostDetail({
               <span className="inline-flex items-center gap-2 rounded-full bg-accent px-3.5 py-2 text-[10px] font-bold text-accent-foreground shadow-lg shadow-accent/20">
                 <Tag className="h-3 w-3" /> {blog.category}
               </span>
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3.5 py-2 text-xs font-medium text-white/70">
+              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card/70 px-3.5 py-2 text-xs font-medium text-muted-foreground">
                 <Clock className="h-3 w-3" /> {blog.readTime}
               </span>
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3.5 py-2 text-xs font-medium text-white/70">
+              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card/70 px-3.5 py-2 text-xs font-medium text-muted-foreground">
                 <Calendar className="h-3 w-3" /> {blog.date}
               </span>
             </div>
@@ -108,13 +108,13 @@ export default function BlogPostDetail({
             <p className="mb-4 text-[10px] font-black uppercase tracking-[0.28em] text-accent">
               Muhyo Tech Insight
             </p>
-            <h1 className="max-w-6xl text-4xl font-bold leading-[1.04] tracking-tight text-white md:text-6xl lg:text-7xl">
+            <h1 className="max-w-6xl text-4xl font-bold leading-[1.04] tracking-tight text-foreground md:text-6xl lg:text-7xl">
               {blog.title}
             </h1>
 
-            <div className="mt-7 grid gap-6 border-t border-white/10 pt-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-end">
+            <div className="mt-7 grid gap-6 border-t border-border/70 pt-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-end">
               {blog.summary ? (
-                <p className="max-w-3xl text-base leading-relaxed text-white/68 md:text-lg">
+                <p className="max-w-3xl text-base leading-relaxed text-muted-foreground md:text-lg">
                   {blog.summary}
                 </p>
               ) : <span />}
@@ -133,10 +133,10 @@ export default function BlogPostDetail({
                   />
                 </div>
                 <div>
-                  <p className="text-xs font-bold tracking-normal text-white">
+                  <p className="text-xs font-bold tracking-normal text-foreground">
                     {blog.author}
                   </p>
-                  <p className="text-[10px] tracking-normal text-white/45">
+                  <p className="text-[10px] tracking-normal text-muted-foreground">
                     {blog.authorRole}
                   </p>
                 </div>
@@ -151,7 +151,7 @@ export default function BlogPostDetail({
             className="relative mt-10"
           >
             <div className="absolute -inset-3 rounded-[2rem] bg-accent/10 blur-2xl" />
-            <div className="theme-media-frame relative overflow-hidden rounded-[1.75rem] border border-border/70 bg-white/5">
+            <div className="theme-media-frame relative overflow-hidden rounded-[1.75rem] border border-border/70 bg-muted/50">
               <div className="relative aspect-[16/8.4] min-h-[260px] md:min-h-[430px]">
                 <Image
                   src={coverImage}
@@ -184,23 +184,30 @@ export default function BlogPostDetail({
             className="lg:col-span-8"
           >
             <div
-              className="blog-content 
-                [&_h2]:text-3xl [&_h2]:font-bold [&_h2]:mt-12 [&_h2]:mb-6 [&_h2]:tracking-tight
+              className="blog-content text-foreground
+                [&_h2]:text-3xl [&_h2]:font-bold [&_h2]:mt-12 [&_h2]:mb-6 [&_h2]:tracking-tight [&_h2]:text-foreground
+                [&_h3]:mt-9 [&_h3]:mb-4 [&_h3]:text-2xl [&_h3]:font-bold [&_h3]:text-foreground
+                [&_h4]:mt-7 [&_h4]:mb-3 [&_h4]:text-xl [&_h4]:font-bold [&_h4]:text-foreground
                 [&_p]:text-muted-foreground [&_p]:leading-relaxed [&_p]:text-lg [&_p]:mb-6
                 [&_blockquote]:border-l-4 [&_blockquote]:border-accent [&_blockquote]:pl-8 [&_blockquote]:py-4 [&_blockquote]:my-10 [&_blockquote]:bg-accent/5 [&_blockquote]:rounded-r-2xl [&_blockquote]:italic [&_blockquote]:text-xl [&_blockquote]:text-foreground
                 [&_ul]:list-disc [&_ul]:ml-6 [&_ul]:mb-8 [&_ul]:space-y-2
-                [&_li]:text-muted-foreground [&_li]:pl-2"
+                [&_ol]:list-decimal [&_ol]:ml-6 [&_ol]:mb-8 [&_ol]:space-y-2
+                [&_li]:text-muted-foreground [&_li]:pl-2
+                [&_strong]:font-bold [&_strong]:text-foreground
+                [&_a]:font-semibold [&_a]:text-accent [&_a]:underline [&_a]:underline-offset-4
+                [&_code]:rounded-md [&_code]:bg-muted [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:text-foreground
+                [&_pre]:overflow-x-auto [&_pre]:rounded-2xl [&_pre]:border [&_pre]:border-border [&_pre]:bg-muted [&_pre]:p-5 [&_pre]:text-foreground"
               dangerouslySetInnerHTML={{ __html: blog.content }}
             />
 
             {/* Tags */}
-            <div className="mt-16 pt-8 border-t border-border/10">
+            <div className="mt-16 border-t border-border/70 pt-8">
               <div className="flex flex-wrap gap-3">
                 {(blog.tags || []).map((tag) => (
                   <Link
                     key={tag}
                     href={`/blog?tag=${encodeURIComponent(tag)}`}
-                    className="px-4 py-2 rounded-xl bg-muted/20 text-muted-foreground text-xs font-bold hover:bg-accent/10 hover:text-accent transition-colors cursor-pointer"
+                    className="cursor-pointer rounded-xl border border-border/70 bg-muted/60 px-4 py-2 text-xs font-bold text-muted-foreground transition-colors hover:border-accent/30 hover:bg-accent/10 hover:text-accent"
                   >
                     #{tag}
                   </Link>
@@ -209,7 +216,7 @@ export default function BlogPostDetail({
             </div>
 
             {relatedServices.length > 0 && (
-              <section className="mt-16 border-t border-border/10 pt-10">
+              <section className="mt-16 border-t border-border/70 pt-10">
                 <p className="text-[10px] font-black uppercase tracking-[0.22em] text-accent">
                   Put the insight into practice
                 </p>
@@ -245,7 +252,7 @@ export default function BlogPostDetail({
             {/* CTA Section */}
             <div className="mt-20 p-8 md:p-12 rounded-3xl bg-gradient-to-br from-accent/10 to-blue-600/5 border border-accent/20 flex flex-col md:flex-row items-center justify-between gap-8">
               <div className="text-left">
-                <h3 className="text-2xl font-bold mb-4">Enjoyed this post?</h3>
+                <h3 className="mb-4 text-2xl font-bold text-foreground">Enjoyed this post?</h3>
                 <p className="text-muted-foreground italic">
                   Let&apos;s discuss how we can implement these technologies for your
                   next project.
@@ -267,7 +274,7 @@ export default function BlogPostDetail({
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
-              className="relative overflow-hidden rounded-[2rem] border border-white/5 bg-[#0A0A0B]/60 p-6 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-2xl group lg:p-5"
+              className="group relative overflow-hidden rounded-[2rem] border border-border/70 bg-card/70 p-6 shadow-xl shadow-overlay/10 backdrop-blur-2xl lg:p-5"
             >
               {/* Decorative Gradient Orb */}
               <div className="absolute -top-24 -right-24 w-48 h-48 bg-accent/10 blur-[80px] rounded-full group-hover:bg-accent/20 transition-colors duration-700" />
@@ -285,10 +292,10 @@ export default function BlogPostDetail({
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={`${option.name}: ${blog.title}`}
-                    className={`group/item flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-white/82 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-black/25 lg:px-4 lg:py-3 ${option.hoverClass}`}
+                    className={`group/item flex items-center justify-between rounded-2xl border border-border bg-muted/45 p-4 text-foreground transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-overlay/10 lg:px-4 lg:py-3 ${option.hoverClass}`}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/7 transition-colors group-hover/item:bg-white/15 lg:h-9 lg:w-9">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted transition-colors group-hover/item:bg-current/10 lg:h-9 lg:w-9">
                         {option.icon}
                       </div>
                       <div>
@@ -307,7 +314,7 @@ export default function BlogPostDetail({
                 <button
                   type="button"
                   onClick={copyShareUrl}
-                  className="group/copy flex w-full cursor-pointer items-center justify-between rounded-2xl border border-accent/25 bg-accent/10 p-4 text-accent transition-all duration-300 hover:-translate-y-0.5 hover:bg-accent hover:text-white hover:shadow-xl hover:shadow-accent/10 lg:px-4 lg:py-3"
+                  className="group/copy flex w-full cursor-pointer items-center justify-between rounded-2xl border border-accent/25 bg-accent/10 p-4 text-accent transition-all duration-300 hover:-translate-y-0.5 hover:bg-accent hover:text-accent-foreground hover:shadow-xl hover:shadow-accent/10 lg:px-4 lg:py-3"
                 >
                   <div className="flex items-center gap-4">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent/10 transition-colors group-hover/copy:bg-white/20 lg:h-9 lg:w-9">

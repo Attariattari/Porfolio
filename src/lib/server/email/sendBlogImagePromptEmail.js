@@ -1,7 +1,19 @@
 import { sendEmail } from "@/lib/mailer";
 import { SITE_URL } from "@/lib/config";
 
+const PUBLIC_SITE_URL = "https://www.muhyotech.com";
+
+function isLocalUrl(value = "") {
+  try {
+    const hostname = new URL(value).hostname;
+    return ["localhost", "127.0.0.1", "0.0.0.0", "::1"].includes(hostname);
+  } catch {
+    return false;
+  }
+}
+
 function getAppUrl(baseUrl = "") {
+  if (isLocalUrl(baseUrl)) return PUBLIC_SITE_URL;
   if (baseUrl) return baseUrl;
 
   const explicitUrl =
@@ -9,7 +21,7 @@ function getAppUrl(baseUrl = "") {
     process.env.NEXT_PUBLIC_BASE_URL ||
     process.env.NEXT_PUBLIC_SITE_URL;
 
-  if (explicitUrl) return explicitUrl;
+  if (explicitUrl && !isLocalUrl(explicitUrl)) return explicitUrl;
 
   const vercelUrl =
     process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL;
@@ -18,11 +30,7 @@ function getAppUrl(baseUrl = "") {
     return vercelUrl.startsWith("http") ? vercelUrl : `https://${vercelUrl}`;
   }
 
-  if (process.env.NODE_ENV !== "production") {
-    return "http://localhost:3000";
-  }
-
-  return SITE_URL;
+  return isLocalUrl(SITE_URL) ? PUBLIC_SITE_URL : SITE_URL || PUBLIC_SITE_URL;
 }
 
 function escapeHtml(value = "") {

@@ -80,7 +80,7 @@ export default function Topbar() {
   const handleSearchSubmit = (e) => {
     if (e.key === "Enter" && searchQuery.trim()) {
       const query = searchQuery.trim().toLowerCase();
-      
+
       // Module Keywords Mapping for Quick Navigation
       const modules = {
         "dashboard": "/admin/dashboard",
@@ -130,7 +130,7 @@ export default function Topbar() {
         </button>
 
         <div className="relative group hidden md:block">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-blue-500 transition-colors" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-accent" />
           <input
             type="text"
             placeholder="Search resources..."
@@ -175,11 +175,11 @@ export default function Topbar() {
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                 className="fixed left-4 right-4 top-24 z-50 overflow-hidden rounded-[2.5rem] border border-border/70 bg-card shadow-2xl backdrop-blur-3xl md:absolute md:left-auto md:right-0 md:top-auto md:mt-4 md:w-[450px]"
               >
-                <div className="p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+                <div className="p-6 border-b border-border/70 flex items-center justify-between bg-card/50">
                   <h3 className="text-sm font-black uppercase tracking-widest text-foreground italic italic-tighter">
                     System Activity
                   </h3>
-                  <span className="text-[10px] px-2 py-1 bg-blue-500/10 text-blue-500 rounded-md font-black uppercase tracking-widest border border-blue-500/20">
+                  <span className="text-[10px] px-2 py-1 bg-accent/10 text-accent rounded-md font-black uppercase tracking-widest border border-accent/20">
                     {unreadCount} Notifications
                   </span>
                 </div>
@@ -198,11 +198,11 @@ export default function Topbar() {
                       return (
                         <div
                           key={n.id}
-                          className={`p-5 border-b border-white/5 hover:bg-white/[0.02] transition-colors relative group ${isUnread ? "bg-blue-500/[0.03]" : ""}`}
+                          className={`p-5 border-b border-border/70 hover:bg-card/50 transition-colors relative group ${isUnread ? "bg-accent/[0.03]" : ""}`}
                         >
                           <div className="flex gap-4">
                             <div
-                              className={`mt-1 w-10 h-10 rounded-xl flex items-center justify-center border-2 border-white/5 flex-shrink-0 transition-transform ${isUnread ? "bg-blue-500/10 text-blue-500 border-blue-500/20" : "bg-slate-500/5 text-slate-600"}`}
+                              className={`mt-1 w-10 h-10 rounded-xl flex items-center justify-center border-2 border-border/70 flex-shrink-0 transition-transform ${isUnread ? "bg-accent/10 text-accent border-accent/20" : "bg-muted/50 text-muted-foreground/80"}`}
                             >
                               <Icon className="w-5 h-5" />
                             </div>
@@ -213,13 +213,13 @@ export default function Topbar() {
                                 >
                                   {n.title}
                                 </h4>
-                                <span className="text-[9px] text-slate-600 font-bold whitespace-nowrap uppercase tracking-tighter">
+                                <span className="text-[9px] text-muted-foreground/80 font-bold whitespace-nowrap uppercase tracking-tighter">
                                   {formatDistanceToNow(new Date(n.createdAt))}{" "}
                                   ago
                                 </span>
                               </div>
                               <p
-                                className={`text-[11px] leading-relaxed truncate-2-lines ${isUnread ? "text-slate-300" : "text-slate-600 opacity-60"}`}
+                                className={`text-[11px] leading-relaxed truncate-2-lines ${isUnread ? "text-foreground/80" : "text-muted-foreground/80 opacity-60"}`}
                               >
                                 {n.message}
                               </p>
@@ -230,7 +230,7 @@ export default function Topbar() {
                                       onClick={() =>
                                         updateNotification(n.id, "read")
                                       }
-                                      className="text-[9px] font-black uppercase tracking-widest text-blue-500 hover:text-white flex items-center gap-1 transition-colors"
+                                      className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-accent transition-colors hover:brightness-75"
                                     >
                                       <Check className="w-3 h-3" /> Mark as Read
                                     </button>
@@ -244,7 +244,7 @@ export default function Topbar() {
                                 {n.type === "USER_REQUEST" && (
                                   <Link
                                     href="/admin/users"
-                                    className="text-[9px] font-black uppercase tracking-widest text-white hover:text-blue-500 ml-auto"
+                                    className="ml-auto text-[9px] font-black uppercase tracking-widest text-foreground hover:text-accent"
                                     onClick={() => setShowNotifications(false)}
                                   >
                                     Authorize →
@@ -257,7 +257,7 @@ export default function Topbar() {
                       );
                     })
                   ) : (
-                    <div className="p-16 text-center text-slate-600 italic">
+                    <div className="p-16 text-center text-muted-foreground/80 italic">
                       <ShieldCheck className="w-12 h-12 mx-auto mb-4 opacity-20" />
                       <p className="text-xs font-bold uppercase tracking-widest">
                         Authority Status Normal
@@ -271,7 +271,7 @@ export default function Topbar() {
 
                 <Link
                   href="/admin/notifications"
-                  className="block p-4 text-center text-[10px] font-black uppercase tracking-widest text-white bg-blue-600/10 hover:bg-blue-600 transition-all border-t border-white/5 active:scale-95"
+                  className="block border-t border-border/70 bg-accent/10 p-4 text-center text-[10px] font-black uppercase tracking-widest text-accent transition-all hover:bg-accent hover:text-accent-foreground active:scale-95"
                   onClick={() => setShowNotifications(false)}
                 >
                   View Activity Log
@@ -283,7 +283,7 @@ export default function Topbar() {
 
         <Link
           href="/admin/settings"
-          className="p-2.5 hover:bg-white/5 rounded-xl text-slate-500 hover:text-foreground transition-all"
+          className="p-2.5 hover:bg-muted/50 rounded-xl text-muted-foreground hover:text-foreground transition-all"
         >
           <Settings className="w-5 h-5" />
         </Link>
@@ -300,7 +300,7 @@ export default function Topbar() {
               {session?.email || "Synchronizing..."}
             </span>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 p-0.5 shadow-xl shadow-blue-500/20 group hover:scale-105 transition-transform">
+          <div className="group h-10 w-10 rounded-xl bg-accent p-0.5 shadow-xl shadow-accent/20 transition-transform hover:scale-105">
             <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-[10px] bg-background">
               {session?.avatar ? (
                 <Image
@@ -311,7 +311,7 @@ export default function Topbar() {
                   className="h-full w-full object-cover"
                 />
               ) : (
-                <User className="w-5 h-5 text-blue-500" />
+                <User className="h-5 w-5 text-accent" />
               )}
             </div>
           </div>

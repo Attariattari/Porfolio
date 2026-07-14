@@ -72,7 +72,7 @@ export default function SettingsDebugPanel() {
   }
 
   return (
-    <div className="mt-12 p-6 bg-white/5 border border-white/10 rounded-2xl">
+    <div className="mt-12 p-6 bg-muted/50 border border-border rounded-2xl">
       <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
         <AlertCircle className="w-5 h-5 text-yellow-500" />
         Debug Panel (Dev Only)
@@ -81,7 +81,7 @@ export default function SettingsDebugPanel() {
       <button
         onClick={runTest}
         disabled={testing}
-        className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all disabled:opacity-50"
+        className="px-6 py-2 bg-accent hover:bg-accent text-foreground rounded-lg font-medium transition-all disabled:opacity-50"
       >
         {testing ? (
           <>
@@ -109,7 +109,7 @@ export default function SettingsDebugPanel() {
               {testResult.message}
             </span>
           </div>
-          <pre className="text-xs bg-black/30 p-3 rounded overflow-x-auto max-h-48 overflow-y-auto text-white/70">
+          <pre className="text-xs bg-overlay/30 p-3 rounded overflow-x-auto max-h-48 overflow-y-auto text-foreground/70">
             {JSON.stringify(testResult.data, null, 2)}
           </pre>
         </div>

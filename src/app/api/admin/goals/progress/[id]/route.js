@@ -21,7 +21,8 @@ export async function PATCH(request, { params }) {
       );
     }
 
-    const progress = await GoalController.updateRecentProgress(params.id, body);
+    const { id } = await params;
+    const progress = await GoalController.updateRecentProgress(id, body);
     if (!progress) {
       return NextResponse.json(
         { success: false, error: "Progress update not found" },
@@ -33,7 +34,7 @@ export async function PATCH(request, { params }) {
       action: "UPDATE",
       module: "GOALS_PROGRESS",
       details: `Updated recent progress: ${progress.title}`,
-      targetId: params.id,
+      targetId: id,
     }).catch(() => {});
 
     return NextResponse.json({ success: true, data: progress });
@@ -56,13 +57,14 @@ export async function DELETE(request, { params }) {
       );
     }
 
-    await GoalController.deleteRecentProgress(params.id);
+    const { id } = await params;
+    await GoalController.deleteRecentProgress(id);
 
     await ActivityController.logFromSession(session, {
       action: "DELETE",
       module: "GOALS_PROGRESS",
       details: "Deleted recent progress update",
-      targetId: params.id,
+      targetId: id,
     }).catch(() => {});
 
     return NextResponse.json({

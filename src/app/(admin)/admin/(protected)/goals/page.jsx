@@ -48,6 +48,7 @@ export default function GoalsAdminPage() {
     featured: false,
     icon: "Target",
     order: 0,
+    publishStatus: "published",
   });
   const [progressForm, setProgressForm] = useState({
     title: "",
@@ -57,6 +58,19 @@ export default function GoalsAdminPage() {
     createdAt: new Date().toISOString().split("T")[0],
   });
   const [editingProgress, setEditingProgress] = useState(null);
+  const [editingRoadmap, setEditingRoadmap] = useState(null);
+  const [roadmapForm, setRoadmapForm] = useState({
+    title: "", description: "", year: new Date().getFullYear(), quarter: "Q1",
+    status: "upcoming", publishStatus: "published", order: 0,
+  });
+  const [editingMilestone, setEditingMilestone] = useState(null);
+  const [milestoneForm, setMilestoneForm] = useState({
+    title: "", description: "", date: "", category: "", featured: false,
+    publishStatus: "published", order: 0,
+  });
+  const [visionForm, setVisionForm] = useState({
+    missionStatement: "", visionStatement: "", founderMessage: "",
+  });
 
   // Fetch data on mount
   useEffect(() => {
@@ -66,11 +80,12 @@ export default function GoalsAdminPage() {
   async function fetchData() {
     try {
       setIsLoading(true);
-      const [goalsRes, roadmapRes, milestonesRes, progressRes] = await Promise.all([
+      const [goalsRes, roadmapRes, milestonesRes, progressRes, visionRes] = await Promise.all([
         fetch("/api/admin/goals"),
         fetch("/api/admin/goals/roadmap"),
         fetch("/api/admin/goals/milestones"),
         fetch("/api/admin/goals/progress"),
+        fetch("/api/admin/goals/vision"),
       ]);
 
       if (goalsRes.ok) {
@@ -92,6 +107,14 @@ export default function GoalsAdminPage() {
       if (progressRes.ok) {
         const data = await progressRes.json();
         setProgressUpdates(data.data || []);
+      }
+      if (visionRes.ok) {
+        const data = await visionRes.json();
+        setVisionForm({
+          missionStatement: data.data?.missionStatement || "",
+          visionStatement: data.data?.visionStatement || "",
+          founderMessage: data.data?.founderMessage || "",
+        });
       }
 
       // Fetch Config & Insights
@@ -153,6 +176,7 @@ export default function GoalsAdminPage() {
       featured: false,
       icon: "Target",
       order: goals.length,
+      publishStatus: "published",
     });
     setIsModalOpen(true);
   };
@@ -230,6 +254,7 @@ export default function GoalsAdminPage() {
       featured: goal.featured || false,
       icon: goal.icon || "Target",
       order: goal.order || 0,
+      publishStatus: goal.publishStatus || "published",
     });
     setIsModalOpen(true);
   };
@@ -352,6 +377,48 @@ export default function GoalsAdminPage() {
     }
   };
 
+  const saveManagedItem = async ({ type, editing, payload, reset }) => {
+    if (!payload.title?.trim()) return toast.error("Title is required");
+    const base = `/api/admin/goals/${type}`;
+    const response = await fetch(editing?._id ? `${base}/${editing._id}` : base, {
+      method: editing?._id ? "PATCH" : "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const result = await response.json();
+    if (!response.ok || !result.success) {
+      return toast.error(result.error || `Failed to save ${type}`);
+    }
+    toast.success(`${type === "roadmap" ? "Roadmap item" : "Milestone"} saved`);
+    reset();
+    await fetchData();
+  };
+
+  const deleteManagedItem = async (type, id) => {
+    if (!confirm(`Delete this ${type === "roadmap" ? "roadmap item" : "milestone"}?`)) return;
+    const response = await fetch(`/api/admin/goals/${type}/${id}`, { method: "DELETE" });
+    const result = await response.json();
+    if (!response.ok || !result.success) return toast.error(result.error || "Delete failed");
+    toast.success("Item deleted");
+    await fetchData();
+  };
+
+  const saveVision = async () => {
+    const response = await fetch("/api/admin/goals/vision", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(visionForm),
+    });
+    const result = await response.json();
+    if (!response.ok || !result.success) return toast.error(result.error || "Vision update failed");
+    setVisionForm({
+      missionStatement: result.data?.missionStatement || "",
+      visionStatement: result.data?.visionStatement || "",
+      founderMessage: result.data?.founderMessage || "",
+    });
+    toast.success("Vision content updated");
+  };
+
   // Stats calculation
   const stats = {
     totalGoals: goals.filter((g) => !g._isFromDataJs).length,
@@ -386,16 +453,16 @@ export default function GoalsAdminPage() {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-6 p-4 rounded-lg bg-blue-500/20 border border-blue-500/50"
+            className="mb-6 p-4 rounded-lg bg-accent/20 border border-accent/50"
           >
             <div className="flex items-start justify-between">
               <div className="flex items-start gap-3">
-                <AlertCircle className="w-5 h-5 text-blue-400 mt-0.5" />
+                <AlertCircle className="w-5 h-5 text-accent mt-0.5" />
                 <div>
-                  <h3 className="font-semibold text-blue-400 mb-1">
+                  <h3 className="font-semibold text-accent mb-1">
                     No Goals Found
                   </h3>
-                  <p className="text-sm text-blue-300">
+                  <p className="text-sm text-accent">
                     Would you like to import default goals data from the
                     template?
                   </p>
@@ -404,7 +471,7 @@ export default function GoalsAdminPage() {
               <button
                 onClick={handleImportDefaults}
                 disabled={isLoading}
-                className="px-4 py-2 rounded-lg bg-blue-500 text-white font-semibold hover:bg-blue-600 disabled:opacity-50"
+                className="px-4 py-2 rounded-lg bg-accent text-foreground font-semibold hover:bg-accent disabled:opacity-50"
               >
                 {isLoading ? "Importing..." : "Import Now"}
               </button>
@@ -435,7 +502,7 @@ export default function GoalsAdminPage() {
           ].map((stat, idx) => (
             <div
               key={idx}
-              className="p-4 rounded-lg bg-white/10 border border-white/20"
+              className="p-4 rounded-lg bg-muted border border-border"
             >
               <div className="flex items-center justify-between">
                 <div>
@@ -449,7 +516,7 @@ export default function GoalsAdminPage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-4 mb-6 border-b border-white/10 overflow-x-auto">
+        <div className="flex gap-4 mb-6 border-b border-border overflow-x-auto">
           {["goals", "roadmap", "milestones", "progress", "strategic-deck"].map((tab) => (
             <button
               key={tab}
@@ -499,7 +566,7 @@ export default function GoalsAdminPage() {
                     {dbGoals.map((goal) => (
                       <div
                         key={goal._id}
-                        className="p-4 rounded-lg bg-white/10 border border-white/20 hover:border-white/40 transition-all flex items-start justify-between"
+                        className="p-4 rounded-lg bg-muted border border-border hover:border-border transition-all flex items-start justify-between"
                       >
                         <div className="flex-1">
                           <h3 className="font-semibold text-foreground">
@@ -512,7 +579,7 @@ export default function GoalsAdminPage() {
                             <span className="text-xs px-2 py-1 rounded bg-accent/20 text-accent">
                               {goal.status}
                             </span>
-                            <span className="text-xs px-2 py-1 rounded bg-blue-500/20 text-blue-400">
+                            <span className="text-xs px-2 py-1 rounded bg-accent/20 text-accent">
                               {goal.priority}
                             </span>
                             {goal.featured && (
@@ -529,7 +596,7 @@ export default function GoalsAdminPage() {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => handleEditGoal(goal)}
-                            className="p-2 hover:bg-white/10 rounded transition-colors"
+                            className="p-2 hover:bg-muted rounded transition-colors"
                           >
                             <Edit2 className="w-4 h-4 text-foreground/60" />
                           </button>
@@ -550,6 +617,22 @@ export default function GoalsAdminPage() {
             {/* Roadmap Tab */}
             {activeTab === "roadmap" && (
               <div>
+                <div className="mb-8 rounded-2xl border border-border bg-muted/50 p-6">
+                  <h2 className="text-2xl font-bold mb-5">{editingRoadmap ? "Edit Roadmap Item" : "Add Roadmap Item"}</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input value={roadmapForm.title} onChange={(e) => setRoadmapForm({ ...roadmapForm, title: e.target.value })} placeholder="Roadmap title" className="rounded-xl border border-border bg-background p-3" />
+                    <input type="number" value={roadmapForm.year} onChange={(e) => setRoadmapForm({ ...roadmapForm, year: Number(e.target.value) })} className="rounded-xl border border-border bg-background p-3" />
+                    <textarea value={roadmapForm.description} onChange={(e) => setRoadmapForm({ ...roadmapForm, description: e.target.value })} placeholder="Description" className="md:col-span-2 rounded-xl border border-border bg-background p-3" />
+                    <select value={roadmapForm.quarter} onChange={(e) => setRoadmapForm({ ...roadmapForm, quarter: e.target.value })} className="rounded-xl border border-border bg-background p-3"><option>Q1</option><option>Q2</option><option>Q3</option><option>Q4</option></select>
+                    <select value={roadmapForm.status} onChange={(e) => setRoadmapForm({ ...roadmapForm, status: e.target.value })} className="rounded-xl border border-border bg-background p-3"><option value="upcoming">Upcoming</option><option value="in-progress">In Progress</option><option value="completed">Completed</option><option value="delayed">Delayed</option></select>
+                    <select value={roadmapForm.publishStatus} onChange={(e) => setRoadmapForm({ ...roadmapForm, publishStatus: e.target.value })} className="rounded-xl border border-border bg-background p-3"><option value="published">Published</option><option value="draft">Draft</option></select>
+                    <input type="number" value={roadmapForm.order} onChange={(e) => setRoadmapForm({ ...roadmapForm, order: Number(e.target.value) })} placeholder="Display order" className="rounded-xl border border-border bg-background p-3" />
+                    <div className="flex gap-3">
+                      <button onClick={() => saveManagedItem({ type: "roadmap", editing: editingRoadmap, payload: roadmapForm, reset: () => { setEditingRoadmap(null); setRoadmapForm({ title: "", description: "", year: new Date().getFullYear(), quarter: "Q1", status: "upcoming", publishStatus: "published", order: 0 }); } })} className="rounded-xl bg-accent px-5 py-3 font-bold text-foreground">Save Roadmap</button>
+                      {editingRoadmap && <button onClick={() => { setEditingRoadmap(null); setRoadmapForm({ title: "", description: "", year: new Date().getFullYear(), quarter: "Q1", status: "upcoming", publishStatus: "published", order: 0 }); }} className="rounded-xl border border-border px-5 py-3">Cancel</button>}
+                    </div>
+                  </div>
+                </div>
                 <h2 className="text-2xl font-bold mb-6">Roadmap Items</h2>
                 {dbRoadmap.length === 0 ? (
                   <div className="text-center py-12">
@@ -563,7 +646,7 @@ export default function GoalsAdminPage() {
                     {dbRoadmap.map((item) => (
                       <div
                         key={item._id}
-                        className="p-4 rounded-lg bg-white/10 border border-white/20"
+                        className="p-4 rounded-lg bg-muted border border-border"
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
@@ -577,10 +660,14 @@ export default function GoalsAdminPage() {
                               <span className="text-xs px-2 py-1 rounded bg-accent/20 text-accent">
                                 {item.year} {item.quarter}
                               </span>
-                              <span className="text-xs px-2 py-1 rounded bg-blue-500/20 text-blue-400">
+                              <span className="text-xs px-2 py-1 rounded bg-accent/20 text-accent">
                                 {item.status}
                               </span>
                             </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <button onClick={() => { setEditingRoadmap(item); setRoadmapForm({ title: item.title || "", description: item.description || "", year: item.year || new Date().getFullYear(), quarter: item.quarter || "Q1", status: item.status || "upcoming", publishStatus: item.publishStatus || "published", order: item.order || 0 }); }} className="p-2 rounded-lg border border-border" aria-label="Edit roadmap item"><Edit2 className="w-4 h-4" /></button>
+                            <button onClick={() => deleteManagedItem("roadmap", item._id)} className="p-2 rounded-lg border border-red-500/20 text-red-400" aria-label="Delete roadmap item"><Trash2 className="w-4 h-4" /></button>
                           </div>
                         </div>
                       </div>
@@ -593,6 +680,22 @@ export default function GoalsAdminPage() {
             {/* Milestones Tab */}
             {activeTab === "milestones" && (
               <div>
+                <div className="mb-8 rounded-2xl border border-border bg-muted/50 p-6">
+                  <h2 className="text-2xl font-bold mb-5">{editingMilestone ? "Edit Milestone" : "Add Milestone"}</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input value={milestoneForm.title} onChange={(e) => setMilestoneForm({ ...milestoneForm, title: e.target.value })} placeholder="Milestone title" className="rounded-xl border border-border bg-background p-3" />
+                    <input type="date" value={milestoneForm.date} onChange={(e) => setMilestoneForm({ ...milestoneForm, date: e.target.value })} className="rounded-xl border border-border bg-background p-3" />
+                    <textarea value={milestoneForm.description} onChange={(e) => setMilestoneForm({ ...milestoneForm, description: e.target.value })} placeholder="Description" className="md:col-span-2 rounded-xl border border-border bg-background p-3" />
+                    <input value={milestoneForm.category} onChange={(e) => setMilestoneForm({ ...milestoneForm, category: e.target.value })} placeholder="Category" className="rounded-xl border border-border bg-background p-3" />
+                    <select value={milestoneForm.publishStatus} onChange={(e) => setMilestoneForm({ ...milestoneForm, publishStatus: e.target.value })} className="rounded-xl border border-border bg-background p-3"><option value="published">Published</option><option value="draft">Draft</option></select>
+                    <input type="number" value={milestoneForm.order} onChange={(e) => setMilestoneForm({ ...milestoneForm, order: Number(e.target.value) })} placeholder="Display order" className="rounded-xl border border-border bg-background p-3" />
+                    <label className="flex items-center gap-3 rounded-xl border border-border p-3"><input type="checkbox" checked={milestoneForm.featured} onChange={(e) => setMilestoneForm({ ...milestoneForm, featured: e.target.checked })} /> Featured milestone</label>
+                    <div className="flex gap-3">
+                      <button onClick={() => saveManagedItem({ type: "milestones", editing: editingMilestone, payload: milestoneForm, reset: () => { setEditingMilestone(null); setMilestoneForm({ title: "", description: "", date: "", category: "", featured: false, publishStatus: "published", order: 0 }); } })} className="rounded-xl bg-accent px-5 py-3 font-bold text-foreground">Save Milestone</button>
+                      {editingMilestone && <button onClick={() => { setEditingMilestone(null); setMilestoneForm({ title: "", description: "", date: "", category: "", featured: false, publishStatus: "published", order: 0 }); }} className="rounded-xl border border-border px-5 py-3">Cancel</button>}
+                    </div>
+                  </div>
+                </div>
                 <h2 className="text-2xl font-bold mb-6">Milestones</h2>
                 {dbMilestones.length === 0 ? (
                   <div className="text-center py-12">
@@ -606,7 +709,7 @@ export default function GoalsAdminPage() {
                     {dbMilestones.map((milestone) => (
                       <div
                         key={milestone._id}
-                        className="p-4 rounded-lg bg-white/10 border border-white/20"
+                        className="p-4 rounded-lg bg-muted border border-border"
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
@@ -627,6 +730,10 @@ export default function GoalsAdminPage() {
                               )}
                             </div>
                           </div>
+                          <div className="flex gap-2">
+                            <button onClick={() => { setEditingMilestone(milestone); setMilestoneForm({ title: milestone.title || "", description: milestone.description || "", date: milestone.date ? new Date(milestone.date).toISOString().split("T")[0] : "", category: milestone.category || "", featured: Boolean(milestone.featured), publishStatus: milestone.publishStatus || "published", order: milestone.order || 0 }); }} className="p-2 rounded-lg border border-border" aria-label="Edit milestone"><Edit2 className="w-4 h-4" /></button>
+                            <button onClick={() => deleteManagedItem("milestones", milestone._id)} className="p-2 rounded-lg border border-red-500/20 text-red-400" aria-label="Delete milestone"><Trash2 className="w-4 h-4" /></button>
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -638,7 +745,7 @@ export default function GoalsAdminPage() {
             {/* Recent Progress Tab */}
             {activeTab === "progress" && (
               <div className="grid grid-cols-1 lg:grid-cols-[0.85fr_1.15fr] gap-8">
-                <div className="p-6 rounded-2xl bg-white/5 border border-white/10 h-fit">
+                <div className="p-6 rounded-2xl bg-muted/50 border border-border h-fit">
                   <h2 className="text-2xl font-bold mb-2">
                     {editingProgress ? "Edit Progress" : "Add Progress"}
                   </h2>
@@ -661,7 +768,7 @@ export default function GoalsAdminPage() {
                           })
                         }
                         placeholder="e.g., Updated Goals page design"
-                        className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-foreground"
+                        className="w-full px-3 py-2 rounded-lg bg-muted border border-border text-foreground"
                       />
                     </div>
 
@@ -678,7 +785,7 @@ export default function GoalsAdminPage() {
                           })
                         }
                         placeholder="Short public note about what changed"
-                        className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-foreground h-24"
+                        className="w-full px-3 py-2 rounded-lg bg-muted border border-border text-foreground h-24"
                       />
                     </div>
 
@@ -695,7 +802,7 @@ export default function GoalsAdminPage() {
                               category: e.target.value,
                             })
                           }
-                          className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-foreground"
+                          className="w-full px-3 py-2 rounded-lg bg-muted border border-border text-foreground"
                         >
                           <option value="Feature">Feature</option>
                           <option value="Design">Design</option>
@@ -717,7 +824,7 @@ export default function GoalsAdminPage() {
                               publishStatus: e.target.value,
                             })
                           }
-                          className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-foreground"
+                          className="w-full px-3 py-2 rounded-lg bg-muted border border-border text-foreground"
                         >
                           <option value="published">Published</option>
                           <option value="draft">Draft</option>
@@ -738,7 +845,7 @@ export default function GoalsAdminPage() {
                             createdAt: e.target.value,
                           })
                         }
-                        className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-foreground"
+                        className="w-full px-3 py-2 rounded-lg bg-muted border border-border text-foreground"
                       />
                     </div>
 
@@ -752,7 +859,7 @@ export default function GoalsAdminPage() {
                       {editingProgress && (
                         <button
                           onClick={resetProgressForm}
-                          className="px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-foreground font-semibold hover:bg-white/20"
+                          className="px-4 py-2 rounded-lg bg-muted border border-border text-foreground font-semibold hover:bg-muted"
                         >
                           Cancel
                         </button>
@@ -766,7 +873,7 @@ export default function GoalsAdminPage() {
                     Recent Progress Updates
                   </h2>
                   {dbProgressUpdates.length === 0 ? (
-                    <div className="text-center py-12 rounded-2xl bg-white/5 border border-white/10">
+                    <div className="text-center py-12 rounded-2xl bg-muted/50 border border-border">
                       <CheckCircle2 className="w-12 h-12 text-foreground/40 mx-auto mb-3" />
                       <p className="text-foreground/60">
                         No manual progress updates yet
@@ -777,7 +884,7 @@ export default function GoalsAdminPage() {
                       {dbProgressUpdates.map((item) => (
                         <div
                           key={item._id}
-                          className="p-4 rounded-lg bg-white/10 border border-white/20 hover:border-white/40 transition-all flex items-start justify-between gap-4"
+                          className="p-4 rounded-lg bg-muted border border-border hover:border-border transition-all flex items-start justify-between gap-4"
                         >
                           <div className="flex-1">
                             <div className="flex flex-wrap items-center gap-2 mb-2">
@@ -787,7 +894,7 @@ export default function GoalsAdminPage() {
                               <span className="text-xs px-2 py-1 rounded bg-accent/20 text-accent">
                                 {item.category}
                               </span>
-                              <span className="text-xs px-2 py-1 rounded bg-white/10 text-foreground/70">
+                              <span className="text-xs px-2 py-1 rounded bg-muted text-foreground/70">
                                 {item.publishStatus}
                               </span>
                             </div>
@@ -805,7 +912,7 @@ export default function GoalsAdminPage() {
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => handleEditProgress(item)}
-                              className="p-2 hover:bg-white/10 rounded transition-colors"
+                              className="p-2 hover:bg-muted rounded transition-colors"
                             >
                               <Edit2 className="w-4 h-4 text-foreground/60" />
                             </button>
@@ -827,8 +934,18 @@ export default function GoalsAdminPage() {
             {/* Strategic Deck Tab */}
             {activeTab === "strategic-deck" && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="lg:col-span-2 p-8 rounded-2xl bg-muted/50 border border-border space-y-5">
+                  <div>
+                    <h3 className="text-xl font-bold flex items-center gap-3 mb-2"><Target className="w-5 h-5 text-accent" />Public Vision Content</h3>
+                    <p className="text-sm text-foreground/60">Edit the mission, vision, and founder message shown on the public Goals page.</p>
+                  </div>
+                  <textarea value={visionForm.missionStatement} onChange={(e) => setVisionForm({ ...visionForm, missionStatement: e.target.value })} placeholder="Mission statement" className="w-full min-h-24 rounded-xl border border-border bg-background p-4" />
+                  <textarea value={visionForm.visionStatement} onChange={(e) => setVisionForm({ ...visionForm, visionStatement: e.target.value })} placeholder="Vision statement" className="w-full min-h-24 rounded-xl border border-border bg-background p-4" />
+                  <textarea value={visionForm.founderMessage} onChange={(e) => setVisionForm({ ...visionForm, founderMessage: e.target.value })} placeholder="Founder message" className="w-full min-h-24 rounded-xl border border-border bg-background p-4" />
+                  <button onClick={saveVision} className="rounded-xl bg-accent px-6 py-3 font-bold text-foreground">Save Vision Content</button>
+                </div>
                 {/* 1. HEALTH CONFIG */}
-                <div className="p-8 rounded-2xl bg-white/5 border border-white/10 space-y-8">
+                <div className="p-8 rounded-2xl bg-muted/50 border border-border space-y-8">
                   <div>
                     <h3 className="text-xl font-bold flex items-center gap-3 mb-2">
                       <Shield className="w-5 h-5 text-accent" />
@@ -840,14 +957,14 @@ export default function GoalsAdminPage() {
                   </div>
 
                   <div className="space-y-6">
-                    <div className="flex items-center justify-between p-4 rounded-xl bg-white/5">
+                    <div className="flex items-center justify-between p-4 rounded-xl bg-muted/50">
                       <div>
                         <div className="font-bold">Health Mode</div>
                         <div className="text-xs text-foreground/40 uppercase font-black mt-0.5 tracking-widest">
                           Auto vs Manual Override
                         </div>
                       </div>
-                      <div className="flex bg-background p-1 rounded-lg border border-white/10">
+                      <div className="flex bg-background p-1 rounded-lg border border-border">
                         <button
                           onClick={() =>
                             handleUpdateConfig({
@@ -855,7 +972,7 @@ export default function GoalsAdminPage() {
                               healthMode: "auto",
                             })
                           }
-                          className={`px-4 py-1.5 rounded-md text-xs font-bold transition-all ${config.healthMode === "auto" ? "bg-accent text-white" : "text-foreground/40 hover:text-foreground"}`}
+                          className={`px-4 py-1.5 rounded-md text-xs font-bold transition-all ${config.healthMode === "auto" ? "bg-accent text-foreground" : "text-foreground/40 hover:text-foreground"}`}
                         >
                           Auto
                         </button>
@@ -866,7 +983,7 @@ export default function GoalsAdminPage() {
                               healthMode: "manual",
                             })
                           }
-                          className={`px-4 py-1.5 rounded-md text-xs font-bold transition-all ${config.healthMode === "manual" ? "bg-accent text-white" : "text-foreground/40 hover:text-foreground"}`}
+                          className={`px-4 py-1.5 rounded-md text-xs font-bold transition-all ${config.healthMode === "manual" ? "bg-accent text-foreground" : "text-foreground/40 hover:text-foreground"}`}
                         >
                           Manual
                         </button>
@@ -909,7 +1026,7 @@ export default function GoalsAdminPage() {
                       </motion.div>
                     )}
 
-                    <div className="p-4 rounded-xl bg-white/5 border border-dashed border-white/10">
+                    <div className="p-4 rounded-xl bg-muted/50 border border-dashed border-border">
                       <div className="flex items-center gap-3 mb-4">
                         <Sparkles className="w-4 h-4 text-accent/60" />
                         <span className="text-xs font-black uppercase tracking-widest text-foreground/60">
@@ -935,7 +1052,7 @@ export default function GoalsAdminPage() {
                 </div>
 
                 {/* 2. AI INSIGHTS ENGINE */}
-                <div className="p-8 rounded-2xl bg-white/5 border border-white/10 space-y-8">
+                <div className="p-8 rounded-2xl bg-muted/50 border border-border space-y-8">
                   <div className="flex justify-between items-start">
                     <div>
                       <h3 className="text-xl font-bold flex items-center gap-3 mb-2">
@@ -949,7 +1066,7 @@ export default function GoalsAdminPage() {
                     <button
                       onClick={handleRegenerateInsights}
                       disabled={isUpdatingConfig}
-                      className="p-3 rounded-xl bg-accent/10 border border-accent/20 text-accent hover:bg-accent hover:text-white transition-all disabled:opacity-50 group"
+                      className="p-3 rounded-xl bg-accent/10 border border-accent/20 text-accent hover:bg-accent hover:text-foreground transition-all disabled:opacity-50 group"
                       title="Regenerate Insights"
                     >
                       <Sparkles
@@ -963,7 +1080,7 @@ export default function GoalsAdminPage() {
                       Object.entries(insights).map(([key, item], idx) => (
                         <div
                           key={idx}
-                          className="p-4 rounded-xl bg-white/5 border border-white/10 hover:border-accent/20 transition-all"
+                          className="p-4 rounded-xl bg-muted/50 border border-border hover:border-accent/20 transition-all"
                         >
                           <div className="text-[10px] font-black uppercase tracking-[0.2em] text-accent/60 mb-1">
                             {key.replace(/([A-Z])/g, " $1").trim()}
@@ -990,7 +1107,7 @@ export default function GoalsAdminPage() {
                     )}
                   </div>
 
-                  <div className="pt-4 border-t border-white/10 flex justify-center text-[10px] font-bold text-foreground/30 uppercase tracking-[0.3em]">
+                  <div className="pt-4 border-t border-border flex justify-center text-[10px] font-bold text-foreground/30 uppercase tracking-[0.3em]">
                     Next Regeneration:{" "}
                     {new Date(
                       new Date().getTime() + 24 * 60 * 60 * 1000,
@@ -1011,14 +1128,14 @@ export default function GoalsAdminPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsModalOpen(false)}
-            className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-overlay/50 z-50 flex items-center justify-center p-4"
           >
             <motion.div
               initial={{ scale: 0.95 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0.95 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-background border border-white/20 rounded-lg p-6 max-w-lg w-full max-h-96 overflow-y-auto"
+              className="bg-background border border-border rounded-lg p-6 max-w-lg w-full max-h-96 overflow-y-auto"
             >
               <h2 className="text-2xl font-bold mb-4">
                 {editingItem ? "Edit Goal" : "Add Goal"}
@@ -1035,7 +1152,7 @@ export default function GoalsAdminPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, title: e.target.value })
                     }
-                    className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-foreground"
+                    className="w-full px-3 py-2 rounded-lg bg-muted border border-border text-foreground"
                   />
                 </div>
 
@@ -1048,7 +1165,7 @@ export default function GoalsAdminPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, description: e.target.value })
                     }
-                    className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-foreground h-20"
+                    className="w-full px-3 py-2 rounded-lg bg-muted border border-border text-foreground h-20"
                   />
                 </div>
 
@@ -1062,7 +1179,7 @@ export default function GoalsAdminPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, status: e.target.value })
                       }
-                      className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-foreground"
+                      className="w-full px-3 py-2 rounded-lg bg-muted border border-border text-foreground"
                     >
                       <option value="planned">Planned</option>
                       <option value="in-progress">In Progress</option>
@@ -1081,7 +1198,7 @@ export default function GoalsAdminPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, priority: e.target.value })
                       }
-                      className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-foreground"
+                      className="w-full px-3 py-2 rounded-lg bg-muted border border-border text-foreground"
                     >
                       <option value="low">Low</option>
                       <option value="medium">Medium</option>
@@ -1106,7 +1223,7 @@ export default function GoalsAdminPage() {
                         progress: parseInt(e.target.value),
                       })
                     }
-                    className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-foreground"
+                    className="w-full px-3 py-2 rounded-lg bg-muted border border-border text-foreground"
                   />
                 </div>
 
@@ -1121,8 +1238,27 @@ export default function GoalsAdminPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, category: e.target.value })
                     }
-                    className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-foreground"
+                    className="w-full px-3 py-2 rounded-lg bg-muted border border-border text-foreground"
                   />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold mb-1">Target Date</label>
+                    <input type="date" value={formData.targetDate} onChange={(e) => setFormData({ ...formData, targetDate: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-muted border border-border text-foreground" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold mb-1">Publication</label>
+                    <select value={formData.publishStatus} onChange={(e) => setFormData({ ...formData, publishStatus: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-muted border border-border text-foreground"><option value="published">Published</option><option value="draft">Draft</option></select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold mb-1">Icon</label>
+                    <input value={formData.icon} onChange={(e) => setFormData({ ...formData, icon: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-muted border border-border text-foreground" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold mb-1">Order</label>
+                    <input type="number" value={formData.order} onChange={(e) => setFormData({ ...formData, order: Number(e.target.value) })} className="w-full px-3 py-2 rounded-lg bg-muted border border-border text-foreground" />
+                  </div>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -1148,7 +1284,7 @@ export default function GoalsAdminPage() {
                   </button>
                   <button
                     onClick={() => setIsModalOpen(false)}
-                    className="flex-1 px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-foreground font-semibold hover:bg-white/20"
+                    className="flex-1 px-4 py-2 rounded-lg bg-muted border border-border text-foreground font-semibold hover:bg-muted"
                   >
                     Cancel
                   </button>

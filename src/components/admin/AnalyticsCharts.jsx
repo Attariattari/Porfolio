@@ -20,25 +20,25 @@ import {
 } from 'recharts';
 
 const BRAND_COLORS = [
-  '#0ea5e9', // Sky
-  '#6366f1', // Indigo
-  '#10b981', // Emerald
-  '#f59e0b', // Amber
-  '#ef4444', // Red
-  '#ec4899', // Pink
-  '#8b5cf6', // Violet
-  '#06b6d4', // Cyan
+  'var(--chart-1)', // Sky
+  'var(--chart-2)', // Indigo
+  'var(--chart-3)', // Emerald
+  'var(--chart-4)', // Amber
+  'var(--chart-5)', // Red
+  'var(--chart-6)', // Pink
+  'var(--chart-7)', // Violet
+  'var(--chart-8)', // Cyan
 ];
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-slate-900/95 backdrop-blur-xl border border-white/10 p-3 rounded-xl shadow-2xl">
-        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">{label}</p>
+      <div className="bg-card/95 backdrop-blur-xl border border-border p-3 rounded-xl shadow-2xl">
+        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2">{label}</p>
         {payload.map((entry, index) => (
           <div key={index} className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color || entry.fill }} />
-            <p className="text-xs font-bold text-white">
+            <p className="text-xs font-bold text-foreground">
               {entry.name}: <span className="text-accent">{entry.value}</span>
             </p>
           </div>
@@ -75,29 +75,29 @@ export const EnhancedVisitorChart = ({ data, view = 'daily' }) => {
         <AreaChart data={data}>
           <defs>
             <linearGradient id="colorVisitors" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.4} />
-              <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0} />
+              <stop offset="5%" stopColor="var(--chart-1)" stopOpacity={0.4} />
+              <stop offset="95%" stopColor="var(--chart-1)" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-          <XAxis 
-            dataKey={view === 'daily' ? 'date' : 'hour'} 
-            stroke="#64748b" 
-            fontSize={11} 
-            tickLine={false} 
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+          <XAxis
+            dataKey={view === 'daily' ? 'date' : 'hour'}
+            stroke="var(--chart-axis)"
+            fontSize={11}
+            tickLine={false}
             axisLine={false}
             tickFormatter={formatXAxis}
           />
-          <YAxis stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} />
+          <YAxis stroke="var(--chart-axis)" fontSize={11} tickLine={false} axisLine={false} />
           <Tooltip content={<CustomTooltip />} />
-          <Area 
-            type="monotone" 
-            dataKey="count" 
+          <Area
+            type="monotone"
+            dataKey="count"
             name="Visitors"
-            stroke="#0ea5e9" 
+            stroke="var(--chart-1)"
             strokeWidth={3}
-            fillOpacity={1} 
-            fill="url(#colorVisitors)" 
+            fillOpacity={1}
+            fill="url(#colorVisitors)"
           />
         </AreaChart>
       </ResponsiveContainer>
@@ -129,18 +129,18 @@ export const HourlyBreakdownChart = ({ data }) => {
     <div className="h-[350px] w-full">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={chartData}>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-          <XAxis 
-            dataKey="hour" 
-            stroke="#64748b" 
-            fontSize={10} 
-            tickLine={false} 
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+          <XAxis
+            dataKey="hour"
+            stroke="var(--chart-axis)"
+            fontSize={10}
+            tickLine={false}
             axisLine={false}
             interval={2}
           />
-          <YAxis stroke="#64748b" fontSize={10} tickLine={false} axisLine={false} />
+          <YAxis stroke="var(--chart-axis)" fontSize={10} tickLine={false} axisLine={false} />
           <Tooltip content={<CustomTooltip />} />
-          <Bar dataKey="count" fill="#6366f1" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="count" fill="var(--chart-2)" radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>
@@ -170,7 +170,7 @@ export const DeviceDistributionChart = ({ data }) => {
             labelLine={false}
             label={({ device, percent }) => `${device || 'Unknown'} ${(percent * 100).toFixed(0)}%`}
             outerRadius={100}
-            fill="#8884d8"
+            fill="var(--chart-2)"
             dataKey="count"
             nameKey="device"
           >
@@ -201,19 +201,19 @@ export const TopPagesChart = ({ data }) => {
     <div className="h-[350px] w-full">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} layout="vertical" margin={{ left: 200 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-          <XAxis type="number" stroke="#64748b" fontSize={10} tickLine={false} axisLine={false} />
-          <YAxis 
-            dataKey="page" 
-            type="category" 
-            stroke="#64748b" 
-            fontSize={9} 
-            tickLine={false} 
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+          <XAxis type="number" stroke="var(--chart-axis)" fontSize={10} tickLine={false} axisLine={false} />
+          <YAxis
+            dataKey="page"
+            type="category"
+            stroke="var(--chart-axis)"
+            fontSize={9}
+            tickLine={false}
             axisLine={false}
             width={190}
           />
           <Tooltip content={<CustomTooltip />} />
-          <Bar dataKey="visits" fill="#10b981" radius={[0, 4, 4, 0]} />
+          <Bar dataKey="visits" fill="var(--chart-3)" radius={[0, 4, 4, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>
@@ -236,20 +236,20 @@ export const GeoDistributionChart = ({ data }) => {
     <div className="h-[350px] w-full">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-          <XAxis 
-            dataKey="country" 
-            stroke="#64748b" 
-            fontSize={10} 
-            tickLine={false} 
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+          <XAxis
+            dataKey="country"
+            stroke="var(--chart-axis)"
+            fontSize={10}
+            tickLine={false}
             axisLine={false}
             angle={-45}
             textAnchor="end"
             height={100}
           />
-          <YAxis stroke="#64748b" fontSize={10} tickLine={false} axisLine={false} />
+          <YAxis stroke="var(--chart-axis)" fontSize={10} tickLine={false} axisLine={false} />
           <Tooltip content={<CustomTooltip />} />
-          <Bar dataKey="visitors" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="visitors" fill="var(--chart-4)" radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

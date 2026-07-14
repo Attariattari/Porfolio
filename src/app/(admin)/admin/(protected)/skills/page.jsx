@@ -32,7 +32,7 @@ export default function SkillsPage() {
       key: "status",
       label: "Status",
       render: (item) => (
-        <div 
+        <div
           className="flex items-center gap-2"
           title={item._isFromDataJs ? "Template - Not yet uploaded to database" : "Uploaded to database"}
         >
@@ -44,20 +44,20 @@ export default function SkillsPage() {
           )}
           {item._isFromDataJs && (
             <div className="flex items-center gap-1.5">
-              <div className="w-2 h-2 rounded-full border border-slate-500" />
-              <span className="text-[9px] font-bold text-slate-500 uppercase tracking-tighter">Template</span>
+              <div className="w-2 h-2 rounded-full border border-border" />
+              <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-tighter">Template</span>
             </div>
           )}
         </div>
       ),
     },
     { key: "name", label: "Technical Proficiency" },
-    { 
-        key: "level", 
+    {
+        key: "level",
         label: "Expertise Rank",
         render: (item) => (
             <div className="flex items-center gap-4 min-w-[140px]">
-                <div className="h-2 flex-1 bg-white/5 rounded-full overflow-hidden border border-white/5 p-0.5">
+                <div className="h-2 flex-1 bg-muted/50 rounded-full overflow-hidden border border-border/70 p-0.5">
                     <div className="h-full bg-accent rounded-full transition-all duration-1000" style={{ width: `${item.level}%` }} />
                 </div>
                 <span className="text-[10px] font-black tabular-nums text-foreground opacity-80">{item.level}%</span>
@@ -117,12 +117,12 @@ export default function SkillsPage() {
     <div className="space-y-8 pb-20">
       <div className="flex justify-between items-end mb-4">
         <div>
-           <h1 className="text-2xl md:text-4xl font-black italic uppercase tracking-tighter text-white">Skill <span className="text-accent underline decoration-accent/20 underline-offset-[10px]">Matrix</span></h1>
-           <p className="text-[10px] md:text-sm text-slate-500 mt-4 font-medium tracking-tight uppercase tracking-widest">Calibrate your technical arsenal for maximum market impact.</p>
+           <h1 className="text-2xl md:text-4xl font-black italic uppercase tracking-tighter text-foreground">Skill <span className="text-accent underline decoration-accent/20 underline-offset-[10px]">Matrix</span></h1>
+           <p className="text-[10px] md:text-sm text-muted-foreground mt-4 font-medium tracking-tight uppercase tracking-widest">Calibrate your technical arsenal for maximum market impact.</p>
         </div>
       </div>
 
-      <DataTable 
+      <DataTable
         title="Technical Stack"
         columns={columns}
         data={skills}
@@ -133,7 +133,7 @@ export default function SkillsPage() {
 
       <AnimatePresence>
         {isModalOpen && (
-          <FormModal 
+          <FormModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
             title={editingSkill ? "Recalibrate Technical Ability" : "Inject New Skill Signature"}
@@ -147,7 +147,7 @@ export default function SkillsPage() {
 
       <AnimatePresence>
         {isConfirmOpen && (
-          <ConfirmDialog 
+          <ConfirmDialog
             isOpen={isConfirmOpen}
             onConfirm={onConfirmDelete}
             onCancel={() => setIsConfirmOpen(false)}

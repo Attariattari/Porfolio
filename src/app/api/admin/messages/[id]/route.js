@@ -71,7 +71,7 @@ export async function DELETE(request, { params }) {
     }
 
     // Only super-admins can delete messages
-    if (auth.role !== "super-admin") {
+    if (!["super-admin", "root-super-admin"].includes(auth.role)) {
       return NextResponse.json(
         { success: false, message: "Only super-admins can delete messages" },
         { status: 403 }

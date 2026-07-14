@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { HeroController } from "@/controllers/HeroController";
 import { getAuthSession, checkPermission } from "@/lib/auth";
 import { serializeDoc } from "@/lib/mongooseHelper";
+import { revalidatePath } from "next/cache";
 
 // GET HERO (Public)
 export async function GET() {
@@ -25,6 +26,7 @@ export async function PATCH(request) {
 
         const body = await request.json();
         const updatedHero = await HeroController.update(body);
+        revalidatePath("/");
         return NextResponse.json({ success: true, data: serializeDoc(updatedHero) });
     } catch (error) {
         console.error("API Hero PATCH Error:", error);

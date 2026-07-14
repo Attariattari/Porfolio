@@ -54,20 +54,61 @@ async function buildDirectMongoUri(uri) {
   return `mongodb://${auth}${hosts}${parsed.pathname}?${params.toString()}`;
 }
 
+function isTransientDnsError(error) {
+  const messages = [
+    error?.message,
+    error?.cause?.message,
+    error?.reason?.message,
+    ...Array.from(error?.reason?.servers?.values?.() || []).map(
+      (server) => server?.error?.message,
+    ),
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  return /querySrv|EAI_AGAIN|ENOTFOUND|ECONNREFUSED|ETIMEOUT|DNS/i.test(messages);
+}
+
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function connectWithDnsFallback(opts) {
-  try {
-    return await mongoose.connect(MONGODB_URI, opts);
-  } catch (error) {
-    if (!String(error.message || "").includes("querySrv")) throw error;
+  const maxAttempts = 3;
+  let directUri = null;
+  let lastError;
 
-    console.warn(
-      "[Mongoose/DNS] SRV lookup failed. Retrying MongoDB with direct shard hosts.",
-    );
-    const directUri = await buildDirectMongoUri(MONGODB_URI);
-    if (!directUri) throw error;
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      return await mongoose.connect(directUri || MONGODB_URI, opts);
+    } catch (error) {
+      lastError = error;
+      if (!isTransientDnsError(error)) throw error;
 
-    return mongoose.connect(directUri, opts);
+      await mongoose.disconnect().catch(() => undefined);
+
+      if (!directUri && MONGODB_URI.startsWith("mongodb+srv://")) {
+        try {
+          directUri = await buildDirectMongoUri(MONGODB_URI);
+          console.warn(
+            "[Mongoose/DNS] SRV lookup failed. Retrying MongoDB with direct shard hosts.",
+          );
+        } catch (directUriError) {
+          lastError = directUriError;
+        }
+      }
+
+      if (attempt < maxAttempts) {
+        const retryDelay = 350 * 2 ** (attempt - 1);
+        console.warn(
+          `[Mongoose/DNS] Temporary resolution failure. Retry ${attempt + 1}/${maxAttempts} in ${retryDelay}ms.`,
+        );
+        await wait(retryDelay);
+      }
+    }
   }
+
+  throw lastError;
 }
 
 async function dbConnect() {
@@ -79,6 +120,7 @@ async function dbConnect() {
     const opts = {
       bufferCommands: false,
       maxPoolSize: 10,
+      family: 4,
       serverSelectionTimeoutMS: 5000, // Fail fast if unreachable (e.g. whitelist issues)
     };
 

@@ -31,7 +31,7 @@ export const useMessages = (options = {}) => {
     try {
       // Build params - only include non-empty values
       const params = new URLSearchParams();
-      
+
       if (page) params.append("page", page.toString());
       if (limit) params.append("limit", limit.toString());
       if (sortBy) params.append("sortBy", sortBy);
@@ -55,12 +55,12 @@ export const useMessages = (options = {}) => {
       });
 
       console.log("[useMessages] Response status:", response.status);
-      
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         console.error("[useMessages] Error response:", errorData);
         throw new Error(
-          errorData.message || 
+          errorData.message ||
           `Failed to fetch messages: ${response.status} ${response.statusText}`
         );
       }

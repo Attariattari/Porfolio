@@ -249,15 +249,15 @@ export default function SuperAdminTransferModal({ isOpen, onClose, currentEmail 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-overlay/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-[#0a0f1c] border border-white/10 rounded-[3rem] shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        className="bg-background border border-border rounded-[3rem] shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
       >
         {/* Header */}
-        <div className="sticky top-0 border-b border-white/10 p-8 bg-[#0a0f1c]/95 backdrop-blur flex justify-between items-start z-10">
+        <div className="sticky top-0 border-b border-border p-8 bg-background/95 backdrop-blur flex justify-between items-start z-10">
           <div>
             <h2 className="text-3xl font-black italic uppercase tracking-tighter">
               Transfer <span className="text-accent">Authority</span>
@@ -269,7 +269,7 @@ export default function SuperAdminTransferModal({ isOpen, onClose, currentEmail 
           <button
             onClick={handleClose}
             disabled={loading}
-            className="p-2 hover:bg-white/10 rounded-xl transition-colors disabled:opacity-50"
+            className="p-2 hover:bg-muted rounded-xl transition-colors disabled:opacity-50"
           >
             <X className="w-6 h-6" />
           </button>
@@ -282,7 +282,7 @@ export default function SuperAdminTransferModal({ isOpen, onClose, currentEmail 
               <div key={s} className="flex-1">
                 <div
                   className={`h-1.5 rounded-full transition-all ${
-                    step >= s ? "bg-accent" : "bg-white/10"
+                    step >= s ? "bg-accent" : "bg-muted"
                   }`}
                 />
               </div>
@@ -315,7 +315,7 @@ export default function SuperAdminTransferModal({ isOpen, onClose, currentEmail 
                   <label className="text-[10px] font-black uppercase tracking-widest text-accent/80 mb-2 block">
                     Current Super Admin Email
                   </label>
-                  <div className="p-4 bg-white/5 border border-white/10 rounded-2xl text-sm text-muted-foreground flex items-center gap-3">
+                  <div className="p-4 bg-muted/50 border border-border rounded-2xl text-sm text-muted-foreground flex items-center gap-3">
                     <Mail className="w-4 h-4 text-accent" />
                     {currentEmail}
                   </div>
@@ -335,7 +335,7 @@ export default function SuperAdminTransferModal({ isOpen, onClose, currentEmail 
                         setError("");
                       }}
                       placeholder="admin@example.com"
-                      className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl text-sm focus:ring-4 focus:ring-accent/10 focus:border-accent/40 transition-all outline-none"
+                      className="w-full pl-12 pr-4 py-4 bg-muted/50 border border-border rounded-2xl text-sm focus:ring-4 focus:ring-accent/10 focus:border-accent/40 transition-all outline-none"
                       disabled={loading}
                     />
                   </div>
@@ -355,7 +355,7 @@ export default function SuperAdminTransferModal({ isOpen, onClose, currentEmail 
                 <button
                   onClick={handleInitiateTransfer}
                   disabled={loading || !newEmail.trim()}
-                  className="w-full py-4 bg-gradient-to-r from-accent to-accent/80 text-black font-black uppercase text-sm rounded-2xl hover:shadow-lg hover:shadow-accent/40 transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                  className="w-full py-4 bg-gradient-to-r from-accent to-accent/80 text-accent-foreground font-black uppercase text-sm rounded-2xl hover:shadow-lg hover:shadow-accent/40 transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                 >
                   {loading ? (
                     <>
@@ -382,11 +382,11 @@ export default function SuperAdminTransferModal({ isOpen, onClose, currentEmail 
                 exit={{ opacity: 0, y: -20 }}
                 className="space-y-6"
               >
-                <div className="bg-blue-500/10 border border-blue-500/30 p-6 rounded-2xl">
-                  <p className="text-sm text-blue-300">
+                <div className="bg-accent/10 border border-accent/30 p-6 rounded-2xl">
+                  <p className="text-sm text-accent">
                     Check your email <strong>{currentEmail}</strong> for a 6-digit verification code.
                   </p>
-                  <div className="flex items-center gap-2 mt-3 text-xs text-blue-200">
+                  <div className="flex items-center gap-2 mt-3 text-xs text-accent">
                     <Clock className="w-3 h-3" />
                     Code expires in: <span className="font-bold">{formatTime(timeLeft)}</span>
                   </div>
@@ -405,7 +405,7 @@ export default function SuperAdminTransferModal({ isOpen, onClose, currentEmail 
                     }}
                     placeholder="000000"
                     maxLength="6"
-                    className="w-full px-4 py-4 bg-white/5 border border-white/10 rounded-2xl text-2xl font-black text-center tracking-widest focus:ring-4 focus:ring-accent/10 focus:border-accent/40 transition-all outline-none font-mono"
+                    className="w-full px-4 py-4 bg-muted/50 border border-border rounded-2xl text-2xl font-black text-center tracking-widest focus:ring-4 focus:ring-accent/10 focus:border-accent/40 transition-all outline-none font-mono"
                     disabled={loading}
                   />
                   <button
@@ -438,7 +438,7 @@ export default function SuperAdminTransferModal({ isOpen, onClose, currentEmail 
                 <button
                   onClick={handleVerifyCurrentEmail}
                   disabled={loading || currentOTP.length !== 6}
-                  className="w-full py-4 bg-gradient-to-r from-accent to-accent/80 text-black font-black uppercase text-sm rounded-2xl hover:shadow-lg hover:shadow-accent/40 transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                  className="w-full py-4 bg-gradient-to-r from-accent to-accent/80 text-accent-foreground font-black uppercase text-sm rounded-2xl hover:shadow-lg hover:shadow-accent/40 transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                 >
                   {loading ? (
                     <>
@@ -488,7 +488,7 @@ export default function SuperAdminTransferModal({ isOpen, onClose, currentEmail 
                     }}
                     placeholder="000000"
                     maxLength="6"
-                    className="w-full px-4 py-4 bg-white/5 border border-white/10 rounded-2xl text-2xl font-black text-center tracking-widest focus:ring-4 focus:ring-accent/10 focus:border-accent/40 transition-all outline-none font-mono"
+                    className="w-full px-4 py-4 bg-muted/50 border border-border rounded-2xl text-2xl font-black text-center tracking-widest focus:ring-4 focus:ring-accent/10 focus:border-accent/40 transition-all outline-none font-mono"
                     disabled={loading}
                   />
                   <button
@@ -521,7 +521,7 @@ export default function SuperAdminTransferModal({ isOpen, onClose, currentEmail 
                 <button
                   onClick={handleVerifyNewEmail}
                   disabled={loading || newOTP.length !== 6}
-                  className="w-full py-4 bg-gradient-to-r from-accent to-accent/80 text-black font-black uppercase text-sm rounded-2xl hover:shadow-lg hover:shadow-accent/40 transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                  className="w-full py-4 bg-gradient-to-r from-accent to-accent/80 text-accent-foreground font-black uppercase text-sm rounded-2xl hover:shadow-lg hover:shadow-accent/40 transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                 >
                   {loading ? (
                     <>
@@ -566,7 +566,7 @@ export default function SuperAdminTransferModal({ isOpen, onClose, currentEmail 
                   </div>
                 </div>
 
-                <div className="bg-white/5 border border-white/10 p-6 rounded-2xl">
+                <div className="bg-muted/50 border border-border p-6 rounded-2xl">
                   <p className="text-xs text-muted-foreground mb-4">
                     Type <strong className="text-accent">CONFIRM</strong> to complete the transfer. This action cannot be undone.
                   </p>
@@ -575,7 +575,7 @@ export default function SuperAdminTransferModal({ isOpen, onClose, currentEmail 
                 <button
                   onClick={handleFinalConfirmation}
                   disabled={loading}
-                  className="w-full py-4 bg-gradient-to-r from-red-600 to-red-700 text-white font-black uppercase text-sm rounded-2xl hover:shadow-lg hover:shadow-red-600/40 transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                  className="w-full py-4 bg-gradient-to-r from-red-600 to-red-700 text-foreground font-black uppercase text-sm rounded-2xl hover:shadow-lg hover:shadow-red-600/40 transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                 >
                   {loading ? (
                     <>
@@ -593,7 +593,7 @@ export default function SuperAdminTransferModal({ isOpen, onClose, currentEmail 
                 <button
                   onClick={handleClose}
                   disabled={loading}
-                  className="w-full py-3 border border-white/10 text-white font-bold uppercase text-xs rounded-2xl hover:bg-white/5 transition-all disabled:opacity-50"
+                  className="w-full py-3 border border-border text-foreground font-bold uppercase text-xs rounded-2xl hover:bg-muted/50 transition-all disabled:opacity-50"
                 >
                   Cancel Process
                 </button>
@@ -639,14 +639,14 @@ export default function SuperAdminTransferModal({ isOpen, onClose, currentEmail 
                 {newPasskey && (
                   <div className="bg-accent/10 border border-accent/20 p-6 rounded-2xl text-left">
                     <p className="text-xs text-accent font-bold mb-2 uppercase tracking-widest">New Super Admin Passkey</p>
-                    <div className="flex items-center justify-between gap-4 bg-black/40 p-4 rounded-xl border border-accent/20">
-                      <code className="text-xl font-black text-white tracking-[0.3em] font-mono">{newPasskey}</code>
-                      <button 
+                    <div className="flex items-center justify-between gap-4 bg-overlay/40 p-4 rounded-xl border border-accent/20">
+                      <code className="text-xl font-black text-foreground tracking-[0.3em] font-mono">{newPasskey}</code>
+                      <button
                         onClick={() => {
                           navigator.clipboard.writeText(newPasskey);
                           toast.success("Passkey copied to clipboard");
                         }}
-                        className="text-[10px] bg-accent text-black px-3 py-1 rounded-lg font-bold uppercase"
+                        className="text-[10px] bg-accent text-accent-foreground px-3 py-1 rounded-lg font-bold uppercase"
                       >
                         Copy
                       </button>

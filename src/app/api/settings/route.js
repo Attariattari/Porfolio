@@ -5,6 +5,7 @@ import eventBus, { ADMIN_EVENTS } from "@/lib/eventBus";
 import { portfolioData } from "@/lib/data";
 import { getAuthSession } from "@/lib/auth";
 import { cacheManager, withCache } from "@/lib/cache";
+import { revalidatePath } from "next/cache";
 
 const PUBLIC_THEME_CACHE_KEY = "settings:public-theme";
 const PUBLIC_THEME_CACHE_TTL = 5;
@@ -40,8 +41,8 @@ const sanitizePublicSettings = (settings = {}) => {
     };
 };
 
-const isAdminSession = (session) =>
-    ["super-admin", "root-super-admin", "admin"].includes(session?.role);
+const isSuperAdminSession = (session) =>
+    ["super-admin", "root-super-admin"].includes(session?.role);
 
 const noStore = (response) => {
     response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate");
@@ -108,7 +109,7 @@ export async function GET(request) {
         }
 
         const publicSettings = sanitizePublicSettings(config);
-        const responseData = isAdminSession(session) ? config : publicSettings;
+        const responseData = isSuperAdminSession(session) ? config : publicSettings;
 
         return noStore(apiResponse.success(
             responseData,
@@ -133,8 +134,8 @@ export async function GET(request) {
 export async function PATCH(request) {
     try {
         const session = await getAuthSession().catch(() => null);
-        if (!isAdminSession(session)) {
-            return apiResponse.error("Admin authorization required", 401);
+        if (!isSuperAdminSession(session)) {
+            return apiResponse.error("Super Admin authorization required", 403);
         }
 
         await dbConnect();
@@ -192,6 +193,9 @@ export async function PATCH(request) {
             cacheManager.invalidateByTag("settings"),
             cacheManager.invalidateByTag("site-theme"),
         ]);
+
+        revalidatePath("/", "layout");
+        revalidatePath("/");
 
         return noStore(apiResponse.success(
             savedConfig.toObject(),

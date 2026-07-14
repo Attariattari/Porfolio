@@ -7,10 +7,9 @@ import eventBus, { ADMIN_EVENTS } from "@/lib/eventBus";
 import { generateEmailTemplate } from "@/lib/emailTemplates";
 import { SITE_URL } from "@/lib/config";
 import { verifyPasskey, hashPasskey } from "@/lib/passwordReset";
+import { getAuthSecretKey } from "@/lib/authSecret";
 
-const SECRET = new TextEncoder().encode(
-    process.env.AUTH_SECRET || "fallback_muhyo_secret_32_chars_long_!!!",
-);
+const SECRET = getAuthSecretKey();
 
 // Super Admin Configuration - Now dynamically loaded from DB with fallback
 const ROOT_ADMIN_EMAIL = (
@@ -26,7 +25,10 @@ function resolveSafeRole(user) {
 
 export function getDefaultAuthRedirect(user, callbackUrl = "") {
     if (callbackUrl && callbackUrl.startsWith("/") && !callbackUrl.startsWith("//")) {
-        return callbackUrl;
+        const callbackPath = callbackUrl.split(/[?#]/, 1)[0].replace(/\/$/, "");
+        if (callbackPath !== "/admin/login" && callbackPath !== "/admin/signup") {
+            return callbackUrl;
+        }
     }
     return "/admin/dashboard";
 }
@@ -120,6 +122,13 @@ export function isTokenExpired(token) {
     if (!payload || !payload.exp) return true;
     // exp is in seconds, Date.now() is in ms
     return Math.floor(Date.now() / 1000) >= payload.exp;
+}
+
+function isJwtVerificationError(error) {
+    return (
+        typeof error?.code === "string" &&
+        (error.code.startsWith("ERR_JWT_") || error.code.startsWith("ERR_JWS_"))
+    );
 }
 
 /**
@@ -561,8 +570,9 @@ export async function getAuthSession() {
 
     // PATCH: Check token expiration BEFORE verification
     if (isTokenExpired(token)) {
-        // Token expired - clear cookies on backend
-        (await cookies()).delete("admin_auth_token");
+        // Treat stale or malformed cookies as a signed-out session. Cookie
+        // deletion is handled by the proxy/route layer, where response cookies
+        // can safely be mutated.
         return null;
     }
 
@@ -615,13 +625,10 @@ export async function getAuthSession() {
             permissions: user.permissions || {},
         };
     } catch (e) {
-        console.error(`[Auth] JWT Verification Failed: ${e.message}`);
-        // On any auth error, clear token cookie
-        if (
-            e.message &&
-            (e.message.includes("exp claim") || e.message.includes("invalid"))
-        ) {
-            (await cookies()).delete("admin_auth_token");
+        // Invalid signatures and expired JWTs are an expected signed-out state
+        // after secret rotation; do not surface them as application errors.
+        if (!isJwtVerificationError(e)) {
+            console.error("[Auth] Session lookup failed:", e);
         }
         return null;
     }

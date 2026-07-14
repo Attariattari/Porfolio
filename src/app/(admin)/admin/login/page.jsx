@@ -1,4 +1,4 @@
-import { getAuthSession } from "@/lib/auth";
+import { getAuthSession, getDefaultAuthRedirect } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import AuthContainer from "./AuthContainer";
 
@@ -10,12 +10,7 @@ export const metadata = {
 export default async function AdminLoginPage({ searchParams }) {
     const resolvedSearchParams = await searchParams;
     const rawCallbackUrl = resolvedSearchParams?.callbackUrl || "/admin/dashboard";
-    const callbackUrl =
-        typeof rawCallbackUrl === "string" &&
-        rawCallbackUrl.startsWith("/") &&
-        !rawCallbackUrl.startsWith("//")
-            ? rawCallbackUrl
-            : "/admin/dashboard";
+    const callbackUrl = getDefaultAuthRedirect(null, rawCallbackUrl);
     const session = await getAuthSession();
 
     // If session exists and is valid, redirect to the secure dashboard

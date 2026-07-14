@@ -5,6 +5,9 @@
 
 import { io } from 'socket.io-client';
 
+const SOCKET_TRANSPORT_PATH = '/api/socketio';
+let localSocketBootstrap = null;
+
 // Events emitted from server
 export const SOCKET_EVENTS = {
   CONNECT: 'connect',
@@ -55,19 +58,51 @@ export function initializeSocket(options = {}) {
 
   if (!socketEnabled) return null;
 
-  // Wake up the socket server if it's not running.
-  fetch('/api/socket').catch((err) => console.warn('Socket wakeup failed', err));
-
-  return io(process.env.NEXT_PUBLIC_SOCKET_URL || '/', {
-    path: '/api/socket',
+  const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || '/';
+  const socket = io(socketUrl, {
+    path: SOCKET_TRANSPORT_PATH,
     addTrailingSlash: false,
     transports: ['websocket', 'polling'],
     reconnection: true,
     reconnectionDelay: 1000,
     reconnectionDelayMax: 5000,
     reconnectionAttempts: 5,
+    autoConnect: Boolean(process.env.NEXT_PUBLIC_SOCKET_URL),
     ...options,
   });
+
+  // Local Next.js needs one normal HTTP request to install Socket.IO on the
+  // persistent development server. Its transport uses a different path so
+  // this bootstrap request is never mistaken for a Socket.IO handshake.
+  if (!process.env.NEXT_PUBLIC_SOCKET_URL) {
+    if (!localSocketBootstrap) {
+      localSocketBootstrap = fetch('/api/socket-bootstrap', { cache: 'no-store' })
+        .then((response) => {
+          if (!response.ok) throw new Error(`Socket bootstrap returned ${response.status}`);
+        })
+        .catch((error) => {
+          localSocketBootstrap = null;
+          throw error;
+        });
+    }
+
+    localSocketBootstrap
+      .then(() => {
+        if (!socket.__muhyoDisposed) socket.connect();
+      })
+      .catch((error) => {
+        if (!socket.__muhyoDisposed) console.warn('Socket initialization failed:', error.message);
+      });
+  }
+
+  return socket;
+}
+
+export function disposeSocket(socket) {
+  if (!socket) return;
+  socket.__muhyoDisposed = true;
+  socket.removeAllListeners();
+  socket.disconnect();
 }
 
 /**
@@ -96,7 +131,7 @@ export const setupSocketServer = (ioServer) => {
 
 /**
  * Emit events from server API routes. Socket.io is optional, so events are
- * skipped quietly until /api/socket has initialized the server.
+ * skipped quietly until /api/socket-bootstrap has initialized the server.
  */
 export const emitSocketEvent = (eventName, data) => {
   if (globalThis.io) {

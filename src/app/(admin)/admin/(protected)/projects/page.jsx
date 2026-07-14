@@ -20,6 +20,9 @@ const projectSchema = z.object({
   description: z.string().optional(),
   shortDescription: z.string().optional(),
   longDescription: z.string().optional(),
+  thumbnailAlt: z.string().optional(),
+  heroImageAlt: z.string().optional(),
+  galleryImageAlts: z.string().optional(),
   category: z.string().optional(),
   projectType: z.string().optional(),
   purpose: z.string().optional(),
@@ -106,8 +109,8 @@ export default function ProjectsPage() {
           )}
           {item._isFromDataJs && (
             <div className="flex items-center gap-1.5">
-              <div className="w-2 h-2 rounded-full border border-slate-500" />
-              <span className="text-[9px] font-bold text-slate-500 uppercase tracking-tighter">
+              <div className="w-2 h-2 rounded-full border border-border" />
+              <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-tighter">
                 Template
               </span>
             </div>
@@ -121,12 +124,12 @@ export default function ProjectsPage() {
       render: (item) => (
         <div className="flex flex-col gap-1 text-[10px] font-black uppercase tracking-widest">
           {item._isFromDataJs ? (
-            <span className="text-slate-500">Template</span>
+            <span className="text-muted-foreground">Template</span>
           ) : (
             <span className={
               item.publishStatus === "published" ? "text-green-500" :
               item.publishStatus === "pending" ? "text-amber-500" :
-              "text-slate-400"
+              "text-muted-foreground"
             }>
               {item.publishStatus || "draft"}
             </span>
@@ -141,7 +144,7 @@ export default function ProjectsPage() {
         const preview = item.thumbnail || item.thumbnailImage || item.heroImage || item.gallery?.[0] || item.images?.[0];
 
         return (
-          <div className="relative w-16 h-10 rounded-lg overflow-hidden border border-white/10 bg-white/5 flex items-center justify-center">
+          <div className="relative w-16 h-10 rounded-lg overflow-hidden border border-border bg-muted/50 flex items-center justify-center">
             {preview && (
               <Image
                 src={preview}
@@ -186,7 +189,7 @@ export default function ProjectsPage() {
       label: "Featured",
       render: (item) => (
         <span
-          className={`px-2 py-1 rounded text-[8px] font-black uppercase ${item.featured ? "bg-amber-500/10 text-amber-500" : "bg-slate-500/10 text-slate-500"}`}
+          className={`px-2 py-1 rounded text-[8px] font-black uppercase ${item.featured ? "bg-amber-500/10 text-amber-500" : "bg-muted text-muted-foreground"}`}
         >
           {item.featured ? "Featured" : "Standard"}
         </span>
@@ -254,6 +257,20 @@ export default function ProjectsPage() {
     {
       name: "description",
       label: "Brief Description",
+      type: "textarea",
+      fullWidth: true,
+    },
+    {
+      name: "longDescription",
+      label: "Long Description",
+      type: "textarea",
+      fullWidth: true,
+    },
+    { name: "thumbnailAlt", label: "Thumbnail Alt Text", fullWidth: true },
+    { name: "heroImageAlt", label: "Hero Image Alt Text", fullWidth: true },
+    {
+      name: "galleryImageAlts",
+      label: "Gallery Alt Texts (one per line)",
       type: "textarea",
       fullWidth: true,
     },
@@ -364,10 +381,10 @@ export default function ProjectsPage() {
       label: "Sort Order",
       type: "number",
     },
-    { 
-      name: "publishStatus", 
-      label: "Publication Status", 
-      type: "select", 
+    {
+      name: "publishStatus",
+      label: "Publication Status",
+      type: "select",
       options: [
         { label: "Draft - Hidden", value: "draft" },
         { label: "Pending Review", value: "pending" },
@@ -419,6 +436,9 @@ export default function ProjectsPage() {
       keywords: Array.isArray(project.keywords)
         ? project.keywords.join(", ")
         : project.keywords,
+      galleryImageAlts: Array.isArray(project.galleryImageAlts)
+        ? project.galleryImageAlts.join("\n")
+        : project.galleryImageAlts || "",
       images: project.gallery || project.images || [project.thumbnail || ""],
     };
     setEditingProject(formattedProject);
@@ -451,7 +471,7 @@ export default function ProjectsPage() {
       } else {
         toast.loading("Updating records to global index...");
       }
-      
+
       const finalImageUrls = await uploadPendingImages(data.images || []);
 
       const submissionData = {
@@ -467,9 +487,15 @@ export default function ProjectsPage() {
         processSteps: parseJsonField(data.processSteps, []),
         challenges: parseJsonField(data.challenges, []),
         results: parseJsonField(data.results, []),
+        galleryImageAlts: String(data.galleryImageAlts || "")
+          .split(/\r?\n/)
+          .map((item) => item.trim())
+          .filter(Boolean),
         galleryImages: finalImageUrls.map((url, index) => ({
           url,
-          alt: `${data.title} screenshot ${index + 1}`,
+          alt:
+            String(data.galleryImageAlts || "").split(/\r?\n/)[index]?.trim() ||
+            `${data.title} screenshot ${index + 1}`,
           caption: index === 0 ? "Project preview" : `Screenshot ${index + 1}`,
         })),
         relatedServices: data.relatedServices
@@ -526,10 +552,10 @@ export default function ProjectsPage() {
     <div className="space-y-8 pb-20">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-4">
         <div>
-          <h1 className="text-2xl md:text-4xl font-black italic uppercase tracking-tighter text-white">
+          <h1 className="text-2xl md:text-4xl font-black italic uppercase tracking-tighter text-foreground">
             Project <span className="text-accent">Muhyo Tech</span>
           </h1>
-          <p className="text-[10px] md:text-sm text-slate-500 mt-2 font-medium uppercase tracking-widest">
+          <p className="text-[10px] md:text-sm text-muted-foreground mt-2 font-medium uppercase tracking-widest">
             Manage and showcase your engineering masterpieces.
           </p>
         </div>
@@ -546,7 +572,7 @@ export default function ProjectsPage() {
             type="button"
             onClick={() => handleImportProjects("force")}
             disabled={isImporting}
-            className="rounded-2xl border border-red-400/30 bg-red-400/10 px-5 py-3 text-xs font-black uppercase tracking-widest text-red-300 transition-all hover:bg-red-400 hover:text-white disabled:opacity-50"
+            className="rounded-2xl border border-red-400/30 bg-red-400/10 px-5 py-3 text-xs font-black uppercase tracking-widest text-red-300 transition-all hover:bg-red-400 hover:text-foreground disabled:opacity-50"
           >
             Force Update
           </button>
@@ -562,9 +588,9 @@ export default function ProjectsPage() {
         onDelete={handleDelete}
         onReorder={reorderProjects}
         filters={[
-          { 
-            key: 'publishStatus', 
-            label: 'All Publish Status', 
+          {
+            key: 'publishStatus',
+            label: 'All Publish Status',
             options: [
               { label: 'Published', value: 'published' },
               { label: 'Pending', value: 'pending' },

@@ -24,16 +24,7 @@ export const SkillController = {
                         return portfolioData.skills;
                     }
 
-                    const uploadedNames = new Set(dbSkills.map((s) => s.name));
-                    const fallbackSkills = portfolioData.skills
-                        .filter((s) => !uploadedNames.has(s.name))
-                        .map((s) => ({
-                            ...s,
-                            _isFromDataJs: true,
-                            _dbId: null,
-                        }));
-
-                    return [...serializeDoc(dbSkills), ...fallbackSkills];
+                    return serializeDoc(dbSkills);
                 },
                 1800, // 30 minute cache
                 ["skills"]

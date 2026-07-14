@@ -9,38 +9,46 @@ export default function Error({ error, reset }) {
   }, [error]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-black text-accent p-12 text-center font-mono relative overflow-hidden">
-      {/* Glitch Overlay Effect */}
-      <div className="absolute inset-0 bg-accent/5 opacity-20 pointer-events-none" />
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-5 py-12 text-foreground transition-colors sm:px-8">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,color-mix(in_srgb,var(--accent)_12%,transparent),transparent_48%)]" />
 
-      <h1 className="text-4xl md:text-5xl font-black mb-8 italic uppercase tracking-tighter relative z-10">
-        SYSTEM_FAILURE_MUHYO_TECH
-      </h1>
+      <section className="relative z-10 w-full max-w-2xl rounded-3xl border border-border bg-card p-6 text-center shadow-2xl shadow-overlay/10 sm:p-10">
+        <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-destructive/25 bg-destructive/10 text-destructive">
+          <span className="text-2xl font-black" aria-hidden="true">!</span>
+        </div>
 
-      <div className="max-w-xl p-8 border border-accent/20 bg-accent/5 rounded-2xl mb-12 relative z-10 backdrop-blur-sm">
-        <p className="text-[10px] uppercase font-black opacity-40 mb-4 tracking-[0.4em]">
-          Anomaly Report
+        <p className="mb-3 text-[10px] font-black uppercase tracking-[0.32em] text-destructive">
+          System error
         </p>
-        <p className="text-white/80 leading-relaxed italic border-l-2 border-accent pl-4 text-left font-sans text-sm">
-          {error.message ||
-            "Unknown anomaly detected in core execution thread."}
+        <h1 className="mb-4 break-words text-2xl font-black uppercase tracking-tight text-foreground sm:text-4xl">
+          SYSTEM_FAILURE_MUHYO_TECH
+        </h1>
+        <p className="mx-auto mb-8 max-w-lg text-sm leading-6 text-muted-foreground sm:text-base">
+          Something went wrong while loading this page. You can retry now or return to the home page.
         </p>
-      </div>
 
-      <div className="flex flex-col sm:flex-row gap-6 relative z-10">
-        <button
-          onClick={() => reset()}
-          className="px-12 py-5 bg-accent text-accent-foreground font-black uppercase tracking-[0.3em] text-[10px] rounded-full shadow-2xl shadow-accent/20 hover:scale-105 transition-all cursor-pointer"
-        >
-          Initiate Core Reset &rarr;
-        </button>
-        <Link
-          href="/"
-          className="px-12 py-5 border border-accent/20 rounded-full hover:bg-accent/5 transition-all uppercase tracking-[0.3em] text-[10px] font-black text-accent flex items-center justify-center"
-        >
-          Abort to Safe Mode
-        </Link>
-      </div>
-    </div>
+        <div className="flex flex-col justify-center gap-3 sm:flex-row">
+          <button
+            type="button"
+            onClick={reset}
+            className="cursor-pointer rounded-xl bg-accent px-7 py-3.5 text-sm font-bold text-accent-foreground shadow-lg shadow-accent/15 transition-all hover:-translate-y-0.5 hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          >
+            Try again
+          </button>
+          <Link
+            href="/"
+            className="rounded-xl border border-border bg-background px-7 py-3.5 text-sm font-bold text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          >
+            Go to home
+          </Link>
+        </div>
+
+        {error?.digest && (
+          <p className="mt-7 text-xs text-muted-foreground">
+            Reference: <span className="font-mono text-foreground">{error.digest}</span>
+          </p>
+        )}
+      </section>
+    </main>
   );
 }

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { ResumeController } from "@/controllers/ResumeController";
 import { getAuthSession, checkPermission } from "@/lib/auth";
+import { revalidatePath } from "next/cache";
 
 // GET RESUME (Public)
 export async function GET() {
@@ -22,6 +23,7 @@ export async function PATCH(request) {
 
     const body = await request.json();
     const updatedResume = await ResumeController.update(body);
+    revalidatePath("/resume");
     return NextResponse.json({ success: true, data: updatedResume });
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 400 });

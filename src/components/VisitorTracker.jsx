@@ -3,6 +3,21 @@
 import { memo, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 
+const VISITOR_ID_KEY = "muhyo_visitor_id";
+const LEGACY_VISITOR_ID_KEY = "visitor_session_id";
+const SESSION_ID_KEY = "muhyo_visit_session_id";
+const SESSION_STARTED_KEY = "muhyo_visit_session_started";
+const SESSION_ACTIVITY_KEY = "muhyo_visit_session_activity";
+const SESSION_TIMEOUT_MS = 30 * 60 * 1000;
+
+const createTrackingId = (prefix) => {
+  const randomPart =
+    typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+      ? crypto.randomUUID()
+      : `${Math.random().toString(36).slice(2)}${Date.now().toString(36)}`;
+  return `${prefix}_${randomPart}`;
+};
+
 const VisitorTrackerComponent = () => {
   const pathname = usePathname();
   // Use refs so the interval/RAF can always access latest values without re-renders
@@ -13,20 +28,33 @@ const VisitorTrackerComponent = () => {
   useEffect(() => {
     if (pathname?.startsWith("/admin")) return;
 
-    // Generate or retrieve session ID and start time
-    let sessionId = localStorage.getItem("visitor_session_id");
-    let sessionStartTime = sessionStorage.getItem("visitor_session_start");
+    const userAgent = window.navigator.userAgent || "";
+    const isAutomatedTraffic =
+      window.navigator.webdriver ||
+      /bot|crawler|spider|headless|lighthouse|pagespeed|google-inspectiontool/i.test(userAgent);
+    if (isAutomatedTraffic) return;
 
-    if (!sessionId) {
-      sessionId =
-        Math.random().toString(36).substring(2) + Date.now().toString(36);
-      localStorage.setItem("visitor_session_id", sessionId);
-    }
+    const now = Date.now();
+    const legacyVisitorId = localStorage.getItem(LEGACY_VISITOR_ID_KEY);
+    let visitorId = localStorage.getItem(VISITOR_ID_KEY) || legacyVisitorId;
+    if (!visitorId) visitorId = createTrackingId("visitor");
+    localStorage.setItem(VISITOR_ID_KEY, visitorId);
+    localStorage.removeItem(LEGACY_VISITOR_ID_KEY);
 
-    if (!sessionStartTime) {
-      sessionStartTime = Date.now().toString();
-      sessionStorage.setItem("visitor_session_start", sessionStartTime);
+    const lastActivity = Number(localStorage.getItem(SESSION_ACTIVITY_KEY) || 0);
+    let sessionId = localStorage.getItem(SESSION_ID_KEY);
+    let sessionStartedAt = Number(localStorage.getItem(SESSION_STARTED_KEY) || 0);
+    if (!sessionId || !sessionStartedAt || now - lastActivity > SESSION_TIMEOUT_MS) {
+      sessionId = createTrackingId("session");
+      sessionStartedAt = now;
+      localStorage.setItem(SESSION_ID_KEY, sessionId);
+      localStorage.setItem(SESSION_STARTED_KEY, String(sessionStartedAt));
     }
+    localStorage.setItem(SESSION_ACTIVITY_KEY, String(now));
+
+    const pageStartedAt = now;
+    interactionsRef.current = 0;
+    maxScrollRef.current = 0;
 
     // PHASE 2 + 4: Passive + RAF-gated scroll handler
     let rafId = null;
@@ -51,21 +79,23 @@ const VisitorTrackerComponent = () => {
     window.addEventListener("click", handleInteraction, { passive: true });
     window.addEventListener("scroll", handleScroll, { passive: true });
 
-    const trackVisitor = async () => {
+    const trackVisitor = async ({ allowHidden = false, keepalive = false } = {}) => {
       // PHASE 4: Skip if tab is hidden or request already in-flight
-      if (document.visibilityState === "hidden" || isSendingRef.current) return;
+      if ((!allowHidden && document.visibilityState === "hidden") || isSendingRef.current) return;
       isSendingRef.current = true;
 
-      const duration = Math.round(
-        (Date.now() - parseInt(sessionStartTime)) / 1000,
-      );
+      const trackedAt = Date.now();
+      const sessionDuration = Math.max(0, Math.round((trackedAt - sessionStartedAt) / 1000));
+      const timeOnPage = Math.max(0, Math.round((trackedAt - pageStartedAt) / 1000));
+      localStorage.setItem(SESSION_ACTIVITY_KEY, String(trackedAt));
 
       const payload = JSON.stringify({
         page: pathname || "/",
-        userAgent: window.navigator.userAgent,
+        userAgent,
+        visitorId,
         sessionId,
-        sessionDuration: duration,
-        timeOnPage: duration,
+        sessionDuration,
+        timeOnPage,
         interactionCount: interactionsRef.current,
         scrollDepth: maxScrollRef.current,
         referrer: document.referrer,
@@ -76,6 +106,7 @@ const VisitorTrackerComponent = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: payload,
+          keepalive,
         });
       } catch {
         // Silently ignore — tracking is non-critical
@@ -106,7 +137,7 @@ const VisitorTrackerComponent = () => {
     // PHASE 4: Track on tab hidden (page unload)
     const handleVisibilityChange = () => {
       if (document.visibilityState === "hidden") {
-        trackVisitor();
+        trackVisitor({ allowHidden: true, keepalive: true });
       }
     };
     document.addEventListener("visibilitychange", handleVisibilityChange);
@@ -118,7 +149,7 @@ const VisitorTrackerComponent = () => {
       window.removeEventListener("scroll", handleScroll);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       // Send final event on cleanup
-      trackVisitor();
+      trackVisitor({ allowHidden: true, keepalive: true });
     };
   }, [pathname]);
 

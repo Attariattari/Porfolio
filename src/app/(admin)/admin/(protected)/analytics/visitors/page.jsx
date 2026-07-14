@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { initializeSocket } from '@/lib/socket';
+import { disposeSocket, initializeSocket } from '@/lib/socket';
 import Link from 'next/link';
 import {
   ArrowLeft,
@@ -20,6 +20,15 @@ import {
   MapPin,
 } from 'lucide-react';
 import { toast } from 'sonner';
+
+async function fetchAnalyticsData(url) {
+  const response = await fetch(url, { cache: 'no-store' });
+  const payload = await response.json();
+  if (!response.ok || !payload.success) {
+    throw new Error(payload.error || payload.message || 'Analytics request failed');
+  }
+  return payload.data;
+}
 
 import {
   EnhancedVisitorChart,
@@ -56,7 +65,8 @@ export default function VisitorAnalyticsPage() {
       });
 
       socket.on('new_visitor', (data) => {
-        toast.info(`New visitor from ${data.country} on ${data.page}`, {
+        const visitType = data.isFirstVisit ? 'New visitor' : 'Returning visitor';
+        toast.info(`${visitType} from ${data.country} on ${data.page}`, {
           icon: <Activity className="w-4 h-4 text-emerald-400" />,
           duration: 3000,
         });
@@ -64,95 +74,96 @@ export default function VisitorAnalyticsPage() {
     }
 
     return () => {
-      if (socket) socket.disconnect();
+      disposeSocket(socket);
     };
   }, [queryClient]);
 
   // Queries with shorter polling intervals for "0 delay" feel
   const { data: visitorsData, isLoading: visitorsLoading } = useQuery({
     queryKey: ['analytics-visitors', period, view],
-    queryFn: () =>
-      fetch(`/api/admin/analytics/visitors?period=${period}&view=${view}`)
-        .then(r => r.json())
-        .then(d => d.data),
+    queryFn: () => fetchAnalyticsData(`/api/admin/analytics/visitors?period=${period}&view=${view}`),
     refetchInterval: 5000,
   });
 
   const { data: devicesData, isLoading: devicesLoading } = useQuery({
     queryKey: ['analytics-devices', period],
-    queryFn: () =>
-      fetch(`/api/admin/analytics/devices?period=${period}`)
-        .then(r => r.json())
-        .then(d => d.data),
+    queryFn: () => fetchAnalyticsData(`/api/admin/analytics/devices?period=${period}`),
     refetchInterval: 10000,
   });
 
   const { data: pagesData, isLoading: pagesLoading } = useQuery({
     queryKey: ['analytics-pages', period],
-    queryFn: () =>
-      fetch(`/api/admin/analytics/pages?period=${period}`)
-        .then(r => r.json())
-        .then(d => d.data),
+    queryFn: () => fetchAnalyticsData(`/api/admin/analytics/pages?period=${period}`),
     refetchInterval: 10000,
   });
 
   const { data: geoData, isLoading: geoLoading } = useQuery({
     queryKey: ['analytics-geo', period],
-    queryFn: () =>
-      fetch(`/api/admin/analytics/geo?period=${period}`)
-        .then(r => r.json())
-        .then(d => d.data),
+    queryFn: () => fetchAnalyticsData(`/api/admin/analytics/geo?period=${period}`),
     refetchInterval: 10000,
   });
 
   const { data: activeData, isLoading: activeLoading } = useQuery({
     queryKey: ['analytics-active'],
-    queryFn: () =>
-      fetch('/api/admin/analytics/active')
-        .then(r => r.json())
-        .then(d => d.data),
+    queryFn: () => fetchAnalyticsData('/api/admin/analytics/active'),
     refetchInterval: 5000,
   });
 
   // Memoized stats
   const formatDuration = (seconds) => {
-    if (!seconds) return '0s';
+    if (seconds === null || seconds === undefined) return '—';
+    if (seconds === 0) return '0s';
     if (seconds < 60) return `${seconds}s`;
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return secs > 0 ? `${mins}m ${secs}s` : `${mins}m`;
   };
 
-  const stats = useMemo(() => [
-    {
-      label: 'Total Visitors',
-      value: visitorsData?.stats?.totalVisitors || 0,
-      trend: `Last ${period}d`,
-      icon: Users,
-      color: 'blue',
-    },
-    {
-      label: 'Unique Visitors',
-      value: visitorsData?.stats?.uniqueVisitors || 0,
-      trend: `Sessions: ${visitorsData?.stats?.totalVisitors || 0}`,
-      icon: TrendingUp,
-      color: 'emerald',
-    },
-    {
-      label: 'Bounce Rate',
-      value: `${visitorsData?.stats?.bounceRate || 0}%`,
-      trend: 'Session exits',
-      icon: Activity,
-      color: 'amber',
-    },
-    {
-      label: 'Avg Session',
-      value: formatDuration(visitorsData?.stats?.avgSessionDuration),
-      trend: 'Time on site',
-      icon: Zap,
-      color: 'violet',
-    },
-  ], [visitorsData, period]);
+  const stats = useMemo(() => {
+    const growthRate = visitorsData?.stats?.growthRate;
+    const hasGrowth = typeof growthRate === 'number';
+    const measuredSessions = visitorsData?.stats?.measuredSessions;
+
+    return [
+      {
+        label: 'Page Views',
+        value: visitorsData?.stats?.totalPageViews ?? '—',
+        trend: `Last ${period}d`,
+        trendLabel: 'Period',
+        icon: FileText,
+        color: 'blue',
+      },
+      {
+        label: 'Unique Visitors',
+        value: visitorsData?.stats?.uniqueVisitors ?? '—',
+        trend: hasGrowth
+          ? `${growthRate > 0 ? '+' : ''}${growthRate}%`
+          : (visitorsData?.stats?.growthStatus || 'Collecting verified baseline'),
+        trendLabel: `vs prior ${period}d`,
+        trendDirection: growthRate > 0 ? 'up' : growthRate < 0 ? 'down' : 'neutral',
+        icon: Users,
+        color: 'emerald',
+      },
+      {
+        label: 'Bounce Rate',
+        value: visitorsData?.stats?.bounceRate === null || visitorsData?.stats?.bounceRate === undefined
+          ? '—'
+          : `${visitorsData.stats.bounceRate}%`,
+        trend: measuredSessions ? `${measuredSessions} measured` : 'Awaiting verified sessions',
+        trendLabel: 'Data quality',
+        icon: Activity,
+        color: 'amber',
+      },
+      {
+        label: 'Avg Session',
+        value: formatDuration(visitorsData?.stats?.avgSessionDuration),
+        trend: measuredSessions ? 'Verified sessions' : 'No verified sessions yet',
+        trendLabel: 'Scope',
+        icon: Zap,
+        color: 'violet',
+      },
+    ];
+  }, [visitorsData, period]);
 
   const handleExport = async () => {
     try {
@@ -161,10 +172,11 @@ export default function VisitorAnalyticsPage() {
         ['Visitor Analytics Report', `Period: Last ${period} days`],
         [],
         ['Metric', 'Value'],
-        ['Total Visitors', visitorsData?.stats?.totalVisitors || 0],
-        ['Unique Visitors', visitorsData?.stats?.uniqueVisitors || 0],
-        ['Bounce Rate', `${visitorsData?.stats?.bounceRate || 0}%`],
-        ['Avg Session Duration', `${visitorsData?.stats?.avgSessionDuration || 0}s`],
+        ['Page Views', visitorsData?.stats?.totalPageViews ?? ''],
+        ['Unique Visitors', visitorsData?.stats?.uniqueVisitors ?? ''],
+        ['Growth vs previous period', visitorsData?.stats?.growthRate ?? ''],
+        ['Bounce Rate', visitorsData?.stats?.bounceRate ?? ''],
+        ['Avg Session Duration', visitorsData?.stats?.avgSessionDuration ?? ''],
       ]
         .map(row => row.join(','))
         .join('\n');
@@ -175,7 +187,7 @@ export default function VisitorAnalyticsPage() {
       a.href = url;
       a.download = `visitor-analytics-${new Date().toISOString().split('T')[0]}.csv`;
       a.click();
-      
+
       toast.success('Report exported successfully');
     } catch (error) {
       toast.error('Failed to export report');
@@ -188,8 +200,8 @@ export default function VisitorAnalyticsPage() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div className="flex items-center gap-4">
           <Link
-            href="/admin/admin/protected/dashboard"
-            className="p-2.5 rounded-xl border border-white/10 hover:border-white/20 hover:bg-white/5 transition-all"
+            href="/admin/dashboard"
+            className="p-2.5 rounded-xl border border-border hover:border-border hover:bg-muted/50 transition-all"
           >
             <ArrowLeft className="w-5 h-5 text-muted-foreground" />
           </Link>
@@ -205,7 +217,7 @@ export default function VisitorAnalyticsPage() {
 
         <div className="flex items-center gap-3 flex-wrap">
           {/* Period Selector */}
-          <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl p-1">
+          <div className="flex items-center gap-2 bg-muted/50 border border-border rounded-xl p-1">
             {[7, 14, 30, 90].map(p => (
               <button
                 key={p}
@@ -240,20 +252,20 @@ export default function VisitorAnalyticsPage() {
       </div>
 
       {/* Main Chart Section */}
-      <div className="border border-white/5 bg-white/[0.01] rounded-[2.5rem] p-8 md:p-10">
+      <div className="border border-border/70 bg-card/40 rounded-[2.5rem] p-8 md:p-10">
         <div className="flex items-center justify-between mb-8">
           <div>
             <h2 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-3">
-              <TrendingUp className="w-7 h-7 text-blue-400" />
+              <TrendingUp className="w-7 h-7 text-accent" />
               Visitor Trend
             </h2>
             <p className="text-xs text-muted-foreground mt-2 uppercase tracking-[0.1em]">
-              {view === 'daily' ? 'Daily visitor count' : 'Hourly breakdown'}
+              {view === 'daily' ? 'Daily unique visitors' : `Unique visitors by hour, last ${period} days`}
             </p>
           </div>
 
           {/* View Toggle */}
-          <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl p-1">
+          <div className="flex items-center gap-2 bg-muted/50 border border-border rounded-xl p-1">
             <button
               onClick={() => setView('daily')}
               className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
@@ -292,10 +304,10 @@ export default function VisitorAnalyticsPage() {
       </div>
 
       {/* Hourly Breakdown */}
-      <div className="border border-white/5 bg-white/[0.01] rounded-[2.5rem] p-8 md:p-10">
+      <div className="border border-border/70 bg-card/40 rounded-[2.5rem] p-8 md:p-10">
         <h2 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-3 mb-8">
           <Calendar className="w-7 h-7 text-indigo-400" />
-          24-Hour Breakdown
+          Hourly Breakdown · Last {period} Days
         </h2>
         {visitorsLoading ? (
           <div className="h-[350px] flex items-center justify-center">
@@ -309,7 +321,7 @@ export default function VisitorAnalyticsPage() {
       {/* Device & Pages Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Devices */}
-        <div className="border border-white/5 bg-white/[0.01] rounded-[2.5rem] p-8 md:p-10">
+        <div className="border border-border/70 bg-card/40 rounded-[2.5rem] p-8 md:p-10">
           <h2 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-3 mb-8">
             <Monitor className="w-7 h-7 text-amber-400" />
             Device Breakdown
@@ -324,7 +336,7 @@ export default function VisitorAnalyticsPage() {
         </div>
 
         {/* Top Pages */}
-        <div className="border border-white/5 bg-white/[0.01] rounded-[2.5rem] p-8 md:p-10">
+        <div className="border border-border/70 bg-card/40 rounded-[2.5rem] p-8 md:p-10">
           <h2 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-3 mb-8">
             <FileText className="w-7 h-7 text-emerald-400" />
             Top Pages
@@ -340,7 +352,7 @@ export default function VisitorAnalyticsPage() {
       </div>
 
       {/* Device Stats Grid */}
-      <div className="border border-white/5 bg-white/[0.01] rounded-[2.5rem] p-8 md:p-10">
+      <div className="border border-border/70 bg-card/40 rounded-[2.5rem] p-8 md:p-10">
         <h2 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-3 mb-8">
           <Activity className="w-7 h-7 text-violet-400" />
           Device Statistics
@@ -351,9 +363,9 @@ export default function VisitorAnalyticsPage() {
       {/* Geographic Data */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Geography Chart */}
-        <div className="lg:col-span-2 border border-white/5 bg-white/[0.01] rounded-[2.5rem] p-8 md:p-10">
+        <div className="lg:col-span-2 border border-border/70 bg-card/40 rounded-[2.5rem] p-8 md:p-10">
           <h2 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-3 mb-8">
-            <Globe className="w-7 h-7 text-blue-400" />
+            <Globe className="w-7 h-7 text-accent" />
             Traffic by Country
           </h2>
           {geoLoading ? (
@@ -372,7 +384,7 @@ export default function VisitorAnalyticsPage() {
       {/* Locations Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Countries */}
-        <div className="border border-white/5 bg-white/[0.01] rounded-[2.5rem] p-8 md:p-10">
+        <div className="border border-border/70 bg-card/40 rounded-[2.5rem] p-8 md:p-10">
           <h2 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-3 mb-8">
             <Globe className="w-7 h-7 text-accent" />
             Top Countries
@@ -383,8 +395,8 @@ export default function VisitorAnalyticsPage() {
                 <Zap className="w-8 h-8 text-accent animate-pulse mx-auto" />
               </div>
             ) : geoData?.countries?.length > 0 ? (
-              geoData.countries.map((country, i) => (
-                <LocationCard key={i} location={country} type="country" />
+                geoData.countries.map((country, i) => (
+                <LocationCard key={i} location={country} type="country" maxVisitors={geoData.countries[0]?.visitors} />
               ))
             ) : (
               <p className="text-center text-sm text-muted-foreground">No data available</p>
@@ -393,7 +405,7 @@ export default function VisitorAnalyticsPage() {
         </div>
 
         {/* Cities */}
-        <div className="border border-white/5 bg-white/[0.01] rounded-[2.5rem] p-8 md:p-10">
+        <div className="border border-border/70 bg-card/40 rounded-[2.5rem] p-8 md:p-10">
           <h2 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-3 mb-8">
             <MapPin className="w-7 h-7 text-accent" />
             Top Cities
@@ -404,8 +416,8 @@ export default function VisitorAnalyticsPage() {
                 <Zap className="w-8 h-8 text-accent animate-pulse mx-auto" />
               </div>
             ) : geoData?.cities?.length > 0 ? (
-              geoData.cities.map((city, i) => (
-                <LocationCard key={i} location={city} type="city" />
+                geoData.cities.map((city, i) => (
+                <LocationCard key={i} location={city} type="city" maxVisitors={geoData.cities[0]?.visitors} />
               ))
             ) : (
               <p className="text-center text-sm text-muted-foreground">No data available</p>
@@ -419,7 +431,7 @@ export default function VisitorAnalyticsPage() {
         <AnalyticsTable
           title="Page Engagement Metrics"
           data={pagesData?.pageEngagement}
-          columns={['Page', 'Visits', 'AvgSessionDuration', 'BounceRate', 'UniqueCount']}
+          columns={['Page', 'Visits', 'AvgSessionDuration', 'BounceRate', 'UniqueVisitors']}
           icon={FileText}
           isLoading={pagesLoading}
         />
@@ -428,7 +440,7 @@ export default function VisitorAnalyticsPage() {
       {/* Browser & OS Stats */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Browsers */}
-        <div className="border border-white/5 bg-white/[0.01] rounded-[2.5rem] p-8 md:p-10">
+        <div className="border border-border/70 bg-card/40 rounded-[2.5rem] p-8 md:p-10">
           <h2 className="text-2xl font-black italic uppercase tracking-tighter mb-8">
             Top Browsers
           </h2>
@@ -441,7 +453,7 @@ export default function VisitorAnalyticsPage() {
               devicesData.browsers.map((browser, i) => (
                 <div
                   key={i}
-                  className="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/5 hover:border-white/10 transition-all"
+                  className="flex items-center justify-between p-4 rounded-lg bg-muted/50 border border-border/70 hover:border-border transition-all"
                 >
                   <span className="text-sm font-bold text-foreground">{browser._id}</span>
                   <span className="text-xs font-black text-accent">
@@ -456,7 +468,7 @@ export default function VisitorAnalyticsPage() {
         </div>
 
         {/* OS */}
-        <div className="border border-white/5 bg-white/[0.01] rounded-[2.5rem] p-8 md:p-10">
+        <div className="border border-border/70 bg-card/40 rounded-[2.5rem] p-8 md:p-10">
           <h2 className="text-2xl font-black italic uppercase tracking-tighter mb-8">
             Operating Systems
           </h2>
@@ -469,7 +481,7 @@ export default function VisitorAnalyticsPage() {
               devicesData.operatingSystems.map((os, i) => (
                 <div
                   key={i}
-                  className="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/5 hover:border-white/10 transition-all"
+                  className="flex items-center justify-between p-4 rounded-lg bg-muted/50 border border-border/70 hover:border-border transition-all"
                 >
                   <span className="text-sm font-bold text-foreground">{os._id}</span>
                   <span className="text-xs font-black text-accent">

@@ -1,29 +1,29 @@
 "use client";
 
 import React, { useState, useRef, useCallback, useEffect } from "react";
-import { 
-  DndContext, 
-  closestCenter, 
-  KeyboardSensor, 
-  PointerSensor, 
-  useSensor, 
-  useSensors 
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors
 } from "@dnd-kit/core";
-import { 
-  arrayMove, 
-  SortableContext, 
-  sortableKeyboardCoordinates, 
-  rectSortingStrategy, 
-  useSortable 
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  rectSortingStrategy,
+  useSortable
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { 
-  Upload, 
-  X, 
-  Link as LinkIcon, 
-  Plus, 
-  Trash2, 
-  RefreshCw, 
+import {
+  Upload,
+  X,
+  Link as LinkIcon,
+  Plus,
+  Trash2,
+  RefreshCw,
   GripVertical,
   Image as ImageIcon
 } from "lucide-react";
@@ -54,26 +54,26 @@ function SortableImageItem({ id, url, onRemove, onReplace }) {
     <div
       ref={setNodeRef}
       style={style}
-      className={`relative rounded-3xl overflow-hidden aspect-square group border border-white/10 bg-slate-800/20 shadow-2xl transition-all duration-500 hover:border-accent/40 ${isDragging ? 'ring-2 ring-accent shadow-accent/20' : ''}`}
+      className={`relative rounded-3xl overflow-hidden aspect-square group border border-border bg-muted/20 shadow-2xl transition-all duration-500 hover:border-accent/40 ${isDragging ? 'ring-2 ring-accent shadow-accent/20' : ''}`}
     >
       <img src={url} alt="Muhyo Tech uploaded media preview" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-      
+
       {/* Overlay */}
-      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-3 backdrop-blur-[2px]">
+      <div className="absolute inset-0 bg-overlay/60 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-3 backdrop-blur-[2px]">
         {/* Drag handle */}
-        <div 
-          {...listeners} 
+        <div
+          {...listeners}
           {...attributes}
-          className="absolute top-4 left-4 p-2 bg-white/10 rounded-xl cursor-grab active:cursor-grabbing hover:bg-white/20 transition-colors"
+          className="absolute top-4 left-4 p-2 bg-muted rounded-xl cursor-grab active:cursor-grabbing hover:bg-muted transition-colors"
         >
-          <GripVertical className="w-4 h-4 text-white" />
+          <GripVertical className="w-4 h-4 text-foreground" />
         </div>
 
         <div className="flex gap-2">
             <button
                 type="button"
                 onClick={() => onReplace(id)}
-                className="p-3 bg-accent text-white rounded-2xl hover:bg-accent/80 transition-all hover:scale-110 active:scale-95 shadow-lg shadow-accent/20"
+                className="p-3 bg-accent text-foreground rounded-2xl hover:bg-accent/80 transition-all hover:scale-110 active:scale-95 shadow-lg shadow-accent/20"
                 title="Replace Image"
             >
                 <RefreshCw className="w-4 h-4" />
@@ -81,7 +81,7 @@ function SortableImageItem({ id, url, onRemove, onReplace }) {
             <button
                 type="button"
                 onClick={() => onRemove(id)}
-                className="p-3 bg-red-500 text-white rounded-2xl hover:bg-red-600 transition-all hover:scale-110 active:scale-95 shadow-lg shadow-red-500/20"
+                className="p-3 bg-red-500 text-foreground rounded-2xl hover:bg-red-600 transition-all hover:scale-110 active:scale-95 shadow-lg shadow-red-500/20"
                 title="Remove Image"
             >
                 <Trash2 className="w-4 h-4" />
@@ -155,7 +155,7 @@ export default function ImageUploader({ images = [], onChange }) {
 
       const newList = arrayMove(imageList, oldIndex, newIndex);
       setImageList(newList);
-      
+
       // Pass the current state items to onChange
       // For existing URLs, just pass the string. For pending, pass the object.
       onChange(newList.map(item => item.file ? { file: item.file, url: item.url } : item.url));
@@ -177,17 +177,17 @@ export default function ImageUploader({ images = [], onChange }) {
     // Add new items to display immediately
     const updatedList = [...imageList, ...newItems];
     setImageList(updatedList);
-    
+
     // Call onChange with the updated state
     onChange(updatedList.map(item => item.file ? { file: item.file, url: item.url } : item.url));
-    
+
     if (fileInputRef.current) fileInputRef.current.value = "";
     toast.success(`${files.length} image(s) selected`);
   };
 
   const handleUrlAdd = () => {
     if (!urlInput.trim()) return;
-    
+
     // Quick validation
     try {
         new URL(urlInput);
@@ -198,10 +198,10 @@ export default function ImageUploader({ images = [], onChange }) {
 
     const newItem = { id: urlInput, url: urlInput };
     const updatedList = [...imageList, newItem];
-    
+
     setImageList(updatedList);
     onChange(updatedList.map(item => item.file ? { file: item.file, url: item.url } : item.url));
-    
+
     setUrlInput("");
     setIsUrlInputOpen(false);
     toast.success("URL image added");
@@ -212,7 +212,7 @@ export default function ImageUploader({ images = [], onChange }) {
     if (itemToRemove && itemToRemove.url.startsWith('blob:')) {
         URL.revokeObjectURL(itemToRemove.url);
     }
-    
+
     const updatedList = imageList.filter(item => item.id !== id);
     setImageList(updatedList);
     onChange(updatedList.map(item => item.file ? { file: item.file, url: item.url } : item.url));
@@ -228,42 +228,42 @@ export default function ImageUploader({ images = [], onChange }) {
     if (!file || !replacingId) return;
 
     const newUrl = URL.createObjectURL(file);
-    
+
     // Revoke old blob if it was one
     const oldItem = imageList.find(item => item.id === replacingId);
     if (oldItem && oldItem.url.startsWith('blob:')) {
         URL.revokeObjectURL(oldItem.url);
     }
 
-    const updatedList = imageList.map(item => 
+    const updatedList = imageList.map(item =>
       item.id === replacingId ? { id: newUrl, url: newUrl, file, isPending: true } : item
     );
 
     setImageList(updatedList);
     onChange(updatedList.map(item => item.file ? { file: item.file, url: item.url } : item.url));
-    
+
     setReplacingId(null);
     if (replaceInputRef.current) replaceInputRef.current.value = "";
     toast.success("Image replaced locally");
   };
 
   return (
-    <div className="space-y-8 w-full p-8 md:p-12 rounded-[2.5rem] bg-slate-900/40 border border-white/5 backdrop-blur-3xl shadow-3xl">
+    <div className="space-y-8 w-full p-8 md:p-12 rounded-[2.5rem] bg-card/40 border border-border/70 backdrop-blur-3xl shadow-3xl">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-white/5 pb-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-border/70 pb-8">
         <div>
            <div className="flex items-center gap-4 mb-2">
             <ImageIcon className="w-8 h-8 text-accent animate-pulse" />
-            <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter italic">Media Assets</h3>
+            <h3 className="text-2xl font-black text-foreground italic uppercase tracking-tighter italic">Media Assets</h3>
            </div>
-           <p className="text-[10px] uppercase font-bold text-slate-500 tracking-[0.2em]">Manage high-fidelity project visuals</p>
+           <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-[0.2em]">Manage high-fidelity project visuals</p>
         </div>
 
         <div className="flex flex-wrap gap-3">
             <button
                 type="button"
                 onClick={() => setIsUrlInputOpen(!isUrlInputOpen)}
-                className="px-6 py-4 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-white/10 text-white font-black uppercase text-[10px] tracking-[0.2em] transition-all flex items-center gap-3 active:scale-95 group"
+                className="px-6 py-4 rounded-2xl bg-muted/40 border border-border/70 hover:border-border text-foreground font-black uppercase text-[10px] tracking-[0.2em] transition-all flex items-center gap-3 active:scale-95 group"
             >
                 <LinkIcon className="w-4 h-4 group-hover:rotate-12 transition-transform" />
                 Add URL
@@ -271,7 +271,7 @@ export default function ImageUploader({ images = [], onChange }) {
             <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="px-8 py-4 rounded-2xl bg-accent text-black font-black uppercase text-[10px] tracking-[0.2em] transition-all flex items-center gap-3 hover:bg-accent/90 shadow-xl shadow-accent/10 active:scale-95"
+                className="px-8 py-4 rounded-2xl bg-accent text-accent-foreground font-black uppercase text-[10px] tracking-[0.2em] transition-all flex items-center gap-3 hover:bg-accent/90 shadow-xl shadow-accent/10 active:scale-95"
             >
                 <Plus className="w-4 h-4" />
                 Select Files
@@ -288,21 +288,21 @@ export default function ImageUploader({ images = [], onChange }) {
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <div className="p-8 rounded-3xl bg-white/[0.02] border border-white/10 flex flex-col md:flex-row gap-4 items-end">
+            <div className="p-8 rounded-3xl bg-card/50 border border-border flex flex-col md:flex-row gap-4 items-end">
                 <div className="flex-1 w-full space-y-2">
                     <label className="text-[10px] font-black uppercase text-accent tracking-widest pl-2">Remote Image URL</label>
-                    <input 
-                        type="text" 
+                    <input
+                        type="text"
                         value={urlInput}
                         onChange={(e) => setUrlInput(e.target.value)}
                         placeholder="https://images.unsplash.com/photo-..."
-                        className="w-full p-4 bg-white/[0.03] border border-white/10 rounded-2xl text-xs text-white focus:outline-none focus:ring-4 focus:ring-accent/10 focus:border-accent/40 transition-all font-medium placeholder:text-slate-600"
+                        className="w-full p-4 bg-muted/40 border border-border rounded-2xl text-xs text-foreground focus:outline-none focus:ring-4 focus:ring-accent/10 focus:border-accent/40 transition-all font-medium placeholder:text-muted-foreground/80"
                     />
                 </div>
                 <button
                     type="button"
                     onClick={handleUrlAdd}
-                    className="px-8 py-4 bg-white text-black rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-slate-200 transition-all active:scale-95"
+                    className="px-8 py-4 bg-card text-accent-foreground rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-muted transition-all active:scale-95"
                 >
                     Link Asset
                 </button>
@@ -347,16 +347,16 @@ export default function ImageUploader({ images = [], onChange }) {
 
               {/* Empty state placeholder and dropzone */}
               {imageList.length === 0 && (
-                <div 
+                <div
                     onClick={() => fileInputRef.current?.click()}
-                    className="col-span-full py-24 rounded-[2.5rem] border-2 border-dashed border-white/5 hover:border-accent/40 bg-white/[0.01] hover:bg-white/[0.03] transition-all cursor-pointer flex flex-col items-center justify-center gap-6 group"
+                    className="col-span-full py-24 rounded-[2.5rem] border-2 border-dashed border-border/70 hover:border-accent/40 bg-card/40 hover:bg-muted/40 transition-all cursor-pointer flex flex-col items-center justify-center gap-6 group"
                 >
-                    <div className="w-20 h-20 rounded-3xl bg-slate-900 border border-white/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-2xl">
-                        <Upload className="w-8 h-8 text-slate-500 group-hover:text-accent transition-colors" />
+                    <div className="w-20 h-20 rounded-3xl bg-card border border-border/70 flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-2xl">
+                        <Upload className="w-8 h-8 text-muted-foreground group-hover:text-accent transition-colors" />
                     </div>
                     <div className="text-center">
-                        <p className="text-sm font-black text-white italic uppercase tracking-tighter mb-1">Architect Your Visuals</p>
-                        <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Supports JPG, PNG, WEBP • MAX 5MB</p>
+                        <p className="text-sm font-black text-foreground italic uppercase tracking-tighter mb-1">Architect Your Visuals</p>
+                        <p className="text-[10px] font-bold text-muted-foreground/80 uppercase tracking-widest">Supports JPG, PNG, WEBP • MAX 5MB</p>
                     </div>
                 </div>
               )}
@@ -366,12 +366,12 @@ export default function ImageUploader({ images = [], onChange }) {
                 <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="aspect-square rounded-3xl border-2 border-dashed border-white/5 hover:border-accent/40 bg-white/[0.01] hover:bg-white/[0.03] transition-all flex flex-col items-center justify-center gap-3 group"
+                    className="aspect-square rounded-3xl border-2 border-dashed border-border/70 hover:border-accent/40 bg-card/40 hover:bg-muted/40 transition-all flex flex-col items-center justify-center gap-3 group"
                 >
-                    <div className="w-10 h-10 rounded-xl bg-slate-900 border border-white/5 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Plus className="w-4 h-4 text-slate-500 group-hover:text-accent" />
+                    <div className="w-10 h-10 rounded-xl bg-card border border-border/70 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Plus className="w-4 h-4 text-muted-foreground group-hover:text-accent" />
                     </div>
-                    <span className="text-[9px] font-black uppercase text-slate-500 group-hover:text-accent tracking-widest">Add More</span>
+                    <span className="text-[9px] font-black uppercase text-muted-foreground group-hover:text-accent tracking-widest">Add More</span>
                 </button>
               )}
             </div>
@@ -380,7 +380,7 @@ export default function ImageUploader({ images = [], onChange }) {
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
             {imageList.map((item) => (
-              <div key={item.id} className="relative rounded-3xl overflow-hidden aspect-square border border-white/10 bg-slate-800/20 shadow-2xl">
+              <div key={item.id} className="relative rounded-3xl overflow-hidden aspect-square border border-border bg-muted/20 shadow-2xl">
                 <img src={item.url} alt="Muhyo Tech uploaded media preview" className="w-full h-full object-cover" />
               </div>
             ))}

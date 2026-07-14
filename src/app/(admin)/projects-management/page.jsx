@@ -62,12 +62,12 @@ export default function ProjectsManagement() {
       };
 
       console.log("Submitting project data:", formattedData);
-      
+
       toast.success(editingProject ? "Project updated!" : "Project created!");
       handleCloseModal();
-      
+
       // Refresh list (mock)
-      setProjects(prev => editingProject 
+      setProjects(prev => editingProject
         ? prev.map(p => p.id === editingProject.id ? { ...p, ...formattedData } : p)
         : [...prev, { id: Date.now().toString(), ...formattedData }]
       );
@@ -83,10 +83,10 @@ export default function ProjectsManagement() {
     { name: "purpose", label: "Purpose", placeholder: "e.g. SAAS / Portfolio / Retail", required: true },
     { name: "techStack", label: "Tech Stack (Comma Separated)", placeholder: "Next.js, Tailwind, MongoDB", required: true },
     { name: "description", label: "Description", type: "textarea", placeholder: "Explain the project impact...", fullWidth: true, required: true },
-    { 
-      name: "images", 
-      label: "Project Media Gallery", 
-      type: "custom", 
+    {
+      name: "images",
+      label: "Project Media Gallery",
+      type: "custom",
       fullWidth: true,
       required: true,
       render: ({ control }) => (
@@ -95,9 +95,9 @@ export default function ProjectsManagement() {
           control={control}
           defaultValue={[]}
           render={({ field }) => (
-            <ImageUploader 
-              images={field.value} 
-              onChange={field.onChange} 
+            <ImageUploader
+              images={field.value}
+              onChange={field.onChange}
             />
           )}
         />
@@ -109,14 +109,14 @@ export default function ProjectsManagement() {
     <div className="space-y-12">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div className="flex flex-col gap-2">
-          <h1 className="text-4xl font-black text-white tracking-widest uppercase italic">
+          <h1 className="text-4xl font-black text-foreground tracking-widest uppercase italic">
             Project Management
           </h1>
-          <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">
+          <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">
             Organize & Architect Your Portfolio
           </p>
         </div>
-        <button 
+        <button
           onClick={() => handleOpenModal()}
           className="px-10 py-5 rounded-2xl bg-accent text-accent-foreground font-black uppercase text-xs tracking-widest hover:bg-accent/90 transition-all shadow-xl shadow-accent/20 flex items-center gap-3 active:scale-95 group"
         >
@@ -126,52 +126,52 @@ export default function ProjectsManagement() {
 
       <div className="flex flex-col md:flex-row gap-6 items-center">
         <div className="w-full relative group">
-          <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-accent transition-colors" />
+          <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-accent transition-colors" />
           <input
             placeholder="Search Projects..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-800 p-5 pl-14 rounded-2xl text-sm font-bold text-white focus:outline-none focus:border-accent transition-all placeholder:text-slate-700 shadow-2xl"
+            className="w-full bg-card border border-border p-5 pl-14 rounded-2xl text-sm font-bold text-foreground focus:outline-none focus:border-accent transition-all placeholder:text-muted-foreground/70 shadow-2xl"
           />
         </div>
-        <button className="px-8 py-5 rounded-2xl border border-slate-800 bg-slate-900 text-slate-500 font-black uppercase text-[10px] tracking-widest flex items-center gap-3 hover:text-white transition-colors">
+        <button className="px-8 py-5 rounded-2xl border border-border bg-card text-muted-foreground font-black uppercase text-[10px] tracking-widest flex items-center gap-3 hover:text-foreground transition-colors">
           <Filter className="w-4 h-4" /> Filter By Stack
         </button>
       </div>
 
-      <div className="overflow-x-auto rounded-[2.5rem] border border-white/5 bg-slate-900/40 backdrop-blur-3xl shadow-3xl">
+      <div className="overflow-x-auto rounded-[2.5rem] border border-border/70 bg-card/40 backdrop-blur-3xl shadow-3xl">
         <table className="w-full text-left border-collapse min-w-[800px]">
-          <thead className="border-b border-white/5 bg-slate-900/50">
+          <thead className="border-b border-border/70 bg-card/50">
             <tr>
-              <th className="p-10 text-[10px] font-black uppercase text-slate-500 tracking-[0.3em]">
+              <th className="p-10 text-[10px] font-black uppercase text-muted-foreground tracking-[0.3em]">
                 Project Title
               </th>
-              <th className="p-10 text-[10px] font-black uppercase text-slate-500 tracking-[0.3em]">
+              <th className="p-10 text-[10px] font-black uppercase text-muted-foreground tracking-[0.3em]">
                 Category
               </th>
-              <th className="p-10 text-[10px] font-black uppercase text-slate-500 tracking-[0.3em]">
+              <th className="p-10 text-[10px] font-black uppercase text-muted-foreground tracking-[0.3em]">
                 Tech Stack
               </th>
-              <th className="p-10 text-[10px] font-black uppercase text-slate-500 tracking-[0.3em]">
+              <th className="p-10 text-[10px] font-black uppercase text-muted-foreground tracking-[0.3em]">
                 Status
               </th>
-              <th className="p-10 text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] text-right">
+              <th className="p-10 text-[10px] font-black uppercase text-muted-foreground tracking-[0.3em] text-right">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-border">
             {projects.filter(p => p.title.toLowerCase().includes(search.toLowerCase())).map((p, i) => (
               <motion.tr
                 key={p.id}
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.05 }}
-                className="hover:bg-white/[0.02] transition-colors group"
+                className="hover:bg-card/50 transition-colors group"
               >
                 <td className="p-10">
                   <div className="flex items-center gap-6">
-                    <div className="w-16 h-16 rounded-2xl bg-slate-800 overflow-hidden border border-white/5 shadow-xl">
+                    <div className="w-16 h-16 rounded-2xl bg-muted overflow-hidden border border-border/70 shadow-xl">
                       <img
                         src={p.thumbnail || p.images?.[0] || `https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=200`}
                         className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-700"
@@ -180,23 +180,23 @@ export default function ProjectsManagement() {
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <div className="text-base font-black text-white group-hover:text-accent transition-colors italic">
+                        <div className="text-base font-black text-foreground group-hover:text-accent transition-colors italic">
                           {p.title}
                         </div>
                         {!p._isFromDataJs && (
-                          <div 
+                          <div
                             className="w-2.5 h-2.5 rounded-full bg-green-500 shadow-lg shadow-green-500/50 group-hover:scale-125 transition-transform"
                             title="This project is already uploaded to the database"
                           />
                         )}
                         {p._isFromDataJs && (
-                          <div 
-                            className="w-2.5 h-2.5 rounded-full border-2 border-slate-500 group-hover:scale-125 transition-transform"
+                          <div
+                            className="w-2.5 h-2.5 rounded-full border-2 border-border group-hover:scale-125 transition-transform"
                             title="This is a template from data.js - not uploaded yet"
                           />
                         )}
                       </div>
-                      <div className="text-[10px] font-bold text-slate-500 mt-1 uppercase tracking-widest">
+                      <div className="text-[10px] font-bold text-muted-foreground mt-1 uppercase tracking-widest">
                         {p.purpose}
                       </div>
                     </div>
@@ -212,7 +212,7 @@ export default function ProjectsManagement() {
                     {p.techStack?.map((t) => (
                       <span
                         key={t}
-                        className="text-[8px] font-bold px-2 py-1 rounded-lg bg-slate-800 border border-white/5 text-slate-400 tracking-widest uppercase"
+                        className="text-[8px] font-bold px-2 py-1 rounded-lg bg-muted border border-border/70 text-muted-foreground tracking-widest uppercase"
                       >
                         {t}
                       </span>
@@ -221,7 +221,7 @@ export default function ProjectsManagement() {
                 </td>
                 <td className="p-10">
                   <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-sm" />
                     <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">
                       Live
                     </span>
@@ -229,16 +229,16 @@ export default function ProjectsManagement() {
                 </td>
                 <td className="p-10 text-right">
                   <div className="flex justify-end gap-3 opacity-20 group-hover:opacity-100 transition-all duration-300 transform group-hover:translate-x-0 translate-x-4">
-                    <button 
+                    <button
                       onClick={() => handleOpenModal(p)}
-                      className="p-3 rounded-xl bg-slate-800 text-slate-400 hover:text-white hover:bg-accent transition-all hover:scale-110"
+                      className="p-3 rounded-xl bg-muted text-muted-foreground hover:text-foreground hover:bg-accent transition-all hover:scale-110"
                     >
                       <Edit2 className="w-4 h-4" />
                     </button>
-                    <button className="p-3 rounded-xl bg-slate-800 text-red-500/60 hover:text-white hover:bg-red-500 transition-all hover:scale-110">
+                    <button className="p-3 rounded-xl bg-muted text-red-500/60 hover:text-foreground hover:bg-red-500 transition-all hover:scale-110">
                       <Trash2 className="w-4 h-4" />
                     </button>
-                    <button className="p-3 rounded-xl bg-slate-800 text-slate-400 hover:text-white hover:bg-white/10 transition-all hover:scale-110">
+                    <button className="p-3 rounded-xl bg-muted text-muted-foreground hover:text-foreground hover:bg-muted transition-all hover:scale-110">
                       <ExternalLink className="w-4 h-4" />
                     </button>
                   </div>
@@ -263,7 +263,7 @@ export default function ProjectsManagement() {
       />
 
       <div className="mt-10 flex justify-center">
-        <button className="text-[9px] font-black uppercase text-slate-700 tracking-[0.5em] hover:text-accent transition-colors">
+        <button className="text-[9px] font-black uppercase text-muted-foreground/70 tracking-[0.5em] hover:text-accent transition-colors">
           System Core Online // Port v2.4
         </button>
       </div>

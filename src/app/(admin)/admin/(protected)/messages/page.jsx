@@ -52,7 +52,7 @@ export default function MessagesPage() {
   const handleSelectMessage = async (message) => {
     setSelectedMessage(message);
     setIsDetailOpen(true);
-    
+
     // Mark as seen in background if it's new
     const messageId = message.id || message._id;
     if (message.status === "new" && messageId) {
@@ -67,7 +67,7 @@ export default function MessagesPage() {
               : {}),
           },
         });
-        
+
         // Handle local refresh without toast
         refetch();
         if (stats) {
@@ -132,18 +132,18 @@ export default function MessagesPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-5xl font-black italic uppercase text-white tracking-tighter leading-none mb-4">
+          <h1 className="text-5xl font-black italic uppercase text-foreground tracking-tighter leading-none mb-4">
             Client <span className="text-accent underline decoration-accent/20 underline-offset-12">Messages</span>
           </h1>
-          <p className="text-slate-400 text-sm font-medium tracking-wide">
-            Manage and respond to all client inquiries in <span className="text-white">real-time</span>.
+          <p className="text-muted-foreground text-sm font-medium tracking-wide">
+            Manage and respond to all client inquiries in <span className="text-foreground">real-time</span>.
           </p>
         </div>
-        
+
         <div className="flex items-center gap-3">
-          <button 
-            onClick={() => { refetch(); refetchStats(); toast.success("Messages updated"); }} 
-            className="p-3 rounded-2xl bg-white/5 border border-white/10 text-slate-400 hover:text-white hover:bg-white/10 transition-all group"
+          <button
+            onClick={() => { refetch(); refetchStats(); toast.success("Messages updated"); }}
+            className="p-3 rounded-2xl bg-muted/50 border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-all group"
             title="Refresh messages"
           >
             <RefreshCw className={`w-5 h-5 group-active:rotate-180 transition-transform duration-500 ${loading ? 'animate-spin' : ''}`} />
@@ -153,32 +153,32 @@ export default function MessagesPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatsCard 
-          label="Total Messages" 
-          value={stats?.totalMessages} 
-          icon={MessageSquare} 
+        <StatsCard
+          label="Total Messages"
+          value={stats?.totalMessages}
+          icon={MessageSquare}
           color="blue"
           loading={statsLoading}
         />
-        <StatsCard 
-          label="Unread / New" 
-          value={stats?.newMessages} 
-          icon={Mail} 
+        <StatsCard
+          label="Unread / New"
+          value={stats?.newMessages}
+          icon={Mail}
           color="amber"
           loading={statsLoading}
           highlight={stats?.newMessages > 0}
         />
-        <StatsCard 
-          label="Seen Messages" 
-          value={stats?.seenMessages} 
-          icon={CheckCircle2} 
+        <StatsCard
+          label="Seen Messages"
+          value={stats?.seenMessages}
+          icon={CheckCircle2}
           color="purple"
           loading={statsLoading}
         />
-        <StatsCard 
-          label="Replied" 
-          value={stats?.repliedMessages} 
-          icon={Reply} 
+        <StatsCard
+          label="Replied"
+          value={stats?.repliedMessages}
+          icon={Reply}
           color="emerald"
           loading={statsLoading}
         />
@@ -186,7 +186,7 @@ export default function MessagesPage() {
 
       {/* Messages List Container */}
       <div className="relative group">
-        <div className="absolute -inset-1 bg-gradient-to-r from-accent/20 to-blue-500/20 rounded-[2.5rem] blur-2xl opacity-20 group-hover:opacity-30 transition duration-1000"></div>
+        <div className="absolute -inset-1 bg-gradient-to-r from-accent/20 to-accent/20 rounded-[2.5rem] blur-2xl opacity-20 group-hover:opacity-30 transition duration-1000"></div>
         <MessageList
           messages={messages}
           pagination={pagination}
@@ -220,14 +220,14 @@ export default function MessagesPage() {
 
 function StatsCard({ label, value, icon: Icon, color, loading, highlight }) {
   const colorMap = {
-    blue: "from-blue-500/20 to-blue-600/5 border-blue-500/30 text-blue-500 shadow-blue-500/5",
+    blue: "from-accent/20 to-accent/5 border-accent/30 text-accent shadow-accent/5",
     amber: "from-amber-500/20 to-amber-600/5 border-amber-500/30 text-amber-500 shadow-amber-500/5",
     purple: "from-purple-500/20 to-purple-600/5 border-purple-500/30 text-purple-500 shadow-purple-500/5",
     emerald: "from-emerald-500/20 to-emerald-600/5 border-emerald-500/30 text-emerald-500 shadow-emerald-500/5",
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -5, scale: 1.02 }}
@@ -238,20 +238,20 @@ function StatsCard({ label, value, icon: Icon, color, loading, highlight }) {
       )}
       <div className="flex items-center justify-between relative z-10">
         <div className="space-y-1">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">{label}</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">{label}</p>
           {loading ? (
-            <div className="h-9 w-16 bg-white/5 animate-pulse rounded-lg" />
+            <div className="h-9 w-16 bg-muted/50 animate-pulse rounded-lg" />
           ) : (
-            <p className="text-4xl font-black text-white tabular-nums drop-shadow-sm">
+            <p className="text-4xl font-black text-foreground tabular-nums drop-shadow-sm">
               {value ?? 0}
             </p>
           )}
         </div>
-        <div className={`p-3 rounded-2xl bg-white/5 border border-white/10 ${colorMap[color].split('text-')[1].split(' ')[0]}`}>
+        <div className={`p-3 rounded-2xl bg-muted/50 border border-border ${colorMap[color].split('text-')[1].split(' ')[0]}`}>
           <Icon className="w-6 h-6" />
         </div>
       </div>
-      
+
       {/* Decorative inner glow */}
       <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-current opacity-[0.03] blur-3xl rounded-full" />
     </motion.div>

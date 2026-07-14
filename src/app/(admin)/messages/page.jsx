@@ -34,10 +34,10 @@ export default function MessagesManagement() {
   return (
     <div className="space-y-12">
       <div className="flex flex-col gap-2">
-        <h1 className="text-4xl font-black text-white tracking-widest uppercase">
+        <h1 className="text-4xl font-black text-foreground tracking-widest uppercase">
           Member Messages
         </h1>
-        <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">
+        <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">
           Inbound Communications & Enquiries
         </p>
       </div>
@@ -49,46 +49,46 @@ export default function MessagesManagement() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: i * 0.1 }}
-            className="p-10 rounded-3xl bg-slate-900 border border-slate-800 shadow-xl group hover:border-blue-500/30 transition-all flex flex-col md:flex-row gap-8 items-start relative overflow-hidden"
+            className="p-10 rounded-3xl bg-card border border-border shadow-xl group hover:border-accent/30 transition-all flex flex-col md:flex-row gap-8 items-start relative overflow-hidden"
           >
             {/* Read Indicator */}
             <div className="absolute top-0 right-0 p-4 opacity-30 group-hover:opacity-100 transition-opacity">
-              <button className="text-slate-500 hover:text-white">
+              <button className="text-muted-foreground hover:text-foreground">
                 <MoreVertical className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="w-16 h-16 rounded-full bg-blue-600/10 border border-blue-600/20 text-blue-500 flex items-center justify-center shrink-0">
+            <div className="w-16 h-16 rounded-full bg-accent/10 border border-accent/20 text-accent flex items-center justify-center shrink-0">
               <MessageSquare className="w-6 h-6" />
             </div>
 
             <div className="flex-grow space-y-4">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-slate-800 pb-4">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-border pb-4">
                 <div>
-                  <h3 className="text-xl font-black text-white tracking-wide">
+                  <h3 className="text-xl font-black text-foreground tracking-wide">
                     {m.name}
                   </h3>
-                  <div className="flex items-center gap-3 text-sm font-bold text-slate-500 mt-1 italic">
+                  <div className="flex items-center gap-3 text-sm font-bold text-muted-foreground mt-1 italic">
                     <span>{m.email}</span>
-                    <span className="w-1 h-1 rounded-full bg-slate-700" />
-                    <span className="text-blue-500 uppercase text-[10px] tracking-widest">
+                    <span className="w-1 h-1 rounded-full bg-muted" />
+                    <span className="text-accent uppercase text-[10px] tracking-widest">
                       {m.objective}
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 text-[10px] font-black uppercase text-slate-600 tracking-widest bg-slate-800 px-3 py-1 rounded-full border border-slate-700">
+                <div className="flex items-center gap-2 text-[10px] font-black uppercase text-muted-foreground/80 tracking-widest bg-muted px-3 py-1 rounded-full border border-border">
                   <Clock className="w-4 h-4" /> {m.date}
                 </div>
               </div>
-              <p className="text-sm font-medium text-slate-300 leading-relaxed italic border-l-4 border-slate-800 pl-6 py-2 bg-slate-800/20 rounded-r-xl">
+              <p className="text-sm font-medium text-foreground/80 leading-relaxed italic border-l-4 border-border pl-6 py-2 bg-muted/20 rounded-r-xl">
                 &ldquo;{m.message}&rdquo;
               </p>
 
               <div className="pt-4 flex gap-4">
-                <button className="px-6 py-2 rounded-xl bg-blue-600 text-white font-black uppercase text-[10px] tracking-widest hover:bg-blue-500 transition-all flex items-center gap-2 active:scale-95 shadow-lg shadow-blue-500/20">
+                <button className="px-6 py-2 rounded-xl bg-accent text-foreground font-black uppercase text-[10px] tracking-widest hover:bg-accent transition-all flex items-center gap-2 active:scale-95 shadow-lg shadow-accent/20">
                   <Mail className="w-4 h-4" /> Reply
                 </button>
-                <button className="px-6 py-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 font-black uppercase text-[10px] tracking-widest hover:text-white transition-all flex items-center gap-2">
+                <button className="px-6 py-2 rounded-xl border border-border bg-card text-muted-foreground font-black uppercase text-[10px] tracking-widest hover:text-foreground transition-all flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4" /> Archive
                 </button>
                 <button className="px-6 py-2 rounded-xl text-red-500/40 hover:text-red-500 hover:bg-red-500/10 font-black uppercase text-[10px] tracking-widest transition-all flex items-center gap-2 ml-auto">

@@ -54,7 +54,7 @@ function SortableRow({ item, columns, onEdit, onDelete, onView, highlightedItem,
         isDragging ? "bg-accent/20 shadow-2xl scale-[1.01]" : ""
       } ${
         highlightedItem === (item._id || item.id)
-          ? "bg-accent/10 shadow-[inset_0_0_20px_rgba(var(--accent-rgb),0.05)]"
+          ? "bg-accent/10 shadow-inner"
           : "hover:bg-muted/20"
       }`}
     >
@@ -130,7 +130,7 @@ function SortableCard({ item, columns, onEdit, onDelete, onView, highlightedItem
         isDragging ? "bg-accent/20 shadow-2xl scale-[1.02]" : ""
       } ${
         highlightedItem === (item._id || item.id)
-          ? "bg-accent/10 border-l-4 border-l-accent shadow-[inset_0_0_20px_rgba(var(--accent-rgb),0.05)]"
+          ? "bg-accent/10 border-l-4 border-l-accent shadow-inner"
           : "hover:bg-muted/20"
       }`}
     >
@@ -234,7 +234,7 @@ export default function DataTable({
       const itemIndex = data.findIndex(
         (item) => (item._id || item.id) === highlightId
       );
-      
+
       if (itemIndex !== -1) {
         const targetPage = Math.floor(itemIndex / itemsPerPage) + 1;
         if (targetPage !== currentPage) {
@@ -295,11 +295,11 @@ export default function DataTable({
       // Find indices in the full filtered dataset
       const oldGlobalIndex = filteredData.findIndex(item => (item._id || item.id) === active.id);
       const newGlobalIndex = filteredData.findIndex(item => (item._id || item.id) === over.id);
-      
+
       if (oldGlobalIndex !== -1 && newGlobalIndex !== -1) {
         const newGlobalData = arrayMove(filteredData, oldGlobalIndex, newGlobalIndex);
         const newAllIds = newGlobalData.map(item => item._id || item.id);
-        
+
         if (onReorder) {
           onReorder(newAllIds);
         }
@@ -449,7 +449,7 @@ export default function DataTable({
               Manage your {title.toLowerCase()} across the site.
             </p>
           </div>
-          
+
           {filters.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {filters.map((filter) => (
@@ -466,7 +466,7 @@ export default function DataTable({
                 </select>
               ))}
               {Object.values(activeFilter).some(v => v) && (
-                <button 
+                <button
                   onClick={() => setActiveFilter({})}
                   className="text-[9px] font-black uppercase text-accent/60 hover:text-accent transition-colors"
                 >

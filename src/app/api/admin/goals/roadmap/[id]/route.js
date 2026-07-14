@@ -24,7 +24,8 @@ export async function PATCH(request, { params }) {
       );
     }
 
-    const updated = await GoalController.updateRoadmapItem(params.id, body);
+    const { id } = await params;
+    const updated = await GoalController.updateRoadmapItem(id, body);
     if (!updated) {
       return NextResponse.json(
         { success: false, error: "Roadmap item not found" },
@@ -36,7 +37,7 @@ export async function PATCH(request, { params }) {
       action: "UPDATE",
       module: "GOALS_ROADMAP",
       details: `Updated roadmap item: ${updated.title}`,
-      targetId: params.id,
+      targetId: id,
     }).catch(() => {});
 
     return NextResponse.json({ success: true, data: updated });
@@ -60,13 +61,14 @@ export async function DELETE(request, { params }) {
       );
     }
 
-    await GoalController.deleteRoadmapItem(params.id);
+    const { id } = await params;
+    await GoalController.deleteRoadmapItem(id);
 
     await ActivityController.logFromSession(session, {
       action: "DELETE",
       module: "GOALS_ROADMAP",
       details: `Deleted roadmap item`,
-      targetId: params.id,
+      targetId: id,
     }).catch(() => {});
 
     return NextResponse.json({

@@ -56,7 +56,7 @@ export function SystemHealthDashboard() {
   }, []);
 
   const getHealthColor = (status) => {
-    if (!status) return "bg-gray-600";
+    if (!status) return "bg-muted-foreground";
     if (status.includes("Healthy") || status.includes("Excellent") || status.includes("PASSED"))
       return "bg-green-600";
     if (status.includes("Degraded")) return "bg-orange-600";
@@ -75,69 +75,69 @@ export function SystemHealthDashboard() {
     <div className="space-y-4">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold text-white mb-2">System Health</h2>
-        <p className="text-gray-400">Comprehensive production monitoring and compliance dashboard</p>
+        <h2 className="text-2xl font-bold text-foreground mb-2">System Health</h2>
+        <p className="text-muted-foreground">Comprehensive production monitoring and compliance dashboard</p>
       </div>
 
       {/* Quick Status Overview */}
       {healthSummary && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-slate-800 rounded-lg p-4 border border-slate-700">
+          <div className="bg-muted rounded-lg p-4 border border-border">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-gray-400 text-sm flex items-center gap-2">
+              <p className="text-muted-foreground text-sm flex items-center gap-2">
                 <Database className="w-4 h-4" />
                 Cache
               </p>
-              <span className={`inline-block px-2 py-1 rounded text-xs font-bold ${getHealthColor(healthSummary.cache.status)} text-white`}>
+              <span className={`inline-block px-2 py-1 rounded text-xs font-bold ${getHealthColor(healthSummary.cache.status)} text-foreground`}>
                 {getHealthText(healthSummary.cache.status)}
               </span>
             </div>
-            <p className="text-xs text-gray-500">
-              Hit Rate: <span className="font-semibold text-blue-400">{healthSummary.cache.metrics.hitRate}</span>
+            <p className="text-xs text-muted-foreground/80">
+              Hit Rate: <span className="font-semibold text-accent">{healthSummary.cache.metrics.hitRate}</span>
             </p>
           </div>
 
-          <div className="bg-slate-800 rounded-lg p-4 border border-slate-700">
+          <div className="bg-muted rounded-lg p-4 border border-border">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-gray-400 text-sm flex items-center gap-2">
+              <p className="text-muted-foreground text-sm flex items-center gap-2">
                 <Activity className="w-4 h-4" />
                 Performance
               </p>
-              <span className={`inline-block px-2 py-1 rounded text-xs font-bold ${getHealthColor(healthSummary.production.status)} text-white`}>
+              <span className={`inline-block px-2 py-1 rounded text-xs font-bold ${getHealthColor(healthSummary.production.status)} text-foreground`}>
                 {getHealthText(healthSummary.production.status)}
               </span>
             </div>
-            <p className="text-xs text-gray-500">
-              Issues: <span className="font-semibold text-blue-400">{healthSummary.production.issues.length}</span>
+            <p className="text-xs text-muted-foreground/80">
+              Issues: <span className="font-semibold text-accent">{healthSummary.production.issues.length}</span>
             </p>
           </div>
 
-          <div className="bg-slate-800 rounded-lg p-4 border border-slate-700">
+          <div className="bg-muted rounded-lg p-4 border border-border">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-gray-400 text-sm flex items-center gap-2">
+              <p className="text-muted-foreground text-sm flex items-center gap-2">
                 <Shield className="w-4 h-4" />
                 Security
               </p>
-              <span className={`inline-block px-2 py-1 rounded text-xs font-bold ${getHealthColor(healthSummary.security.overallStatus)} text-white`}>
+              <span className={`inline-block px-2 py-1 rounded text-xs font-bold ${getHealthColor(healthSummary.security.overallStatus)} text-foreground`}>
                 {getHealthText(healthSummary.security.overallStatus)}
               </span>
             </div>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground/80">
               Status: <span className="font-semibold text-green-400">PASSED</span>
             </p>
           </div>
 
-          <div className="bg-slate-800 rounded-lg p-4 border border-slate-700">
+          <div className="bg-muted rounded-lg p-4 border border-border">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-gray-400 text-sm flex items-center gap-2">
+              <p className="text-muted-foreground text-sm flex items-center gap-2">
                 <Search className="w-4 h-4" />
                 SEO
               </p>
-              <span className={`inline-block px-2 py-1 rounded text-xs font-bold bg-green-600 text-white`}>
+              <span className={`inline-block px-2 py-1 rounded text-xs font-bold bg-green-600 text-foreground`}>
                 🟢 Score: {healthSummary.seo.overallScore}
               </span>
             </div>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground/80">
               Grade: <span className="font-semibold text-green-400">A (Excellent)</span>
             </p>
           </div>
@@ -145,14 +145,14 @@ export function SystemHealthDashboard() {
       )}
 
       {/* Tab Navigation */}
-      <div className="border-b border-slate-700">
+      <div className="border-b border-border">
         <div className="flex flex-wrap gap-0 overflow-x-auto">
           <button
             onClick={() => setActiveTab("overview")}
             className={`px-4 py-2 font-medium text-sm border-b-2 whitespace-nowrap transition ${
               activeTab === "overview"
-                ? "border-blue-500 text-blue-400"
-                : "border-transparent text-gray-400 hover:text-gray-300"
+                ? "border-accent text-accent"
+                : "border-transparent text-muted-foreground hover:text-foreground/80"
             }`}
           >
             Overview
@@ -161,8 +161,8 @@ export function SystemHealthDashboard() {
             onClick={() => setActiveTab("cache")}
             className={`px-4 py-2 font-medium text-sm border-b-2 whitespace-nowrap transition ${
               activeTab === "cache"
-                ? "border-blue-500 text-blue-400"
-                : "border-transparent text-gray-400 hover:text-gray-300"
+                ? "border-accent text-accent"
+                : "border-transparent text-muted-foreground hover:text-foreground/80"
             }`}
           >
             Cache
@@ -171,8 +171,8 @@ export function SystemHealthDashboard() {
             onClick={() => setActiveTab("performance")}
             className={`px-4 py-2 font-medium text-sm border-b-2 whitespace-nowrap transition ${
               activeTab === "performance"
-                ? "border-blue-500 text-blue-400"
-                : "border-transparent text-gray-400 hover:text-gray-300"
+                ? "border-accent text-accent"
+                : "border-transparent text-muted-foreground hover:text-foreground/80"
             }`}
           >
             Performance
@@ -181,8 +181,8 @@ export function SystemHealthDashboard() {
             onClick={() => setActiveTab("errors")}
             className={`px-4 py-2 font-medium text-sm border-b-2 whitespace-nowrap transition ${
               activeTab === "errors"
-                ? "border-blue-500 text-blue-400"
-                : "border-transparent text-gray-400 hover:text-gray-300"
+                ? "border-accent text-accent"
+                : "border-transparent text-muted-foreground hover:text-foreground/80"
             }`}
           >
             Errors
@@ -191,8 +191,8 @@ export function SystemHealthDashboard() {
             onClick={() => setActiveTab("security")}
             className={`px-4 py-2 font-medium text-sm border-b-2 whitespace-nowrap transition ${
               activeTab === "security"
-                ? "border-blue-500 text-blue-400"
-                : "border-transparent text-gray-400 hover:text-gray-300"
+                ? "border-accent text-accent"
+                : "border-transparent text-muted-foreground hover:text-foreground/80"
             }`}
           >
             Security
@@ -201,8 +201,8 @@ export function SystemHealthDashboard() {
             onClick={() => setActiveTab("seo")}
             className={`px-4 py-2 font-medium text-sm border-b-2 whitespace-nowrap transition ${
               activeTab === "seo"
-                ? "border-blue-500 text-blue-400"
-                : "border-transparent text-gray-400 hover:text-gray-300"
+                ? "border-accent text-accent"
+                : "border-transparent text-muted-foreground hover:text-foreground/80"
             }`}
           >
             SEO
@@ -214,39 +214,39 @@ export function SystemHealthDashboard() {
       <div>
         {activeTab === "overview" && (
           <div className="space-y-4">
-            <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-              <h3 className="text-lg font-semibold text-white mb-4">System Status Overview</h3>
+            <div className="bg-muted rounded-lg p-6 border border-border">
+              <h3 className="text-lg font-semibold text-foreground mb-4">System Status Overview</h3>
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-slate-700/50 rounded">
-                  <p className="text-gray-300 flex items-center gap-2">
+                <div className="flex items-center justify-between p-3 bg-muted/70 rounded">
+                  <p className="text-foreground/80 flex items-center gap-2">
                     <Database className="w-4 h-4" />
                     Cache System
                   </p>
                   <span className="text-green-400 font-semibold">🟢 Healthy</span>
                 </div>
-                <div className="flex items-center justify-between p-3 bg-slate-700/50 rounded">
-                  <p className="text-gray-300 flex items-center gap-2">
+                <div className="flex items-center justify-between p-3 bg-muted/70 rounded">
+                  <p className="text-foreground/80 flex items-center gap-2">
                     <Activity className="w-4 h-4" />
                     Performance & Observability
                   </p>
                   <span className="text-green-400 font-semibold">🟢 Healthy</span>
                 </div>
-                <div className="flex items-center justify-between p-3 bg-slate-700/50 rounded">
-                  <p className="text-gray-300 flex items-center gap-2">
+                <div className="flex items-center justify-between p-3 bg-muted/70 rounded">
+                  <p className="text-foreground/80 flex items-center gap-2">
                     <AlertCircle className="w-4 h-4" />
                     Error Monitoring
                   </p>
                   <span className="text-green-400 font-semibold">🟢 Operational</span>
                 </div>
-                <div className="flex items-center justify-between p-3 bg-slate-700/50 rounded">
-                  <p className="text-gray-300 flex items-center gap-2">
+                <div className="flex items-center justify-between p-3 bg-muted/70 rounded">
+                  <p className="text-foreground/80 flex items-center gap-2">
                     <Shield className="w-4 h-4" />
                     Security
                   </p>
                   <span className="text-green-400 font-semibold">🟢 Hardened</span>
                 </div>
-                <div className="flex items-center justify-between p-3 bg-slate-700/50 rounded">
-                  <p className="text-gray-300 flex items-center gap-2">
+                <div className="flex items-center justify-between p-3 bg-muted/70 rounded">
+                  <p className="text-foreground/80 flex items-center gap-2">
                     <Search className="w-4 h-4" />
                     SEO & Schema
                   </p>
@@ -255,8 +255,8 @@ export function SystemHealthDashboard() {
               </div>
             </div>
 
-            <div className="bg-blue-900/20 border border-blue-700/50 rounded-lg p-4">
-              <p className="text-sm text-blue-300">
+            <div className="bg-accent/20 border border-accent/50 rounded-lg p-4">
+              <p className="text-sm text-accent">
                 <span className="font-semibold">✓ Enterprise Ready:</span> Your Muhyo Tech platform is now operating at enterprise production grade with comprehensive monitoring, security hardening, and SEO optimization enabled.
               </p>
             </div>

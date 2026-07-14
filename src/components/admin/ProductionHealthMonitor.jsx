@@ -29,10 +29,10 @@ const MetricCard = ({ icon: Icon, label, current, unit, target, lowerIsBetter = 
     metricHealth === "good" ? "text-green-400" : metricHealth === "fair" ? "text-yellow-400" : "text-red-400";
 
   return (
-    <div className="bg-slate-700/50 rounded p-4">
+    <div className="bg-muted/70 rounded p-4">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-gray-400 text-xs mb-2 uppercase tracking-wide flex items-center gap-2">
+          <p className="text-muted-foreground text-xs mb-2 uppercase tracking-wide flex items-center gap-2">
             <Icon className="w-3 h-3" />
             {label}
           </p>
@@ -40,7 +40,7 @@ const MetricCard = ({ icon: Icon, label, current, unit, target, lowerIsBetter = 
             {current.toFixed(1)}{unit}
           </p>
           {target && (
-            <p className="text-xs text-gray-500 mt-1">Target: {target}{unit}</p>
+            <p className="text-xs text-muted-foreground/80 mt-1">Target: {target}{unit}</p>
           )}
         </div>
         {metricHealth === "good" && <CheckCircle className="w-4 h-4 text-green-400" />}
@@ -89,11 +89,11 @@ export function ProductionHealthMonitor() {
 
   if (loading && !health) {
     return (
-      <div className="bg-slate-800 rounded-lg p-6 border border-slate-700 animate-pulse">
-        <div className="h-6 bg-slate-700 rounded w-1/3 mb-4"></div>
+      <div className="bg-muted rounded-lg p-6 border border-border animate-pulse">
+        <div className="h-6 bg-muted rounded w-1/3 mb-4"></div>
         <div className="space-y-3">
-          <div className="h-4 bg-slate-700 rounded w-2/3"></div>
-          <div className="h-4 bg-slate-700 rounded w-1/2"></div>
+          <div className="h-4 bg-muted rounded w-2/3"></div>
+          <div className="h-4 bg-muted rounded w-1/2"></div>
         </div>
       </div>
     );
@@ -122,40 +122,40 @@ export function ProductionHealthMonitor() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
             <Activity className="w-5 h-5" />
             Production Health Monitor
           </h3>
-          <p className="text-sm text-gray-400 mt-1">Last updated: {lastUpdate}</p>
+          <p className="text-sm text-muted-foreground mt-1">Last updated: {lastUpdate}</p>
         </div>
         <button
           onClick={fetchHealth}
           disabled={loading}
-          className="px-3 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded text-sm font-medium transition"
+          className="px-3 py-2 bg-accent hover:bg-accent disabled:opacity-50 rounded text-sm font-medium transition"
         >
           {loading ? "Refreshing..." : "Refresh"}
         </button>
       </div>
 
       {/* Overall Status */}
-      <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+      <div className="bg-muted rounded-lg p-6 border border-border">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <p className="text-gray-400 text-sm mb-1">System Status</p>
+            <p className="text-muted-foreground text-sm mb-1">System Status</p>
             <div className={`text-2xl font-bold ${health.status.includes("Excellent") ? "text-green-400" : health.status.includes("Critical") ? "text-red-400" : health.status.includes("Degraded") ? "text-orange-400" : "text-yellow-400"}`}>
               {health.status}
             </div>
           </div>
           <div className="text-right">
-            <p className="text-gray-400 text-sm mb-1">Issues Detected</p>
-            <p className="text-3xl font-bold text-white">{health.issues?.length || 0}</p>
+            <p className="text-muted-foreground text-sm mb-1">Issues Detected</p>
+            <p className="text-3xl font-bold text-foreground">{health.issues?.length || 0}</p>
           </div>
         </div>
 
         {/* Issues List */}
         {health.issues && health.issues.length > 0 && (
-          <div className="mt-4 pt-4 border-t border-slate-700">
-            <p className="text-sm font-semibold text-white mb-2">Detected Issues:</p>
+          <div className="mt-4 pt-4 border-t border-border">
+            <p className="text-sm font-semibold text-foreground mb-2">Detected Issues:</p>
             <ul className="space-y-1">
               {health.issues.map((issue, idx) => (
                 <li key={idx} className="text-sm text-yellow-300 flex items-center gap-2">
@@ -169,8 +169,8 @@ export function ProductionHealthMonitor() {
       </div>
 
       {/* Frontend Metrics */}
-      <div className="bg-slate-800 rounded-lg p-4 border border-slate-700">
-        <p className="font-semibold text-white mb-4">Frontend Performance</p>
+      <div className="bg-muted rounded-lg p-4 border border-border">
+        <p className="font-semibold text-foreground mb-4">Frontend Performance</p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <MetricCard
             icon={Zap}
@@ -218,8 +218,8 @@ export function ProductionHealthMonitor() {
       </div>
 
       {/* Backend Metrics */}
-      <div className="bg-slate-800 rounded-lg p-4 border border-slate-700">
-        <p className="font-semibold text-white mb-4">Backend Performance</p>
+      <div className="bg-muted rounded-lg p-4 border border-border">
+        <p className="font-semibold text-foreground mb-4">Backend Performance</p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <MetricCard
             icon={Zap}
@@ -254,9 +254,9 @@ export function ProductionHealthMonitor() {
       </div>
 
       {/* Recommendations */}
-      <div className="bg-slate-800 rounded-lg p-4 border border-slate-700">
-        <p className="font-semibold text-white mb-3">Performance Recommendations</p>
-        <div className="space-y-2 text-sm text-gray-300">
+      <div className="bg-muted rounded-lg p-4 border border-border">
+        <p className="font-semibold text-foreground mb-3">Performance Recommendations</p>
+        <div className="space-y-2 text-sm text-foreground/80">
           {metrics.frontend.lcp.current > 2500 && (
             <div className="flex gap-2">
               <AlertTriangle className="w-4 h-4 text-yellow-400 flex-shrink-0" />

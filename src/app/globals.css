@@ -22,6 +22,21 @@
         --muted-foreground: #475569;
         --popover: #ffffff;
         --popover-foreground: #020617;
+        --chart-grid: rgba(15, 23, 42, 0.09);
+        --chart-axis: #64748b;
+        --chart-1: #2563eb;
+        --chart-2: #4f46e5;
+        --chart-3: #059669;
+        --chart-4: #d97706;
+        --chart-5: #dc2626;
+        --chart-6: #db2777;
+        --chart-7: #7c3aed;
+        --chart-8: #0891b2;
+        --status-success: #059669;
+        --status-warning: #d97706;
+        --status-danger: #dc2626;
+        --status-foreground: #ffffff;
+        --overlay: #020617;
     }
     /* Dark Theme when html has class 'dark' */
     .dark {
@@ -46,6 +61,21 @@
         --muted-foreground: #94a3b8;
         --popover: #111827;
         --popover-foreground: #f8fafc;
+        --chart-grid: rgba(255, 255, 255, 0.08);
+        --chart-axis: #94a3b8;
+        --chart-1: #38bdf8;
+        --chart-2: #818cf8;
+        --chart-3: #34d399;
+        --chart-4: #fbbf24;
+        --chart-5: #fb7185;
+        --chart-6: #f472b6;
+        --chart-7: #a78bfa;
+        --chart-8: #22d3ee;
+        --status-success: #34d399;
+        --status-warning: #fbbf24;
+        --status-danger: #fb7185;
+        --status-foreground: #07111f;
+        --overlay: #020617;
     }
     /* True-black premium theme. The html element also keeps the `dark` class
        so every existing Tailwind dark variant continues to work safely. */
@@ -71,6 +101,21 @@
         --black-surface: rgba(5, 7, 10, 0.94);
         --black-surface-raised: rgba(11, 14, 19, 0.96);
         --black-highlight: rgba(34, 211, 255, 0.24);
+        --chart-grid: rgba(255, 255, 255, 0.1);
+        --chart-axis: #c0c9d4;
+        --chart-1: #22d3ff;
+        --chart-2: #8b9cff;
+        --chart-3: #3ee6a8;
+        --chart-4: #ffd166;
+        --chart-5: #ff7185;
+        --chart-6: #ff7bc3;
+        --chart-7: #bd9cff;
+        --chart-8: #36e4f7;
+        --status-success: #3ee6a8;
+        --status-warning: #ffd166;
+        --status-danger: #ff7185;
+        --status-foreground: #000000;
+        --overlay: #000000;
     }
 }
 
@@ -88,6 +133,11 @@
     --color-ring: var(--ring);
     --color-destructive: var(--destructive);
     --color-destructive-foreground: var(--destructive-foreground);
+    --color-overlay: var(--overlay);
+    --color-status-success: var(--status-success);
+    --color-status-warning: var(--status-warning);
+    --color-status-danger: var(--status-danger);
+    --color-status-foreground: var(--status-foreground);
     --color-muted: var(--muted);
     --color-muted-foreground: var(--muted-foreground);
     --radius-xl: 1rem;
@@ -241,6 +291,40 @@
         background-color: var(--background);
         color: var(--foreground);
     }
+    .admin-theme-scope :is(input, textarea, select) {
+        border-color: var(--border);
+        background-color: color-mix(in srgb, var(--card) 88%, var(--muted));
+        color: var(--foreground);
+        caret-color: var(--accent);
+    }
+    .admin-theme-scope :is(input, textarea, select)::placeholder {
+        color: color-mix(in srgb, var(--muted-foreground) 72%, transparent);
+        opacity: 1;
+    }
+    .admin-theme-scope :is(input, textarea, select):focus {
+        border-color: color-mix(in srgb, var(--accent) 70%, var(--border));
+        outline: none;
+        box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 11%, transparent);
+    }
+    .admin-theme-scope select option {
+        background-color: var(--card);
+        color: var(--foreground);
+    }
+    .admin-theme-scope :is([role="menu"], [role="listbox"], [data-admin-dropdown]) {
+        border-color: var(--border);
+        background-color: var(--popover);
+        color: var(--popover-foreground);
+    }
+    .admin-theme-scope :is([role="menuitem"], [role="option"]):is(:hover, :focus, [aria-selected="true"]) {
+        background-color: var(--muted);
+        color: var(--foreground);
+    }
+    .admin-theme-scope :is(table, thead, tbody, tr, th, td) {
+        border-color: var(--border);
+    }
+    .admin-theme-scope :is(dialog, [role="dialog"]) {
+        color: var(--foreground);
+    }
     .admin-theme-scope [class*="bg-[#0a0f1c]"],
     .admin-theme-scope [class*="bg-[#070b14]"],
     .admin-theme-scope [class*="bg-[#050508]"],
@@ -266,14 +350,72 @@
     .admin-theme-scope [class*="border-white/"] {
         border-color: var(--border) !important;
     }
+    .admin-auth-input:-webkit-autofill,
+    .admin-auth-input:-webkit-autofill:hover,
+    .admin-auth-input:-webkit-autofill:focus,
+    .admin-auth-input:-webkit-autofill:active {
+        -webkit-text-fill-color: var(--foreground) !important;
+        caret-color: var(--foreground);
+        -webkit-box-shadow: 0 0 0 1000px color-mix(in srgb, var(--background) 82%, var(--card)) inset !important;
+        box-shadow: 0 0 0 1000px color-mix(in srgb, var(--background) 82%, var(--card)) inset !important;
+        transition: background-color 9999s ease-out 0s;
+    }
+    .admin-auth-error {
+        background-color: color-mix(in srgb, var(--status-danger) 10%, var(--card)) !important;
+        border-color: color-mix(in srgb, var(--status-danger) 42%, var(--border)) !important;
+        color: var(--status-danger) !important;
+    }
+    .admin-auth-error :is(span, svg) {
+        color: inherit !important;
+        opacity: 1 !important;
+    }
     html.light .admin-theme-scope :is(h1, h2, h3, h4, h5, h6, label, input, textarea, select) {
         color: var(--foreground) !important;
     }
     html.light .admin-theme-scope :is(input, textarea, select) {
         background-color: color-mix(in srgb, var(--card) 88%, var(--muted));
     }
-    html.light .admin-theme-scope :is(h1, h2, h3, h4, h5, h6, label, p, span, td, th).text-white {
-        color: var(--foreground) !important;
+    .admin-theme-scope :is(
+        [class~="bg-accent"],
+        [class~="hover:bg-accent"]:hover
+    ).text-foreground {
+        color: var(--accent-foreground) !important;
+    }
+    .admin-theme-scope :is(
+        [class~="bg-blue-500"], [class~="bg-blue-600"], [class~="bg-blue-700"],
+        [class~="bg-indigo-500"], [class~="bg-indigo-600"],
+        [class~="bg-violet-500"], [class~="bg-violet-600"],
+        [class~="bg-purple-500"], [class~="bg-purple-600"],
+        [class~="bg-emerald-500"], [class~="bg-emerald-600"],
+        [class~="bg-green-500"], [class~="bg-green-600"],
+        [class~="bg-amber-500"], [class~="bg-amber-600"],
+        [class~="bg-yellow-500"], [class~="bg-yellow-600"],
+        [class~="bg-orange-500"], [class~="bg-orange-600"],
+        [class~="bg-red-400"], [class~="bg-red-500"], [class~="bg-red-600"], [class~="bg-red-700"],
+        [class~="bg-rose-500"], [class~="bg-rose-600"],
+        [class~="hover:bg-blue-500"]:hover, [class~="hover:bg-blue-600"]:hover,
+        [class~="hover:bg-indigo-500"]:hover, [class~="hover:bg-indigo-600"]:hover,
+        [class~="hover:bg-violet-500"]:hover, [class~="hover:bg-violet-600"]:hover,
+        [class~="hover:bg-purple-500"]:hover, [class~="hover:bg-purple-600"]:hover,
+        [class~="hover:bg-emerald-500"]:hover, [class~="hover:bg-emerald-600"]:hover,
+        [class~="hover:bg-green-500"]:hover, [class~="hover:bg-green-600"]:hover,
+        [class~="hover:bg-amber-500"]:hover, [class~="hover:bg-yellow-500"]:hover, [class~="hover:bg-orange-500"]:hover,
+        [class~="hover:bg-red-400"]:hover, [class~="hover:bg-red-500"]:hover, [class~="hover:bg-red-600"]:hover,
+        [class~="hover:bg-rose-500"]:hover, [class~="hover:bg-rose-600"]:hover
+    ).text-foreground {
+        color: var(--status-foreground) !important;
+    }
+    html.light .admin-theme-scope :is(.text-slate-300, .text-slate-400, .text-slate-500, .text-slate-600, .text-gray-300, .text-gray-400, .text-gray-500) {
+        color: var(--muted-foreground) !important;
+    }
+    html.light .admin-theme-scope :is(.text-red-300, .text-red-400, .text-red-500, .text-red-600, .text-rose-300, .text-rose-400, .text-rose-500) {
+        color: var(--status-danger) !important;
+    }
+    html.light .admin-theme-scope :is(.text-green-300, .text-green-400, .text-green-500, .text-green-600, .text-emerald-300, .text-emerald-400, .text-emerald-500, .text-emerald-600) {
+        color: var(--status-success) !important;
+    }
+    html.light .admin-theme-scope :is(.text-yellow-300, .text-yellow-400, .text-yellow-500, .text-amber-300, .text-amber-400, .text-amber-500, .text-orange-300, .text-orange-400, .text-orange-500) {
+        color: var(--status-warning) !important;
     }
     .glass {
         background: var(--card);

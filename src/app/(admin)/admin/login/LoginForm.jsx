@@ -160,9 +160,9 @@ export default function LoginForm() {
         body: JSON.stringify({ email, passkey }),
       });
       const data = await res.json();
-      
+
       console.log("[Login Response]", { status: res.status, success: data.success, data });
-      
+
       if (data.success) {
         // Store token in localStorage for API requests
         if (data.token) {
@@ -171,21 +171,21 @@ export default function LoginForm() {
         }
         console.log("[Login] ✅ Login successful, redirecting...");
         toast.success("Identity verified. Accessing Administrative Portal...");
-        
+
         // Redirect after success (longer delay to ensure token is stored)
         setTimeout(() => {
           window.location.href = "/admin/dashboard";
         }, 800);
       } else {
         // Log error details to console for debugging
-        console.error("[Login] ❌ Login failed:", { 
-          code: data.code, 
+        console.error("[Login] ❌ Login failed:", {
+          code: data.code,
           message: data.message,
           email: email
         });
-        
+
         setLoading(false);  // Stop loading to show error
-        
+
         if (data.code === "NOT_FOUND") {
           setError("Email account not found in system. Initialize admission first.");
           setView("reverify");
@@ -204,9 +204,9 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#030712] flex items-center justify-center p-6 relative overflow-hidden font-sans selection:bg-blue-500/30">
+    <div className="min-h-screen w-full bg-background flex items-center justify-center p-6 relative overflow-hidden font-sans selection:bg-accent/30">
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-500/10 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent/10 rounded-full blur-[120px] animate-pulse" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-500/10 rounded-full blur-[120px] animate-pulse delay-700" />
       </div>
 
@@ -215,9 +215,9 @@ export default function LoginForm() {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         className="w-full max-w-lg z-10"
       >
-        <div className="bg-[#0f172a]/80 backdrop-blur-3xl border border-white/5 p-12 rounded-[3rem] shadow-3xl overflow-hidden relative">
+        <div className="bg-card/80 backdrop-blur-3xl border border-border/70 p-12 rounded-[3rem] shadow-3xl overflow-hidden relative">
           <div className="flex flex-col items-center mb-10 text-center">
-            <div className="w-20 h-20 bg-blue-600/10 border border-blue-500/20 rounded-3xl flex items-center justify-center mb-6 shadow-inner transition-transform hover:scale-110 duration-500">
+            <div className="w-20 h-20 bg-accent/10 border border-accent/20 rounded-3xl flex items-center justify-center mb-6 shadow-inner transition-transform hover:scale-110 duration-500">
               {view === "pending" ? (
                 <Clock className="w-10 h-10 text-yellow-500 animate-pulse" />
               ) : view === "denied" ? (
@@ -225,14 +225,14 @@ export default function LoginForm() {
               ) : view === "reverify" ? (
                 <UserPlus className="w-10 h-10 text-emerald-500" />
               ) : (
-                <ShieldCheck className="w-10 h-10 text-blue-500" />
+                <ShieldCheck className="w-10 h-10 text-accent" />
               )}
             </div>
 
-            <h1 className="text-4xl font-black italic tracking-tighter uppercase text-white mb-3 text-shadow-glow">
-              Admin <span className="text-blue-500">Portal</span>
+            <h1 className="text-4xl font-black italic tracking-tighter uppercase text-foreground mb-3 text-shadow-glow">
+              Admin <span className="text-accent">Portal</span>
             </h1>
-            <p className="text-slate-400 text-[10px] font-black tracking-[0.2em] px-4 opacity-50 uppercase leading-relaxed">
+            <p className="text-muted-foreground text-[10px] font-black tracking-[0.2em] px-4 opacity-50 uppercase leading-relaxed">
               {view === "setup"
                 ? "Requesting Administrative Admission"
                 : view === "verify"
@@ -284,7 +284,7 @@ export default function LoginForm() {
                         ? "Access Node Restricted"
                         : "Account Node Missing"}
                     </p>
-                    <p className="text-slate-300 text-sm font-bold tracking-tight leading-relaxed opacity-60">
+                    <p className="text-foreground/80 text-sm font-bold tracking-tight leading-relaxed opacity-60">
                       {view === "denied"
                         ? "Your previous identity capture has been reviewed and declined. Restore authority through the re-verification stream."
                         : "This digital signature is not mapped within the Authority Database. Initialize admission to establish a new identity node."}
@@ -295,7 +295,7 @@ export default function LoginForm() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className={`w-full py-5 rounded-[2rem] font-black uppercase text-xs tracking-[0.3em] shadow-2xl transition-all flex items-center justify-center gap-3 active:scale-95 disabled:opacity-50 ${view === "denied" ? "bg-blue-600 text-white hover:bg-blue-500" : "bg-emerald-600 text-[#030712] hover:bg-emerald-500 shadow-emerald-600/20"}`}
+                  className={`w-full py-5 rounded-[2rem] font-black uppercase text-xs tracking-[0.3em] shadow-2xl transition-all flex items-center justify-center gap-3 active:scale-95 disabled:opacity-50 ${view === "denied" ? "bg-accent text-foreground hover:bg-accent" : "bg-emerald-600 text-accent-foreground hover:bg-emerald-500 shadow-emerald-600/20"}`}
                 >
                   {loading ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
@@ -312,7 +312,7 @@ export default function LoginForm() {
                 <button
                   type="button"
                   onClick={() => setView("login")}
-                  className="w-full text-[9px] font-black uppercase text-slate-700 hover:text-white transition-colors tracking-widest text-center mt-2 italic opacity-50 hover:opacity-100"
+                  className="w-full text-[9px] font-black uppercase text-muted-foreground/70 hover:text-foreground transition-colors tracking-widest text-center mt-2 italic opacity-50 hover:opacity-100"
                 >
                   Back to Portal Gateway
                 </button>
@@ -320,36 +320,36 @@ export default function LoginForm() {
             ) : view === "setup" || view === "verify" ? (
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-blue-500 tracking-[0.2em] ml-2">
+                  <label className="text-[10px] font-black uppercase text-accent tracking-[0.2em] ml-2">
                     Digital Signature (Email)
                   </label>
                   <div className="relative group">
-                    <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-blue-500 w-5 h-5 transition-colors" />
+                    <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground/80 group-focus-within:text-accent w-5 h-5 transition-colors" />
                     <input
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       disabled={view === "verify"}
                       placeholder="authority@muhyo.tech"
-                      className="w-full bg-[#1e293b]/30 border border-white/5 p-5 pl-14 rounded-2xl text-white font-bold text-sm outline-none focus:border-blue-500/20 backdrop-blur-md disabled:opacity-30 transition-all shadow-inner"
+                      className="w-full bg-muted/30 border border-border/70 p-5 pl-14 rounded-2xl text-foreground font-bold text-sm outline-none focus:border-accent/20 backdrop-blur-md disabled:opacity-30 transition-all shadow-inner"
                       required
                     />
                   </div>
                 </div>
                 {view === "verify" && (
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-blue-500 tracking-[0.2em] ml-2">
+                    <label className="text-[10px] font-black uppercase text-accent tracking-[0.2em] ml-2">
                       Verification Stream Token
                     </label>
                     <div className="relative group">
-                      <Key className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-blue-500 w-5 h-5 transition-colors" />
+                      <Key className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground/80 group-focus-within:text-accent w-5 h-5 transition-colors" />
                       <input
                         type="text"
                         maxLength={6}
                         value={code}
                         onChange={(e) => setCode(e.target.value)}
                         placeholder="000000"
-                        className="w-full bg-[#1e293b]/30 border border-white/5 p-5 pl-14 rounded-2xl text-white font-black text-lg tracking-[1em] outline-none focus:border-blue-500/20 backdrop-blur-md shadow-inner"
+                        className="w-full bg-muted/30 border border-border/70 p-5 pl-14 rounded-2xl text-foreground font-black text-lg tracking-[1em] outline-none focus:border-accent/20 backdrop-blur-md shadow-inner"
                         required
                       />
                     </div>
@@ -366,32 +366,32 @@ export default function LoginForm() {
                   <p className="text-[10px] font-black uppercase tracking-[0.4em] text-yellow-600 mb-2">
                     Authority Review In Progress
                   </p>
-                  <p className="text-slate-400 text-sm font-bold tracking-tight px-2 leading-relaxed opacity-80 italic">
+                  <p className="text-muted-foreground text-sm font-bold tracking-tight px-2 leading-relaxed opacity-80 italic">
                     Your identity capture is waiting for manual authorization by
                     a Super Admin Root node.
                   </p>
                 </div>
-                <div className="h-px w-10 bg-white/5 mx-auto relative" />
-                <p className="text-[9px] font-black uppercase tracking-[0.6em] text-slate-700 animate-pulse relative">
+                <div className="h-px w-10 bg-muted/50 mx-auto relative" />
+                <p className="text-[9px] font-black uppercase tracking-[0.6em] text-muted-foreground/70 animate-pulse relative">
                   Trace Connection: Stable
                 </p>
                 <button
                   type="button"
                   onClick={() => setView("login")}
-                  className="text-[9px] font-black uppercase text-slate-800 hover:text-white transition-colors tracking-[0.4em] mt-4 relative"
+                  className="text-[9px] font-black uppercase text-muted-foreground/60 hover:text-foreground transition-colors tracking-[0.4em] mt-4 relative"
                 >
                   Abort Uplink
                 </button>
               </div>
             ) : view === "success" ? (
-              <div className="bg-blue-600/5 border border-blue-600/10 p-10 rounded-[3rem] text-center space-y-8 relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600/0 via-blue-600 to-blue-600/0 animate-ping" />
+              <div className="bg-accent/5 border border-accent/10 p-10 rounded-[3rem] text-center space-y-8 relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-accent/0 via-accent to-accent/0 animate-ping" />
                 <CheckCircle2 className="w-20 h-20 text-emerald-500 mx-auto" />
                 <div className="space-y-4">
-                  <p className="text-[10px] font-black uppercase text-blue-800 mb-1 tracking-[0.5em] italic">
+                  <p className="text-[10px] font-black uppercase text-accent mb-1 tracking-[0.5em] italic">
                     Access Bypass Token Active
                   </p>
-                  <p className="text-5xl font-black italic text-white tracking-[0.2em] py-8 bg-[#1e293b]/40 rounded-[2rem] border border-white/5 select-all shadow-inner">
+                  <p className="text-5xl font-black italic text-foreground tracking-[0.2em] py-8 bg-muted/40 rounded-[2rem] border border-border/70 select-all shadow-inner">
                     {newPasskey}
                   </p>
                 </div>
@@ -403,16 +403,16 @@ export default function LoginForm() {
             ) : (
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-blue-500 tracking-[0.2em] ml-2">
+                  <label className="text-[10px] font-black uppercase text-accent tracking-[0.2em] ml-2">
                     Authority Identifier
                   </label>
                   <div className="relative group">
-                    <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-blue-500 w-5 h-5 transition-colors" />
+                    <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground/80 group-focus-within:text-accent w-5 h-5 transition-colors" />
                     <input
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full bg-[#1e293b]/30 border border-white/5 p-5 pl-14 rounded-2xl text-white font-bold text-sm outline-none focus:border-blue-500/20 backdrop-blur-md transition-all shadow-inner"
+                      className="w-full bg-muted/30 border border-border/70 p-5 pl-14 rounded-2xl text-foreground font-bold text-sm outline-none focus:border-accent/20 backdrop-blur-md transition-all shadow-inner"
                       placeholder="Identifier Signature"
                       required
                     />
@@ -420,31 +420,31 @@ export default function LoginForm() {
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between items-center px-1">
-                    <label className="text-[10px] font-black uppercase text-blue-500 tracking-[0.2em]">
+                    <label className="text-[10px] font-black uppercase text-accent tracking-[0.2em]">
                       Secure Passkey
                     </label>
                     <button
                       type="button"
                       onClick={() => setView("setup")}
-                      className="text-[9px] font-black uppercase text-slate-700 hover:text-blue-400 transition-colors tracking-widest italic"
+                      className="text-[9px] font-black uppercase text-muted-foreground/70 hover:text-accent transition-colors tracking-widest italic"
                     >
                       Recalibrate Access?
                     </button>
                   </div>
                   <div className="relative group">
-                    <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-blue-500 w-5 h-5 transition-colors" />
+                    <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground/80 group-focus-within:text-accent w-5 h-5 transition-colors" />
                     <input
                       type={showPasskey ? "text" : "password"}
                       value={passkey}
                       onChange={(e) => setPasskey(e.target.value)}
-                      className="w-full bg-[#1e293b]/30 border border-white/5 p-5 pl-14 rounded-2xl text-white font-bold text-sm outline-none focus:border-blue-500/20 backdrop-blur-md transition-all shadow-inner"
+                      className="w-full bg-muted/30 border border-border/70 p-5 pl-14 rounded-2xl text-foreground font-bold text-sm outline-none focus:border-accent/20 backdrop-blur-md transition-all shadow-inner"
                       placeholder="••••••••"
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowPasskey(!showPasskey)}
-                      className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-600 hover:text-white transition-colors p-1"
+                      className="absolute right-5 top-1/2 -translate-y-1/2 text-muted-foreground/80 hover:text-foreground transition-colors p-1"
                     >
                       {showPasskey ? (
                         <EyeOff className="w-5 h-5" />
@@ -489,7 +489,7 @@ export default function LoginForm() {
                     }
                   }}
                   disabled={loading}
-                  className="group w-full py-5 rounded-[2rem] bg-blue-600 text-[#030712] font-black uppercase text-xs tracking-[0.3em] shadow-[0_20px_50px_rgba(37,99,235,0.2)] hover:bg-blue-500 hover:scale-[1.01] transition-all flex items-center justify-center gap-3 active:scale-95 disabled:opacity-50"
+                  className="group flex w-full items-center justify-center gap-3 rounded-[2rem] bg-accent py-5 text-xs font-black uppercase tracking-[0.3em] text-accent-foreground shadow-xl shadow-accent/20 transition-all hover:scale-[1.01] hover:bg-accent active:scale-95 disabled:opacity-50"
                 >
                   {loading ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
@@ -504,14 +504,14 @@ export default function LoginForm() {
                   ) : (
                     "Authorize Session"
                   )}
-                  <div className="w-1.5 h-1.5 bg-white/20 rounded-full animate-ping group-hover:bg-white" />
+                  <div className="w-1.5 h-1.5 bg-muted rounded-full animate-ping group-hover:bg-card" />
                 </button>
 
                 {view === "login" && (
                   <button
                     type="button"
                     onClick={() => setView("setup")}
-                    className="text-[10px] font-black uppercase text-slate-700 hover:text-white transition-colors tracking-widest text-center mt-2 italic opacity-40 hover:opacity-100"
+                    className="text-[10px] font-black uppercase text-muted-foreground/70 hover:text-foreground transition-colors tracking-widest text-center mt-2 italic opacity-40 hover:opacity-100"
                   >
                     No Identity Node? Request Admission
                   </button>
@@ -520,17 +520,17 @@ export default function LoginForm() {
             )}
           </form>
 
-          <div className="mt-16 pt-8 border-t border-white/5 flex flex-col items-center">
+          <div className="mt-16 pt-8 border-t border-border/70 flex flex-col items-center">
             <div className="flex gap-2 mb-4">
               {[1, 2, 3, 4].map((i) => (
                 <div
                   key={i}
-                  className="w-1 h-1 bg-blue-600/20 rounded-full animate-pulse"
+                  className="w-1 h-1 bg-accent/20 rounded-full animate-pulse"
                   style={{ animationDelay: `${i * 0.2}s` }}
                 />
               ))}
             </div>
-            <p className="text-[9px] font-black text-slate-800 uppercase tracking-[0.8em] select-none text-shadow-glow">
+            <p className="text-[9px] font-black text-muted-foreground/60 uppercase tracking-[0.8em] select-none text-shadow-glow">
               Secure.Admin_v1.0
             </p>
           </div>

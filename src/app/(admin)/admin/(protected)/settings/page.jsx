@@ -8,14 +8,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { 
-  Settings, 
-  Save, 
-  Shield, 
-  Globe, 
-  User, 
-  Mail, 
-  MapPin, 
+import {
+  Settings,
+  Save,
+  Shield,
+  Globe,
+  User,
+  Mail,
+  MapPin,
   Sparkles,
   Lock,
   Palette,
@@ -109,7 +109,7 @@ export default function SettingsPage() {
 
   const onSubmit = async (data) => {
     setIsSaving(true);
-    
+
     try {
       const formattedData = {
         siteTitle: data.siteTitle,
@@ -134,7 +134,7 @@ export default function SettingsPage() {
         updateSettings(formattedData),
         timeoutPromise
       ]);
-      
+
       if (result.success) {
         addNotification({
             title: "Settings Synchronized",
@@ -184,7 +184,7 @@ export default function SettingsPage() {
 
   return (
     <div className={`max-w-5xl mx-auto space-y-12 transition-all duration-1000 p-4 rounded-[3rem] ${isHighlighted ? "bg-accent/5 ring-2 ring-accent/20" : ""}`}>
-      <SuperAdminTransferModal 
+      <SuperAdminTransferModal
         isOpen={isTransferModalOpen}
         onClose={() => setIsTransferModalOpen(false)}
         currentEmail={settings?.superAdminEmail || settings?.email || ""}
@@ -254,18 +254,18 @@ export default function SettingsPage() {
           {/* Brand Identity */}
           <div className="bg-card/45 border border-border/60 p-10 rounded-[3rem] relative overflow-hidden group backdrop-blur-xl">
             <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 blur-[100px] rounded-full translate-x-32 -translate-y-32 pointer-events-none group-hover:bg-accent/10 transition-colors" />
-            
-            <SectionHeader 
-              icon={Globe} 
-              title="Brand Identity" 
-              desc="Configure your public brand and logo naming." 
+
+            <SectionHeader
+              icon={Globe}
+              title="Brand Identity"
+              desc="Configure your public brand and logo naming."
             />
-            
+
             <div className="space-y-6 relative z-10">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-accent/80 pl-2">Logo Title</label>
-                  <input 
+                  <input
                     {...register("siteTitle")}
                     className="w-full p-4 bg-background/65 border border-border/70 rounded-2xl text-sm text-foreground focus:ring-4 focus:ring-accent/10 focus:border-accent/40 transition-all outline-none"
                   />
@@ -273,7 +273,7 @@ export default function SettingsPage() {
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-accent/80 pl-2">Logo Accent</label>
-                  <input 
+                  <input
                     {...register("siteAccent")}
                     className="w-full p-4 bg-background/65 border border-border/70 rounded-2xl text-sm text-foreground focus:ring-4 focus:ring-accent/10 focus:border-accent/40 transition-all outline-none"
                   />
@@ -285,7 +285,7 @@ export default function SettingsPage() {
                 <label className="text-[10px] font-black uppercase tracking-widest text-accent/80 pl-2">Admin Name</label>
                 <div className="relative">
                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                   <input 
+                   <input
                     {...register("adminName")}
                     className="w-full pl-12 pr-4 py-4 bg-background/65 border border-border/70 rounded-2xl text-sm text-foreground focus:ring-4 focus:ring-accent/10 focus:border-accent/40 transition-all outline-none"
                    />
@@ -297,7 +297,7 @@ export default function SettingsPage() {
                 <label className="text-[10px] font-black uppercase tracking-widest text-accent/80 pl-2">System Email</label>
                 <div className="relative">
                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                   <input 
+                   <input
                     {...register("email")}
                     className="w-full pl-12 pr-4 py-4 bg-background/65 border border-border/70 rounded-2xl text-sm text-foreground focus:ring-4 focus:ring-accent/10 focus:border-accent/40 transition-all outline-none"
                    />
@@ -309,7 +309,7 @@ export default function SettingsPage() {
                 <label className="text-[10px] font-black uppercase tracking-widest text-accent/80 pl-2">Location/HQ</label>
                 <div className="relative">
                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                   <input 
+                   <input
                     {...register("location")}
                     className="w-full pl-12 pr-4 py-4 bg-background/65 border border-border/70 rounded-2xl text-sm text-foreground focus:ring-4 focus:ring-accent/10 focus:border-accent/40 transition-all outline-none"
                    />
@@ -346,16 +346,16 @@ export default function SettingsPage() {
           <div className="space-y-8">
 
             <div className="bg-card/45 border border-border/60 p-10 rounded-[3rem] relative overflow-hidden group backdrop-blur-xl">
-               <SectionHeader 
-                  icon={Shield} 
-                  title="Search Engine Indexing" 
-                  desc="Optimize how your site appears globally." 
+               <SectionHeader
+                  icon={Shield}
+                  title="Search Engine Indexing"
+                  desc="Optimize how your site appears globally."
                />
-               
+
                <div className="space-y-4 relative z-10">
                   <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase tracking-widest text-accent/80 pl-2">SEO Meta Title</label>
-                    <input 
+                    <input
                       {...register("seoTitle")}
                       className="w-full p-4 bg-background/65 border border-border/70 rounded-2xl text-sm text-foreground focus:ring-4 focus:ring-accent/10 focus:border-accent/40 transition-all outline-none"
                     />
@@ -363,7 +363,7 @@ export default function SettingsPage() {
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase tracking-widest text-accent/80 pl-2">SEO Meta Description</label>
-                    <textarea 
+                    <textarea
                       {...register("seoDescription")}
                       rows={3}
                       className="w-full p-4 bg-background/65 border border-border/70 rounded-2xl text-sm text-foreground focus:ring-4 focus:ring-accent/10 focus:border-accent/40 transition-all outline-none resize-none"
@@ -376,8 +376,8 @@ export default function SettingsPage() {
         </div>
 
         <div className="flex justify-center pt-12">
-          <motion.button 
-            type="submit" 
+          <motion.button
+            type="submit"
             disabled={isSaving}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}

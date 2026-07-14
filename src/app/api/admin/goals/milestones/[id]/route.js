@@ -16,7 +16,8 @@ export async function PATCH(request, { params }) {
 
     const body = await request.json();
 
-    const updated = await GoalController.updateMilestone(params.id, body);
+    const { id } = await params;
+    const updated = await GoalController.updateMilestone(id, body);
     if (!updated) {
       return NextResponse.json(
         { success: false, error: "Milestone not found" },
@@ -28,7 +29,7 @@ export async function PATCH(request, { params }) {
       action: "UPDATE",
       module: "GOALS_MILESTONES",
       details: `Updated milestone: ${updated.title}`,
-      targetId: params.id,
+      targetId: id,
     }).catch(() => {});
 
     return NextResponse.json({ success: true, data: updated });
@@ -52,13 +53,14 @@ export async function DELETE(request, { params }) {
       );
     }
 
-    await GoalController.deleteMilestone(params.id);
+    const { id } = await params;
+    await GoalController.deleteMilestone(id);
 
     await ActivityController.logFromSession(session, {
       action: "DELETE",
       module: "GOALS_MILESTONES",
       details: `Deleted milestone`,
-      targetId: params.id,
+      targetId: id,
     }).catch(() => {});
 
     return NextResponse.json({

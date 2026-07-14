@@ -36,7 +36,14 @@ export const SocialController = {
                 };
             }).filter(item => item.url !== "");
 
-            return fallbackData;
+            if (fallbackData.length === 0) return [];
+
+            const initialized = await SocialLinks.findOneAndUpdate(
+                {},
+                { $set: { links: fallbackData, updatedAt: new Date() } },
+                { returnDocument: "after", upsert: true, setDefaultsOnInsert: true },
+            ).lean();
+            return initialized.links || [];
         } catch (error) {
             console.error("SocialController.get() error:", error);
             return [];
@@ -62,15 +69,11 @@ export const SocialController = {
                 .filter(link => link.url !== "")
                 .slice(0, 5);
 
-            // FORCE RESET: Delete existing documents to clear old schema fields
-            // This ensures we move from the old object-based structure to the new array-based one
-            await SocialLinks.deleteMany({});
-            
-            // Create a fresh document with the new structure
-            const doc = await SocialLinks.create({
-                links: validLinks,
-                updatedAt: new Date(),
-            });
+            const doc = await SocialLinks.findOneAndUpdate(
+                {},
+                { $set: { links: validLinks, updatedAt: new Date() } },
+                { returnDocument: "after", upsert: true, runValidators: true, setDefaultsOnInsert: true },
+            );
 
             return doc.links;
         } catch (error) {

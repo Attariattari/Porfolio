@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { SocialController } from "@/controllers/SocialController";
+import { getAuthSession } from "@/lib/auth";
+import { revalidatePath } from "next/cache";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -26,6 +28,11 @@ export async function GET() {
 
 export async function POST(request) {
   try {
+    const session = await getAuthSession();
+    if (!["super-admin", "root-super-admin"].includes(session?.role)) {
+      return NextResponse.json({ success: false, error: "Access Denied" }, { status: 403 });
+    }
+
     const body = await request.json();
     
     // Validate that body is an array of links
@@ -39,6 +46,7 @@ export async function POST(request) {
     }
 
     const data = await SocialController.update(links);
+    revalidatePath("/", "layout");
     
     return NextResponse.json({
       success: true,

@@ -7,11 +7,12 @@
 import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import { SignJWT, jwtVerify } from 'jose';
+import { getAuthSecretValue } from '@/lib/authSecret';
 
 const getCurrentYear = () => new Date().getFullYear();
 
 const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'jwt_secret_key_2026_muhyo_tech_secure'
+  process.env.JWT_SECRET || getAuthSecretValue()
 );
 
 /**

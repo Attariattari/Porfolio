@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { initializeSocket, SOCKET_EVENTS } from "@/lib/socket";
+import { disposeSocket, initializeSocket, SOCKET_EVENTS } from "@/lib/socket";
 import useAdminStore from "@/lib/store/adminStore";
 import { toast } from "sonner";
 
@@ -68,7 +68,7 @@ export default function SocketRefresh() {
     socket.on(SOCKET_EVENTS.SETTINGS_UPDATED, () => router.refresh());
 
     return () => {
-      socket.disconnect();
+      disposeSocket(socket);
     };
   }, [fetchBlogs, router]);
 

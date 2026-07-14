@@ -13,6 +13,7 @@ export async function POST(req) {
     try {
         const body = await req.json();
         const {
+            visitorId,
             sessionId,
             page,
             userAgent,
@@ -23,11 +24,26 @@ export async function POST(req) {
             referrer = '',
         } = body;
 
+        const requestUserAgent = req.headers.get("user-agent") || userAgent || "";
+        if (/bot|crawler|spider|headless|lighthouse|pagespeed|google-inspectiontool/i.test(requestUserAgent)) {
+            return new NextResponse(null, { status: 204 });
+        }
+
         // Validation
         if (!page || !sessionId) {
             console.log('[Visitor Tracking] Missing required fields:', { page, sessionId });
             return NextResponse.json(
                 { success: false, error: "Missing required fields: page and sessionId" },
+                { status: 400 }
+            );
+        }
+
+        const normalizedSessionId = String(sessionId).trim().slice(0, 160);
+        const normalizedVisitorId = String(visitorId || sessionId).trim().slice(0, 160);
+        const normalizedPage = String(page).trim().slice(0, 2048) || "/";
+        if (!normalizedSessionId || !normalizedVisitorId) {
+            return NextResponse.json(
+                { success: false, error: "Invalid visitor identity" },
                 { status: 400 }
             );
         }
@@ -38,18 +54,15 @@ export async function POST(req) {
         // (same session and page, created within the last 30 minutes)
         const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
         const existingPageLog = await VisitorLog.findOne({
-            sessionId,
-            page: page.trim() || '/',
+            sessionId: normalizedSessionId,
+            page: normalizedPage,
             createdAt: { $gte: thirtyMinutesAgo }
         }).sort({ createdAt: -1 });
 
-        // Parse device info
-        const deviceInfo = parseUserAgent(userAgent || '');
-        const clientIP = getClientIP(req);
-        const geoInfo = await getGeoFromIP(clientIP);
-
         if (existingPageLog) {
             // Update existing log
+            existingPageLog.visitorId = normalizedVisitorId;
+            existingPageLog.trackingVersion = 2;
             existingPageLog.sessionDuration = Math.max(existingPageLog.sessionDuration || 0, parseInt(sessionDuration) || 0);
             existingPageLog.timeOnPage = Math.max(existingPageLog.timeOnPage || 0, parseInt(timeOnPage) || 0);
             existingPageLog.interactionCount = Math.max(existingPageLog.interactionCount || 0, parseInt(interactionCount) || 0);
@@ -64,15 +77,33 @@ export async function POST(req) {
             });
         }
 
-        // Check if this is a new session entirely
-        const sessionExists = await VisitorLog.exists({ sessionId });
+        const [sessionExists, visitorExists] = await Promise.all([
+            VisitorLog.exists({ sessionId: normalizedSessionId }),
+            VisitorLog.exists({
+                $or: [
+                    { visitorId: normalizedVisitorId },
+                    {
+                        visitorId: { $exists: false },
+                        sessionId: normalizedVisitorId,
+                    },
+                ],
+            }),
+        ]);
         const isNewSession = !sessionExists;
+        const isFirstVisit = !visitorExists;
+
+        // Device and location work is only needed when a new page record is created.
+        const deviceInfo = parseUserAgent(requestUserAgent);
+        const clientIP = getClientIP(req);
+        const geoInfo = await getGeoFromIP(clientIP);
 
         // Create visitor log
         const visitorLog = new VisitorLog({
-            page: page.trim() || '/',
-            userAgent: userAgent || 'Unknown',
-            sessionId: sessionId.trim(),
+            page: normalizedPage,
+            userAgent: requestUserAgent || 'Unknown',
+            visitorId: normalizedVisitorId,
+            sessionId: normalizedSessionId,
+            trackingVersion: 2,
             device: {
                 type: deviceInfo.type || 'desktop',
                 browser: deviceInfo.browser || 'Unknown',
@@ -98,12 +129,15 @@ export async function POST(req) {
         
         // Emit socket events for real-time updates
         const { emitSocketEvent } = await import("@/lib/socket");
-        emitSocketEvent('new_visitor', { 
-            page, 
-            timestamp: savedLog.createdAt,
-            country: savedLog.geo.country,
-            device: savedLog.device.type
-        });
+        if (isNewSession) {
+            emitSocketEvent('new_visitor', {
+                page: normalizedPage,
+                timestamp: savedLog.createdAt,
+                country: savedLog.geo.country,
+                device: savedLog.device.type,
+                isFirstVisit,
+            });
+        }
         emitSocketEvent('STATS_UPDATED', { type: 'visitor', page });
 
         return NextResponse.json({
@@ -111,7 +145,10 @@ export async function POST(req) {
             message: "Visitor tracked successfully",
             data: {
                 id: savedLog._id,
+                visitorId: savedLog.visitorId,
                 sessionId: savedLog.sessionId,
+                isFirstVisit,
+                isNewSession,
                 page: savedLog.page,
                 device: savedLog.device.type,
                 country: savedLog.geo.country,

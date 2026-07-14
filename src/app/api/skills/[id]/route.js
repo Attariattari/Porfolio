@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { SkillController } from "@/controllers/SkillController";
 import { getAuthSession, checkPermission } from "@/lib/auth";
+import { revalidatePath } from "next/cache";
 
 // UPDATE SKILL BY ID (Admin with Edit Permission)
 export async function PATCH(request, { params }) {
@@ -14,6 +15,8 @@ export async function PATCH(request, { params }) {
     const body = await request.json();
     const updatedSkill = await SkillController.update(id, body);
     if (!updatedSkill) return NextResponse.json({ success: false, error: "Skill not found" }, { status: 404 });
+    revalidatePath("/");
+    revalidatePath("/skills");
     return NextResponse.json({ success: true, data: updatedSkill });
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 400 });
@@ -31,6 +34,8 @@ export async function DELETE(request, { params }) {
     const { id } = await params;
     const deletedSkill = await SkillController.deleteOne(id);
     if (!deletedSkill) return NextResponse.json({ success: false, error: "Skill not found" }, { status: 404 });
+    revalidatePath("/");
+    revalidatePath("/skills");
     return NextResponse.json({ success: true, message: `Successfully deleted skill.` });
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });

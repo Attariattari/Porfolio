@@ -1,6 +1,6 @@
 /**
  * Performance Metrics Dashboard Component
- * 
+ *
  * Visualizes navigation performance metrics
  * Can be added to admin dashboard
  */
@@ -70,31 +70,31 @@ export default function PerformanceMetricsDashboard() {
             label="Instant"
             value={breakdown.instant}
             total={breakdown.total}
-            color="rgb(34, 197, 94)"
+            color="var(--status-success)"
           />
           <TimingBar
             label="Fast"
             value={breakdown.fast}
             total={breakdown.total}
-            color="rgb(59, 130, 246)"
+            color="var(--chart-1)"
           />
           <TimingBar
             label="Moderate"
             value={breakdown.moderate}
             total={breakdown.total}
-            color="rgb(249, 115, 22)"
+            color="var(--status-warning)"
           />
           <TimingBar
             label="Slow"
             value={breakdown.slow}
             total={breakdown.total}
-            color="rgb(239, 68, 68)"
+            color="var(--status-danger)"
           />
           <TimingBar
             label="Very Slow"
             value={breakdown.verySlow}
             total={breakdown.total}
-            color="rgb(127, 29, 29)"
+            color="var(--chart-5)"
           />
         </div>
       </div>
@@ -181,7 +181,7 @@ export default function PerformanceMetricsDashboard() {
 function MetricCard({ label, value, unit, color = 'default' }) {
   const colorClasses = {
     default: 'text-foreground',
-    blue: 'text-blue-500',
+    blue: 'text-accent',
     green: 'text-green-500',
     amber: 'text-amber-500',
     purple: 'text-purple-500',

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { initializeSocket, SOCKET_EVENTS } from '@/lib/socket';
+import { disposeSocket, initializeSocket, SOCKET_EVENTS } from '@/lib/socket';
 import useAdminStore from '@/lib/store/adminStore';
 
 /**
@@ -38,6 +38,7 @@ export function useSettingsSync() {
       window.removeEventListener("focus", syncSettings);
       document.removeEventListener("visibilitychange", syncSettings);
       socket?.off(SOCKET_EVENTS.SETTINGS_UPDATED);
+      disposeSocket(socket);
     };
   }, [fetchSettings]);
 }

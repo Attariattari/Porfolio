@@ -128,8 +128,8 @@ export default function BlogsPage() {
           )}
           {item._isFromDataJs && (
             <div className="flex items-center gap-1.5">
-              <div className="w-2 h-2 rounded-full border border-slate-500" />
-              <span className="text-[9px] font-bold text-slate-500 uppercase tracking-tighter">
+              <div className="w-2 h-2 rounded-full border border-border" />
+              <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-tighter">
                 Template
               </span>
             </div>
@@ -143,7 +143,7 @@ export default function BlogsPage() {
       render: (item) => (
         <div className="flex flex-col gap-1 text-[10px] font-black uppercase tracking-widest">
           {item._isFromDataJs ? (
-            <span className="text-slate-500">Template</span>
+            <span className="text-muted-foreground">Template</span>
           ) : (
             <span
               className={
@@ -151,7 +151,7 @@ export default function BlogsPage() {
                   ? "text-green-500"
                   : item.publishStatus === "pending"
                     ? "text-amber-500"
-                    : "text-slate-400"
+                    : "text-muted-foreground"
               }
             >
               {item.publishStatus || "draft"}
@@ -164,7 +164,7 @@ export default function BlogsPage() {
       key: "image",
       label: "Visual",
       render: (item) => (
-        <div className="w-16 h-10 rounded-lg overflow-hidden border border-white/10 shadow-lg bg-white/5 flex items-center justify-center">
+        <div className="w-16 h-10 rounded-lg overflow-hidden border border-border shadow-lg bg-muted/50 flex items-center justify-center">
           <Image
             src={getSafeImageSrc(item.image || item.images?.[0])}
             alt={getBlogImageAlt(item)}
@@ -182,7 +182,7 @@ export default function BlogsPage() {
       key: "createdAt",
       label: "Timeline",
       render: (item) => (
-        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
           {item.createdAt
             ? format(new Date(item.createdAt), "MMM d, yyyy")
             : "Draft"}
@@ -194,7 +194,7 @@ export default function BlogsPage() {
       label: "Featured",
       render: (item) => (
         <span
-          className={`px-2 py-1 rounded text-[8px] font-black uppercase ${item.featured ? "bg-amber-500/10 text-amber-500" : "bg-slate-500/10 text-slate-500"}`}
+          className={`px-2 py-1 rounded text-[8px] font-black uppercase ${item.featured ? "bg-amber-500/10 text-amber-500" : "bg-muted text-muted-foreground"}`}
         >
           {item.featured ? "Featured" : "Standard"}
         </span>
@@ -217,7 +217,7 @@ export default function BlogsPage() {
                 setSelectedBlogForImage(item);
                 setIsAIProgressOpen(true);
               }}
-              className="px-3 py-1.5 bg-amber-500 text-black text-[9px] font-black uppercase tracking-tighter rounded-md hover:bg-amber-400 transition-all flex items-center gap-1 animate-pulse"
+              className="px-3 py-1.5 bg-amber-500 text-accent-foreground text-[9px] font-black uppercase tracking-tighter rounded-md hover:bg-amber-400 transition-all flex items-center gap-1 animate-pulse"
             >
               <Sparkles className="w-3 h-3" />
               {autoGenerateImages ? "Gen Image" : "Send Prompt"}
@@ -229,7 +229,7 @@ export default function BlogsPage() {
               <CheckCircle2 className="w-3 h-3" /> {item.imageStatus}
             </div>
           ) : (
-            <span className="text-[9px] text-slate-600 font-bold uppercase">
+            <span className="text-[9px] text-muted-foreground/80 font-bold uppercase">
               Manual
             </span>
           )}
@@ -257,7 +257,7 @@ export default function BlogsPage() {
                       });
                     }
                   }}
-                  className="p-1.5 rounded-md border border-white/10 text-slate-400 hover:text-white hover:bg-white/10"
+                  className="p-1.5 rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-muted"
                   title="Regenerate AI image"
                 >
                   <RefreshCcw className="w-3 h-3" />
@@ -281,7 +281,7 @@ export default function BlogsPage() {
                     });
                   }
                 }}
-                className="p-1.5 rounded-md border border-white/10 text-slate-400 hover:text-white hover:bg-white/10"
+                className="p-1.5 rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-muted"
                 title="Send prompt email"
               >
                 <Mail className="w-3 h-3" />
@@ -293,7 +293,7 @@ export default function BlogsPage() {
                     navigator.clipboard.writeText(item.imagePrompt || item.image_prompt);
                     toast.success("Image prompt copied.");
                   }}
-                  className="p-1.5 rounded-md border border-white/10 text-slate-400 hover:text-white hover:bg-white/10"
+                  className="p-1.5 rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-muted"
                   title="Copy image prompt"
                 >
                   <Copy className="w-3 h-3" />
@@ -493,13 +493,13 @@ export default function BlogsPage() {
     <div className="space-y-8 pb-20">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-4">
         <div>
-          <h1 className="text-2xl md:text-4xl font-black italic uppercase tracking-tighter text-white">
+          <h1 className="text-2xl md:text-4xl font-black italic uppercase tracking-tighter text-foreground">
             Narrative{" "}
             <span className="text-accent underline decoration-accent/20 underline-offset-8">
               Forge
             </span>
           </h1>
-          <p className="text-[10px] md:text-sm text-slate-500 mt-2 md:mt-4 font-medium tracking-tight uppercase tracking-widest">
+          <p className="text-[10px] md:text-sm text-muted-foreground mt-2 md:mt-4 font-medium tracking-tight uppercase tracking-widest">
             Publish and manage intellectual property across the network.
           </p>
         </div>
@@ -509,7 +509,7 @@ export default function BlogsPage() {
             className={`flex h-10 cursor-pointer select-none items-center justify-between gap-3 rounded-lg border px-3 text-[10px] font-black uppercase tracking-widest transition-colors ${
               autoGenerateImages
                 ? "border-accent/40 bg-accent/10 text-accent"
-                : "border-white/10 bg-white/5 text-slate-400 hover:text-slate-200"
+                : "border-border bg-muted/50 text-muted-foreground hover:text-foreground"
             }`}
             title="Toggle automatic blog image generation"
           >
@@ -530,11 +530,11 @@ export default function BlogsPage() {
             </span>
             <span
               className={`relative h-6 w-11 rounded-full p-0.5 transition-colors duration-200 ${
-                autoGenerateImages ? "bg-accent" : "bg-slate-700"
+                autoGenerateImages ? "bg-accent" : "bg-muted"
               }`}
             >
               <span
-                className={`block h-5 w-5 rounded-full bg-white shadow-lg transition-transform duration-200 ease-out ${
+                className={`block h-5 w-5 rounded-full bg-card shadow-lg transition-transform duration-200 ease-out ${
                   autoGenerateImages ? "translate-x-5" : "translate-x-0"
                 }`}
               />
@@ -550,12 +550,12 @@ export default function BlogsPage() {
               }
               setIsAIProgressOpen(true);
             }}
-            className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest text-white shadow-lg transition-all hover:scale-105 active:scale-95 group ${
+            className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest text-foreground shadow-lg transition-all hover:scale-105 active:scale-95 group ${
               hasPendingImage
                 ? autoGenerateImages
                   ? "bg-gradient-to-r from-amber-500 to-orange-600 shadow-amber-500/20 hover:shadow-amber-500/40"
                   : "bg-gradient-to-r from-emerald-500 to-teal-600 shadow-emerald-500/20 hover:shadow-emerald-500/40"
-                : "bg-gradient-to-r from-accent to-blue-600 shadow-accent/20 hover:shadow-accent/40"
+                : "bg-gradient-to-r from-accent to-accent shadow-accent/20 hover:shadow-accent/40"
             }`}
           >
             {hasPendingImage && !autoGenerateImages ? (

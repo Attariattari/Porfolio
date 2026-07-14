@@ -7,10 +7,9 @@ import { jwtVerify } from "jose";
 import dbConnect from "@/lib/dbConnect";
 import User from "@/models/AdminModels";
 import { getAuthSession } from "@/lib/auth";
+import { getAuthSecretKey } from "@/lib/authSecret";
 
-const SECRET = new TextEncoder().encode(
-  process.env.AUTH_SECRET || "fallback_muhyo_secret_32_chars_long_!!!",
-);
+const SECRET = getAuthSecretKey();
 
 const ROOT_ADMIN_EMAIL = (process.env.SUPER_ADMIN_EMAIL || "attariattari549@gmail.com").toLowerCase();
 

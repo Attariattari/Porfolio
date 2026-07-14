@@ -7,9 +7,9 @@ import { Eye, EyeOff, Lock, CheckCircle, AlertCircle, Loader, KeyRound, Shield }
 import { toast } from 'sonner';
 
 const PASSKEY_STRENGTH = {
-  weak: { color: '#ef4444', label: 'Weak', width: '33%' },
-  medium: { color: '#f59e0b', label: 'Medium', width: '66%' },
-  strong: { color: '#10b981', label: 'Strong', width: '100%' },
+  weak: { color: 'var(--status-danger)', label: 'Weak', width: '33%' },
+  medium: { color: 'var(--status-warning)', label: 'Medium', width: '66%' },
+  strong: { color: 'var(--status-success)', label: 'Strong', width: '100%' },
 };
 
 export default function ChangePasskeyPage() {
@@ -192,7 +192,7 @@ export default function ChangePasskeyPage() {
       }
 
       console.log('[ChangePasskey] ✅ Passkey changed and auto-logged in');
-      
+
       // Store the new token if provided
       if (data.data?.token) {
         localStorage.setItem('admin_token', data.data.token);
@@ -217,7 +217,7 @@ export default function ChangePasskeyPage() {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-card via-muted to-card flex items-center justify-center p-4">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -233,13 +233,13 @@ export default function ChangePasskeyPage() {
   // Invalid or expired token
   if (!tokenValid) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-card via-muted to-card flex items-center justify-center p-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="max-w-md w-full"
         >
-          <div className="bg-slate-800/50 border border-red-500/20 rounded-24 p-12 text-center backdrop-blur-xl">
+          <div className="bg-muted/50 border border-red-500/20 rounded-24 p-12 text-center backdrop-blur-xl">
             <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-6" />
             <h1 className="text-2xl font-black uppercase tracking-tighter mb-4 text-red-400">
               Invalid Reset Link
@@ -247,7 +247,7 @@ export default function ChangePasskeyPage() {
             <p className="text-muted-foreground mb-8">{error}</p>
             <button
               onClick={() => router.push('/admin/login')}
-              className="px-8 py-3 bg-accent hover:bg-accent/90 text-white font-bold rounded-xl transition-colors"
+              className="px-8 py-3 bg-accent hover:bg-accent/90 text-foreground font-bold rounded-xl transition-colors"
             >
               Back to Login
             </button>
@@ -260,7 +260,7 @@ export default function ChangePasskeyPage() {
   // Success state
   if (success) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-card via-muted to-card flex items-center justify-center p-4">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -292,7 +292,7 @@ export default function ChangePasskeyPage() {
 
   // Main form
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-card via-muted to-card p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -318,20 +318,20 @@ export default function ChangePasskeyPage() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-slate-800/50 border border-white/10 rounded-24 p-8 backdrop-blur-xl mb-8"
+          className="bg-muted/50 border border-border rounded-24 p-8 backdrop-blur-xl mb-8"
         >
           {/* Email Display */}
-          <div className="mb-8 p-6 bg-slate-900/50 border border-accent/20 rounded-2xl">
+          <div className="mb-8 p-6 bg-card/50 border border-accent/20 rounded-2xl">
             <p className="text-sm text-muted-foreground mb-2">Account Email</p>
             <p className="text-lg font-mono font-bold text-accent">{userEmail}</p>
           </div>
 
           {/* Time Remaining */}
-          <div className="mb-8 p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-center gap-3">
-            <Lock className="w-5 h-5 text-blue-400" />
+          <div className="mb-8 p-4 bg-accent/10 border border-accent/20 rounded-xl flex items-center gap-3">
+            <Lock className="w-5 h-5 text-accent" />
             <div>
-              <p className="text-sm font-bold text-blue-400">Reset Link Valid</p>
-              <p className="text-xs text-blue-300">{timeLeft}</p>
+              <p className="text-sm font-bold text-accent">Reset Link Valid</p>
+              <p className="text-xs text-accent">{timeLeft}</p>
             </div>
           </div>
 
@@ -363,7 +363,7 @@ export default function ChangePasskeyPage() {
                   value={newPasskey}
                   onChange={(e) => setNewPasskey(e.target.value)}
                   placeholder="Enter your new passkey"
-                  className="w-full px-4 py-3 bg-slate-900/50 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all outline-none"
+                  className="w-full px-4 py-3 bg-card/50 border border-border rounded-xl text-foreground placeholder-slate-500 focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all outline-none"
                   disabled={submitting}
                 />
                 <button
@@ -390,7 +390,7 @@ export default function ChangePasskeyPage() {
                       {passkeyStrength.strength.toUpperCase()}
                     </p>
                   </div>
-                  <div className="h-2 bg-slate-900 rounded-full overflow-hidden">
+                  <div className="h-2 bg-card rounded-full overflow-hidden">
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{
@@ -418,11 +418,11 @@ export default function ChangePasskeyPage() {
                           className={`w-4 h-4 rounded-full flex items-center justify-center ${
                             passkeyStrength.metrics[req.key]
                               ? 'bg-green-500'
-                              : 'bg-slate-700'
+                              : 'bg-muted'
                           }`}
                         >
                           {passkeyStrength.metrics[req.key] && (
-                            <span className="text-white text-xs font-bold">✓</span>
+                            <span className="text-foreground text-xs font-bold">✓</span>
                           )}
                         </div>
                         <span
@@ -452,7 +452,7 @@ export default function ChangePasskeyPage() {
                   value={confirmPasskey}
                   onChange={(e) => setConfirmPasskey(e.target.value)}
                   placeholder="Re-enter your passkey"
-                  className="w-full px-4 py-3 bg-slate-900/50 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all outline-none"
+                  className="w-full px-4 py-3 bg-card/50 border border-border rounded-xl text-foreground placeholder-slate-500 focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all outline-none"
                   disabled={submitting}
                 />
                 <button
@@ -502,8 +502,8 @@ export default function ChangePasskeyPage() {
               }
               className={`w-full px-6 py-4 font-black uppercase tracking-widest rounded-xl transition-all flex items-center justify-center gap-2 ${
                 submitting || !newPasskey || !confirmPasskey
-                  ? 'bg-slate-700 text-slate-400 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-accent to-cyan-500 text-white hover:shadow-lg hover:shadow-accent/50'
+                  ? 'bg-muted text-muted-foreground cursor-not-allowed'
+                  : 'bg-gradient-to-r from-accent to-cyan-500 text-foreground hover:shadow-lg hover:shadow-accent/50'
               }`}
             >
               {submitting ? (

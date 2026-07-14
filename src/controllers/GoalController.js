@@ -16,6 +16,7 @@ import { portfolioData } from "@/lib/data";
 import { serializeDoc } from "@/lib/mongooseHelper";
 import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socket";
 import { cacheManager, withCache } from "@/lib/cache";
+import { revalidatePath } from "next/cache";
 
 const goalsPageData = portfolioData.goalsData || {};
 const fallbackGoalsData = Array.isArray(goalsPageData) ?
@@ -33,6 +34,7 @@ const invalidateGoalsCache = async () => {
         cacheManager.invalidateByTag("milestones"),
         cacheManager.invalidateByTag("goals_vision"),
     ]).catch(() => {});
+    revalidatePath("/goals");
 };
 
 /**
@@ -86,6 +88,8 @@ export const GoalController = {
                     const dbGoals = await Goal.find(query)
                         .sort({ order: 1, featured: -1, createdAt: -1 })
                         .lean();
+
+                    if (dbGoals.length > 0) return serializeDoc(dbGoals);
 
                     const uploadedTitles = new Set(dbGoals.map((g) => g.title));
                     const fallbackGoals = fallbackGoalsData
@@ -313,6 +317,8 @@ export const GoalController = {
                         .sort({ order: 1, createdAt: -1 })
                         .lean();
 
+                    if (dbRoadmap.length > 0) return serializeDoc(dbRoadmap);
+
                     const dbTitles = new Set(dbRoadmap.map((r) => r.title));
                     const fallbackRoadmap = fallbackRoadmapData
                         .filter((r) => !dbTitles.has(r.title))
@@ -458,6 +464,8 @@ export const GoalController = {
                     const dbMilestones = await Milestone.find(query)
                         .sort({ order: 1, date: -1 })
                         .lean();
+
+                    if (dbMilestones.length > 0) return serializeDoc(dbMilestones);
 
                     const dbTitles = new Set(dbMilestones.map((m) => m.title));
                     const fallbackMilestones = fallbackMilestonesData

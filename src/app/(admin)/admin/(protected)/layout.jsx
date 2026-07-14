@@ -12,10 +12,10 @@ export default function ProtectedAdminLayout({ children }) {
     <div className="admin-theme-scope flex min-h-screen overflow-x-hidden bg-background text-foreground selection:bg-accent selection:text-accent-foreground">
       <SocketRefresh />
       <AdminSidebar />
-      <div 
+      <div
         className={`flex-grow flex flex-col transition-[padding] duration-300 min-w-0
-          pl-0 
-          md:pl-20 
+          pl-0
+          md:pl-20
           ${sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-72'}
         `}
       >

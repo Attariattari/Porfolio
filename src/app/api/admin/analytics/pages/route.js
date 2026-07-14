@@ -2,6 +2,13 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import { VisitorLog } from "@/models/VisitorLog";
 import { getAuthSession } from "@/lib/auth";
+import {
+    ANALYTICS_TIMEZONE,
+    addAnalyticsIdentityStage,
+    getAnalyticsPeriod,
+    getRollingPeriodRange,
+    validVisitorIdentityStage,
+} from "@/lib/analytics/visitorAnalytics";
 
 export const dynamic = 'force-dynamic';
 
@@ -14,30 +21,31 @@ export async function GET(req) {
 
         await dbConnect();
 
-        let { period = '30', limit = '20' } = req.nextUrl.searchParams;
-        const periodDays = parseInt(period);
-        const pageLimit = parseInt(limit);
+        const periodDays = getAnalyticsPeriod(req.nextUrl.searchParams.get('period'));
+        const requestedLimit = Number.parseInt(req.nextUrl.searchParams.get('limit') || '20', 10);
+        const pageLimit = Math.min(Math.max(requestedLimit || 20, 1), 100);
         
         if (isNaN(periodDays) || periodDays <= 0) {
             return NextResponse.json({ success: false, error: "Invalid period" }, { status: 400 });
         }
 
-        const startDate = new Date();
-        startDate.setDate(startDate.getDate() - periodDays);
-        startDate.setHours(0, 0, 0, 0);
+        const { startDate, endDate } = getRollingPeriodRange(periodDays);
+        const periodRange = { $gte: startDate, $lte: endDate };
 
         const [topPages, pageEngagement, pageTrend] = await Promise.all([
             // Top visited pages
             VisitorLog.aggregate([
                 { $match: { 
-                    createdAt: { $gte: startDate },
+                    createdAt: periodRange,
                     page: { $ne: null, $ne: "" }
                 } },
+                addAnalyticsIdentityStage(),
+                validVisitorIdentityStage(),
                 {
                     $group: {
                         _id: "$page",
                         visits: { $sum: 1 },
-                        uniqueVisitors: { $addToSet: "$sessionId" },
+                        uniqueVisitors: { $addToSet: "$analyticsVisitorId" },
                         avgTimeOnPage: { $avg: "$timeOnPage" },
                         avgScrollDepth: { $avg: "$scrollDepth" }
                     }
@@ -53,44 +61,54 @@ export async function GET(req) {
                     }
                 },
                 { $sort: { visits: -1 } },
-                { $limit: pageLimit || 20 }
+                { $limit: pageLimit }
             ]),
             // Page engagement metrics with real bounce rate calculation
             VisitorLog.aggregate([
                 { $match: { 
-                    createdAt: { $gte: startDate },
+                    createdAt: periodRange,
+                    trackingVersion: 2,
                     page: { $ne: null, $ne: "" }
                 } },
+                addAnalyticsIdentityStage(),
+                validVisitorIdentityStage(),
+                { $sort: { createdAt: 1 } },
                 {
                     $group: {
-                        _id: "$sessionId",
-                        pages: { $push: "$page" },
-                        durations: { $push: "$sessionDuration" },
-                        interactions: { $push: "$interactionCount" },
+                        _id: "$analyticsSessionId",
+                        visitorId: { $first: "$analyticsVisitorId" },
+                        pages: {
+                            $push: {
+                                page: "$page",
+                                interactions: { $ifNull: ["$interactionCount", 0] },
+                            }
+                        },
                         firstPage: { $first: "$page" },
-                        pageCount: { $sum: 1 }
+                        pageCount: { $sum: 1 },
+                        maxDuration: { $max: { $ifNull: ["$sessionDuration", 0] } },
                     }
                 },
                 { $unwind: "$pages" },
                 {
                     $group: {
-                        _id: "$pages",
+                        _id: "$pages.page",
                         visits: { $sum: 1 },
-                        avgSessionDuration: { $avg: { $arrayElemAt: ["$durations", 0] } },
-                        avgInteractions: { $avg: { $arrayElemAt: ["$interactions", 0] } },
+                        avgSessionDuration: { $avg: "$maxDuration" },
+                        avgInteractions: { $avg: "$pages.interactions" },
                         uniqueSessions: { $addToSet: "$_id" },
+                        uniqueVisitors: { $addToSet: "$visitorId" },
                         // A bounce is when a session started on this page AND had only 1 page total
                         bounces: { 
                             $sum: { 
                                 $cond: [
-                                    { $and: [{ $eq: ["$firstPage", "$pages"] }, { $eq: ["$pageCount", 1] }] }, 
+                                    { $and: [{ $eq: ["$firstPage", "$pages.page"] }, { $eq: ["$pageCount", 1] }] },
                                     1, 
                                     0
                                 ] 
                             } 
                         },
                         entries: {
-                            $sum: { $cond: [{ $eq: ["$firstPage", "$pages"] }, 1, 0] }
+                            $sum: { $cond: [{ $eq: ["$firstPage", "$pages.page"] }, 1, 0] }
                         }
                     }
                 },
@@ -102,6 +120,7 @@ export async function GET(req) {
                         avgSessionDuration: { $round: ["$avgSessionDuration", 0] },
                         avgInteractions: { $round: ["$avgInteractions", 1] },
                         uniqueCount: { $size: "$uniqueSessions" },
+                        uniqueVisitors: { $size: "$uniqueVisitors" },
                         bounceRate: { 
                             $round: [
                                 { $cond: [
@@ -115,18 +134,18 @@ export async function GET(req) {
                     }
                 },
                 { $sort: { visits: -1 } },
-                { $limit: pageLimit || 20 }
+                { $limit: pageLimit }
             ]),
             // Page trend (daily page visits)
             VisitorLog.aggregate([
                 { $match: { 
-                    createdAt: { $gte: startDate },
+                    createdAt: periodRange,
                     page: { $ne: null, $ne: "" }
                 } },
                 {
                     $group: {
                         _id: {
-                            date: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+                            date: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt", timezone: ANALYTICS_TIMEZONE } },
                             page: "$page"
                         },
                         count: { $sum: 1 }
@@ -145,7 +164,9 @@ export async function GET(req) {
                     date: p._id.date,
                     page: p._id.page,
                     count: p.count
-                }))
+                })),
+                periodDays,
+                timezone: ANALYTICS_TIMEZONE,
             }
         });
     } catch (error) {

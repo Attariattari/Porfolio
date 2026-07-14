@@ -18,10 +18,10 @@ export default function NetworkIndicator() {
     // Return a neutral/loading state if not mounted to prevent hydration mismatch
     if (!mounted) {
       return {
-        icon: <Wifi className="w-4 h-4 text-slate-400" />,
+        icon: <Wifi className="w-4 h-4 text-muted-foreground" />,
         label: "Checking...",
-        color: "bg-slate-400/10 text-slate-400 border-slate-400/20",
-        dot: "bg-slate-400",
+        color: "bg-muted text-muted-foreground border-border",
+        dot: "bg-muted-foreground",
       };
     }
     switch (status) {
@@ -48,10 +48,10 @@ export default function NetworkIndicator() {
         };
       default:
         return {
-          icon: <Wifi className="w-4 h-4 text-slate-400" />,
+          icon: <Wifi className="w-4 h-4 text-muted-foreground" />,
           label: "Unknown",
-          color: "bg-slate-400/10 text-slate-400 border-slate-400/20",
-          dot: "bg-slate-400",
+          color: "bg-muted text-muted-foreground border-border",
+          dot: "bg-muted-foreground",
         };
     }
   };
@@ -66,7 +66,7 @@ export default function NetworkIndicator() {
           <span>{failedRequests.length} Failed</span>
         </div>
       )}
-      
+
       <div
         className={cn(
           "flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all duration-300",

@@ -32,36 +32,41 @@ const aboutSchema = z.object({
   company: z.string().min(2, "Company is required"),
   role: z.string().min(2, "Role is required"),
   avatar: z.array(z.any()).min(1, "Avatar image is required"),
-  
+  avatarAlt: z.string().optional(),
+  seoTitle: z.string().optional(),
+  seoDescription: z.string().optional(),
+
   // Content
   bio: z.string().min(10, "Bio must be at least 10 characters"),
   longDescription: z.string().min(20, "Description must be at least 20 characters"),
   mission: z.string().min(10, "Mission statement is required"),
   typewriterWords: z.array(z.string().min(1)).optional(),
-  
+
   // Contact
   email: z.string().email("Invalid email address"),
   phone: z.string().min(5, "Phone number is required"),
   location: z.string().min(5, "Location is required"),
   workingHours: z.string().min(5, "Working hours are required"),
-  
+
   // Experiences
   experiences: z
     .array(
       z.object({
         year: z.string().min(1, "Year is required"),
+        period: z.string().optional(),
         role: z.string().min(1, "Role is required"),
         company: z.string().min(1, "Company is required"),
         duration: z.string().min(1, "Duration is required"),
         description: z.string().min(1, "Description is required"),
         milestones: z.string().optional(),
+        highlights: z.string().optional(),
       }),
     )
     .optional(),
 });
 
 const SectionHeader = ({ icon: Icon, title, desc }) => (
-  <div className="mb-8 border-b border-white/5 pb-6">
+  <div className="mb-8 border-b border-border/70 pb-6">
     <div className="flex items-center gap-3 mb-2">
       <div className="p-2.5 rounded-xl bg-accent/10 border border-accent/20 text-accent">
         <Icon className="w-5 h-5" />
@@ -74,13 +79,105 @@ const SectionHeader = ({ icon: Icon, title, desc }) => (
   </div>
 );
 
+const structuredSectionKeys = [
+  "hero",
+  "story",
+  "whatIBuild",
+  "skills",
+  "education",
+  "approach",
+  "whyChoose",
+  "values",
+  "availability",
+  "finalCTA",
+  "keywords",
+];
+
+function getStructuredSections(source = aboutData) {
+  return Object.fromEntries(
+    structuredSectionKeys.map((key) => [
+      key,
+      structuredClone(source[key] ?? aboutData[key] ?? (key === "keywords" ? [] : {})),
+    ]),
+  );
+}
+
+const inputClass = "w-full rounded-xl border border-border bg-muted/50 px-4 py-3 text-sm outline-none transition-all focus:border-accent/40 focus:ring-2 focus:ring-accent/20";
+
+function EditorField({ label, multiline = false, rows = 3, ...props }) {
+  return (
+    <label className="block space-y-2">
+      <span className="block text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+        {label}
+      </span>
+      {multiline ? (
+        <textarea {...props} rows={rows} className={`${inputClass} resize-y`} />
+      ) : (
+        <input {...props} className={inputClass} />
+      )}
+    </label>
+  );
+}
+
+function RepeatableEditor({ title, items = [], fields, onChange, onAdd, onRemove }) {
+  return (
+    <div className="space-y-4 rounded-2xl border border-border bg-card/50 p-5">
+      <div className="flex items-center justify-between gap-4">
+        <h3 className="text-sm font-black uppercase tracking-wide text-foreground">{title}</h3>
+        <button
+          type="button"
+          onClick={onAdd}
+          className="inline-flex items-center gap-2 rounded-lg bg-accent/10 px-3 py-2 text-[10px] font-black uppercase tracking-widest text-accent transition-colors hover:bg-accent hover:text-accent-foreground"
+        >
+          <Plus className="h-3.5 w-3.5" /> Add
+        </button>
+      </div>
+      {items.map((item, index) => (
+        <div key={`${title}-${index}`} className="space-y-4 rounded-xl border border-border bg-background/55 p-4">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-black uppercase tracking-widest text-accent">
+              {title} {index + 1}
+            </span>
+            <button
+              type="button"
+              onClick={() => onRemove(index)}
+              className="rounded-lg p-2 text-status-danger transition-colors hover:bg-red-500/10"
+              aria-label={`Remove ${title} ${index + 1}`}
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          </div>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {fields.map((field) => (
+              <div key={field.key} className={field.fullWidth ? "md:col-span-2" : ""}>
+                <EditorField
+                  label={field.label}
+                  multiline={field.multiline}
+                  rows={field.rows}
+                  value={item?.[field.key] || ""}
+                  placeholder={field.placeholder || ""}
+                  onChange={(event) => onChange(index, field.key, event.target.value)}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+      {items.length === 0 && (
+        <p className="rounded-xl border border-dashed border-border p-5 text-center text-sm text-muted-foreground">
+          No {title.toLowerCase()} entries added yet.
+        </p>
+      )}
+    </div>
+  );
+}
+
 // REMOVED: SocialLinkInput component - Social links now managed separately
 
 export default function AboutForm() {
   const { about, updateAbout, addNotification, fetchAbout } = useAdminStore();
   const [isSaving, setIsSaving] = useState(false);
-  const [sectionJson, setSectionJson] = useState({});
-  const [jsonError, setJsonError] = useState("");
+  const [sections, setSections] = useState(() => getStructuredSections());
   const searchParams = useSearchParams();
   const highlightId = searchParams.get("highlight");
   const [isHighlighted, setIsHighlighted] = useState(false);
@@ -126,21 +223,12 @@ export default function AboutForm() {
           milestones: Array.isArray(exp.milestones)
             ? exp.milestones.join(", ")
             : exp.milestones || "",
+          highlights: Array.isArray(exp.highlights)
+            ? exp.highlights.join(", ")
+            : exp.highlights || "",
         })),
       });
-      setSectionJson({
-        hero: JSON.stringify(source.hero || aboutData.hero, null, 2),
-        story: JSON.stringify(source.story || aboutData.story, null, 2),
-        whatIBuild: JSON.stringify(source.whatIBuild || aboutData.whatIBuild, null, 2),
-        skills: JSON.stringify(source.skills || aboutData.skills, null, 2),
-        education: JSON.stringify(source.education || aboutData.education, null, 2),
-        approach: JSON.stringify(source.approach || aboutData.approach, null, 2),
-        whyChoose: JSON.stringify(source.whyChoose || aboutData.whyChoose, null, 2),
-        values: JSON.stringify(source.values || aboutData.values, null, 2),
-        availability: JSON.stringify(source.availability || aboutData.availability, null, 2),
-        finalCTA: JSON.stringify(source.finalCTA || aboutData.finalCTA, null, 2),
-        keywords: JSON.stringify(source.keywords || aboutData.keywords, null, 2),
-      });
+      setSections(getStructuredSections(source));
     }, 0);
     return () => window.clearTimeout(timer);
   }, [about, reset]);
@@ -155,14 +243,62 @@ export default function AboutForm() {
     name: "typewriterWords",
   });
 
+  const updateSectionField = (section, field, value) => {
+    setSections((current) => ({
+      ...current,
+      [section]: { ...(current[section] || {}), [field]: value },
+    }));
+  };
+
+  const updateNestedSectionField = (section, group, field, value) => {
+    setSections((current) => ({
+      ...current,
+      [section]: {
+        ...(current[section] || {}),
+        [group]: { ...(current[section]?.[group] || {}), [field]: value },
+      },
+    }));
+  };
+
+  const updateListItem = (section, index, field, value) => {
+    setSections((current) => ({
+      ...current,
+      [section]: (current[section] || []).map((item, itemIndex) =>
+        itemIndex === index ? { ...item, [field]: value } : item,
+      ),
+    }));
+  };
+
+  const addListItem = (section, item) => {
+    setSections((current) => ({
+      ...current,
+      [section]: [...(current[section] || []), item],
+    }));
+  };
+
+  const removeListItem = (section, index) => {
+    setSections((current) => ({
+      ...current,
+      [section]: (current[section] || []).filter((_, itemIndex) => itemIndex !== index),
+    }));
+  };
+
+  const updateHeroCta = (index, field, value) => {
+    setSections((current) => ({
+      ...current,
+      hero: {
+        ...(current.hero || {}),
+        ctas: (current.hero?.ctas || []).map((cta, ctaIndex) =>
+          ctaIndex === index ? { ...cta, [field]: value } : cta,
+        ),
+      },
+    }));
+  };
+
   const onSubmit = async (data) => {
     setIsSaving(true);
-    setJsonError("");
     try {
-      const parsedSections = {};
-      for (const [key, value] of Object.entries(sectionJson)) {
-        parsedSections[key] = value?.trim() ? JSON.parse(value) : key === "keywords" ? [] : {};
-      }
+      const parsedSections = sections;
 
       // Upload avatar if changed
       const avatarUrls = await uploadPendingImages(data.avatar);
@@ -177,6 +313,9 @@ export default function AboutForm() {
                   .split(",")
                   .map((m) => m.trim())
                   .filter(Boolean)
+              : [],
+            highlights: exp.highlights
+              ? exp.highlights.split(",").map((item) => item.trim()).filter(Boolean)
               : [],
           }))
         : [];
@@ -209,7 +348,7 @@ export default function AboutForm() {
           type: "success",
         });
         toast.success("Profile saved!");
-        
+
         // 🚀 REAL-TIME SYNC: Refresh the admin store to update all components
         // Using fetchAbout() from the store to pull fresh data from the DB
         await fetchAbout();
@@ -218,9 +357,6 @@ export default function AboutForm() {
       }
     } catch (error) {
       console.error("Error:", error);
-      if (error instanceof SyntaxError) {
-        setJsonError("One of the structured section editors contains invalid JSON.");
-      }
       toast.error(error.message || "Error saving profile");
     } finally {
       setIsSaving(false);
@@ -245,7 +381,7 @@ export default function AboutForm() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
         {/* ====== AVATAR SECTION ====== */}
-        <div className="bg-white/[0.01] border border-white/5 p-10 rounded-[3rem]">
+        <div className="bg-card/40 border border-border/70 p-10 rounded-[3rem]">
           <SectionHeader
             icon={User}
             title="Profile Photo"
@@ -267,12 +403,17 @@ export default function AboutForm() {
                 {errors.avatar.message}
               </p>
             )}
+            <input
+              {...register("avatarAlt")}
+              className="mt-4 w-full px-5 py-4 bg-muted/50 border border-border rounded-xl text-sm outline-none"
+              placeholder="Accessible avatar description"
+            />
           </div>
         </div>
 
         {/* ====== IDENTITY SECTION ====== */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-          <div className="bg-white/[0.01] border border-white/5 p-10 rounded-[3rem]">
+          <div className="bg-card/40 border border-border/70 p-10 rounded-[3rem]">
             <SectionHeader
               icon={Briefcase}
               title="Professional Identity"
@@ -287,7 +428,7 @@ export default function AboutForm() {
                   <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <input
                     {...register("name")}
-                    className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent/40 outline-none transition-all"
+                    className="w-full pl-12 pr-4 py-3 bg-muted/50 border border-border rounded-xl text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent/40 outline-none transition-all"
                   />
                 </div>
                 {errors.name && <p className="text-[10px] text-red-400 mt-1">{errors.name.message}</p>}
@@ -301,7 +442,7 @@ export default function AboutForm() {
                   <Building className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <input
                     {...register("company")}
-                    className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent/40 outline-none transition-all"
+                    className="w-full pl-12 pr-4 py-3 bg-muted/50 border border-border rounded-xl text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent/40 outline-none transition-all"
                   />
                 </div>
                 {errors.company && <p className="text-[10px] text-red-400 mt-1">{errors.company.message}</p>}
@@ -315,7 +456,7 @@ export default function AboutForm() {
                   <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <input
                     {...register("role")}
-                    className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent/40 outline-none transition-all"
+                    className="w-full pl-12 pr-4 py-3 bg-muted/50 border border-border rounded-xl text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent/40 outline-none transition-all"
                   />
                 </div>
                 {errors.role && <p className="text-[10px] text-red-400 mt-1">{errors.role.message}</p>}
@@ -329,7 +470,7 @@ export default function AboutForm() {
                   {...register("bio")}
                   rows={2}
                   placeholder="Brief professional summary..."
-                  className="w-full p-3 bg-white/5 border border-white/10 rounded-xl text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent/40 outline-none resize-none transition-all"
+                  className="w-full p-3 bg-muted/50 border border-border rounded-xl text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent/40 outline-none resize-none transition-all"
                 />
                 {errors.bio && <p className="text-[10px] text-red-400 mt-1">{errors.bio.message}</p>}
               </div>
@@ -337,7 +478,7 @@ export default function AboutForm() {
           </div>
 
           {/* ====== CONTACT SECTION ====== */}
-          <div className="bg-white/[0.01] border border-white/5 p-10 rounded-[3rem]">
+          <div className="bg-card/40 border border-border/70 p-10 rounded-[3rem]">
             <SectionHeader
               icon={MapPin}
               title="Contact Information"
@@ -353,7 +494,7 @@ export default function AboutForm() {
                   <input
                     type="email"
                     {...register("email")}
-                    className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent/40 outline-none transition-all"
+                    className="w-full pl-12 pr-4 py-3 bg-muted/50 border border-border rounded-xl text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent/40 outline-none transition-all"
                   />
                 </div>
                 {errors.email && <p className="text-[10px] text-red-400 mt-1">{errors.email.message}</p>}
@@ -368,7 +509,7 @@ export default function AboutForm() {
                   <input
                     {...register("phone")}
                     placeholder="+1 (555) 000-0000"
-                    className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent/40 outline-none transition-all"
+                    className="w-full pl-12 pr-4 py-3 bg-muted/50 border border-border rounded-xl text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent/40 outline-none transition-all"
                   />
                 </div>
                 {errors.phone && <p className="text-[10px] text-red-400 mt-1">{errors.phone.message}</p>}
@@ -383,7 +524,7 @@ export default function AboutForm() {
                   <input
                     {...register("location")}
                     placeholder="City, Country"
-                    className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent/40 outline-none transition-all"
+                    className="w-full pl-12 pr-4 py-3 bg-muted/50 border border-border rounded-xl text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent/40 outline-none transition-all"
                   />
                 </div>
                 {errors.location && <p className="text-[10px] text-red-400 mt-1">{errors.location.message}</p>}
@@ -398,7 +539,7 @@ export default function AboutForm() {
                   <input
                     {...register("workingHours")}
                     placeholder="9 AM - 6 PM PST"
-                    className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent/40 outline-none transition-all"
+                    className="w-full pl-12 pr-4 py-3 bg-muted/50 border border-border rounded-xl text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent/40 outline-none transition-all"
                   />
                 </div>
                 {errors.workingHours && <p className="text-[10px] text-red-400 mt-1">{errors.workingHours.message}</p>}
@@ -408,7 +549,7 @@ export default function AboutForm() {
         </div>
 
         {/* ====== CONTENT SECTION ====== */}
-        <div className="bg-white/[0.01] border border-white/5 p-10 rounded-[3rem]">
+        <div className="bg-card/40 border border-border/70 p-10 rounded-[3rem]">
           <SectionHeader
             icon={FileText}
             title="Professional Content"
@@ -423,7 +564,7 @@ export default function AboutForm() {
                 {...register("longDescription")}
                 rows={6}
                 placeholder="Tell your professional story, background, and journey..."
-                className="w-full p-3 bg-white/5 border border-white/10 rounded-xl text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent/40 outline-none resize-none transition-all"
+                className="w-full p-3 bg-muted/50 border border-border rounded-xl text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent/40 outline-none resize-none transition-all"
               />
               {errors.longDescription && <p className="text-[10px] text-red-400 mt-1">{errors.longDescription.message}</p>}
             </div>
@@ -436,7 +577,7 @@ export default function AboutForm() {
                 {...register("mission")}
                 rows={3}
                 placeholder="What drives you professionally? Your core mission..."
-                className="w-full p-3 bg-white/5 border border-white/10 rounded-xl text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent/40 outline-none resize-none transition-all"
+                className="w-full p-3 bg-muted/50 border border-border rounded-xl text-sm focus:ring-2 focus:ring-accent/20 focus:border-accent/40 outline-none resize-none transition-all"
               />
               {errors.mission && <p className="text-[10px] text-red-400 mt-1">{errors.mission.message}</p>}
             </div>
@@ -444,8 +585,8 @@ export default function AboutForm() {
         </div>
 
         {/* ====== WORK EXPERIENCE ====== */}
-        <div className="bg-white/[0.01] border border-white/5 p-10 rounded-[3rem]">
-          <div className="flex justify-between items-start mb-8 border-b border-white/5 pb-6">
+        <div className="bg-card/40 border border-border/70 p-10 rounded-[3rem]">
+          <div className="flex justify-between items-start mb-8 border-b border-border/70 pb-6">
             <div className="flex items-center gap-3">
               <div className="p-2.5 rounded-xl bg-accent/10 border border-accent/20 text-accent">
                 <Briefcase className="w-5 h-5" />
@@ -461,7 +602,16 @@ export default function AboutForm() {
             </div>
             <button
               type="button"
-              onClick={() => appendExp({ year: "", role: "", company: "", duration: "", description: "" })}
+              onClick={() => appendExp({
+                year: "",
+                period: "",
+                role: "",
+                company: "",
+                duration: "",
+                description: "",
+                milestones: "",
+                highlights: "",
+              })}
               className="flex items-center gap-2 px-4 py-2 bg-accent text-accent-foreground rounded-xl font-bold text-sm hover:bg-accent/90 transition-all"
             >
               <Plus className="w-4 h-4" /> Add Experience
@@ -470,7 +620,7 @@ export default function AboutForm() {
 
           <div className="space-y-4 relative z-10">
             {expFields.map((field, index) => (
-              <div key={field.id} className="p-6 border border-white/5 rounded-2xl space-y-4 bg-white/[0.02]">
+              <div key={field.id} className="p-6 border border-border/70 rounded-2xl space-y-4 bg-card/50">
                 <div className="flex justify-between items-center mb-4">
                   <span className="text-xs font-bold uppercase text-accent/60">Experience {index + 1}</span>
                   <button
@@ -486,12 +636,17 @@ export default function AboutForm() {
                   <input
                     {...register(`experiences.${index}.year`)}
                     placeholder="Year"
-                    className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm focus:ring-2 focus:ring-accent/20 outline-none"
+                    className="px-3 py-2 bg-muted/50 border border-border rounded-lg text-sm focus:ring-2 focus:ring-accent/20 outline-none"
+                  />
+                  <input
+                    {...register(`experiences.${index}.period`)}
+                    placeholder="Period label"
+                    className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-sm focus:ring-2 focus:ring-accent/20 outline-none"
                   />
                   <input
                     {...register(`experiences.${index}.company`)}
                     placeholder="Company"
-                    className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm focus:ring-2 focus:ring-accent/20 outline-none"
+                    className="px-3 py-2 bg-muted/50 border border-border rounded-lg text-sm focus:ring-2 focus:ring-accent/20 outline-none"
                   />
                 </div>
 
@@ -499,12 +654,12 @@ export default function AboutForm() {
                   <input
                     {...register(`experiences.${index}.role`)}
                     placeholder="Role/Position"
-                    className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm focus:ring-2 focus:ring-accent/20 outline-none"
+                    className="px-3 py-2 bg-muted/50 border border-border rounded-lg text-sm focus:ring-2 focus:ring-accent/20 outline-none"
                   />
                   <input
                     {...register(`experiences.${index}.duration`)}
                     placeholder="e.g., Jan 2020 - Present"
-                    className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm focus:ring-2 focus:ring-accent/20 outline-none"
+                    className="px-3 py-2 bg-muted/50 border border-border rounded-lg text-sm focus:ring-2 focus:ring-accent/20 outline-none"
                   />
                 </div>
 
@@ -512,13 +667,18 @@ export default function AboutForm() {
                   {...register(`experiences.${index}.description`)}
                   placeholder="Job description and responsibilities..."
                   rows={2}
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm focus:ring-2 focus:ring-accent/20 outline-none resize-none"
+                  className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-sm focus:ring-2 focus:ring-accent/20 outline-none resize-none"
                 />
 
                 <input
                   {...register(`experiences.${index}.milestones`)}
                   placeholder="Milestones (comma-separated)"
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm focus:ring-2 focus:ring-accent/20 outline-none"
+                  className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-sm focus:ring-2 focus:ring-accent/20 outline-none"
+                />
+                <input
+                  {...register(`experiences.${index}.highlights`)}
+                  placeholder="Highlights (comma-separated)"
+                  className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-sm focus:ring-2 focus:ring-accent/20 outline-none"
                 />
               </div>
             ))}
@@ -529,49 +689,185 @@ export default function AboutForm() {
         </div>
 
         {/* ====== STRUCTURED ABOUT PAGE SECTIONS ====== */}
-        <div className="bg-white/[0.01] border border-white/5 p-10 rounded-[3rem]">
+        <div className="bg-card/40 border border-border/70 p-10 rounded-[3rem]">
+          <SectionHeader
+            icon={FileText}
+            title="Search Metadata"
+            desc="Manage the About page SEO title and description"
+          />
+          <div className="grid grid-cols-1 gap-6">
+            <input
+              {...register("seoTitle")}
+              className="w-full p-4 bg-muted/50 border border-border rounded-xl text-sm outline-none"
+              placeholder="About page SEO title"
+            />
+            <textarea
+              {...register("seoDescription")}
+              rows={4}
+              className="w-full p-4 bg-muted/50 border border-border rounded-xl text-sm outline-none resize-y"
+              placeholder="About page SEO description"
+            />
+          </div>
+        </div>
+
+        {/* ====== STRUCTURED ABOUT PAGE SECTIONS ====== */}
+        <div className="bg-card/40 border border-border/70 p-10 rounded-[3rem]">
           <SectionHeader
             icon={Target}
             title="Structured About Page Sections"
-            desc="Manage hero, story, cards, skills, education, CTA, and SEO fallback content"
+            desc="Manage the visible About page content with simple fields—no code required"
           />
-          {jsonError && (
-            <div className="mb-6 p-4 rounded-2xl border border-red-500/20 bg-red-500/10 text-red-300 text-sm font-bold">
-              {jsonError}
+          <div className="relative z-10 space-y-6">
+            <div className="space-y-5 rounded-2xl border border-border bg-card/50 p-5">
+              <h3 className="text-sm font-black uppercase tracking-wide text-foreground">Hero & Professional Identity</h3>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <EditorField label="Badge" value={sections.hero?.badge || ""} onChange={(event) => updateSectionField("hero", "badge", event.target.value)} />
+                <EditorField label="Title" value={sections.hero?.title || ""} onChange={(event) => updateSectionField("hero", "title", event.target.value)} />
+                <div className="md:col-span-2">
+                  <EditorField label="Headline" value={sections.hero?.headline || ""} onChange={(event) => updateSectionField("hero", "headline", event.target.value)} />
+                </div>
+                <div className="md:col-span-2">
+                  <EditorField label="Description" multiline rows={4} value={sections.hero?.description || ""} onChange={(event) => updateSectionField("hero", "description", event.target.value)} />
+                </div>
+                <div className="md:col-span-2">
+                  <EditorField
+                    label="Highlights (comma-separated)"
+                    value={(sections.hero?.highlights || []).join(", ")}
+                    onChange={(event) => updateSectionField("hero", "highlights", event.target.value.split(",").map((item) => item.trim()).filter(Boolean))}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                {(sections.hero?.ctas || []).map((cta, index) => (
+                  <div key={`hero-cta-${index}`} className="space-y-3 rounded-xl border border-border bg-background/55 p-4">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-accent">Hero button {index + 1}</span>
+                    <EditorField label="Label" value={cta.label || ""} onChange={(event) => updateHeroCta(index, "label", event.target.value)} />
+                    <EditorField label="Link" value={cta.href || ""} onChange={(event) => updateHeroCta(index, "href", event.target.value)} />
+                  </div>
+                ))}
+              </div>
             </div>
-          )}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative z-10">
+
+            <div className="space-y-5 rounded-2xl border border-border bg-card/50 p-5">
+              <h3 className="text-sm font-black uppercase tracking-wide text-foreground">Professional Story</h3>
+              <EditorField label="Section title" value={sections.story?.title || ""} onChange={(event) => updateSectionField("story", "title", event.target.value)} />
+              <EditorField
+                label="Story paragraphs (one paragraph per line)"
+                multiline
+                rows={6}
+                value={(sections.story?.paragraphs || []).join("\n")}
+                onChange={(event) => updateSectionField("story", "paragraphs", event.target.value.split("\n").map((item) => item.trim()).filter(Boolean))}
+              />
+            </div>
+
+            <RepeatableEditor
+              title="What I Build"
+              items={sections.whatIBuild}
+              fields={[
+                { key: "title", label: "Card title" },
+                { key: "icon", label: "Icon name" },
+                { key: "description", label: "Description", multiline: true, fullWidth: true },
+                { key: "link", label: "Page link", fullWidth: true },
+              ]}
+              onChange={(index, field, value) => updateListItem("whatIBuild", index, field, value)}
+              onAdd={() => addListItem("whatIBuild", { icon: "Globe", title: "", description: "", link: "/services" })}
+              onRemove={(index) => removeListItem("whatIBuild", index)}
+            />
+
+            <div className="space-y-5 rounded-2xl border border-border bg-card/50 p-5">
+              <h3 className="text-sm font-black uppercase tracking-wide text-foreground">Skills & Technologies</h3>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                {Object.keys(sections.skills || {}).map((category) => (
+                  <EditorField
+                    key={category}
+                    label={`${category} (comma-separated)`}
+                    value={(sections.skills?.[category] || []).join(", ")}
+                    onChange={(event) => updateSectionField("skills", category, event.target.value.split(",").map((item) => item.trim()).filter(Boolean))}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <RepeatableEditor
+              title="Education"
+              items={sections.education}
+              fields={[
+                { key: "degree", label: "Degree / qualification" },
+                { key: "institute", label: "Institute" },
+                { key: "period", label: "Period" },
+                { key: "status", label: "Status" },
+                { key: "description", label: "Description", multiline: true, fullWidth: true },
+              ]}
+              onChange={(index, field, value) => updateListItem("education", index, field, value)}
+              onAdd={() => addListItem("education", { degree: "", institute: "", period: "", status: "", description: "" })}
+              onRemove={(index) => removeListItem("education", index)}
+            />
+
             {[
-              ["hero", "Hero / Professional Identity"],
-              ["story", "Short Professional Story"],
-              ["whatIBuild", "What I Build Cards"],
-              ["skills", "Skills & Technologies"],
-              ["education", "Education"],
               ["approach", "Development Approach"],
               ["whyChoose", "Why Choose Muhyo Tech"],
-              ["values", "Values / Work Principles"],
-              ["availability", "Availability / Contact Highlight"],
-              ["finalCTA", "Final CTA"],
-              ["keywords", "SEO Keywords"],
-            ].map(([key, label]) => (
-              <div key={key} className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-accent/80 block">
-                  {label}
-                </label>
-                <textarea
-                  value={sectionJson[key] || ""}
-                  onChange={(event) =>
-                    setSectionJson((current) => ({
-                      ...current,
-                      [key]: event.target.value,
-                    }))
-                  }
-                  rows={key === "hero" || key === "whatIBuild" ? 12 : 8}
-                  spellCheck={false}
-                  className="w-full p-4 bg-white/5 border border-white/10 rounded-xl text-xs font-mono leading-relaxed focus:ring-2 focus:ring-accent/20 focus:border-accent/40 outline-none resize-y transition-all"
-                />
-              </div>
+              ["values", "Values & Work Principles"],
+            ].map(([section, title]) => (
+              <RepeatableEditor
+                key={section}
+                title={title}
+                items={sections[section]}
+                fields={[
+                  { key: "title", label: "Title" },
+                  { key: "icon", label: "Icon name" },
+                  { key: "description", label: "Description", multiline: true, fullWidth: true },
+                ]}
+                onChange={(index, field, value) => updateListItem(section, index, field, value)}
+                onAdd={() => addListItem(section, { icon: "Target", title: "", description: "" })}
+                onRemove={(index) => removeListItem(section, index)}
+              />
             ))}
+
+            <div className="space-y-5 rounded-2xl border border-border bg-card/50 p-5">
+              <h3 className="text-sm font-black uppercase tracking-wide text-foreground">Availability & Contact Highlight</h3>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <EditorField label="Title" value={sections.availability?.title || ""} onChange={(event) => updateSectionField("availability", "title", event.target.value)} />
+                <EditorField label="Status" value={sections.availability?.status || ""} onChange={(event) => updateSectionField("availability", "status", event.target.value)} />
+                <div className="md:col-span-2">
+                  <EditorField label="Description" multiline rows={4} value={sections.availability?.description || ""} onChange={(event) => updateSectionField("availability", "description", event.target.value)} />
+                </div>
+              </div>
+              <p className="text-xs leading-5 text-muted-foreground">Email, phone, location and working hours are synchronized from the Contact Information section above.</p>
+            </div>
+
+            <div className="space-y-5 rounded-2xl border border-border bg-card/50 p-5">
+              <h3 className="text-sm font-black uppercase tracking-wide text-foreground">Final Call to Action</h3>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <EditorField label="Badge" value={sections.finalCTA?.badge || ""} onChange={(event) => updateSectionField("finalCTA", "badge", event.target.value)} />
+                <EditorField label="Title" value={sections.finalCTA?.title || ""} onChange={(event) => updateSectionField("finalCTA", "title", event.target.value)} />
+                <div className="md:col-span-2">
+                  <EditorField label="Description" multiline rows={4} value={sections.finalCTA?.description || ""} onChange={(event) => updateSectionField("finalCTA", "description", event.target.value)} />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                {[
+                  ["primaryButton", "Primary button"],
+                  ["secondaryButton", "Secondary button"],
+                  ["tertiaryButton", "Third button"],
+                ].map(([group, label]) => (
+                  <div key={group} className="space-y-3 rounded-xl border border-border bg-background/55 p-4">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-accent">{label}</span>
+                    <EditorField label="Label" value={sections.finalCTA?.[group]?.label || ""} onChange={(event) => updateNestedSectionField("finalCTA", group, "label", event.target.value)} />
+                    <EditorField label="Link" value={sections.finalCTA?.[group]?.href || ""} onChange={(event) => updateNestedSectionField("finalCTA", group, "href", event.target.value)} />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-border bg-card/50 p-5">
+              <EditorField
+                label="SEO keywords (comma-separated)"
+                multiline
+                rows={4}
+                value={(sections.keywords || []).join(", ")}
+                onChange={(event) => setSections((current) => ({ ...current, keywords: event.target.value.split(",").map((item) => item.trim()).filter(Boolean) }))}
+              />
+            </div>
           </div>
         </div>
 

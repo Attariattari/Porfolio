@@ -35,6 +35,7 @@ const serviceSchema = z.object({
   clientRequirements: z.array(z.any()).optional(),
   faqs: z.array(z.any()).optional(),
   deliveryNote: z.string().optional(),
+  deliveryTime: z.string().optional(),
   quoteNote: z.string().optional(),
   ctaTitle: z.string().optional(),
   ctaDescription: z.string().optional(),
@@ -43,6 +44,11 @@ const serviceSchema = z.object({
   seoTitle: z.string().optional(),
   seoDescription: z.string().optional(),
   keywords: z.string().optional(),
+  targetKeywords: z.string().optional(),
+  localKeywords: z.string().optional(),
+  relatedServices: z.string().optional(),
+  relatedProjects: z.string().optional(),
+  heroImageAlt: z.string().optional(),
   status: z.enum(["draft", "pending", "published"]).default("published"),
   publishStatus: z.enum(["draft", "pending", "published"]).optional(),
   featured: z.boolean().default(false),
@@ -189,7 +195,7 @@ export default function ServicesPage() {
       key: "banner",
       label: "Visual",
       render: (item) => (
-        <div className="w-16 h-10 rounded-lg overflow-hidden border border-white/10 shadow-lg bg-white/5 flex items-center justify-center">
+        <div className="w-16 h-10 rounded-lg overflow-hidden border border-border shadow-lg bg-muted/50 flex items-center justify-center">
           <img
             src={item.heroImage || item.banner || item.images?.[0] || item.gallery?.[0]}
             alt={getServiceMediaAlt(item)}
@@ -263,6 +269,7 @@ export default function ServicesPage() {
       placeholder: "https://...",
       fullWidth: true,
     },
+    { name: "heroImageAlt", label: "Hero Image Alt Text", fullWidth: true },
     {
       name: "images",
       label: "Media Gallery / Hero Upload",
@@ -300,10 +307,10 @@ export default function ServicesPage() {
       type: "textarea",
       fullWidth: true,
     },
-    { 
-      name: "status", 
-      label: "Publication Status", 
-      type: "select", 
+    {
+      name: "status",
+      label: "Publication Status",
+      type: "select",
       options: [
         { label: "Draft - Hidden", value: "draft" },
         { label: "Pending Review", value: "pending" },
@@ -473,6 +480,7 @@ export default function ServicesPage() {
       type: "textarea",
       fullWidth: true,
     },
+    { name: "deliveryTime", label: "Delivery Time", fullWidth: true },
     {
       name: "quoteNote",
       label: "Quote Note",
@@ -498,6 +506,15 @@ export default function ServicesPage() {
     {
       name: "keywords",
       label: "SEO Keywords (comma separated)",
+      fullWidth: true,
+    },
+    { name: "targetKeywords", label: "Target Keywords (comma separated)", fullWidth: true },
+    { name: "localKeywords", label: "Local Keywords (comma separated)", fullWidth: true },
+    { name: "relatedServices", label: "Related Service Slugs (comma separated)", fullWidth: true },
+    {
+      name: "relatedProjects",
+      label: "Related Projects (JSON array)",
+      type: "textarea",
       fullWidth: true,
     },
   ];
@@ -544,6 +561,10 @@ export default function ServicesPage() {
       clientRequirements: toObjects(service.clientRequirements),
       faqs: Array.isArray(service.faqs) && service.faqs.length ? service.faqs : service.faq || [],
       keywords: Array.isArray(service.keywords) ? service.keywords.join(", ") : service.keywords || "",
+      targetKeywords: Array.isArray(service.targetKeywords) ? service.targetKeywords.join(", ") : service.targetKeywords || "",
+      localKeywords: Array.isArray(service.localKeywords) ? service.localKeywords.join(", ") : service.localKeywords || "",
+      relatedServices: Array.isArray(service.relatedServices) ? service.relatedServices.join(", ") : service.relatedServices || "",
+      relatedProjects: JSON.stringify(service.relatedProjects || [], null, 2),
       featured: Boolean(service.featured || service.isFeatured),
       images: Array.isArray(service.images)
         ? service.images
@@ -621,6 +642,18 @@ export default function ServicesPage() {
         keywords: typeof data.keywords === "string"
           ? data.keywords.split(",").map((item) => item.trim()).filter(Boolean)
           : data.keywords || [],
+        targetKeywords: String(data.targetKeywords || "").split(",").map((item) => item.trim()).filter(Boolean),
+        localKeywords: String(data.localKeywords || "").split(",").map((item) => item.trim()).filter(Boolean),
+        relatedServices: String(data.relatedServices || "").split(",").map((item) => item.trim()).filter(Boolean),
+        relatedProjects: (() => {
+          try {
+            const parsed = JSON.parse(data.relatedProjects || "[]");
+            if (!Array.isArray(parsed)) throw new Error();
+            return parsed;
+          } catch {
+            throw new Error("Related Projects must be a valid JSON array.");
+          }
+        })(),
         status,
         publishStatus: status,
         isFeatured: Boolean(data.featured),
@@ -649,13 +682,13 @@ export default function ServicesPage() {
     <div className="space-y-8 pb-20">
       <div className="flex justify-between items-end mb-4">
         <div>
-          <h1 className="text-2xl md:text-4xl font-black italic uppercase tracking-tighter text-white">
+          <h1 className="text-2xl md:text-4xl font-black italic uppercase tracking-tighter text-foreground">
             Solution{" "}
             <span className="text-accent underline decoration-accent/20 underline-offset-8">
               Core
             </span>
           </h1>
-          <p className="text-[10px] md:text-sm text-slate-500 mt-2 md:mt-4 font-medium tracking-tight uppercase tracking-widest">
+          <p className="text-[10px] md:text-sm text-muted-foreground mt-2 md:mt-4 font-medium tracking-tight uppercase tracking-widest">
             Orchestrate the services that drive digital performance.
           </p>
         </div>
@@ -683,9 +716,9 @@ export default function ServicesPage() {
         onDelete={handleDelete}
         onReorder={reorderServices}
         filters={[
-          { 
-            key: 'publishStatus', 
-            label: 'All Publish Status', 
+          {
+            key: 'publishStatus',
+            label: 'All Publish Status',
             options: [
               { label: 'Published', value: 'published' },
               { label: 'Pending', value: 'pending' },
@@ -736,7 +769,7 @@ export default function ServicesPage() {
         {isImportOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
             <div
-              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+              className="absolute inset-0 bg-overlay/80 backdrop-blur-sm"
               onClick={() => !isImporting && setIsImportOpen(false)}
             />
             <div className="relative z-10 w-full max-w-lg rounded-3xl border border-border bg-card p-8 shadow-2xl">

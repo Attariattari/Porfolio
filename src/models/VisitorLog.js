@@ -14,6 +14,14 @@ const visitorLogSchema = new mongoose.Schema({
     type: String,
     index: true,
   },
+  visitorId: {
+    type: String,
+    index: true,
+  },
+  trackingVersion: {
+    type: Number,
+    default: 1,
+  },
   // Device Detection
   device: {
     type: {
@@ -55,5 +63,7 @@ visitorLogSchema.index({ 'device.type': 1 });
 visitorLogSchema.index({ 'geo.country': 1 });
 visitorLogSchema.index({ page: 1, createdAt: -1 });
 visitorLogSchema.index({ sessionId: 1, createdAt: -1 });
+visitorLogSchema.index({ visitorId: 1, createdAt: -1 });
+visitorLogSchema.index({ visitorId: 1, sessionId: 1, createdAt: -1 });
 
 export const VisitorLog = mongoose.models.VisitorLog || mongoose.model("VisitorLog", visitorLogSchema);

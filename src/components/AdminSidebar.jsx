@@ -139,7 +139,7 @@ export default function AdminSidebar() {
       return {
         ...link,
         badge: messageStats.newMessages,
-        badgeColor: "bg-blue-500 shadow-lg shadow-blue-500/20",
+        badgeColor: "bg-accent shadow-lg shadow-accent/20",
       };
     }
     return link;
@@ -210,7 +210,7 @@ export default function AdminSidebar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setSidebarOpen(false)}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] lg:hidden"
+            className="fixed inset-0 bg-overlay/60 backdrop-blur-sm z-[60] lg:hidden"
           />
         )}
       </AnimatePresence>
@@ -242,7 +242,7 @@ export default function AdminSidebar() {
                   <span className="text-sm font-black uppercase italic leading-none tracking-widest text-foreground">
                     MUHYO
                   </span>
-                  <span className="text-[8px] font-bold text-slate-500 tracking-[0.3em] uppercase leading-none mt-1">
+                  <span className="text-[8px] font-bold text-muted-foreground tracking-[0.3em] uppercase leading-none mt-1">
                     Control Center
                   </span>
                 </motion.div>
@@ -268,7 +268,7 @@ export default function AdminSidebar() {
             {sidebarSections.map((section, idx) => (
               <div key={idx} className="space-y-2">
                 {!isCollapsed && (
-                  <h3 className="px-4 text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-4">
+                  <h3 className="px-4 text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4">
                     {section.label}
                   </h3>
                 )}
@@ -303,7 +303,7 @@ export default function AdminSidebar() {
               className={`flex items-center gap-3 ${isCollapsed ? "justify-center" : "px-2"}`}
             >
               <div
-                className={`w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 p-0.5 shadow-lg shadow-blue-500/20 shrink-0`}
+                className="h-10 w-10 shrink-0 rounded-xl bg-accent p-0.5 shadow-lg shadow-accent/20"
               >
                 <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-[9px] bg-background">
                   {session?.avatar ? (
@@ -315,7 +315,7 @@ export default function AdminSidebar() {
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <User className="w-5 h-5 text-blue-400" />
+                    <User className="h-5 w-5 text-accent" />
                   )}
                 </div>
               </div>
@@ -344,7 +344,7 @@ export default function AdminSidebar() {
             {isCollapsed && (
               <button
                 onClick={handleLogout}
-                className="w-full p-2 text-slate-500 hover:text-red-400 transition-colors flex justify-center"
+                className="w-full p-2 text-muted-foreground hover:text-red-400 transition-colors flex justify-center"
                 title="Logout"
               >
                 <LogOut className="w-5 h-5" />
@@ -396,7 +396,7 @@ function SidebarItem({
       {active && (
         <motion.div
           layoutId="sidebar-active-pill"
-          className="absolute left-0 w-1 h-6 bg-blue-500 rounded-r-full"
+          className="absolute left-0 h-6 w-1 rounded-r-full bg-accent"
         />
       )}
 
@@ -404,7 +404,7 @@ function SidebarItem({
         className={`flex items-center w-full px-4 gap-4 ${collapsed ? "justify-center px-0" : ""}`}
       >
         <div
-          className={`relative transition-transform duration-300 group-hover:scale-110 ${active ? "text-blue-500" : "group-hover:text-blue-400"}`}
+          className={`relative transition-transform duration-300 group-hover:scale-110 ${active ? "text-accent" : "group-hover:text-accent"}`}
         >
           <Icon size={collapsed ? 22 : 20} strokeWidth={active ? 2.5 : 2} />
 
@@ -428,7 +428,7 @@ function SidebarItem({
           <motion.span
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className={`ml-auto px-2 py-0.5 rounded-full text-[10px] font-bold text-white shadow-sm ${badgeColor || "bg-blue-600"}`}
+            className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-bold text-foreground shadow-sm ${badgeColor || "bg-accent"}`}
           >
             {badge}
           </motion.span>
@@ -437,9 +437,9 @@ function SidebarItem({
 
       {/* Tooltip for Collapsed view */}
       {collapsed && (
-        <div className="absolute left-full ml-3 px-3 py-2 bg-blue-600 text-white text-[11px] font-bold rounded-lg opacity-0 group-hover:opacity-100 group-hover:visible invisible pointer-events-none transition-all translate-x-3 group-hover:translate-x-0 shadow-xl whitespace-nowrap z-[100]">
+        <div className="invisible pointer-events-none absolute left-full z-[100] ml-3 translate-x-3 whitespace-nowrap rounded-lg bg-popover px-3 py-2 text-[11px] font-bold text-popover-foreground opacity-0 shadow-xl ring-1 ring-border transition-all group-hover:visible group-hover:translate-x-0 group-hover:opacity-100">
           {label}
-          <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-blue-600 rotate-45" />
+          <div className="absolute -left-1 top-1/2 h-2 w-2 -translate-y-1/2 rotate-45 border-b border-l border-border bg-popover" />
         </div>
       )}
     </Link>

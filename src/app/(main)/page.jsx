@@ -19,26 +19,37 @@ import { HeroController } from "@/controllers/HeroController";
 import { resolveFeaturedBlogs } from "@/lib/blogUtils";
 import { buildCanonical, getSeoImage } from "@/lib/seo";
 import { getCanonicalServices } from "@/lib/servicesSeo";
+import dbConnect from "@/lib/dbConnect";
+import { SiteConfig } from "@/models/Portfolio";
 
 // ISR (Incremental Static Regeneration) - High Speed
 export const revalidate = 3600;
 
-export const metadata = {
-  title: { absolute: "Full-Stack Web Developer in Lahore | Muhyo Tech" },
-  description:
-    "Muhyo Tech builds fast websites, Next.js applications, MERN stack platforms, and admin dashboards for businesses in Lahore and beyond.",
-  alternates: {
-    canonical: buildCanonical("/"),
-  },
-  openGraph: {
-    title: "Full-Stack Web Developer in Lahore | Muhyo Tech",
-    description:
-      "Pir Ghulam Muhyo Din at Muhyo Tech provides expert website development. Explore modern full-stack web apps, NextJS, and MERN stack projects.",
-    url: buildCanonical("/"),
-    images: [{ url: getSeoImage("/home-preview.png"), width: 1200, height: 630, alt: "Muhyo Tech full-stack web development portfolio" }],
-    type: "website",
-  },
-};
+export async function generateMetadata() {
+  let configuredSeo = null;
+  try {
+    await dbConnect();
+    configuredSeo = await SiteConfig.findOne({}).select("seo siteTitle").lean();
+  } catch {}
+
+  const title = configuredSeo?.seo?.title || "Full-Stack Web Developer in Lahore | Muhyo Tech";
+  const description = configuredSeo?.seo?.description ||
+    "Muhyo Tech builds fast websites, Next.js applications, MERN stack platforms, and admin dashboards for businesses in Lahore and beyond.";
+
+  return {
+    title: { absolute: title },
+    description,
+    alternates: { canonical: buildCanonical("/") },
+    openGraph: {
+      title,
+      description,
+      url: buildCanonical("/"),
+      siteName: configuredSeo?.siteTitle || "Muhyo Tech",
+      images: [{ url: getSeoImage("/home-preview.png"), width: 1200, height: 630, alt: "Muhyo Tech full-stack web development portfolio" }],
+      type: "website",
+    },
+  };
+}
 
 export default async function HomePage() {
   // Fetch real-time data from Mainframe (MongoDB)

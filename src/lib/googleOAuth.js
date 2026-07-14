@@ -5,6 +5,7 @@ import User, { GoogleOAuthLinkRequest } from "@/models/AdminModels";
 import { createAdminSession, getDefaultAuthRedirect, formatName } from "@/lib/auth";
 import { verifyPasskey } from "@/lib/passwordReset";
 import { ActivityController } from "@/controllers/ActivityController";
+import { getAuthSecretValue } from "@/lib/authSecret";
 
 const GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
@@ -35,8 +36,7 @@ export function sanitizeInternalRedirect(value, fallback = "/admin/dashboard") {
 export function hashOAuthToken(token) {
   const secret =
     process.env.SESSION_SECRET ||
-    process.env.AUTH_SECRET ||
-    "fallback_muhyo_secret_32_chars_long_!!!";
+    getAuthSecretValue();
   return crypto.createHmac("sha256", secret).update(token).digest("hex");
 }
 

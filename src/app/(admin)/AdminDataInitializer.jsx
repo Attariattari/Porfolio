@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import useAdminStore from "@/lib/store/adminStore";
 import { useSettingsSync } from "@/lib/hooks/useSettingsSync";
 
@@ -64,10 +65,20 @@ function AuthenticatedDataInitializer({ children, isAuthenticated, mounted }) {
 export default function AdminDataInitializer({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const pathname = usePathname();
+  const isPublicAuthPage = pathname === "/admin/login" || pathname === "/admin/signup";
 
   // Check authentication on mount
   useEffect(() => {
     let cancelled = false;
+
+    // Login and signup are intentionally public admin routes. Probing the
+    // session here only creates an expected 401 in the browser console.
+    if (isPublicAuthPage) {
+      return () => {
+        cancelled = true;
+      };
+    }
 
     const checkAuthentication = async () => {
       try {
@@ -90,7 +101,7 @@ export default function AdminDataInitializer({ children }) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [isPublicAuthPage]);
 
   // Don't render auth-dependent content until we've checked auth status
   if (!mounted) {

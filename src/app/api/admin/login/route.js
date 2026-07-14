@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { login } from "@/lib/auth";
+import { attachAdminSessionCookies, login } from "@/lib/auth";
 import { ActivityController } from "@/controllers/ActivityController";
 
 export async function POST(request) {
@@ -28,7 +28,7 @@ export async function POST(request) {
     });
 
     // Return token for client-side storage as well
-    return NextResponse.json({ 
+    const response = NextResponse.json({
       success: true, 
       message: "Authorized",
       token: result.token, // Return JWT token for localStorage
@@ -37,6 +37,10 @@ export async function POST(request) {
         role: result.role,
       }
     }, { status: 200 });
+
+    // Attach the signed session directly to this response so the browser has
+    // the HttpOnly cookie before it follows the dashboard navigation.
+    return attachAdminSessionCookies(response, result.token);
   } catch (error) {
     console.error("[Login Error]", error);
     return NextResponse.json({ success: false, message: "Authentication failed" }, { status: 500 });

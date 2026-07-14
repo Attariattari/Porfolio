@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import { VisitorLog } from "@/models/VisitorLog";
 import { getAuthSession } from "@/lib/auth";
+import {
+            addAnalyticsIdentityStage,
+            validVisitorIdentityStage,
+} from "@/lib/analytics/visitorAnalytics";
 
 export const dynamic = 'force-dynamic';
 
@@ -20,27 +24,44 @@ export async function GET(req) {
         const [activeUsers, recentSessions, topPages] = await Promise.all([
             // Current active users (last 30 minutes)
             VisitorLog.aggregate([
-                { $match: { createdAt: { $gte: thirtyMinutesAgo } } },
-                { $group: { _id: "$sessionId" } },
+                { $match: { updatedAt: { $gte: thirtyMinutesAgo } } },
+                addAnalyticsIdentityStage(),
+                validVisitorIdentityStage(),
+                { $group: { _id: "$analyticsVisitorId" } },
                 { $count: "activeCount" }
             ]),
             // Recent user activities
-            VisitorLog.find({ createdAt: { $gte: thirtyMinutesAgo } })
-                .sort({ createdAt: -1 })
-                .limit(15)
-                .lean(),
+            VisitorLog.aggregate([
+                { $match: { updatedAt: { $gte: thirtyMinutesAgo } } },
+                addAnalyticsIdentityStage(),
+                validVisitorIdentityStage(),
+                { $sort: { updatedAt: -1 } },
+                {
+                    $group: {
+                        _id: "$analyticsSessionId",
+                        sessionId: { $first: "$analyticsSessionId" },
+                        page: { $first: "$page" },
+                        device: { $first: "$device" },
+                        geo: { $first: "$geo" },
+                        lastSeen: { $first: "$updatedAt" },
+                    }
+                },
+                { $sort: { lastSeen: -1 } },
+                { $limit: 15 },
+            ]),
             // Most visited pages in last 30 min
             VisitorLog.aggregate([
                 { $match: { 
-                    createdAt: { $gte: thirtyMinutesAgo },
+                    updatedAt: { $gte: thirtyMinutesAgo },
                     page: { $ne: null, $ne: "" }
                 } },
                 {
                     $group: {
                         _id: "$page",
-                        count: { $sum: 1 }
+                        sessions: { $addToSet: "$sessionId" }
                     }
                 },
+                { $project: { _id: 1, count: { $size: "$sessions" } } },
                 { $sort: { count: -1 } },
                 { $limit: 5 }
             ])
@@ -62,7 +83,7 @@ export async function GET(req) {
                 city: log.geo?.city && !['Unknown', 'Not Detected'].includes(log.geo.city)
                     ? log.geo.city
                     : null,
-                timeAgo: getTimeAgo(log.createdAt)
+                timeAgo: getTimeAgo(log.lastSeen)
             }))
             .slice(0, 10);
 

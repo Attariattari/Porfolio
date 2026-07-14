@@ -20,18 +20,18 @@ import {
 } from 'recharts';
 
 const BRAND_COLORS = [
-  '#0ea5e9', // Sky
-  '#6366f1', // Indigo
-  '#10b981', // Emerald
-  '#f59e0b', // Amber
-  '#ef4444', // Red
-  '#ec4899', // Pink
+  'var(--chart-1)', // Sky
+  'var(--chart-2)', // Indigo
+  'var(--chart-3)', // Emerald
+  'var(--chart-4)', // Amber
+  'var(--chart-5)', // Red
+  'var(--chart-6)', // Pink
 ];
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-slate-900/90 backdrop-blur-xl border border-white/10 p-4 rounded-2xl shadow-2xl">
+      <div className="bg-card/90 backdrop-blur-xl border border-border p-4 rounded-2xl shadow-2xl">
         <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2">{label}</p>
         {payload.map((entry, index) => (
           <div key={index} className="flex items-center gap-3">
@@ -54,32 +54,32 @@ export const BookingTrendChart = ({ data }) => {
         <AreaChart data={data}>
           <defs>
             <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0}/>
+              <stop offset="5%" stopColor="var(--chart-1)" stopOpacity={0.3}/>
+              <stop offset="95%" stopColor="var(--chart-1)" stopOpacity={0}/>
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-          <XAxis 
-            dataKey="_id" 
-            stroke="#64748b" 
-            fontSize={10} 
-            tickLine={false} 
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+          <XAxis
+            dataKey="_id"
+            stroke="var(--chart-axis)"
+            fontSize={10}
+            tickLine={false}
             axisLine={false}
             tickFormatter={(str) => {
               const date = new Date(str);
               return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
             }}
           />
-          <YAxis stroke="#64748b" fontSize={10} tickLine={false} axisLine={false} />
+          <YAxis stroke="var(--chart-axis)" fontSize={10} tickLine={false} axisLine={false} />
           <Tooltip content={<CustomTooltip />} />
-          <Area 
-            type="monotone" 
-            dataKey="count" 
+          <Area
+            type="monotone"
+            dataKey="count"
             name="Bookings"
-            stroke="#0ea5e9" 
+            stroke="var(--chart-1)"
             strokeWidth={3}
-            fillOpacity={1} 
-            fill="url(#colorCount)" 
+            fillOpacity={1}
+            fill="url(#colorCount)"
           />
         </AreaChart>
       </ResponsiveContainer>
@@ -111,9 +111,9 @@ export const ServiceDistributionChart = ({ data }) => {
             ))}
           </Pie>
           <Tooltip content={<CustomTooltip />} />
-          <Legend 
-            verticalAlign="bottom" 
-            height={80} 
+          <Legend
+            verticalAlign="bottom"
+            height={80}
             wrapperStyle={{ paddingTop: "10px", paddingBottom: "10px" }}
             iconType="circle"
             formatter={(value) => <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1 mr-2 inline-block mb-2">{value}</span>}
@@ -143,12 +143,12 @@ export const ContentActivityChart = ({ data }) => {
     <div className="h-[300px] w-full">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={chartData}>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-          <XAxis 
-            dataKey="name" 
-            stroke="#64748b" 
-            fontSize={10} 
-            tickLine={false} 
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+          <XAxis
+            dataKey="name"
+            stroke="var(--chart-axis)"
+            fontSize={10}
+            tickLine={false}
             axisLine={false}
             tickFormatter={(str) => {
                 const [year, month] = str.split('-');
@@ -156,11 +156,11 @@ export const ContentActivityChart = ({ data }) => {
                 return d.toLocaleDateString(undefined, { month: 'short' });
             }}
           />
-          <YAxis stroke="#64748b" fontSize={10} tickLine={false} axisLine={false} />
+          <YAxis stroke="var(--chart-axis)" fontSize={10} tickLine={false} axisLine={false} />
           <Tooltip content={<CustomTooltip />} />
-          <Bar dataKey="Blogs" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={12} />
-          <Bar dataKey="Services" fill="#0ea5e9" radius={[4, 4, 0, 0]} barSize={12} />
-          <Bar dataKey="Projects" fill="#10b981" radius={[4, 4, 0, 0]} barSize={12} />
+          <Bar dataKey="Blogs" fill="var(--chart-2)" radius={[4, 4, 0, 0]} barSize={12} />
+          <Bar dataKey="Services" fill="var(--chart-1)" radius={[4, 4, 0, 0]} barSize={12} />
+          <Bar dataKey="Projects" fill="var(--chart-3)" radius={[4, 4, 0, 0]} barSize={12} />
         </BarChart>
       </ResponsiveContainer>
     </div>
@@ -174,16 +174,16 @@ export const VisitorGrowthChart = ({ data }) => {
         <AreaChart data={data}>
           <defs>
             <linearGradient id="colorVisitorGrowth" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+              <stop offset="5%" stopColor="var(--chart-3)" stopOpacity={0.3}/>
+              <stop offset="95%" stopColor="var(--chart-3)" stopOpacity={0}/>
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-          <XAxis 
-            dataKey="_id" 
-            stroke="#64748b" 
-            fontSize={10} 
-            tickLine={false} 
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+          <XAxis
+            dataKey="_id"
+            stroke="var(--chart-axis)"
+            fontSize={10}
+            tickLine={false}
             axisLine={false}
             tickFormatter={(str) => {
               if(!str) return '';
@@ -191,16 +191,16 @@ export const VisitorGrowthChart = ({ data }) => {
               return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
             }}
           />
-          <YAxis stroke="#64748b" fontSize={10} tickLine={false} axisLine={false} />
+          <YAxis stroke="var(--chart-axis)" fontSize={10} tickLine={false} axisLine={false} />
           <Tooltip content={<CustomTooltip />} />
-          <Area 
-            type="monotone" 
-            dataKey="count" 
+          <Area
+            type="monotone"
+            dataKey="count"
             name="Visitors"
-            stroke="#10b981" 
+            stroke="var(--chart-3)"
             strokeWidth={3}
-            fillOpacity={1} 
-            fill="url(#colorVisitorGrowth)" 
+            fillOpacity={1}
+            fill="url(#colorVisitorGrowth)"
           />
         </AreaChart>
       </ResponsiveContainer>
@@ -232,9 +232,9 @@ export const PageViewsChart = ({ data }) => {
             ))}
           </Pie>
           <Tooltip content={<CustomTooltip />} />
-          <Legend 
-            verticalAlign="bottom" 
-            height={80} 
+          <Legend
+            verticalAlign="bottom"
+            height={80}
             wrapperStyle={{ paddingTop: "10px", paddingBottom: "10px" }}
             iconType="circle"
             formatter={(value) => {
