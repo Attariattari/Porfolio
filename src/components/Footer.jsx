@@ -261,9 +261,9 @@ export default function Footer({ data }) {
                     </a>
                   </li>
                   <li>
-                    <p className="mb-0 text-sm font-medium leading-relaxed text-muted-foreground">
+                    <address className="mb-0 text-sm font-medium not-italic leading-relaxed text-muted-foreground">
                       Business Address: Lahore, Punjab, Pakistan
-                    </p>
+                    </address>
                   </li>
                   <li>
                     <Link
@@ -326,9 +326,9 @@ export default function Footer({ data }) {
               &copy; {new Date().getFullYear()} Muhyo Tech. All rights reserved.
             </p>
             <div className="hidden md:block w-[1px] h-4 bg-border/60" />
-            <p className="mb-0 text-[11px] font-medium text-muted-foreground">
+            <address className="mb-0 text-[11px] font-medium not-italic text-muted-foreground">
               Business Address: Lahore, Punjab, Pakistan
-            </p>
+            </address>
           </div>
 
           <motion.button

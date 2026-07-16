@@ -925,12 +925,10 @@ html.not-found-active .site-main-shell {
         contain-intrinsic-size: auto 900px;
     }
 
-    /*
-     * The loader keeps the same presentation, but its mobile fade runs on the
-     * compositor timeline instead of waiting for React's busy main thread.
-     */
+    /* The route fallback already covers the server wait. Avoid a duplicate
+       overlay after hydration so the hero can become the mobile LCP. */
     .initial-loader-shell {
-        animation: initial-loader-mobile-exit 250ms ease-in-out 400ms forwards;
+        display: none;
     }
 
     /* The final hero design is unchanged; only its costly first-load reveal is
@@ -939,18 +937,6 @@ html.not-found-active .site-main-shell {
         animation: none !important;
     }
 
-}
-
-@keyframes initial-loader-mobile-exit {
-    from {
-        opacity: 1;
-        visibility: visible;
-    }
-    to {
-        opacity: 0;
-        visibility: hidden;
-        pointer-events: none;
-    }
 }
 
 /* Same hero reveal sequence as before, now independent of React hydration. */

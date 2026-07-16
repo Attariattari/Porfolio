@@ -12,6 +12,18 @@ export default function InitialLoader() {
     // P0 OPTIMIZATION: Skip loader on repeat visits (same session)
     const hasVisited = sessionStorage.getItem("hasVisited");
     const compactMobile = window.matchMedia("(max-width: 767px)").matches;
+
+    // The route-level loading UI already covers the server wait. Replaying a
+    // second overlay after hydration only delays the mobile content paint.
+    if (compactMobile) {
+      sessionStorage.setItem("hasVisited", "true");
+      const frame = window.requestAnimationFrame(() => {
+        setIsCompactMobile(true);
+        setLoading(false);
+      });
+      return () => window.cancelAnimationFrame(frame);
+    }
+
     const frame = window.requestAnimationFrame(() => {
       setIsCompactMobile(compactMobile);
       if (hasVisited) setLoading(false);
@@ -26,7 +38,7 @@ export default function InitialLoader() {
     const timer = setTimeout(() => {
       setLoading(false);
       sessionStorage.setItem("hasVisited", "true");
-    }, compactMobile ? 400 : 700);
+    }, 700);
 
     return () => {
       window.cancelAnimationFrame(frame);
@@ -64,8 +76,8 @@ export default function InitialLoader() {
                   alt="Muhyo Tech logo"
                   width={80}
                   height={80}
+                  loading="eager"
                   className="w-20 h-20 object-contain animate-pulse"
-                  priority
                 />
                 <div className="absolute inset-[-30px] animate-spin rounded-full border border-dashed border-accent/10 [animation-duration:12s]" />
               </div>

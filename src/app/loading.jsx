@@ -1,6 +1,3 @@
-"use client";
-
-import { motion } from "framer-motion";
 import Image from "next/image";
 
 export default function Loading() {
@@ -13,19 +10,15 @@ export default function Loading() {
       <div className="relative flex flex-col items-center gap-12 max-w-xs w-full">
         {/* Orbital Ring Logo Area */}
         <div className="relative">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-            className="absolute inset-[-20px] border border-accent/20 rounded-full border-dashed"
-          />
+          <div className="absolute inset-[-20px] animate-spin rounded-full border border-dashed border-accent/20 [animation-duration:8s]" />
           <div className="relative w-24 h-24 flex items-center justify-center glass rounded-full border border-accent/20 overflow-hidden shadow-[0_0_50px_rgba(var(--accent-rgb),0.1)]">
             <Image
               src="/logo.webp"
               alt="Muhyo Tech logo"
               width={64}
               height={64}
+              loading="eager"
               className="w-16 h-16 object-contain animate-pulse"
-              priority
             />
           </div>
         </div>
@@ -37,16 +30,7 @@ export default function Loading() {
             <div className="absolute top-0 left-0 h-full w-full bg-accent animate-progress-wide shadow-[0_0_15px_rgba(var(--accent-rgb),0.4)]" />
 
             {/* Secondary Tracer */}
-            <motion.div
-              initial={{ x: "-100%" }}
-              animate={{ x: "200%" }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              className="absolute top-0 left-0 h-full w-1/3 bg-gradient-to-r from-transparent via-foreground/20 to-transparent"
-            />
+            <div className="absolute top-0 left-0 h-full w-1/3 animate-progress-wide bg-gradient-to-r from-transparent via-foreground/20 to-transparent" />
           </div>
 
           <div className="flex justify-center items-center px-1">
@@ -54,17 +38,13 @@ export default function Loading() {
               Initializing Experience
               <span className="flex ml-1">
                 {[0, 1, 2].map((i) => (
-                  <motion.span
+                  <span
                     key={i}
-                    animate={{ opacity: [0, 1, 0] }}
-                    transition={{
-                      duration: 1.5,
-                      repeat: Infinity,
-                      delay: i * 0.2,
-                    }}
+                    className="animate-pulse"
+                    style={{ animationDelay: `${i * 0.2}s` }}
                   >
                     .
-                  </motion.span>
+                  </span>
                 ))}
               </span>
             </span>

@@ -57,6 +57,36 @@ const resolveIcon = (icon) => {
   return icon;
 };
 
+const ContactValue = ({ info }) => {
+  if (info.label !== "Our Office") {
+    return (
+      <p
+        className="text-sm font-bold text-foreground group-hover:text-accent transition-colors"
+      >
+        {info.value}
+      </p>
+    );
+  }
+
+  return (
+    <address
+      itemScope
+      itemType="https://schema.org/PostalAddress"
+      className="text-sm font-bold not-italic text-foreground group-hover:text-accent transition-colors"
+    >
+      <span itemProp="streetAddress">
+        Chota, Mohlanwal Road, Badu Pura Chung
+      </span>
+      {", "}
+      <span itemProp="addressLocality">Lahore</span>
+      {", "}
+      <span itemProp="postalCode">53720</span>
+      {", "}
+      <span itemProp="addressCountry">Pakistan</span>
+    </address>
+  );
+};
+
 const Contact = ({ isHomePage = false }) => {
   const { contactInfo, siteConfig } = portfolioData;
   const data = siteConfig.contactPage;
@@ -252,9 +282,7 @@ const Contact = ({ isHomePage = false }) => {
                   <p className="relative text-[10px] font-semibold tracking-normal text-muted-foreground/60 mb-1">
                     {info.label}
                   </p>
-                  <p className="text-sm font-bold text-foreground group-hover:text-accent transition-colors">
-                    {info.value}
-                  </p>
+                  <ContactValue info={info} />
                 </motion.a>
               ))}
             </div>

@@ -56,13 +56,6 @@ export default function RootLayout({ children }) {
       <head>
         <link rel="icon" href="/logo.png" />
         <link rel="apple-touch-icon" href="/logo.png" />
-        <link
-          rel="preload"
-          href="/_next/static/media/e4af272ccee01ff0-s.p.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
         <OrganizationSchema />
         <GoogleAnalytics />
         <script
