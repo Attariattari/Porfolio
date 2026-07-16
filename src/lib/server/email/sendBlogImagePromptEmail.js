@@ -12,25 +12,37 @@ function isLocalUrl(value = "") {
   }
 }
 
+function isVercelDeploymentUrl(value = "") {
+  try {
+    return new URL(value).hostname.toLowerCase().endsWith(".vercel.app");
+  } catch {
+    return false;
+  }
+}
+
 function getAppUrl(baseUrl = "") {
   if (isLocalUrl(baseUrl)) return PUBLIC_SITE_URL;
-  if (baseUrl) return baseUrl;
 
   const explicitUrl =
     process.env.APP_URL ||
     process.env.NEXT_PUBLIC_BASE_URL ||
     process.env.NEXT_PUBLIC_SITE_URL;
 
-  if (explicitUrl && !isLocalUrl(explicitUrl)) return explicitUrl;
-
-  const vercelUrl =
-    process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL;
-
-  if (process.env.VERCEL && vercelUrl) {
-    return vercelUrl.startsWith("http") ? vercelUrl : `https://${vercelUrl}`;
+  // Email links must point at the public custom domain. Vercel preview URLs can
+  // be deployment-protected and would show a Vercel login screen to recipients.
+  if (
+    explicitUrl &&
+    !isLocalUrl(explicitUrl) &&
+    !isVercelDeploymentUrl(explicitUrl)
+  ) {
+    return explicitUrl;
   }
 
-  return isLocalUrl(SITE_URL) ? PUBLIC_SITE_URL : SITE_URL || PUBLIC_SITE_URL;
+  if (baseUrl && !isVercelDeploymentUrl(baseUrl)) return baseUrl;
+
+  return isLocalUrl(SITE_URL) || isVercelDeploymentUrl(SITE_URL)
+    ? PUBLIC_SITE_URL
+    : SITE_URL || PUBLIC_SITE_URL;
 }
 
 function escapeHtml(value = "") {

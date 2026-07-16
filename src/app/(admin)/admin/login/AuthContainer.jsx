@@ -206,7 +206,10 @@ export default function AuthContainer({
         localStorage.setItem("token", data.token);
       }
       toast.success("Welcome back.");
-      window.location.replace("/admin/dashboard");
+      // Use the validated callback passed by the server. A full navigation makes
+      // sure the HttpOnly session cookie from the login response is available to
+      // the destination server component before it checks authentication.
+      window.location.replace(callbackUrl);
     } catch {
       setError("Sign-in failed. Please check your connection and try again.");
     } finally {
