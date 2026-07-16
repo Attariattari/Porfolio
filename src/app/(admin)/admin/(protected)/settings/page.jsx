@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import useAdminStore from "@/lib/store/adminStore";
 import { useTheme } from "@/components/ThemeProvider";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -26,6 +26,12 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import SuperAdminTransferModal from "@/components/admin/SuperAdminTransferModal";
+import {
+  HOME_SEO_DESCRIPTION,
+  HOME_SEO_LIMITS,
+  HOME_SEO_TITLE,
+  resolveHomeSeo,
+} from "@/lib/homeSeo";
 
 const settingsSchema = z.object({
   siteTitle: z.string().min(2, "Site title is too short"),
@@ -33,8 +39,12 @@ const settingsSchema = z.object({
   adminName: z.string().min(2, "Admin name is required"),
   email: z.string().email("Invalid email address"),
   location: z.string().min(5, "Location is required"),
-  seoTitle: z.string().min(5, "SEO title is too short"),
-  seoDescription: z.string().min(20, "SEO description must be descriptive"),
+  seoTitle: z.string()
+    .min(HOME_SEO_LIMITS.title.min, "SEO title must be at least 50 characters")
+    .max(HOME_SEO_LIMITS.title.max, "SEO title must be at most 60 characters"),
+  seoDescription: z.string()
+    .min(HOME_SEO_LIMITS.description.min, "SEO description must be at least 120 characters")
+    .max(HOME_SEO_LIMITS.description.max, "SEO description must be at most 160 characters"),
   siteTheme: z.enum(["light", "dark", "black"]),
 });
 
@@ -78,16 +88,21 @@ export default function SettingsPage() {
   }, [fetchSettings]);
 
   // Safe defaults for all settings fields
-  const defaultSettings = useMemo(() => ({
-    siteTitle: settings?.siteTitle ?? "Muhyo Tech",
-    siteAccent: settings?.siteAccent ?? "Tech",
-    adminName: settings?.adminName ?? "Pir Ghulam Muhyo Din",
-    email: settings?.email ?? "attariattari549@gmail.com",
-    location: settings?.location ?? "Lahore, Pakistan",
-    seoTitle: settings?.seo?.title ?? "Muhyo Tech - Full Stack Developer",
-    seoDescription: settings?.seo?.description ?? "Full Stack Web Developer specializing in modern web applications",
-    siteTheme: ["light", "dark", "black"].includes(settings?.siteTheme) ? settings.siteTheme : "black",
-  }), [settings]);
+  const defaultSettings = useMemo(() => {
+    const resolvedSeo = resolveHomeSeo(settings?.seo);
+    return {
+      siteTitle: settings?.siteTitle ?? "Muhyo Tech",
+      siteAccent: settings?.siteAccent ?? "Tech",
+      adminName: settings?.adminName ?? "Pir Ghulam Muhyo Din",
+      email: settings?.email ?? "attariattari549@gmail.com",
+      location: settings?.location ?? "Lahore, Pakistan",
+      seoTitle: resolvedSeo.title || HOME_SEO_TITLE,
+      seoDescription: resolvedSeo.description || HOME_SEO_DESCRIPTION,
+      siteTheme: ["light", "dark", "black"].includes(settings?.siteTheme)
+        ? settings.siteTheme
+        : "black",
+    };
+  }, [settings]);
 
   const {
     register,
@@ -95,10 +110,14 @@ export default function SettingsPage() {
     formState: { errors },
     reset,
     setValue,
+    control,
   } = useForm({
     resolver: zodResolver(settingsSchema),
     defaultValues: defaultSettings,
   });
+  const seoTitleValue = useWatch({ control, name: "seoTitle" }) || "";
+  const seoDescriptionValue =
+    useWatch({ control, name: "seoDescription" }) || "";
 
   // Reset form when settings change
   useEffect(() => {
@@ -357,8 +376,12 @@ export default function SettingsPage() {
                     <label className="text-[10px] font-black uppercase tracking-widest text-accent/80 pl-2">SEO Meta Title</label>
                     <input
                       {...register("seoTitle")}
+                      maxLength={HOME_SEO_LIMITS.title.max}
                       className="w-full p-4 bg-background/65 border border-border/70 rounded-2xl text-sm text-foreground focus:ring-4 focus:ring-accent/10 focus:border-accent/40 transition-all outline-none"
                     />
+                    <p className="px-2 text-[10px] font-bold text-muted-foreground">
+                      {seoTitleValue.length}/{HOME_SEO_LIMITS.title.max} characters · recommended {HOME_SEO_LIMITS.title.min}–{HOME_SEO_LIMITS.title.max}
+                    </p>
                     {errors.seoTitle && <p className="text-[10px] text-red-400 font-bold uppercase pl-2">{errors.seoTitle.message}</p>}
                   </div>
                   <div className="space-y-2">
@@ -366,8 +389,12 @@ export default function SettingsPage() {
                     <textarea
                       {...register("seoDescription")}
                       rows={3}
+                      maxLength={HOME_SEO_LIMITS.description.max}
                       className="w-full p-4 bg-background/65 border border-border/70 rounded-2xl text-sm text-foreground focus:ring-4 focus:ring-accent/10 focus:border-accent/40 transition-all outline-none resize-none"
                     />
+                    <p className="px-2 text-[10px] font-bold text-muted-foreground">
+                      {seoDescriptionValue.length}/{HOME_SEO_LIMITS.description.max} characters · recommended {HOME_SEO_LIMITS.description.min}–{HOME_SEO_LIMITS.description.max}
+                    </p>
                     {errors.seoDescription && <p className="text-[10px] text-red-400 font-bold uppercase pl-2">{errors.seoDescription.message}</p>}
                   </div>
                </div>

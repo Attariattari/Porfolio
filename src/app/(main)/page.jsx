@@ -21,6 +21,7 @@ import { buildCanonical, getSeoImage } from "@/lib/seo";
 import { getCanonicalServices } from "@/lib/servicesSeo";
 import dbConnect from "@/lib/dbConnect";
 import { SiteConfig } from "@/models/Portfolio";
+import { resolveHomeSeo } from "@/lib/homeSeo";
 
 // ISR (Incremental Static Regeneration) - High Speed
 export const revalidate = 3600;
@@ -32,9 +33,7 @@ export async function generateMetadata() {
     configuredSeo = await SiteConfig.findOne({}).select("seo siteTitle").lean();
   } catch {}
 
-  const title = configuredSeo?.seo?.title || "Full-Stack Web Developer in Lahore | Muhyo Tech";
-  const description = configuredSeo?.seo?.description ||
-    "Muhyo Tech builds fast websites, Next.js applications, MERN stack platforms, and admin dashboards for businesses in Lahore and beyond.";
+  const { title, description } = resolveHomeSeo(configuredSeo?.seo);
 
   return {
     title: { absolute: title },

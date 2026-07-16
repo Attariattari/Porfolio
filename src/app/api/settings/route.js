@@ -6,6 +6,11 @@ import { portfolioData } from "@/lib/data";
 import { getAuthSession } from "@/lib/auth";
 import { cacheManager, withCache } from "@/lib/cache";
 import { revalidatePath } from "next/cache";
+import {
+    HOME_SEO_DESCRIPTION,
+    HOME_SEO_LIMITS,
+    HOME_SEO_TITLE,
+} from "@/lib/homeSeo";
 
 const PUBLIC_THEME_CACHE_KEY = "settings:public-theme";
 const PUBLIC_THEME_CACHE_TTL = 5;
@@ -18,8 +23,8 @@ const defaultSettings = {
     email: "attariattari549@gmail.com",
     location: "Lahore, Pakistan",
     seo: {
-        title: "Muhyo Tech - Full Stack Developer",
-        description: "Full Stack Web Developer specializing in modern web applications",
+        title: HOME_SEO_TITLE,
+        description: HOME_SEO_DESCRIPTION,
     },
     ...(portfolioData.siteConfig || {}),
 };
@@ -101,8 +106,8 @@ export async function GET(request) {
                 email: "attariattari549@gmail.com",
                 location: "Lahore, Pakistan",
                 seo: {
-                    title: "Muhyo Tech - Full Stack Developer",
-                    description: "Full Stack Web Developer specializing in modern web applications",
+                    title: HOME_SEO_TITLE,
+                    description: HOME_SEO_DESCRIPTION,
                 },
             });
             await config.save();
@@ -162,7 +167,24 @@ export async function PATCH(request) {
         if (data.adminName) updateData.adminName = data.adminName;
         if (data.email) updateData.email = data.email;
         if (data.location) updateData.location = data.location;
-        if (data.seo) updateData.seo = data.seo;
+        if (data.seo) {
+            const title = String(data.seo.title || "").trim();
+            const description = String(data.seo.description || "").trim();
+            const titleIsValid =
+                title.length >= HOME_SEO_LIMITS.title.min &&
+                title.length <= HOME_SEO_LIMITS.title.max;
+            const descriptionIsValid =
+                description.length >= HOME_SEO_LIMITS.description.min &&
+                description.length <= HOME_SEO_LIMITS.description.max;
+
+            if (!titleIsValid || !descriptionIsValid) {
+                return apiResponse.error(
+                    "SEO title must be 50-60 characters and description must be 120-160 characters.",
+                    400,
+                );
+            }
+            updateData.seo = { title, description };
+        }
         if (data.socialLinks) updateData.socialLinks = data.socialLinks;
         updateData.updatedBy = session.email;
 

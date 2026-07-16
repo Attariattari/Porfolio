@@ -86,6 +86,9 @@ export async function generateBlogImagePrompt(blog, options = {}) {
       {
         temperature: 0.45,
         responseMimeType: "application/json",
+        maxOutputTokens: 1536,
+        thinkingBudget: 0,
+        timeoutMs: Number(process.env.AI_IMAGE_PROMPT_TIMEOUT_MS || 10000),
       },
     );
 

@@ -227,6 +227,9 @@ async function generateStrategicTopic(recentBlogMeta = [], attempt = 0) {
     const response = await generateGeminiResponse(prompt, {
       temperature: 0.85,
       responseMimeType: "application/json",
+      maxOutputTokens: 512,
+      thinkingBudget: 0,
+      timeoutMs: Number(process.env.AI_TOPIC_TIMEOUT_MS || 8000),
     });
     const parsed = JSON.parse(
       response.replace(/```json/gi, "").replace(/```/g, "").trim(),
@@ -446,6 +449,9 @@ async function generateEditorialContent(
     systemInstruction: EDITORIAL_GUIDELINES,
     temperature: 0.9, // High for natural sentence variation
     responseMimeType: "application/json",
+    maxOutputTokens: 4096,
+    thinkingBudget: 0,
+    timeoutMs: Number(process.env.AI_DRAFT_TIMEOUT_MS || 30000),
   });
 
   try {
@@ -813,6 +819,9 @@ async function runQualityReview(blogData) {
   const reviewResponse = await generateGeminiResponse(reviewPrompt, {
     temperature: 0.1,
     responseMimeType: "application/json",
+    maxOutputTokens: 1024,
+    thinkingBudget: 0,
+    timeoutMs: Number(process.env.AI_REVIEW_TIMEOUT_MS || 10000),
   });
 
   try {
@@ -904,7 +913,7 @@ export async function runBlogAutomationPipeline(
 
       const aiTopic = await withTimeout(
         generateStrategicTopic(recentBlogMeta),
-        Number(process.env.AI_TOPIC_TIMEOUT_MS || 12000),
+        Number(process.env.AI_TOPIC_TIMEOUT_MS || 8000),
         null,
         "TopicStrategist",
       );

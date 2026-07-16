@@ -4,11 +4,26 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+function createTimeoutError(timeoutMs) {
+    const error = new Error(`Gemini request timed out after ${timeoutMs}ms.`);
+    error.code = "AI_TIMEOUT";
+    return error;
+}
+
+function isTimeoutError(error) {
+    return (
+        error?.code === "AI_TIMEOUT" ||
+        error?.name === "AbortError" ||
+        /timed?\s*out|timeout|aborted/i.test(error?.message || "")
+    );
+}
+
 function isModelFallbackError(error) {
     return (
         error.status === 404 ||
         error.status === 429 ||
         error.status >= 500 ||
+        isTimeoutError(error) ||
         (error.message &&
             (error.message.includes("404") ||
                 error.message.includes("429") ||
@@ -20,11 +35,19 @@ function isModelFallbackError(error) {
     );
 }
 
-async function callGeminiWithRetry(fn, retries = 3, delay = 5000) {
+async function callGeminiWithRetry(
+    fn,
+    retries = 3,
+    delay = 5000,
+    deadline = Number.POSITIVE_INFINITY,
+) {
     let lastError;
     for (let i = 0; i < retries; i++) {
+        const remainingMs = deadline - Date.now();
+        if (remainingMs <= 0) throw createTimeoutError(0);
+
         try {
-            return await fn();
+            return await fn(remainingMs);
         } catch (error) {
             lastError = error;
             const isRetriableError =
@@ -37,10 +60,15 @@ async function callGeminiWithRetry(fn, retries = 3, delay = 5000) {
                         error.message.includes("temporary")));
 
             if (isRetriableError && i < retries - 1) {
-                console.warn(
-                    `[Gemini] Retriable error detected (${error.status || "unknown code"}), retrying in ${delay}ms... (Attempt ${i + 1}/${retries})`,
+                const retryDelay = Math.min(
+                    delay,
+                    Math.max(0, deadline - Date.now()),
                 );
-                await sleep(delay);
+                if (retryDelay <= 0) break;
+                console.warn(
+                    `[Gemini] Retriable error detected (${error.status || "unknown code"}), retrying in ${retryDelay}ms... (Attempt ${i + 1}/${retries})`,
+                );
+                await sleep(retryDelay);
                 delay *= 2; // Exponential backoff
                 continue;
             }
@@ -62,7 +90,12 @@ export async function generateGeminiResponse(input, config = {}) {
             maxOutputTokens = 4096,
             responseMimeType = "text/plain",
             systemInstruction = "",
+            thinkingBudget,
+            timeoutMs = Number(process.env.GEMINI_REQUEST_TIMEOUT_MS || 30000),
     } = config;
+
+    const safeTimeoutMs = Math.max(1000, Number(timeoutMs) || 30000);
+    const deadline = Date.now() + safeTimeoutMs;
 
     // Prioritize models from the environment configuration
     const modelsToTry = [
@@ -78,16 +111,25 @@ export async function generateGeminiResponse(input, config = {}) {
     for (const modelName of modelsToTry) {
         try {
             return await callGeminiWithRetry(
-                async() => {
+                async(remainingMs) => {
+                    const generationConfig = {
+                        temperature,
+                        topP,
+                        topK,
+                        maxOutputTokens,
+                        responseMimeType,
+                    };
+
+                    if (
+                        Number.isFinite(thinkingBudget) &&
+                        modelName.includes("2.5")
+                    ) {
+                        generationConfig.thinkingConfig = { thinkingBudget };
+                    }
+
                     const modelConfig = {
                         model: modelName,
-                        generationConfig: {
-                            temperature,
-                            topP,
-                            topK,
-                            maxOutputTokens,
-                            responseMimeType,
-                        },
+                        generationConfig,
                     };
 
                     if (systemInstruction) {
@@ -95,7 +137,9 @@ export async function generateGeminiResponse(input, config = {}) {
                     }
 
                     const model = genAI.getGenerativeModel(modelConfig);
-                    const result = await model.generateContent(input);
+                    const result = await model.generateContent(input, {
+                        timeout: Math.max(1000, Math.floor(remainingMs)),
+                    });
                     const response = await result.response;
                     const text = response.text();
 
@@ -130,6 +174,7 @@ export async function generateGeminiResponse(input, config = {}) {
                 },
                 2,
                 2000,
+                deadline,
             ); // Fewer retries per model to move to fallback faster
         } catch (error) {
             lastError = error;

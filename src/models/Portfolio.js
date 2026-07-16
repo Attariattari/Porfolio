@@ -1,4 +1,9 @@
 import mongoose from "mongoose";
+import {
+    HOME_SEO_DESCRIPTION,
+    HOME_SEO_LIMITS,
+    HOME_SEO_TITLE,
+} from "@/lib/homeSeo";
 
 // 1. PROJECT SCHEMA
 const ProjectSchema = new mongoose.Schema({
@@ -487,13 +492,17 @@ const SiteConfigSchema = new mongoose.Schema({
     seo: {
         title: {
             type: String,
-            default: "Muhyo Tech - Full Stack Developer",
+            default: HOME_SEO_TITLE,
             trim: true,
+            minlength: HOME_SEO_LIMITS.title.min,
+            maxlength: HOME_SEO_LIMITS.title.max,
         },
         description: {
             type: String,
-            default: "Full Stack Web Developer specializing in modern web applications",
+            default: HOME_SEO_DESCRIPTION,
             trim: true,
+            minlength: HOME_SEO_LIMITS.description.min,
+            maxlength: HOME_SEO_LIMITS.description.max,
         },
     },
 
