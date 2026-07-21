@@ -60,4 +60,27 @@ export function getSafeImageSrc(src, fallbackSrc = DEFAULT_FALLBACK_IMAGE) {
   }
 }
 
+export function getCloudinaryAspectSrc(
+  src,
+  aspectRatio,
+  fallbackSrc = DEFAULT_FALLBACK_IMAGE,
+) {
+  const safeSrc = getSafeImageSrc(src, fallbackSrc);
+
+  try {
+    const url = new URL(safeSrc);
+    if (!url.hostname.endsWith("cloudinary.com")) return safeSrc;
+    if (!url.pathname.includes("/image/upload/")) return safeSrc;
+    if (!/^\d+:\d+$/.test(aspectRatio)) return safeSrc;
+
+    url.pathname = url.pathname.replace(
+      "/image/upload/",
+      `/image/upload/c_fill,g_center,ar_${aspectRatio}/`,
+    );
+    return url.toString();
+  } catch {
+    return safeSrc;
+  }
+}
+
 export default getSafeImageSrc;

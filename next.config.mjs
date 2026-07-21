@@ -5,7 +5,7 @@ const nextConfig = {
         // Cache optimized image variants at the edge for 30 days. Source URL
         // changes still create a new cache key, so admin media updates remain safe.
         minimumCacheTTL: 2592000,
-        deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+        deviceSizes: [540, 640, 750, 828, 1080, 1200, 1920],
         imageSizes: [32, 48, 64, 96, 128, 256, 384],
         formats: ["image/avif", "image/webp"],
         remotePatterns: [

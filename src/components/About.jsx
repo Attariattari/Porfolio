@@ -45,7 +45,7 @@ import { getAboutPageData } from "@/lib/content/getAboutPageData";
 import { Button, SectionWrapper } from "./ui";
 import EditorialBackground from "./ui/EditorialBackground";
 import SocialLinks from "./SocialLinks";
-import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
+import { getCloudinaryAspectSrc } from "@/lib/images/getSafeImageSrc";
 import { createElement } from "react";
 
 const particleClasses = [
@@ -213,10 +213,14 @@ const ProfileCard = ({ data, isHomePage }) => (
     <div className="relative z-10 p-2 glass rounded-[1.5rem] overflow-hidden group border border-white/10 hover:border-accent/30 transition-all duration-700">
       <div className="theme-media-frame relative w-full aspect-[4/5] rounded-[1rem] overflow-hidden">
         <Image
-          src={getSafeImageSrc(data.hero?.image, "/about-portrait-new.jpg")}
+          src={getCloudinaryAspectSrc(
+            data.hero?.image,
+            "4:5",
+            "/about-portrait-new.jpg",
+          )}
           alt={getAboutMediaAlt(data)}
           fill
-          sizes="(min-width: 1024px) 44vw, 100vw"
+          sizes="(min-width: 1280px) 526px, (min-width: 1024px) 44vw, (min-width: 768px) 60vw, calc(100vw - 48px)"
           className="object-cover transition-transform duration-1000 group-hover:scale-110"
           priority={!isHomePage}
           loading={isHomePage ? "lazy" : undefined}

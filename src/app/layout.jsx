@@ -7,7 +7,6 @@ import ScrollToTop from "@/components/ScrollToTop";
 import DeferredRuntimeWidgets from "@/components/DeferredRuntimeWidgets";
 import DeferredToaster from "@/components/DeferredToaster";
 import { OrganizationSchema } from "@/components/schema/OrganizationSchema";
-import GoogleAnalytics from "@/components/GoogleAnalytics";
 import { SITE_URL } from "@/lib/config";
 import { getSeoImage } from "@/lib/seo";
 
@@ -19,6 +18,10 @@ const inter = Inter({
 
 const enableVercelAnalytics =
   process.env.NEXT_PUBLIC_ENABLE_VERCEL_ANALYTICS === "true";
+const configuredGoogleAnalyticsId = process.env.NEXT_PUBLIC_GA_ID || "";
+const googleAnalyticsId = /^G-[A-Z0-9]+$/.test(configuredGoogleAnalyticsId)
+  ? configuredGoogleAnalyticsId
+  : "";
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
@@ -29,8 +32,12 @@ export const metadata = {
   description:
     "Muhyo Tech builds modern websites, full-stack web apps, admin dashboards, and scalable Next.js & MERN solutions for businesses in Lahore and beyond.",
   icons: {
-    icon: "/logo.png",
-    apple: "/logo.png",
+    icon: [
+      { url: "/favicon.ico", type: "image/x-icon", sizes: "any" },
+      { url: "/logo.png", type: "image/png", sizes: "640x640" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: [{ url: "/logo.png", type: "image/png", sizes: "640x640" }],
   },
   openGraph: {
     title: "Muhyo Tech - Premium Software Engineering & Digital Solutions",
@@ -54,10 +61,25 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/logo.png" />
-        <link rel="apple-touch-icon" href="/logo.png" />
         <OrganizationSchema />
-        <GoogleAnalytics />
+        {googleAnalyticsId && (
+          <>
+            <script
+              async
+              src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}
+            />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', '${googleAnalyticsId}');
+                `,
+              }}
+            />
+          </>
+        )}
         <script
           dangerouslySetInnerHTML={{
             __html: `

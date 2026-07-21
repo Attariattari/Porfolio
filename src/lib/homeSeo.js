@@ -2,7 +2,7 @@ export const HOME_SEO_TITLE =
   "Muhyo Tech | Full-Stack Web Developer in Lahore, Pakistan";
 
 export const HOME_SEO_DESCRIPTION =
-  "Muhyo Tech builds fast websites, full-stack web apps, admin dashboards, and scalable Next.js and MERN solutions for businesses in Lahore and beyond.";
+  "Muhyo Tech builds fast websites, full-stack web apps, admin dashboards, and scalable Next.js and MERN solutions for businesses in Lahore, Pakistan, and beyond.";
 
 export const HOME_SEO_LIMITS = {
   title: { min: 50, max: 60 },

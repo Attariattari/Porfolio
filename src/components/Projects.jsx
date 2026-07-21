@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { getProjectMediaAlt } from "@/lib/mediaAlt";
 import dynamic from "next/dynamic";
-import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
+import { getCloudinaryAspectSrc } from "@/lib/images/getSafeImageSrc";
 
 const ProjectModal = dynamic(() => import("./ProjectModal"), {
   ssr: false,
@@ -175,7 +175,10 @@ const ProjectRow = ({ project, index, setSelectedProject, showViewAll }) => {
           className="theme-media-frame relative w-full aspect-[4/3] rounded-2xl overflow-hidden border border-border/70 bg-background cursor-pointer"
         >
           <Image
-            src={getSafeImageSrc(project.thumbnail || project.thumbnailImage || project.image)}
+            src={getCloudinaryAspectSrc(
+              project.thumbnail || project.thumbnailImage || project.image,
+              "4:3",
+            )}
             alt={getProjectMediaAlt(project)}
             fill
             priority={!showViewAll && index === 0}
