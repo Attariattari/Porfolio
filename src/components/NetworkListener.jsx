@@ -6,60 +6,96 @@ import { useNetworkStore } from "@/lib/store/networkStore";
 import { setupFetchInterceptor } from "@/lib/network/fetchInterceptor";
 
 export default function NetworkListener() {
-  const { status, setStatus } = useNetworkStore();
+  const setStatus = useNetworkStore((state) => state.setStatus);
 
   useEffect(() => {
     setupFetchInterceptor();
-    
-    // Initial detection
-    const initialStatus = navigator.onLine ? "online" : "offline";
-    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    
+
+    const connection =
+      navigator.connection ||
+      navigator.mozConnection ||
+      navigator.webkitConnection;
+
     const getDetailedStatus = () => {
       if (!navigator.onLine) return "offline";
-      if (connection && (connection.effectiveType === "slow-2g" || connection.effectiveType === "2g")) {
+
+      const effectiveType = connection?.effectiveType;
+      const hasSlowConnectionSignal =
+        effectiveType === "slow-2g" ||
+        effectiveType === "2g" ||
+        connection?.saveData === true ||
+        (Number.isFinite(connection?.downlink) && connection.downlink <= 0.75) ||
+        (Number.isFinite(connection?.rtt) && connection.rtt >= 1000);
+
+      if (hasSlowConnectionSignal) {
         return "slow";
       }
+
       return "online";
     };
 
-    const handleStatusChange = () => {
+    const applyStatus = ({ initial = false } = {}) => {
       const newStatus = getDetailedStatus();
-      
-      if (newStatus !== status) {
+      const previousStatus = useNetworkStore.getState().status;
+
+      if (newStatus === previousStatus && !initial) return;
+
+      if (newStatus !== previousStatus) {
         setStatus(newStatus);
-        
-        // Handle Notifications
-        if (newStatus === "offline") {
-          toast.error("No Internet Connection", {
-            description: "Please check your connection. Some features may be unavailable.",
-            duration: Infinity,
-            id: "network-offline",
+      }
+
+      if (newStatus === "offline") {
+        toast.dismiss("network-slow");
+        toast.error("No Internet Connection", {
+          description: "Please check your connection. Some features may be unavailable.",
+          duration: Infinity,
+          id: "network-offline",
+        });
+        return;
+      }
+
+      if (newStatus === "slow") {
+        toast.dismiss("network-offline");
+        toast.warning("Slow network detected", {
+          description: "Some content might take longer to load.",
+          duration: 5000,
+          id: "network-slow",
+        });
+        return;
+      }
+
+      toast.dismiss("network-offline");
+      toast.dismiss("network-slow");
+
+      if (!initial && previousStatus !== "online") {
+        toast.success("You're back online", {
+          description: "Refreshing data and processing pending tasks...",
+          duration: 3000,
+          id: "network-online",
+        });
+
+        const { failedRequests, clearFailedRequests } =
+          useNetworkStore.getState();
+        if (failedRequests.length > 0) {
+          console.log(
+            `[Network] Retrying ${failedRequests.length} failed requests...`,
+          );
+          failedRequests.forEach((request) => {
+            window
+              .fetch(...request.args)
+              .catch((error) =>
+                console.error("[Network] Retry failed:", error),
+              );
           });
-        } else if (newStatus === "online") {
-          toast.dismiss("network-offline");
-          toast.success("You're back online", {
-            description: "Refreshing data and processing pending tasks...",
-            duration: 3000,
-          });
-          
-          // Global Auto Retry (Non-React Query)
-          const { failedRequests, clearFailedRequests } = useNetworkStore.getState();
-          if (failedRequests.length > 0) {
-            console.log(`[Network] Retrying ${failedRequests.length} failed requests...`);
-            failedRequests.forEach(req => {
-              window.fetch(...req.args).catch(err => console.error("[Network] Retry failed:", err));
-            });
-            clearFailedRequests();
-          }
-        } else if (newStatus === "slow") {
-          toast.warning("Slow network detected", {
-            description: "Some content might take longer to load.",
-            duration: 5000,
-          });
+          clearFailedRequests();
         }
       }
     };
+
+    const handleStatusChange = () => applyStatus();
+
+    // Synchronize the store and show offline/slow feedback on the first load.
+    applyStatus({ initial: true });
 
     window.addEventListener("online", handleStatusChange);
     window.addEventListener("offline", handleStatusChange);
@@ -75,7 +111,7 @@ export default function NetworkListener() {
         connection.removeEventListener("change", handleStatusChange);
       }
     };
-  }, [status, setStatus]);
+  }, [setStatus]);
 
   return null;
 }
