@@ -359,6 +359,7 @@ const Contact = ({ isHomePage = false }) => {
                       <input
                         type="text"
                         name="name"
+                        aria-label="Your name"
                         placeholder="John Doe"
                         value={formData.name}
                         onChange={handleChange}
@@ -374,6 +375,7 @@ const Contact = ({ isHomePage = false }) => {
                       <input
                         type="email"
                         name="email"
+                        aria-label="Your email"
                         placeholder="john@email.com"
                         value={formData.email}
                         onChange={handleChange}
@@ -392,6 +394,7 @@ const Contact = ({ isHomePage = false }) => {
                       <input
                         type="text"
                         name="subject"
+                        aria-label="Subject"
                         placeholder="What is this about?"
                         value={formData.subject}
                         onChange={handleChange}
@@ -405,7 +408,10 @@ const Contact = ({ isHomePage = false }) => {
                       </label>
                       <div className="relative" ref={dropdownRef}>
                         {/* Custom Dropdown Trigger */}
-                        <div
+                        <button
+                          type="button"
+                          aria-label="Related service"
+                          aria-expanded={isDropdownOpen}
                           onClick={handleDropdownToggle}
                           className={`w-full bg-background/50 backdrop-blur-xl border border-border/50 rounded-2xl px-6 py-4 text-foreground transition-all duration-300 outline-none text-sm font-semibold shadow-inner cursor-pointer flex items-center justify-between group/trigger ${isDropdownOpen ? "border-accent/50 ring-4 ring-accent/5 bg-accent/5" : ""} ${loading ? "opacity-50 pointer-events-none" : ""}`}
                         >
@@ -447,7 +453,7 @@ const Contact = ({ isHomePage = false }) => {
                           >
                             <ChevronDown className="w-4 h-4" />
                           </motion.div>
-                        </div>
+                        </button>
 
                         {/* Smart Notification - Floating Popover */}
                         <AnimatePresence>
@@ -613,6 +619,7 @@ const Contact = ({ isHomePage = false }) => {
                     </label>
                     <textarea
                       name="message"
+                      aria-label="Project details"
                       rows={5}
                       placeholder="How can we help you?"
                       value={formData.message}

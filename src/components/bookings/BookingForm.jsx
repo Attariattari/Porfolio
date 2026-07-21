@@ -252,6 +252,7 @@ export default function BookingForm({
       <input
         type="text"
         name="website"
+        aria-label="Website"
         value={formData.website}
         onChange={(e) => updateField("website", e.target.value)}
         className="hidden"
@@ -291,6 +292,7 @@ export default function BookingForm({
             <input
               type="text"
               name="name"
+              aria-label="Full name"
               value={formData.name}
               onChange={(e) => updateField("name", e.target.value)}
               placeholder="Your name"
@@ -308,6 +310,7 @@ export default function BookingForm({
             <input
               type="email"
               name="email"
+              aria-label="Email address"
               value={formData.email}
               onChange={(e) => updateField("email", e.target.value)}
               placeholder="you@example.com"
@@ -327,6 +330,7 @@ export default function BookingForm({
             <input
               type="tel"
               name="phone"
+              aria-label="Phone number"
               value={formData.phone}
               onChange={(e) => updateField("phone", e.target.value)}
               placeholder="+92 322 4458481"
@@ -343,6 +347,7 @@ export default function BookingForm({
           <FieldShell icon={BookOpen}>
             <select
               name="serviceSlug"
+              aria-label="Service"
               value={formData.serviceSlug}
               onChange={(e) => handleServiceChange(e.target.value)}
               disabled={serviceLoading}
@@ -373,6 +378,7 @@ export default function BookingForm({
             <input
               type="date"
               name="preferredDate"
+              aria-label="Preferred date"
               value={formData.preferredDate}
               onChange={(e) => updateField("preferredDate", e.target.value)}
               className={baseInputClass}
@@ -389,6 +395,7 @@ export default function BookingForm({
             <input
               type="time"
               name="preferredTime"
+              aria-label="Preferred time"
               value={formData.preferredTime}
               onChange={(e) => updateField("preferredTime", e.target.value)}
               className={baseInputClass}
@@ -406,6 +413,7 @@ export default function BookingForm({
           <div className="relative">
             <select
               name="projectType"
+              aria-label="Project type"
               value={formData.projectType}
               onChange={(e) => handleProjectTypeChange(e.target.value)}
               disabled={aiLoading}
@@ -435,6 +443,7 @@ export default function BookingForm({
           <div className="relative">
             <select
               name="timelinePreference"
+              aria-label="Timeline"
               value={formData.timelinePreference}
               onChange={(e) => updateField("timelinePreference", e.target.value)}
               className="w-full appearance-none rounded-xl border border-border/70 bg-background/70 py-3 pl-4 pr-11 text-sm text-foreground outline-none transition-all focus:border-accent/60 focus:bg-background/90"
@@ -459,6 +468,7 @@ export default function BookingForm({
           <div className="relative">
             <select
               name="contactPreference"
+              aria-label="Contact preference"
               value={formData.contactPreference}
               onChange={(e) => updateField("contactPreference", e.target.value)}
               className="w-full appearance-none rounded-xl border border-border/70 bg-background/70 py-3 pl-4 pr-11 text-sm text-foreground outline-none transition-all focus:border-accent/60 focus:bg-background/90"
@@ -510,6 +520,7 @@ export default function BookingForm({
           <textarea
             id="booking-project-details"
             name="message"
+            aria-label="Project details"
             rows={6}
             value={formData.message}
             onChange={(e) => updateField("message", e.target.value)}

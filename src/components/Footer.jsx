@@ -132,6 +132,7 @@ export default function Footer({ data }) {
                   <Mail size={16} className="shrink-0 text-accent" />
                   <input
                     type="email"
+                    aria-label="Email address for project updates"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}

@@ -39,6 +39,12 @@ export function getSeoImage(image) {
   return absoluteUrl(image || defaultSeoData.ogImage);
 }
 
+export function removeBrandSuffix(value = "") {
+  return String(value)
+    .replace(/\s*\|\s*Muhyo Tech\s*$/i, "")
+    .trim();
+}
+
 export const generateMetadata = (pageTitle, pageDescription) => {
   return {
     title: pageTitle ? `${pageTitle} | Muhyo Tech` : defaultSeoData.title,

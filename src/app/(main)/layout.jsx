@@ -15,7 +15,7 @@ import { getSeoImage } from "@/lib/seo";
 export const metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Muhyo Tech - Full Stack Web Development & Software Engineering",
+    default: "Full-Stack Web Development | Muhyo Tech",
     template: "%s | Muhyo Tech",
   },
   description:
@@ -92,7 +92,10 @@ export default async function MainLayout({ children }) {
       <div
         className="site-main-shell flex flex-col min-h-screen relative z-10 transition-[padding] duration-500 ease-in-out pt-16 md:pt-0 pl-[var(--sidebar-width,0px)]"
       >
-        <main className="grow">{children}</main>
+        <a className="skip-to-content" href="#main-content">
+          Skip to content
+        </a>
+        <main id="main-content" className="grow">{children}</main>
         <Footer data={globalAbout} />
       </div>
     </div>

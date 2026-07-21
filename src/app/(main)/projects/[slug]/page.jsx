@@ -3,7 +3,7 @@ import { ProjectController } from "@/controllers/ProjectController";
 import ProjectDetailView from "@/components/ProjectDetailView";
 import { serializeDoc } from "@/lib/mongooseHelper";
 import { SITE_URL } from "@/lib/config";
-import { buildCanonical, cleanSeoText, getSeoImage } from "@/lib/seo";
+import { buildCanonical, cleanSeoText, getSeoImage, removeBrandSuffix } from "@/lib/seo";
 import { portfolioData } from "@/lib/data";
 
 // 1. Enable ISR (Revalidate every hour)
@@ -30,7 +30,7 @@ export async function generateMetadata({ params }) {
   const image = getSeoImage(project.heroImage || project.thumbnailImage || project.image || project.thumbnail);
 
   return {
-    title: project.seoTitle || `${project.title} | Muhyo Tech`,
+    title: removeBrandSuffix(project.seoTitle || project.title),
     description,
     keywords:
       (project.keywords || project.techStack || []).join(", ") || "Web Development, Engineering",
@@ -74,23 +74,18 @@ export default async function ProjectPage({ params }) {
     .filter((service) => (project.relatedServices || []).includes(service.slug))
     .slice(0, 3);
 
-  // P3 SEO: Add comprehensive JSON-LD schema for projects
   const baseUrl = SITE_URL;
   const canonicalUrl = buildCanonical(`/projects/${project.slug}`);
   const image = getSeoImage(project.heroImage || project.thumbnailImage || project.image || project.thumbnail);
 
   const projectSchema = {
     "@context": "https://schema.org",
-    "@type": "SoftwareSourceCode",
+    "@type": "CreativeWork",
     name: project.title,
     description: cleanSeoText(project.seoDescription || project.shortDescription || project.description, 155),
     image,
-    creator: {
-      "@type": "Person",
-      name: "Muhyo Tech",
-      url: baseUrl,
-    },
-    programmingLanguage: project.techStack || [],
+    creator: { "@id": `${baseUrl}/#organization` },
+    about: (project.techStack || []).map((name) => ({ "@type": "Thing", name })),
     url: canonicalUrl,
     mainEntityOfPage: {
       "@type": "WebPage",

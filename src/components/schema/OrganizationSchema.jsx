@@ -85,6 +85,13 @@ export async function OrganizationSchema() {
           ],
         },
         {
+          "@type": "WebSite",
+          "@id": `${SITE_URL}/#website`,
+          name: config.siteTitle || "Muhyo Tech",
+          url: SITE_URL,
+          publisher: { "@id": `${SITE_URL}/#organization` },
+        },
+        {
           "@type": "LocalBusiness",
           "@id": `${SITE_URL}/#localbusiness`,
           name: "Muhyo Tech",
@@ -161,6 +168,13 @@ export async function OrganizationSchema() {
             postalCode: "53720",
             addressCountry: "PK",
           },
+        },
+        {
+          "@type": "WebSite",
+          "@id": `${SITE_URL}/#website`,
+          name: "Muhyo Tech",
+          url: SITE_URL,
+          publisher: { "@id": `${SITE_URL}/#organization` },
         },
         {
           "@type": "ProfessionalService",

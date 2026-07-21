@@ -72,6 +72,7 @@ export default function Newsletter() {
               />
               <input
                 type="email"
+                aria-label="Email address for newsletter"
                 placeholder="Enter your email"
                 required
                 value={email}
@@ -80,6 +81,7 @@ export default function Newsletter() {
               />
               <button
                 type="submit"
+                aria-label="Subscribe to newsletter"
                 disabled={loading}
                 className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-xl bg-accent text-background flex items-center justify-center hover:bg-accent/90 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-accent/20"
               >

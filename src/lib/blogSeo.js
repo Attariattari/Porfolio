@@ -155,7 +155,12 @@ export const getBlogWordCount = (blog = {}) => {
 };
 
 export const getBlogSeoTitle = (blog = {}) =>
-  truncateAtWord(blog.seoTitle || blog.title || "Muhyo Tech Engineering Insight", 55);
+  truncateAtWord(
+    String(blog.seoTitle || blog.title || "Muhyo Tech Engineering Insight")
+      .replace(/\s*\|\s*Muhyo Tech\s*$/i, "")
+      .trim(),
+    55,
+  );
 
 export const getBlogSeoDescription = (blog = {}) => {
   const preferred = blog.seoDescription || blog.summary;
