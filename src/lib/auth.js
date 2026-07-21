@@ -680,6 +680,25 @@ export async function updateUserMetadata(
             };
         }
 
+        const targetUser = await User.findOne({ email: normalizedEmail }).select("role email").lean();
+        if (!targetUser) return { success: false, message: "Personnel record not found." };
+
+        // Only the root administrator may change a secondary super administrator.
+        if (targetUser.role === "super-admin" && actorSession?.role !== "root-super-admin") {
+            return {
+                success: false,
+                message: "Only the root administrator can change a super administrator's access.",
+            };
+        }
+
+        // Only the root administrator may grant secondary super-admin authority.
+        if (role === "super-admin" && actorSession?.role !== "root-super-admin") {
+            return {
+                success: false,
+                message: "Only the root administrator can assign super administrator access.",
+            };
+        }
+
         // 👑 ROLE PROTECTION: Cannot promote anyone to root-super-admin
         if (role === "root-super-admin") {
             return {

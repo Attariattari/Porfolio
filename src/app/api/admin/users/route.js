@@ -1,22 +1,28 @@
 import { NextResponse } from "next/server";
 import { getAllUsers, approveUser, denyUser, removeUser, updateUserMetadata, getAuthSession } from "@/lib/auth";
 
-async function isSuperAdmin() {
+async function getAuthorizedSession() {
     const session = await getAuthSession();
-    return session?.role === "super-admin" || session?.role === "root-super-admin";
+    return session && ["super-admin", "root-super-admin"].includes(session.role) ? session : null;
 }
 
 export async function GET() {
-  if (!(await isSuperAdmin())) return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+  if (!(await getAuthorizedSession())) return NextResponse.json({ message: "Forbidden" }, { status: 403 });
   const users = await getAllUsers();
   return NextResponse.json({ users });
 }
 
 export async function POST(request) {
-  if (!(await isSuperAdmin())) return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+  const session = await getAuthorizedSession();
+  if (!session) return NextResponse.json({ message: "Forbidden" }, { status: 403 });
 
   try {
     const { email, action } = await request.json(); // approve, deny, remove
+    const users = await getAllUsers();
+    const target = users.find((user) => user.email?.toLowerCase() === email?.toLowerCase());
+    if (target?.role === "super-admin" && session.role !== "root-super-admin") {
+      return NextResponse.json({ success: false, message: "Only the root administrator can change a super administrator account." }, { status: 403 });
+    }
     if (action === "approve") {
       const result = await approveUser(email);
       return NextResponse.json(result);
@@ -34,11 +40,12 @@ export async function POST(request) {
 }
 
 export async function PATCH(request) {
-  if (!(await isSuperAdmin())) return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+  const session = await getAuthorizedSession();
+  if (!session) return NextResponse.json({ message: "Forbidden" }, { status: 403 });
 
   try {
     const { email, role, permissions } = await request.json();
-    const result = await updateUserMetadata(email, { role, permissions });
+    const result = await updateUserMetadata(email, { role, permissions }, session);
     return NextResponse.json(result);
   } catch (err) {
     return NextResponse.json({ success: false, message: "Metadata update failure." }, { status: 500 });

@@ -5,9 +5,9 @@ import { useSearchParams } from "next/navigation";
 import { useMessages, useMessageStats, useRealTimeMessageUpdates } from "@/app/(admin)/hooks/useMessages";
 import MessageList from "../components/MessageList";
 import MessageDetailModal from "../components/MessageDetailModal";
-import { MessageSquare, Mail, CheckCircle2, Reply, RefreshCw, Send } from "lucide-react";
+import { MessageSquare, Mail, CheckCircle2, Reply, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 
 export default function MessagesPage() {
   const [selectedMessage, setSelectedMessage] = useState(null);
@@ -49,7 +49,7 @@ export default function MessagesPage() {
   });
 
   // Handle message selection
-  const handleSelectMessage = async (message) => {
+  const handleSelectMessage = useCallback(async (message) => {
     setSelectedMessage(message);
     setIsDetailOpen(true);
 
@@ -81,7 +81,7 @@ export default function MessagesPage() {
         console.error("Failed to mark message as seen:", err);
       }
     }
-  };
+  }, [refetch, setStats, stats]);
 
   // Handle filters change
   const handleFilterChange = (newFilters) => {
@@ -112,7 +112,7 @@ export default function MessagesPage() {
       }
     }, 0);
     return () => window.clearTimeout(timer);
-  }, [viewId, messages]);
+  }, [viewId, messages, handleSelectMessage]);
 
   // Handle success after delete
   const handleDeleteSuccess = () => {
@@ -128,65 +128,33 @@ export default function MessagesPage() {
   }, [error]);
 
   return (
-    <div className="space-y-10 max-w-[1600px] mx-auto pb-20">
+    <div className="mx-auto max-w-[1600px] space-y-6 pb-20">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div>
-          <h1 className="text-5xl font-black italic uppercase text-foreground tracking-tighter leading-none mb-4">
-            Client <span className="text-accent underline decoration-accent/20 underline-offset-12">Messages</span>
-          </h1>
-          <p className="text-muted-foreground text-sm font-medium tracking-wide">
-            Manage and respond to all client inquiries in <span className="text-foreground">real-time</span>.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-3">
+      <section className="relative overflow-hidden rounded-[28px] border border-white/[0.08] bg-[#0d1727] shadow-[0_28px_80px_-50px_rgba(0,0,0,.9)]">
+        <div className="pointer-events-none absolute -right-20 -top-24 size-72 rounded-full bg-cyan-400/[0.06] blur-3xl" />
+        <div className="relative flex flex-col justify-between gap-6 border-b border-white/[0.07] p-6 sm:p-8 md:flex-row md:items-center">
+          <div className="flex items-start gap-4">
+            <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-cyan-300 text-slate-950 shadow-[0_12px_35px_-14px_rgba(103,232,249,.8)]"><MessageSquare className="size-5" /></span>
+            <div><p className="mb-2 text-[10px] font-bold uppercase tracking-[.2em] text-cyan-300/75">Communication desk</p><h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">Client messages</h1><p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">Review new inquiries, follow up with clients and keep every conversation moving.</p></div>
+          </div>
           <button
             onClick={() => { refetch(); refetchStats(); toast.success("Messages updated"); }}
-            className="p-3 rounded-2xl bg-muted/50 border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-all group"
-            title="Refresh messages"
+            disabled={loading || statsLoading}
+            className="inline-flex items-center justify-center gap-2 self-start rounded-xl border border-white/[0.08] bg-white/[0.035] px-4 py-3 text-xs font-semibold text-slate-400 transition hover:bg-white/[0.06] hover:text-white disabled:opacity-50 md:self-auto"
           >
-            <RefreshCw className={`w-5 h-5 group-active:rotate-180 transition-transform duration-500 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`size-4 ${loading || statsLoading ? 'animate-spin' : ''}`} /> Refresh inbox
           </button>
         </div>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatsCard
-          label="Total Messages"
-          value={stats?.totalMessages}
-          icon={MessageSquare}
-          color="blue"
-          loading={statsLoading}
-        />
-        <StatsCard
-          label="Unread / New"
-          value={stats?.newMessages}
-          icon={Mail}
-          color="amber"
-          loading={statsLoading}
-          highlight={stats?.newMessages > 0}
-        />
-        <StatsCard
-          label="Seen Messages"
-          value={stats?.seenMessages}
-          icon={CheckCircle2}
-          color="purple"
-          loading={statsLoading}
-        />
-        <StatsCard
-          label="Replied"
-          value={stats?.repliedMessages}
-          icon={Reply}
-          color="emerald"
-          loading={statsLoading}
-        />
-      </div>
+        <div className="grid sm:grid-cols-2 md:grid-cols-[1.25fr_1fr_1fr_1fr]">
+          <Metric label="Needs attention" value={stats?.newMessages} note="Unread inquiries" icon={Mail} loading={statsLoading} attention />
+          <Metric label="All messages" value={stats?.totalMessages} icon={MessageSquare} loading={statsLoading} />
+          <Metric label="Reviewed" value={stats?.seenMessages} icon={CheckCircle2} loading={statsLoading} />
+          <Metric label="Replied" value={stats?.repliedMessages} icon={Reply} loading={statsLoading} last />
+        </div>
+      </section>
 
       {/* Messages List Container */}
-      <div className="relative group">
-        <div className="absolute -inset-1 bg-gradient-to-r from-accent/20 to-accent/20 rounded-[2.5rem] blur-2xl opacity-20 group-hover:opacity-30 transition duration-1000"></div>
+      <div>
         <MessageList
           messages={messages}
           pagination={pagination}
@@ -218,42 +186,6 @@ export default function MessagesPage() {
   );
 }
 
-function StatsCard({ label, value, icon: Icon, color, loading, highlight }) {
-  const colorMap = {
-    blue: "from-accent/20 to-accent/5 border-accent/30 text-accent shadow-accent/5",
-    amber: "from-amber-500/20 to-amber-600/5 border-amber-500/30 text-amber-500 shadow-amber-500/5",
-    purple: "from-purple-500/20 to-purple-600/5 border-purple-500/30 text-purple-500 shadow-purple-500/5",
-    emerald: "from-emerald-500/20 to-emerald-600/5 border-emerald-500/30 text-emerald-500 shadow-emerald-500/5",
-  };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -5, scale: 1.02 }}
-      className={`relative overflow-hidden bg-gradient-to-br ${colorMap[color]} border rounded-3xl p-6 backdrop-blur-md shadow-2xl transition-all duration-300`}
-    >
-      {highlight && (
-        <div className="absolute top-0 right-0 w-2 h-2 m-4 rounded-full bg-current animate-ping" />
-      )}
-      <div className="flex items-center justify-between relative z-10">
-        <div className="space-y-1">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">{label}</p>
-          {loading ? (
-            <div className="h-9 w-16 bg-muted/50 animate-pulse rounded-lg" />
-          ) : (
-            <p className="text-4xl font-black text-foreground tabular-nums drop-shadow-sm">
-              {value ?? 0}
-            </p>
-          )}
-        </div>
-        <div className={`p-3 rounded-2xl bg-muted/50 border border-border ${colorMap[color].split('text-')[1].split(' ')[0]}`}>
-          <Icon className="w-6 h-6" />
-        </div>
-      </div>
-
-      {/* Decorative inner glow */}
-      <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-current opacity-[0.03] blur-3xl rounded-full" />
-    </motion.div>
-  );
+function Metric({ label, value, note, icon: Icon, loading, attention = false, last = false }) {
+  return <div className={`flex items-center justify-between border-b border-white/[0.07] p-5 sm:p-6 md:border-b-0 ${attention ? "bg-amber-300/[0.035]" : ""} ${last ? "" : "md:border-r"}`}><div><p className={`text-[9px] font-bold uppercase tracking-[.18em] ${attention ? "text-amber-300/70" : "text-slate-600"}`}>{label}</p>{loading ? <div className="mt-3 h-7 w-12 animate-pulse rounded-md bg-white/[0.06]" /> : <p className="mt-2 text-2xl font-semibold tracking-tight text-slate-100">{value ?? 0}</p>}{note && <p className="mt-1 text-xs text-slate-500">{note}</p>}</div><span className={`relative grid size-11 place-items-center rounded-full ${attention ? "bg-amber-300/10 text-amber-300" : "text-slate-600"}`}><Icon className="size-4" />{attention && (value ?? 0) > 0 && <span className="absolute right-0 top-0 size-2 rounded-full bg-amber-300 ring-4 ring-[#101a29]" />}</span></div>;
 }

@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   AlertCircle, CalendarDays, Check, CheckCircle2, ChevronRight, Clock3,
-  Loader2, Mail, RefreshCw, Search, Settings2, Shield, ShieldCheck,
+  Crown, Loader2, Mail, RefreshCw, Search, Settings2, Shield, ShieldCheck,
   Sparkles, Trash2, UserCheck, Users, UserX, X,
 } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
@@ -23,6 +23,11 @@ const permissionModules = [
 ];
 
 const defaultPermissions = Object.fromEntries(permissionModules.map(({ id, actions }) => [id, Object.fromEntries(actions.map((action) => [action, false]))]));
+const ROOT_ADMIN_EMAIL = "attariattari549@gmail.com";
+
+function isRootAccount(user) {
+  return user?.role === "root-super-admin" || user?.email?.trim().toLowerCase() === ROOT_ADMIN_EMAIL;
+}
 
 const statusMeta = {
   approved: { label: "Active", Icon: CheckCircle2, classes: "border-emerald-500/20 bg-emerald-500/10 text-emerald-500" },
@@ -58,6 +63,9 @@ function roleLabel(role) {
 }
 
 function PermissionsPanel({ user, actorRole, onClose, onUpdate }) {
+  const isRoot = isRootAccount(user);
+  const isSecondarySuper = user?.role === "super-admin";
+  const readOnlyFullAccess = isRoot || (isSecondarySuper && actorRole !== "root-super-admin");
   const [role, setRole] = useState(user?.role || "admin");
   const [saving, setSaving] = useState(false);
   const [permissions, setPermissions] = useState(() => Object.fromEntries(
@@ -82,13 +90,13 @@ function PermissionsPanel({ user, actorRole, onClose, onUpdate }) {
       <motion.aside initial={{ x: 60, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: 60, opacity: 0 }} transition={{ type: "spring", damping: 28, stiffness: 260 }} onMouseDown={(event) => event.stopPropagation()} className="flex h-full w-full max-w-2xl flex-col border-l border-border bg-card shadow-2xl">
         <header className="flex items-start justify-between border-b border-border/70 p-6 md:p-8">
           <div className="flex gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-500/10 text-violet-500"><Shield className="h-5 w-5" /></div>
-            <div><p className="text-xs font-bold uppercase tracking-[.16em] text-violet-500">Access management</p><h2 className="mt-1 text-2xl font-bold tracking-tight text-foreground">Role & permissions</h2><p className="mt-1 text-sm text-muted-foreground">{user.email}</p></div>
+            <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${readOnlyFullAccess ? "bg-amber-500/10 text-amber-500" : "bg-violet-500/10 text-violet-500"}`}>{readOnlyFullAccess ? <Crown className="h-5 w-5" /> : <Shield className="h-5 w-5" />}</div>
+            <div><p className={`text-xs font-bold uppercase tracking-[.16em] ${readOnlyFullAccess ? "text-amber-500" : "text-violet-500"}`}>{isRoot ? "Root authority" : readOnlyFullAccess ? "Super administrator" : "Access management"}</p><h2 className="mt-1 text-2xl font-bold tracking-tight text-foreground">{readOnlyFullAccess ? "Permanent full access" : "Role & permissions"}</h2><p className="mt-1 text-sm text-muted-foreground">{user.email}</p></div>
           </div>
           <button onClick={onClose} className="flex h-10 w-10 items-center justify-center rounded-xl border border-border text-muted-foreground transition hover:bg-muted hover:text-foreground"><X className="h-5 w-5" /></button>
         </header>
 
-        <div className="flex-1 space-y-8 overflow-y-auto p-6 md:p-8">
+        {readOnlyFullAccess ? <FullAccessOverview root={isRoot} /> : <div className="flex-1 space-y-8 overflow-y-auto p-6 md:p-8">
           <section>
             <div className="mb-3 flex items-center justify-between"><div><h3 className="text-sm font-bold text-foreground">Account role</h3><p className="text-xs text-muted-foreground">Choose the user’s level of responsibility.</p></div></div>
             <div className="grid gap-3 sm:grid-cols-3">
@@ -96,18 +104,34 @@ function PermissionsPanel({ user, actorRole, onClose, onUpdate }) {
             </div>
           </section>
 
-          <section>
+          {role === "super-admin" ? <AutomaticFullAccessNotice /> : <section>
             <div className="mb-4 flex items-end justify-between"><div><h3 className="text-sm font-bold text-foreground">Content permissions</h3><p className="text-xs text-muted-foreground">Enable only the actions this user needs.</p></div><span className="rounded-full bg-muted px-2.5 py-1 text-xs font-bold text-muted-foreground">{enabledCount} enabled</span></div>
             <div className="space-y-3">
               {permissionModules.map((module) => <div key={module.id} className="rounded-2xl border border-border/70 bg-background/35 p-4"><div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-sm font-bold text-foreground">{module.label}</p><p className="text-xs text-muted-foreground">{module.description}</p></div><div className="flex flex-wrap gap-2">{module.actions.map((action) => { const enabled = permissions[module.id]?.[action]; return <button key={action} onClick={() => toggle(module.id, action)} className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-semibold capitalize transition ${enabled ? "border-emerald-500/25 bg-emerald-500/10 text-emerald-500" : "border-border bg-card text-muted-foreground hover:text-foreground"}`}><span className={`flex h-4 w-4 items-center justify-center rounded ${enabled ? "bg-emerald-500 text-white" : "border border-border"}`}>{enabled && <Check className="h-3 w-3" />}</span>{action}</button>; })}</div></div></div>)}
             </div>
-          </section>
-        </div>
+          </section>}
+        </div>}
 
-        <footer className="flex items-center justify-between gap-3 border-t border-border/70 bg-background/30 p-5 md:px-8"><p className="hidden text-xs text-muted-foreground sm:block">Changes apply immediately after saving.</p><div className="ml-auto flex gap-3"><button onClick={onClose} className="h-11 rounded-xl border border-border px-5 text-sm font-semibold text-foreground hover:bg-muted">Cancel</button><button onClick={save} disabled={saving} className="inline-flex h-11 items-center gap-2 rounded-xl bg-foreground px-5 text-sm font-semibold text-background transition hover:opacity-90 disabled:opacity-50">{saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />} Save access</button></div></footer>
+        <footer className="flex items-center justify-between gap-3 border-t border-border/70 bg-background/30 p-5 md:px-8">{readOnlyFullAccess ? <><p className="text-xs text-muted-foreground">{isRoot ? "Root authority is secured by the system and cannot be changed." : "Only the root administrator can change this account's authority."}</p><button onClick={onClose} className="ml-auto h-11 rounded-xl bg-foreground px-6 text-sm font-semibold text-background transition hover:opacity-90">Close</button></> : <><p className="hidden text-xs text-muted-foreground sm:block">Changes apply immediately after saving.</p><div className="ml-auto flex gap-3"><button onClick={onClose} className="h-11 rounded-xl border border-border px-5 text-sm font-semibold text-foreground hover:bg-muted">Cancel</button><button onClick={save} disabled={saving} className="inline-flex h-11 items-center gap-2 rounded-xl bg-foreground px-5 text-sm font-semibold text-background transition hover:opacity-90 disabled:opacity-50">{saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />} Save access</button></div></>}</footer>
       </motion.aside>
     </motion.div>
   );
+}
+
+function FullAccessOverview({ root = false }) {
+  return <div className="flex-1 overflow-y-auto p-6 md:p-8">
+    <section className="relative overflow-hidden rounded-3xl border border-amber-500/20 bg-amber-500/[0.055] p-6">
+      <div className="pointer-events-none absolute -right-10 -top-12 h-40 w-40 rounded-full bg-amber-400/10 blur-3xl" />
+      <div className="relative flex items-start gap-4"><div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-500 text-white shadow-lg shadow-amber-500/20"><ShieldCheck className="h-6 w-6" /></div><div><span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-500"><CheckCircle2 className="h-3 w-3" /> Always enabled</span><h3 className="mt-3 text-xl font-bold tracking-tight text-foreground">You have complete system access</h3><p className="mt-2 max-w-lg text-sm leading-6 text-muted-foreground">{root ? "This is the protected root account." : "This account has super administrator authority."} Every dashboard area and administrative action is automatically available, so manual permission setup is not required.</p></div></div>
+    </section>
+    <div className="mt-7 flex items-end justify-between"><div><h3 className="text-sm font-bold text-foreground">Access coverage</h3><p className="mt-1 text-xs text-muted-foreground">All current and future administrative modules are included.</p></div><span className="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-500">Full access</span></div>
+    <div className="mt-4 grid gap-3 sm:grid-cols-2">{permissionModules.map((module) => <div key={module.id} className="flex items-center justify-between rounded-2xl border border-border/70 bg-background/35 p-4"><div><p className="text-sm font-bold text-foreground">{module.label}</p><p className="mt-0.5 text-xs text-muted-foreground">{module.description}</p></div><span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500"><Check className="h-4 w-4" /></span></div>)}</div>
+    <div className="mt-4 flex items-center gap-3 rounded-2xl border border-violet-500/15 bg-violet-500/[0.045] p-4"><Sparkles className="h-5 w-5 shrink-0 text-violet-500" /><p className="text-xs leading-5 text-muted-foreground"><span className="font-bold text-foreground">Automatic coverage:</span> any new dashboard capability will also be available to this account without additional configuration.</p></div>
+  </div>;
+}
+
+function AutomaticFullAccessNotice() {
+  return <section className="rounded-2xl border border-amber-500/20 bg-amber-500/[0.055] p-5"><div className="flex items-start gap-3"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-500"><Crown className="h-5 w-5" /></span><div><div className="flex flex-wrap items-center gap-2"><h3 className="text-sm font-bold text-foreground">Automatic full access</h3><span className="rounded-full bg-emerald-500/10 px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-emerald-500">All enabled</span></div><p className="mt-1.5 text-xs leading-5 text-muted-foreground">Super administrators receive every current and future permission automatically. Change the account role to Administrator or Team member if granular permissions are required.</p></div></div></section>;
 }
 
 export default function UserManagementPage() {
@@ -180,13 +204,13 @@ export default function UserManagementPage() {
         <div className="mb-4 flex items-end justify-between"><div><h2 className="text-lg font-bold text-foreground">Team directory</h2><p className="text-sm text-muted-foreground">Showing {filteredUsers.length} of {users.length} users</p></div></div>
         <AnimatePresence mode="popLayout">
           {!filteredUsers.length ? <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex min-h-80 flex-col items-center justify-center rounded-[2rem] border border-dashed border-border bg-card/40 px-6 text-center"><div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-muted text-muted-foreground"><AlertCircle className="h-7 w-7" /></div><h3 className="text-lg font-bold text-foreground">No users found</h3><p className="mt-1 text-sm text-muted-foreground">Try changing your search or account-status filter.</p></motion.div> : <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{filteredUsers.map((user, index) => {
-            const id = user._id || user.email; const meta = statusMeta[user.status] || statusMeta.pending; const StatusIcon = meta.Icon; const isRoot = user.role === "root-super-admin"; const highlighted = highlightId === user._id;
+            const id = user._id || user.email; const meta = statusMeta[user.status] || statusMeta.pending; const StatusIcon = meta.Icon; const isRoot = isRootAccount(user); const isProtectedSuper = user.role === "super-admin" && session?.role !== "root-super-admin"; const highlighted = highlightId === user._id;
             return <motion.article key={id} ref={(element) => { if (user._id) rowRefs.current[user._id] = element; }} layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: .98 }} transition={{ delay: Math.min(index * .025, .15) }} className={`group relative overflow-hidden rounded-[1.6rem] border bg-card p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg ${highlighted ? "border-violet-500 ring-4 ring-violet-500/10" : "border-border/70"}`}>
               <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-violet-500 via-blue-500 to-cyan-400 opacity-0 transition group-hover:opacity-100" />
               <div className="flex items-start justify-between gap-3"><div className="flex min-w-0 items-center gap-3"><UserAvatar user={user} /><div className="min-w-0"><h3 className="truncate text-base font-bold text-foreground">{user.name ? formatName(user.name) : "Unnamed user"}</h3><p className="truncate text-xs text-muted-foreground">{user.email}</p></div></div><span className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${meta.classes}`}><StatusIcon className="h-3 w-3" />{meta.label}</span></div>
               <div className="my-5 grid grid-cols-2 gap-3"><div className="rounded-xl bg-muted/45 p-3"><p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Role</p><p className="mt-1 truncate text-xs font-semibold text-foreground">{roleLabel(user.role)}</p></div><div className="rounded-xl bg-muted/45 p-3"><p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Joined</p><p className="mt-1 text-xs font-semibold text-foreground">{user.createdAt ? format(new Date(user.createdAt), "MMM d, yyyy") : "Not available"}</p></div></div>
               {user.createdAt && <div className="mb-4 flex items-center gap-2 text-xs text-muted-foreground"><CalendarDays className="h-3.5 w-3.5" /> Joined {formatDistanceToNow(new Date(user.createdAt), { addSuffix: true })}</div>}
-              <div className="flex items-center gap-2 border-t border-border/70 pt-4">{isRoot ? <div className="flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-amber-500/10 text-xs font-bold text-amber-500"><ShieldCheck className="h-4 w-4" /> Protected root account</div> : <>{user.status === "pending" && <><button onClick={() => handleAction(user.email, "approve")} className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-500 text-xs font-bold text-white transition hover:bg-emerald-600"><UserCheck className="h-4 w-4" /> Approve</button><button onClick={() => handleAction(user.email, "deny")} className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-3 text-xs font-bold text-red-500 hover:bg-red-500 hover:text-white"><UserX className="h-4 w-4" /> Deny</button></>}{user.status === "approved" && <button onClick={() => setSelectedUser(user)} className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-foreground text-xs font-bold text-background transition hover:opacity-90"><Settings2 className="h-4 w-4" /> Manage access <ChevronRight className="h-3.5 w-3.5" /></button>}{user.status !== "pending" && <button onClick={() => handleAction(user.email, user.status === "removed" ? "approve" : "remove")} className={`flex h-10 w-10 items-center justify-center rounded-xl border transition ${user.status === "removed" ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-500" : "border-border text-muted-foreground hover:border-red-500/20 hover:bg-red-500/10 hover:text-red-500"}`} title={user.status === "removed" ? "Restore user" : "Remove user"}>{user.status === "removed" ? <RefreshCw className="h-4 w-4" /> : <Trash2 className="h-4 w-4" />}</button>}</>}</div>
+              <div className="flex items-center gap-2 border-t border-border/70 pt-4">{isRoot || isProtectedSuper ? <button onClick={() => setSelectedUser(user)} className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl border border-amber-500/20 bg-amber-500/10 text-xs font-bold text-amber-500 transition hover:bg-amber-500/15"><Crown className="h-4 w-4" /> View full access <ChevronRight className="h-3.5 w-3.5" /></button> : <>{user.status === "pending" && <><button onClick={() => handleAction(user.email, "approve")} className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-500 text-xs font-bold text-white transition hover:bg-emerald-600"><UserCheck className="h-4 w-4" /> Approve</button><button onClick={() => handleAction(user.email, "deny")} className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-3 text-xs font-bold text-red-500 hover:bg-red-500 hover:text-white"><UserX className="h-4 w-4" /> Deny</button></>}{user.status === "approved" && <button onClick={() => setSelectedUser(user)} className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-foreground text-xs font-bold text-background transition hover:opacity-90"><Settings2 className="h-4 w-4" /> Manage access <ChevronRight className="h-3.5 w-3.5" /></button>}{user.status !== "pending" && <button onClick={() => handleAction(user.email, user.status === "removed" ? "approve" : "remove")} className={`flex h-10 w-10 items-center justify-center rounded-xl border transition ${user.status === "removed" ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-500" : "border-border text-muted-foreground hover:border-red-500/20 hover:bg-red-500/10 hover:text-red-500"}`} title={user.status === "removed" ? "Restore user" : "Remove user"}>{user.status === "removed" ? <RefreshCw className="h-4 w-4" /> : <Trash2 className="h-4 w-4" />}</button>}</>}</div>
             </motion.article>;
           })}</div>}
         </AnimatePresence>
