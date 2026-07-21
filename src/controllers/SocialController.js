@@ -5,6 +5,7 @@
 import { SocialLinks } from "@/models/Portfolio";
 import dbConnect from "@/lib/dbConnect";
 import { SOCIAL_LINKS } from "@/lib/data";
+import { normalizeSocialProfileUrl } from "@/lib/socialProfileUrl";
 
 const ALLOWED_PLATFORMS = [
     "whatsapp",
@@ -71,7 +72,7 @@ export const SocialController = {
                 .filter(link => ALLOWED_PLATFORMS.includes(link.platform.toLowerCase()))
                 .map(link => ({
                     platform: link.platform.toLowerCase(),
-                    url: link.url.trim(),
+                    url: normalizeSocialProfileUrl(link.platform, link.url),
                 }))
                 .filter(link => link.url !== "")
                 .slice(0, 6);

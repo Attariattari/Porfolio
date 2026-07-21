@@ -17,6 +17,7 @@ import {
   Globe,
 } from "lucide-react";
 import useAdminStore from "@/lib/store/adminStore";
+import { normalizeSocialProfileUrl } from "@/lib/socialProfileUrl";
 
 const WhatsAppIcon = (props) => (
     <svg
@@ -63,11 +64,24 @@ const ALLOWED_PLATFORMS = [
 ];
 
 // Validation schema
-const socialLinksSchema = z.object({
-  links: z.array(z.object({
+const socialLinkSchema = z.object({
     platform: z.enum(ALLOWED_PLATFORMS),
-    url: z.string().url("Invalid URL format").min(1, "URL is required"),
-  })).max(6, "Maximum 6 social links allowed"),
+    url: z.string().trim().min(1, "Username or URL is required"),
+  }).superRefine((link, context) => {
+    if (link.platform !== "whatsapp") return;
+
+    const parsedUrl = z.string().url().safeParse(link.url);
+    if (!parsedUrl.success) {
+      context.addIssue({
+        code: "custom",
+        path: ["url"],
+        message: "Enter the complete WhatsApp URL",
+      });
+    }
+  });
+
+const socialLinksSchema = z.object({
+  links: z.array(socialLinkSchema).max(6, "Maximum 6 social links allowed"),
 });
 
 const SectionHeader = ({ icon: Icon, title, desc }) => (
@@ -94,6 +108,7 @@ export default function SocialLinksForm() {
     handleSubmit,
     control,
     reset,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(socialLinksSchema),
@@ -142,10 +157,16 @@ export default function SocialLinksForm() {
   const onSubmit = async (data) => {
     setIsSaving(true);
     try {
+      const normalizedLinks = data.links.map((link) => ({
+        ...link,
+        url: normalizeSocialProfileUrl(link.platform, link.url),
+      }));
+
       // Save updated links
-      const res = await updateSocialLinks(data.links);
+      const res = await updateSocialLinks(normalizedLinks);
 
       if (res.success) {
+        reset({ links: normalizedLinks });
         toast.success("Social links synchronized with database!");
       } else {
         toast.error("Failed to save social links");
@@ -191,6 +212,8 @@ export default function SocialLinksForm() {
             {fields.map((field, index) => {
               const platformKey = currentLinks[index]?.platform || field.platform;
               const Icon = PLATFORM_ICONS[platformKey] || Globe;
+              const fieldName = `links.${index}.url`;
+              const fieldRegistration = register(fieldName);
 
               return (
                 <div
@@ -206,9 +229,25 @@ export default function SocialLinksForm() {
                       {PLATFORM_LABELS[platformKey]}
                     </label>
                     <input
-                      type="url"
-                      {...register(`links.${index}.url`)}
-                      placeholder={`Enter your ${PLATFORM_LABELS[platformKey]} URL`}
+                      type={platformKey === "whatsapp" ? "url" : "text"}
+                      inputMode={platformKey === "whatsapp" ? "url" : "text"}
+                      {...fieldRegistration}
+                      onBlur={(event) => {
+                        fieldRegistration.onBlur(event);
+                        const normalizedUrl = normalizeSocialProfileUrl(
+                          platformKey,
+                          event.target.value,
+                        );
+                        setValue(fieldName, normalizedUrl, {
+                          shouldDirty: true,
+                          shouldValidate: true,
+                        });
+                      }}
+                      placeholder={
+                        platformKey === "whatsapp"
+                          ? "Enter complete WhatsApp URL"
+                          : `Enter ${PLATFORM_LABELS[platformKey]} username or URL`
+                      }
                       className="w-full bg-transparent border-none p-0 text-sm font-medium focus:ring-0 placeholder:text-muted-foreground/20 text-foreground"
                     />
                   </div>
