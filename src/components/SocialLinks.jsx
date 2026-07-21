@@ -7,6 +7,7 @@ import {
   Linkedin,
   Github,
   Facebook,
+  Instagram,
   Twitter as XIcon,
   Globe,
 } from "lucide-react";
@@ -33,6 +34,7 @@ const PLATFORM_CONFIG = {
   github: { icon: Github, color: "#ffffff", name: "GitHub" },
   twitter: { icon: XIcon, color: "#ffffff", name: "X (Twitter)" },
   facebook: { icon: Facebook, color: "#1877F2", name: "Facebook" },
+  instagram: { icon: Instagram, color: "#E4405F", name: "Instagram" },
   whatsapp: { icon: WhatsAppIcon, color: "#25D366", name: "WhatsApp" },
 };
 
@@ -86,7 +88,7 @@ export default function SocialLinks({
 
   return (
     <div className={className}>
-      {displayLinks.slice(0, 5).map((social, i) => {
+      {displayLinks.slice(0, 6).map((social, i) => {
         const platform = social.platform.toLowerCase();
         const config = PLATFORM_CONFIG[platform] || {
           icon: Globe,

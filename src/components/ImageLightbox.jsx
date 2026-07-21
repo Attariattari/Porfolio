@@ -27,6 +27,8 @@ const imageSlideTransition = {
   scale: { type: "spring", stiffness: 220, damping: 25 },
 };
 
+const centeredZoomOrigin = { x: 50, y: 50 };
+
 export const ImageLightbox = ({
   isOpen,
   onClose,
@@ -37,6 +39,7 @@ export const ImageLightbox = ({
 }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [zoom, setZoom] = useState(1);
+  const [zoomOrigin, setZoomOrigin] = useState(centeredZoomOrigin);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [slideDirection, setSlideDirection] = useState(0);
   const mainImageDragRef = useRef({ moved: false });
@@ -59,6 +62,7 @@ export const ImageLightbox = ({
     const resetFrame = window.requestAnimationFrame(() => {
       setCurrentIndex(initialIndex);
       setZoom(1);
+      setZoomOrigin(centeredZoomOrigin);
       setSlideDirection(0);
     });
 
@@ -85,6 +89,7 @@ export const ImageLightbox = ({
         setSlideDirection(1);
         setCurrentIndex((previous) => (previous + 1) % safeImages.length);
         setZoom(1);
+        setZoomOrigin(centeredZoomOrigin);
       }
       if (event.key === "ArrowLeft") {
         setSlideDirection(-1);
@@ -93,6 +98,7 @@ export const ImageLightbox = ({
             (previous - 1 + safeImages.length) % safeImages.length,
         );
         setZoom(1);
+        setZoomOrigin(centeredZoomOrigin);
       }
     };
 
@@ -195,6 +201,7 @@ export const ImageLightbox = ({
 
   const handleClose = () => {
     setZoom(1);
+    setZoomOrigin(centeredZoomOrigin);
     onClose();
   };
 
@@ -203,6 +210,7 @@ export const ImageLightbox = ({
     setSlideDirection(1);
     setCurrentIndex((prev) => (prev + 1) % safeImages.length);
     setZoom(1);
+    setZoomOrigin(centeredZoomOrigin);
   };
 
   const handlePrev = (e) => {
@@ -210,6 +218,7 @@ export const ImageLightbox = ({
     setSlideDirection(-1);
     setCurrentIndex((prev) => (prev - 1 + safeImages.length) % safeImages.length);
     setZoom(1);
+    setZoomOrigin(centeredZoomOrigin);
   };
 
   const handleImageClick = (e) => {
@@ -217,7 +226,16 @@ export const ImageLightbox = ({
     if (mainImageDragRef.current.moved) return;
     if (zoom > 1) {
       setZoom(1);
+      setZoomOrigin(centeredZoomOrigin);
     } else {
+      const imageBounds = e.currentTarget.getBoundingClientRect();
+      const x = ((e.clientX - imageBounds.left) / imageBounds.width) * 100;
+      const y = ((e.clientY - imageBounds.top) / imageBounds.height) * 100;
+
+      setZoomOrigin({
+        x: Math.min(100, Math.max(0, x)),
+        y: Math.min(100, Math.max(0, y)),
+      });
       setZoom(2.5);
     }
   };
@@ -248,7 +266,9 @@ export const ImageLightbox = ({
     e?.stopPropagation();
     if (zoom > 1) {
       setZoom(1);
+      setZoomOrigin(centeredZoomOrigin);
     } else {
+      setZoomOrigin(centeredZoomOrigin);
       setZoom(2.5);
     }
   };
@@ -351,6 +371,9 @@ export const ImageLightbox = ({
                 animate={{ opacity: 1, x: 0, scale: zoom }}
                 exit="exit"
                 transition={imageSlideTransition}
+                style={{
+                  transformOrigin: `${zoomOrigin.x}% ${zoomOrigin.y}%`,
+                }}
                 draggable={false}
                 className={`absolute max-h-full max-w-full select-none rounded-sm object-contain shadow-2xl ${
                   zoom > 1
@@ -410,6 +433,7 @@ export const ImageLightbox = ({
                   setSlideDirection(i === currentIndex ? 0 : i > currentIndex ? 1 : -1);
                   setCurrentIndex(i);
                   setZoom(1);
+                  setZoomOrigin(centeredZoomOrigin);
                 }}
                 aria-label={`View image ${i + 1}: ${imageAlts[i]}`}
                 aria-pressed={i === currentIndex}

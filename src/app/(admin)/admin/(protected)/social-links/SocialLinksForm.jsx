@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -10,6 +10,7 @@ import {
   Linkedin,
   Github,
   Facebook,
+  Instagram,
   Twitter as XIcon,
   Plus,
   Trash2,
@@ -40,6 +41,7 @@ const PLATFORM_ICONS = {
   github: Github,
   twitter: XIcon,
   facebook: Facebook,
+  instagram: Instagram,
 };
 
 const PLATFORM_LABELS = {
@@ -48,16 +50,24 @@ const PLATFORM_LABELS = {
   github: "GitHub",
   twitter: "X (Twitter)",
   facebook: "Facebook",
+  instagram: "Instagram",
 };
 
-const ALLOWED_PLATFORMS = ["whatsapp", "linkedin", "twitter", "facebook", "github"];
+const ALLOWED_PLATFORMS = [
+  "whatsapp",
+  "linkedin",
+  "twitter",
+  "facebook",
+  "github",
+  "instagram",
+];
 
 // Validation schema
 const socialLinksSchema = z.object({
   links: z.array(z.object({
     platform: z.enum(ALLOWED_PLATFORMS),
     url: z.string().url("Invalid URL format").min(1, "URL is required"),
-  })).max(5, "Maximum 5 social links allowed"),
+  })).max(6, "Maximum 6 social links allowed"),
 });
 
 const SectionHeader = ({ icon: Icon, title, desc }) => (
@@ -77,14 +87,13 @@ const SectionHeader = ({ icon: Icon, title, desc }) => (
 export default function SocialLinksForm() {
   const { socialLinks, updateSocialLinks, fetchSocialLinks } = useAdminStore();
   const [isSaving, setIsSaving] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const isLoaded = socialLinks !== null && socialLinks !== undefined;
 
   const {
     register,
     handleSubmit,
     control,
     reset,
-    watch,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(socialLinksSchema),
@@ -127,7 +136,6 @@ export default function SocialLinksForm() {
         if (linksArray.length > 0) {
             reset({ links: linksArray });
         }
-        setIsLoaded(true);
     }
   }, [socialLinks, reset]);
 
@@ -150,7 +158,7 @@ export default function SocialLinksForm() {
     }
   };
 
-  const currentLinks = watch("links") || [];
+  const currentLinks = useWatch({ control, name: "links" }) || [];
   const availablePlatforms = ALLOWED_PLATFORMS.filter(
     p => !currentLinks.some(link => link.platform === p)
   );
@@ -181,7 +189,7 @@ export default function SocialLinksForm() {
 
           <div className="space-y-4 relative z-10">
             {fields.map((field, index) => {
-              const platformKey = watch(`links.${index}.platform`);
+              const platformKey = currentLinks[index]?.platform || field.platform;
               const Icon = PLATFORM_ICONS[platformKey] || Globe;
 
               return (
@@ -222,7 +230,7 @@ export default function SocialLinksForm() {
               </div>
             )}
 
-            {fields.length < 5 && availablePlatforms.length > 0 && (
+            {fields.length < 6 && availablePlatforms.length > 0 && (
               <div className="pt-6">
                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 mb-4 px-2">Add New Platform</p>
                 <div className="flex flex-wrap gap-2">

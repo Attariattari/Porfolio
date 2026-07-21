@@ -23,6 +23,11 @@ const googleAnalyticsId = /^G-[A-Z0-9]+$/.test(configuredGoogleAnalyticsId)
   ? configuredGoogleAnalyticsId
   : "";
 
+export const viewport = {
+  themeColor: "#000000",
+  colorScheme: "light dark",
+};
+
 export const metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
@@ -32,11 +37,8 @@ export const metadata = {
   description:
     "Muhyo Tech builds modern websites, full-stack web apps, admin dashboards, and scalable Next.js & MERN solutions for businesses in Lahore and beyond.",
   icons: {
-    icon: [
-      { url: "/favicon.ico", type: "image/x-icon", sizes: "any" },
-      { url: "/logo.png", type: "image/png", sizes: "640x640" },
-    ],
-    shortcut: "/favicon.ico",
+    icon: [{ url: "/logo.png", type: "image/png", sizes: "640x640" }],
+    shortcut: [{ url: "/logo.png", type: "image/png" }],
     apple: [{ url: "/logo.png", type: "image/png", sizes: "640x640" }],
   },
   openGraph: {
@@ -62,8 +64,14 @@ export default function RootLayout({ children }) {
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <head>
         <OrganizationSchema />
+        <link rel="dns-prefetch" href="//res.cloudinary.com" />
         {googleAnalyticsId && (
           <>
+            <link
+              rel="preconnect"
+              href="https://www.googletagmanager.com"
+              crossOrigin="anonymous"
+            />
             <script
               async
               src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}

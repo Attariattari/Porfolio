@@ -6,7 +6,14 @@ import { SocialLinks } from "@/models/Portfolio";
 import dbConnect from "@/lib/dbConnect";
 import { SOCIAL_LINKS } from "@/lib/data";
 
-const ALLOWED_PLATFORMS = ["whatsapp", "linkedin", "twitter", "facebook", "github"];
+const ALLOWED_PLATFORMS = [
+    "whatsapp",
+    "linkedin",
+    "twitter",
+    "facebook",
+    "github",
+    "instagram",
+];
 
 export const SocialController = {
     // ===== GET SOCIAL LINKS =====
@@ -67,7 +74,7 @@ export const SocialController = {
                     url: link.url.trim(),
                 }))
                 .filter(link => link.url !== "")
-                .slice(0, 5);
+                .slice(0, 6);
 
             const doc = await SocialLinks.findOneAndUpdate(
                 {},

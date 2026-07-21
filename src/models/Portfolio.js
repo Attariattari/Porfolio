@@ -347,7 +347,7 @@ const SocialLinksSchema = new mongoose.Schema({
         platform: {
             type: String,
             required: true,
-            enum: ["linkedin", "github", "twitter", "facebook", "whatsapp"],
+            enum: ["linkedin", "github", "twitter", "facebook", "whatsapp", "instagram"],
         },
         url: { type: String, required: true },
     }, ],

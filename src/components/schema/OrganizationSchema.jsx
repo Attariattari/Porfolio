@@ -58,6 +58,7 @@ export async function OrganizationSchema() {
           name: config.siteTitle || "Muhyo Tech",
           alternateName: "Muhyo Tech",
           url: SITE_URL,
+          email: "MuhyoTech@gmail.com",
           logo: getSeoImage("/logo.png"),
           image: getSeoImage("/home-preview.png"),
           description:
@@ -99,6 +100,7 @@ export async function OrganizationSchema() {
           image: getSeoImage("/home-preview.png"),
           logo: getSeoImage("/logo.png"),
           telephone: "+92-322-4458481",
+          email: "MuhyoTech@gmail.com",
           location: "Lahore, Punjab, Pakistan",
           address,
           areaServed: ["Lahore", "Pakistan"],
@@ -158,6 +160,7 @@ export async function OrganizationSchema() {
           "@id": `${SITE_URL}/#organization`,
           name: "Muhyo Tech",
           url: SITE_URL,
+          email: "MuhyoTech@gmail.com",
           logo: getSeoImage("/logo.png"),
           telephone: "+92 322 4458481",
           address: {
@@ -184,6 +187,7 @@ export async function OrganizationSchema() {
           logo: getSeoImage("/logo.png"),
           image: getSeoImage("/home-preview.png"),
           telephone: "+92 322 4458481",
+          email: "MuhyoTech@gmail.com",
           address: {
             "@type": "PostalAddress",
             streetAddress: "Chota, Mohlanwal Road, Badu Pura Chung",

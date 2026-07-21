@@ -230,17 +230,17 @@ export default function Footer({ data }) {
                 </h4>
                 <ul className="space-y-3">
                   <li>
-                    <Link
-                      href="/contact#contact-form"
+                    <a
+                      href="mailto:MuhyoTech@gmail.com"
                       className="group flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-accent"
-                      aria-label="Contact form"
+                      aria-label="Email Muhyo Tech"
                     >
-                      Contact form
+                      MuhyoTech@gmail.com
                       <ExternalLink
                         size={12}
                         className="ml-1 opacity-50 transition-opacity group-hover:opacity-100"
                       />
-                    </Link>
+                    </a>
                   </li>
                   <li>
                     <Link
@@ -264,7 +264,8 @@ export default function Footer({ data }) {
                   </li>
                   <li>
                     <address className="mb-0 text-sm font-medium not-italic leading-relaxed text-muted-foreground">
-                      Business Address: Lahore, Punjab, Pakistan
+                      Chota, Mohlanwal Road, Badu Pura Chung, Lahore 53720,
+                      Pakistan
                     </address>
                   </li>
                   <li>
@@ -329,7 +330,7 @@ export default function Footer({ data }) {
             </p>
             <div className="hidden md:block w-[1px] h-4 bg-border/60" />
             <address className="mb-0 text-[11px] font-medium not-italic text-muted-foreground">
-              Business Address: Lahore, Punjab, Pakistan
+              Chota, Mohlanwal Road, Badu Pura Chung, Lahore 53720, Pakistan
             </address>
           </div>
 

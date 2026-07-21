@@ -4,6 +4,7 @@ import { portfolioData } from "@/lib/data";
 import { ResumeController } from "@/controllers/ResumeController";
 import { serializeDoc } from "@/lib/mongooseHelper";
 import { buildCanonical, getSeoImage } from "@/lib/seo";
+import BreadcrumbSchema from "@/components/seo/BreadcrumbSchema";
 
 export const metadata = {
   title: { absolute: "Resume | Pir Ghulam Muhyo Din - Muhyo Tech" },
@@ -94,5 +95,15 @@ export default async function ResumePage() {
     console.error("Resume fetch error:", error);
   }
 
-  return <ResumeClient resumeData={resumeData} />;
+  return (
+    <>
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: buildCanonical("/") },
+          { name: "Resume", url: buildCanonical("/resume") },
+        ]}
+      />
+      <ResumeClient resumeData={resumeData} />
+    </>
+  );
 }

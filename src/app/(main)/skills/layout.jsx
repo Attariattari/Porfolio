@@ -1,4 +1,5 @@
 import { buildCanonical, getSeoImage } from "@/lib/seo";
+import BreadcrumbSchema from "@/components/seo/BreadcrumbSchema";
 
 export const metadata = {
   title: "Skills & Technology Expertise",
@@ -30,5 +31,15 @@ export const metadata = {
 };
 
 export default function Layout({ children }) {
-  return children;
+  return (
+    <>
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: buildCanonical("/") },
+          { name: "Skills", url: buildCanonical("/skills") },
+        ]}
+      />
+      {children}
+    </>
+  );
 }

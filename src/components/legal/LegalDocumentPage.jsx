@@ -121,25 +121,47 @@ function SectionNavigator({ sections, documentType }) {
 export default function LegalDocumentPage({ document }) {
   const alternateHref = document.type === "Privacy Policy" ? "/terms" : "/privacy";
   const alternateLabel = document.type === "Privacy Policy" ? "Terms of Service" : "Privacy Policy";
+  const documentUrl = `https://www.muhyotech.com/${document.slug}`;
   const structuredData = {
     "@context": "https://schema.org",
-    "@type": "WebPage",
-    name: `${document.type} | Muhyo Tech`,
-    description: document.description,
-    url: `https://www.muhyotech.com/${document.slug}`,
-    datePublished: "2026-07-14",
-    dateModified: "2026-07-14",
-    inLanguage: "en",
-    isPartOf: {
-      "@type": "WebSite",
-      name: "Muhyo Tech",
-      url: "https://www.muhyotech.com",
-    },
-    publisher: {
-      "@type": "Organization",
-      name: "Muhyo Tech",
-      url: "https://www.muhyotech.com",
-    },
+    "@graph": [
+      {
+        "@type": "WebPage",
+        name: `${document.type} | Muhyo Tech`,
+        description: document.description,
+        url: documentUrl,
+        datePublished: "2026-07-14",
+        dateModified: "2026-07-14",
+        inLanguage: "en",
+        isPartOf: {
+          "@type": "WebSite",
+          name: "Muhyo Tech",
+          url: "https://www.muhyotech.com",
+        },
+        publisher: {
+          "@type": "Organization",
+          name: "Muhyo Tech",
+          url: "https://www.muhyotech.com",
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: "https://www.muhyotech.com",
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: document.type,
+            item: documentUrl,
+          },
+        ],
+      },
+    ],
   };
 
   return (

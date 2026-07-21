@@ -7,6 +7,11 @@ const THEME_CACHE_KEY = "muhyo_global_theme";
 const THEME_PREFERENCE_KEY = "muhyo_theme_preference";
 const THEME_EVENT = "muhyo:theme-change";
 const THEME_CHANNEL = "muhyo-global-theme";
+const THEME_COLORS = {
+  light: "#f8fafc",
+  dark: "#020617",
+  black: "#000000",
+};
 
 const normalizeTheme = (value) => (VALID_THEMES.includes(value) ? value : "black");
 
@@ -24,6 +29,11 @@ const applyThemeToRoot = (value) => {
 
     root.dataset.theme = theme;
     root.style.colorScheme = theme === "light" ? "light" : "dark";
+
+    const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+    if (themeColorMeta) {
+      themeColorMeta.setAttribute("content", THEME_COLORS[theme]);
+    }
 
     window.requestAnimationFrame(() => {
       window.requestAnimationFrame(() => root.classList.remove("theme-switching"));

@@ -263,7 +263,7 @@ export const aboutData = {
     availability: {
         title: "Ready to discuss your project?",
         description: "Share your website, web app, dashboard, or business idea and I will help you shape the right digital solution.",
-        email: "Use contact form",
+        email: "MuhyoTech@gmail.com",
         phone: "+92 322 4458481",
         location: "Chota, Mohlanwal Road, Badu Pura Chung, Lahore, 53720, Pakistan",
         workingHours: "Mon - Sat: 9:00 AM - 6:00 PM",
@@ -638,8 +638,8 @@ export const portfolioData = {
     contactInfo: [{
         icon: "Mail",
         label: "Email Us",
-        value: "Use contact form",
-        href: "#contact-form",
+        value: "MuhyoTech@gmail.com",
+        href: "mailto:MuhyoTech@gmail.com",
         color: "from-accent/80 to-accent",
     },
     {
@@ -1349,8 +1349,8 @@ export const portfolioData = {
         contactInfo: [{
             icon: "Mail",
             label: "Email",
-            value: "Use contact form",
-            link: "/contact#contact-form",
+            value: "MuhyoTech@gmail.com",
+            link: "mailto:MuhyoTech@gmail.com",
         },
         {
             icon: "Phone",
@@ -1377,7 +1377,7 @@ export const portfolioData = {
         about: "I am a results-driven developer and project strategist with a unique background that blends sales management, team leadership, and full-stack engineering. After starting my career in sales—where I learned how to build relationships and lead teams—I transitioned into web development to bring ideas to life through code. I specialize in building smooth digital systems that help businesses grow and run efficiently. My goal is always to create tools that are not only powerful but also easy and helpful for people to use.",
         contact: [
             { icon: "Phone", text: "+92-322-4458481" },
-            { icon: "Mail", text: "Use contact form" },
+            { icon: "Mail", text: "MuhyoTech@gmail.com" },
             { icon: "MapPin", text: "Chota, Mohlanwal Road, Badu Pura Chung, Lahore, 53720, Pakistan" },
         ],
         stats: [{
