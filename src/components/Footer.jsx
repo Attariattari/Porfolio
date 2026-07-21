@@ -19,7 +19,7 @@ import SocialLinks from "./SocialLinks";
 
 import { portfolioData } from "@/lib/data";
 
-export default function Footer({ data }) {
+export default function Footer({ data, socials = [] }) {
   const pathname = usePathname();
   const footerData = portfolioData.siteConfig.footer;
   const about = data || portfolioData.about;
@@ -170,6 +170,7 @@ export default function Footer({ data }) {
                   </span>
                 </div>
                 <SocialLinks
+                  socials={socials}
                   className="flex items-center gap-2"
                   buttonClassName="w-9 h-9 rounded-full border border-border/60 bg-muted/15 flex items-center justify-center transition-all duration-300"
                   iconSize="w-4 h-4"

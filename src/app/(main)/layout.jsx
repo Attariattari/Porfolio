@@ -7,6 +7,7 @@ import DeferredWhatsAppButton from "@/components/DeferredWhatsAppButton";
 import ScrollProgress from "@/components/ScrollProgress";
 import DeferredNavigationWatcher from "@/components/DeferredNavigationWatcher";
 import { AboutController } from "@/controllers/AboutController";
+import { SocialController } from "@/controllers/SocialController";
 import { portfolioData } from "@/lib/data";
 import { serializeDoc } from "@/lib/mongooseHelper";
 import { SITE_URL } from "@/lib/config";
@@ -74,9 +75,13 @@ export const metadata = {
 
 export default async function MainLayout({ children }) {
   // Global Hybrid Sync - IMPORTANT: Serialize Mongoose docs to plain objects
-  const dbAbout = await AboutController.get().catch(() => null);
+  const [dbAbout, dbSocials] = await Promise.all([
+    AboutController.get().catch(() => null),
+    SocialController.get().catch(() => []),
+  ]);
   const serializedAbout = dbAbout ? serializeDoc(dbAbout) : null;
   const globalAbout = serializedAbout || portfolioData.about;
+  const globalSocials = serializeDoc(dbSocials) || [];
 
   return (
     <div
@@ -96,7 +101,7 @@ export default async function MainLayout({ children }) {
           Skip to content
         </a>
         <main id="main-content" className="grow">{children}</main>
-        <Footer data={globalAbout} />
+        <Footer data={globalAbout} socials={globalSocials} />
       </div>
     </div>
   );
