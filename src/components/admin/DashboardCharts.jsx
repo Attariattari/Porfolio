@@ -48,10 +48,12 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 export const BookingTrendChart = ({ data }) => {
+  const chartData = Array.isArray(data) ? data : [];
+
   return (
     <div className="h-[300px] w-full">
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={data}>
+        <AreaChart data={chartData}>
           <defs>
             <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="var(--chart-1)" stopOpacity={0.3}/>
@@ -66,7 +68,8 @@ export const BookingTrendChart = ({ data }) => {
             tickLine={false}
             axisLine={false}
             tickFormatter={(str) => {
-              const date = new Date(str);
+              const [year, month, day] = str.split('-').map(Number);
+              const date = new Date(year, month - 1, day);
               return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
             }}
           />

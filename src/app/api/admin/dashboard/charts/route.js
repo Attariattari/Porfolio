@@ -16,19 +16,45 @@ export async function GET(req) {
         await dbConnect();
 
         // 1. Booking Trend (Last 30 days)
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        const today = new Date();
+        const thirtyDaysAgo = new Date(Date.UTC(
+            today.getUTCFullYear(),
+            today.getUTCMonth(),
+            today.getUTCDate() - 29
+        ));
 
         const bookingTrend = await Booking.aggregate([
             { $match: { createdAt: { $gte: thirtyDaysAgo } } },
             {
                 $group: {
-                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+                    _id: {
+                        $dateToString: {
+                            format: "%Y-%m-%d",
+                            date: "$createdAt",
+                            timezone: "UTC"
+                        }
+                    },
                     count: { $sum: 1 }
                 }
             },
             { $sort: { "_id": 1 } }
         ]);
+
+        // Mongo only returns dates that contain bookings. Fill the missing days so
+        // the chart always represents the complete rolling 30-day window.
+        const bookingsByDate = new Map(
+            bookingTrend.map(({ _id, count }) => [_id, count])
+        );
+        const completeBookingTrend = Array.from({ length: 30 }, (_, index) => {
+            const date = new Date(thirtyDaysAgo);
+            date.setUTCDate(date.getUTCDate() + index);
+            const dateKey = date.toISOString().slice(0, 10);
+
+            return {
+                _id: dateKey,
+                count: bookingsByDate.get(dateKey) || 0
+            };
+        });
 
         // 2. Service Distribution
         const serviceDistribution = await Booking.aggregate([
@@ -67,7 +93,7 @@ export async function GET(req) {
         return NextResponse.json({
             success: true,
             data: {
-                bookingTrend,
+                bookingTrend: completeBookingTrend,
                 serviceDistribution,
                 activityStats: {
                     blogs: blogStats,
