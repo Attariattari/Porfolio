@@ -46,7 +46,6 @@ export async function GET(req) {
       uniqueVisitors,
       currentVerifiedVisitors,
       previousVerifiedVisitors,
-      earliestVerifiedTracking,
       sessionQuality,
       averageSessionDuration,
     ] = await Promise.all([
@@ -108,20 +107,19 @@ export async function GET(req) {
         { $count: "count" },
       ]),
       VisitorLog.aggregate([
-        { $match: { createdAt: currentRange, trackingVersion: 2 } },
+        { $match: { createdAt: currentRange } },
         addAnalyticsIdentityStage(),
         validVisitorIdentityStage(),
         { $group: { _id: "$analyticsVisitorId" } },
         { $count: "count" },
       ]),
       VisitorLog.aggregate([
-        { $match: { createdAt: previousRange, trackingVersion: 2 } },
+        { $match: { createdAt: previousRange } },
         addAnalyticsIdentityStage(),
         validVisitorIdentityStage(),
         { $group: { _id: "$analyticsVisitorId" } },
         { $count: "count" },
       ]),
-      VisitorLog.findOne({ trackingVersion: 2 }).sort({ createdAt: 1 }).select("createdAt").lean(),
       VisitorLog.aggregate([
         {
           $match: {
@@ -180,13 +178,7 @@ export async function GET(req) {
       ? Number(((quality.bouncedSessions / quality.totalSessions) * 100).toFixed(1))
       : null;
     const avgSessionDuration = averageSessionDuration[0]?.average;
-    const hasCompleteGrowthBaseline = Boolean(
-      earliestVerifiedTracking?.createdAt &&
-      new Date(earliestVerifiedTracking.createdAt) <= previousStartDate,
-    );
-    const growthRate = hasCompleteGrowthBaseline
-      ? calculateGrowthRate(currentVerifiedCount, previousVerifiedCount)
-      : null;
+    const growthRate = calculateGrowthRate(currentVerifiedCount, previousVerifiedCount);
 
     return NextResponse.json({
       success: true,
@@ -203,8 +195,10 @@ export async function GET(req) {
           verifiedVisitors: currentVerifiedCount,
           previousVerifiedVisitors: previousVerifiedCount,
           growthRate,
-          growthAvailable: growthRate !== null,
-          growthStatus: growthRate === null ? "Collecting verified baseline" : "Verified",
+          growthAvailable: true,
+          growthStatus: previousVerifiedCount === 0 && currentVerifiedCount > 0
+            ? "First active period"
+            : "Live comparison",
           periodDays,
         },
         trend: dailyTrend,

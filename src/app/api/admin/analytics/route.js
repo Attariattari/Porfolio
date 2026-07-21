@@ -6,6 +6,7 @@ import {
   ANALYTICS_TIMEZONE,
   addAnalyticsIdentityStage,
   calculateGrowthRate,
+  getCalendarMonthRange,
   getUniqueCount,
   validVisitorIdentityStage,
 } from "@/lib/analytics/visitorAnalytics";
@@ -55,8 +56,17 @@ export async function GET() {
 
     const now = new Date();
     const last24Hours = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    const currentMonthParts = new Intl.DateTimeFormat("en-US", {
+      timeZone: ANALYTICS_TIMEZONE,
+      year: "numeric",
+      month: "2-digit",
+    }).formatToParts(now);
+    const currentMonthValues = Object.fromEntries(
+      currentMonthParts.map(({ type, value }) => [type, value]),
+    );
+    const currentMonthKey = `${currentMonthValues.year}-${currentMonthValues.month}`;
+    const monthRange = getCalendarMonthRange(currentMonthKey, ANALYTICS_TIMEZONE);
     const last30Days = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-    const previous30Days = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
 
     const [
       totalPageViews,
@@ -64,7 +74,6 @@ export async function GET() {
       last24VisitorsData,
       currentPeriodVisitorsData,
       previousPeriodVisitorsData,
-      earliestVerifiedTracking,
       pageViewsData,
       monthlyTrendData,
     ] = await Promise.all([
@@ -72,14 +81,11 @@ export async function GET() {
       VisitorLog.aggregate(uniqueVisitorsPipeline()),
       VisitorLog.aggregate(uniqueVisitorsPipeline({ createdAt: { $gte: last24Hours, $lte: now } })),
       VisitorLog.aggregate(uniqueVisitorsPipeline({
-        createdAt: { $gte: last30Days, $lte: now },
-        trackingVersion: 2,
+        createdAt: { $gte: monthRange.startDate, $lt: monthRange.endDate },
       })),
       VisitorLog.aggregate(uniqueVisitorsPipeline({
-        createdAt: { $gte: previous30Days, $lt: last30Days },
-        trackingVersion: 2,
+        createdAt: { $gte: monthRange.previousStartDate, $lt: monthRange.startDate },
       })),
-      VisitorLog.findOne({ trackingVersion: 2 }).sort({ createdAt: 1 }).select("createdAt").lean(),
       VisitorLog.aggregate([
         { $match: { page: { $type: "string", $ne: "" } } },
         { $group: { _id: "$page", count: { $sum: 1 } } },
@@ -117,13 +123,7 @@ export async function GET() {
     const last24Visitors = getUniqueCount(last24VisitorsData);
     const currentPeriodVisitors = getUniqueCount(currentPeriodVisitorsData);
     const previousPeriodVisitors = getUniqueCount(previousPeriodVisitorsData);
-    const hasCompleteGrowthBaseline = Boolean(
-      earliestVerifiedTracking?.createdAt &&
-      new Date(earliestVerifiedTracking.createdAt) <= previous30Days,
-    );
-    const growthRate = hasCompleteGrowthBaseline
-      ? calculateGrowthRate(currentPeriodVisitors, previousPeriodVisitors)
-      : null;
+    const growthRate = calculateGrowthRate(currentPeriodVisitors, previousPeriodVisitors);
     const trendByDate = new Map(monthlyTrendData.map((item) => [item._id, item]));
     const completeMonthlyTrend = getCalendarDateKeys(now, 30, ANALYTICS_TIMEZONE)
       .map((dateKey) => ({
@@ -144,9 +144,14 @@ export async function GET() {
         monthlyVisitors: currentPeriodVisitors,
         previousPeriodVisitors,
         growthRate,
-        growthAvailable: growthRate !== null,
-        growthStatus: growthRate === null ? "Collecting verified baseline" : "Verified",
-        growthPeriodDays: 30,
+        growthAvailable: true,
+        growthStatus: previousPeriodVisitors === 0 && currentPeriodVisitors > 0
+          ? "First active month"
+          : "Live monthly comparison",
+        growthPeriod: "month",
+        currentMonthVisitors: currentPeriodVisitors,
+        previousMonthVisitors: previousPeriodVisitors,
+        currentMonth: currentMonthKey,
         pageViews: pageViewsData,
         monthlyTrend: completeMonthlyTrend,
         timezone: ANALYTICS_TIMEZONE,

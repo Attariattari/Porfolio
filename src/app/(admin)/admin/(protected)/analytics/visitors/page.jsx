@@ -9,6 +9,7 @@ import {
   ArrowLeft,
   Users,
   TrendingUp,
+  TrendingDown,
   Activity,
   Zap,
   Globe,
@@ -32,6 +33,7 @@ async function fetchAnalyticsData(url) {
 
 import {
   EnhancedVisitorChart,
+  MonthlyGrowthComparisonChart,
   HourlyBreakdownChart,
   DeviceDistributionChart,
   TopPagesChart,
@@ -49,6 +51,7 @@ import {
 export default function VisitorAnalyticsPage() {
   const [period, setPeriod] = useState(30);
   const [view, setView] = useState('daily');
+  const [selectedMonth, setSelectedMonth] = useState(() => new Date().toISOString().slice(0, 7));
   const queryClient = useQueryClient();
 
   // Socket initialization for real-time updates
@@ -62,9 +65,12 @@ export default function VisitorAnalyticsPage() {
         queryClient.invalidateQueries({ queryKey: ['analytics-pages'] });
         queryClient.invalidateQueries({ queryKey: ['analytics-geo'] });
         queryClient.invalidateQueries({ queryKey: ['analytics-active'] });
+        queryClient.invalidateQueries({ queryKey: ['analytics-monthly-growth'] });
       });
 
       socket.on('new_visitor', (data) => {
+        queryClient.invalidateQueries({ queryKey: ['analytics-visitors'] });
+        queryClient.invalidateQueries({ queryKey: ['analytics-monthly-growth'] });
         const visitType = data.isFirstVisit ? 'New visitor' : 'Returning visitor';
         toast.info(`${visitType} from ${data.country} on ${data.page}`, {
           icon: <Activity className="w-4 h-4 text-emerald-400" />,
@@ -108,6 +114,23 @@ export default function VisitorAnalyticsPage() {
     queryFn: () => fetchAnalyticsData('/api/admin/analytics/active'),
     refetchInterval: 5000,
   });
+
+  const { data: monthlyGrowth, isLoading: monthlyGrowthLoading } = useQuery({
+    queryKey: ['analytics-monthly-growth', selectedMonth],
+    queryFn: () => fetchAnalyticsData(`/api/admin/analytics/monthly-growth?month=${selectedMonth}`),
+    refetchInterval: 5000,
+    refetchIntervalInBackground: true,
+  });
+
+  const monthOptions = useMemo(() => Array.from({ length: 24 }, (_, index) => {
+    const date = new Date();
+    date.setDate(1);
+    date.setMonth(date.getMonth() - index);
+    return {
+      value: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`,
+      label: date.toLocaleDateString(undefined, { month: 'long', year: 'numeric' }),
+    };
+  }), []);
 
   // Memoized stats
   const formatDuration = (seconds) => {
@@ -249,6 +272,74 @@ export default function VisitorAnalyticsPage() {
         {stats.map((stat, i) => (
           <MetricCard key={stat.label} {...stat} />
         ))}
+      </div>
+
+      {/* Calendar Month Growth Comparison */}
+      <div className="border border-border/70 bg-card/40 rounded-[2.5rem] p-8 md:p-10 overflow-hidden relative">
+        <div className={`absolute inset-x-0 top-0 h-1 ${monthlyGrowth?.growthRate < 0 ? 'bg-red-500' : 'bg-emerald-500'}`} />
+        <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6 mb-8">
+          <div>
+            <h2 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-3">
+              {monthlyGrowth?.growthRate < 0
+                ? <TrendingDown className="w-7 h-7 text-red-400" />
+                : <TrendingUp className="w-7 h-7 text-emerald-400" />}
+              Monthly Growth Comparison
+            </h2>
+            <p className="text-xs text-muted-foreground mt-2 uppercase tracking-[0.1em]">
+              Unique visitors compared with the previous calendar month
+            </p>
+          </div>
+          <label className="flex flex-col gap-2">
+            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Select month</span>
+            <select
+              value={selectedMonth}
+              onChange={(event) => setSelectedMonth(event.target.value)}
+              className="min-w-52 bg-muted/60 border border-border rounded-xl px-4 py-3 text-xs font-bold text-foreground outline-none focus:border-accent"
+            >
+              {monthOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+            </select>
+          </label>
+        </div>
+
+        {monthlyGrowthLoading ? (
+          <div className="h-[480px] flex items-center justify-center"><Zap className="w-8 h-8 text-accent animate-pulse" /></div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
+              <div className="p-5 rounded-2xl bg-muted/40 border border-border/70">
+                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{monthlyGrowth?.monthLabel}</p>
+                <p className="text-3xl font-black mt-2 tabular-nums">{monthlyGrowth?.currentVisitors?.toLocaleString() || 0}</p>
+                <p className="text-[10px] text-muted-foreground mt-1">Unique visitors</p>
+              </div>
+              <div className="p-5 rounded-2xl bg-muted/40 border border-border/70">
+                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{monthlyGrowth?.previousMonthLabel}</p>
+                <p className="text-3xl font-black mt-2 tabular-nums">{monthlyGrowth?.previousVisitors?.toLocaleString() || 0}</p>
+                <p className="text-[10px] text-muted-foreground mt-1">Unique visitors</p>
+              </div>
+              <div className={`p-5 rounded-2xl border ${monthlyGrowth?.difference < 0 ? 'bg-red-500/10 border-red-500/20' : 'bg-emerald-500/10 border-emerald-500/20'}`}>
+                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Net change</p>
+                <p className={`text-3xl font-black mt-2 tabular-nums ${monthlyGrowth?.difference < 0 ? 'text-red-400' : 'text-emerald-400'}`}>
+                  {monthlyGrowth?.difference > 0 ? '+' : ''}{monthlyGrowth?.difference || 0}
+                </p>
+                <p className="text-[10px] text-muted-foreground mt-1">Visitors vs previous month</p>
+              </div>
+              <div className={`p-5 rounded-2xl border ${monthlyGrowth?.growthRate < 0 ? 'bg-red-500/10 border-red-500/20' : 'bg-emerald-500/10 border-emerald-500/20'}`}>
+                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Growth rate</p>
+                <p className={`text-3xl font-black mt-2 tabular-nums ${monthlyGrowth?.growthRate < 0 ? 'text-red-400' : 'text-emerald-400'}`}>
+                  {typeof monthlyGrowth?.growthRate === 'number'
+                    ? `${monthlyGrowth.growthRate > 0 ? '+' : ''}${monthlyGrowth.growthRate}%`
+                    : monthlyGrowth?.currentVisitors > 0 ? 'New' : '0%'}
+                </p>
+                <p className="text-[10px] text-muted-foreground mt-1">Calendar-month comparison</p>
+              </div>
+            </div>
+            <MonthlyGrowthComparisonChart
+              data={monthlyGrowth?.daily}
+              currentLabel={monthlyGrowth?.monthLabel}
+              previousLabel={monthlyGrowth?.previousMonthLabel}
+            />
+          </>
+        )}
       </div>
 
       {/* Main Chart Section */}

@@ -105,6 +105,53 @@ export const EnhancedVisitorChart = ({ data, view = 'daily' }) => {
   );
 };
 
+export const MonthlyGrowthComparisonChart = ({ data, currentLabel, previousLabel }) => {
+  const chartData = Array.isArray(data) ? data : [];
+  if (!chartData.length) {
+    return <div className="h-[360px] flex items-center justify-center text-sm text-muted-foreground">No monthly data available</div>;
+  }
+
+  return (
+    <div className="h-[360px] w-full">
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={chartData} margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+          <XAxis
+            dataKey="day"
+            stroke="var(--chart-axis)"
+            fontSize={10}
+            tickLine={false}
+            axisLine={false}
+            tickFormatter={(day) => `Day ${day}`}
+          />
+          <YAxis allowDecimals={false} stroke="var(--chart-axis)" fontSize={10} tickLine={false} axisLine={false} />
+          <Tooltip content={<CustomTooltip />} />
+          <Legend wrapperStyle={{ fontSize: 11, paddingTop: 16 }} />
+          <Line
+            type="monotone"
+            dataKey="currentVisitors"
+            name={currentLabel || 'Selected month'}
+            stroke="var(--chart-3)"
+            strokeWidth={3}
+            dot={false}
+            activeDot={{ r: 5 }}
+          />
+          <Line
+            type="monotone"
+            dataKey="previousVisitors"
+            name={previousLabel || 'Previous month'}
+            stroke="var(--chart-2)"
+            strokeWidth={2}
+            strokeDasharray="6 5"
+            dot={false}
+            activeDot={{ r: 4 }}
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
+};
+
 /**
  * Hourly Breakdown Chart
  */

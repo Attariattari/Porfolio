@@ -262,7 +262,7 @@ export default function DashboardPage() {
       { label: "Page Views", value: analyticsData?.totalPageViews ?? "—", icon: FileText, color: "text-emerald-400", bg: "bg-emerald-500/10", trend: "Recorded page loads", link: "/admin/analytics/visitors" },
       { label: "Unique Visitors", value: analyticsData?.uniqueVisitors ?? "—", icon: ShieldCheck, color: "text-accent", bg: "bg-accent/10", trend: "Distinct browsers", link: "/admin/analytics/visitors" },
       { label: "Visitors (24h)", value: analyticsData?.last24Visitors ?? "—", icon: Clock, color: "text-amber-400", bg: "bg-amber-500/10", trend: "Rolling 24 hours", link: "/admin/analytics/visitors" },
-      { label: "Visitor Growth", value: growthValue, icon: growthIsDown ? TrendingDown : TrendingUp, trendIcon: growthIsDown ? TrendingDown : TrendingUp, color: growthIsDown ? "text-red-400" : "text-accent", bg: growthIsDown ? "bg-red-500/10" : "bg-accent/10", trend: analyticsData?.growthAvailable ? "vs previous 30 days" : (analyticsData?.growthStatus || "Collecting verified baseline"), link: "/admin/analytics/visitors" },
+      { label: "Monthly Growth", value: growthValue, icon: growthIsDown ? TrendingDown : TrendingUp, trendIcon: growthIsDown ? TrendingDown : TrendingUp, color: growthIsDown ? "text-red-400" : "text-emerald-400", bg: growthIsDown ? "bg-red-500/10" : "bg-emerald-500/10", trend: analyticsData?.growthAvailable ? "vs previous month" : (analyticsData?.growthStatus || "Monthly comparison"), link: "/admin/analytics/visitors" },
     ];
   }, [analyticsData]);
 
