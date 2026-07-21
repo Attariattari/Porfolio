@@ -107,6 +107,7 @@ export default function Footer({ data }) {
                     width={24}
                     height={24}
                     className="h-full w-full object-contain"
+                    sizes="24px"
                     loading="lazy"
                   />
                 </div>

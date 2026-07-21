@@ -22,6 +22,7 @@ import { getCanonicalServices } from "@/lib/servicesSeo";
 import dbConnect from "@/lib/dbConnect";
 import { SiteConfig } from "@/models/Portfolio";
 import { resolveHomeSeo } from "@/lib/homeSeo";
+import { SITE_URL } from "@/lib/config";
 
 // ISR (Incremental Static Regeneration) - High Speed
 export const revalidate = 3600;
@@ -47,6 +48,22 @@ export async function generateMetadata() {
       images: [{ url: getSeoImage("/home-preview.png"), width: 1200, height: 630, alt: "Muhyo Tech full-stack web development portfolio" }],
       type: "website",
     },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [getSeoImage("/home-preview.png")],
+    },
+    keywords: [
+      "full-stack web developer Lahore",
+      "Next.js development Pakistan",
+      "MERN web applications",
+      "admin dashboard development",
+    ],
+    authors: [{ name: "Pir Ghulam Muhyo Din", url: SITE_URL }],
+    creator: "Pir Ghulam Muhyo Din",
+    publisher: "Muhyo Tech",
+    robots: { index: true, follow: true },
   };
 }
 

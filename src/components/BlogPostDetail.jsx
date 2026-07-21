@@ -127,9 +127,10 @@ export default function BlogPostDetail({
                   <Image
                     src={getSafeImageSrc("https://res.cloudinary.com/dg5gwixf1/image/upload/v1772736622/ChatGPT_Image_Mar_5_2026_11_36_42_AM_auw4uw.png", "/logo.png")}
                     alt={ensureMuhyoTechAlt("", `portrait of ${blog.author || "the author"}`)}
-                    width={48}
-                    height={48}
-                    className="object-cover"
+                  width={48}
+                  height={48}
+                  sizes="48px"
+                  className="object-cover"
                   />
                 </div>
                 <div>

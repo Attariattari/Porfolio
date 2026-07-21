@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, ZoomIn, ZoomOut, Maximize2, Minimize2, Download, ChevronLeft, ChevronRight } from "lucide-react";
 import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
 import { ensureMuhyoTechAlt } from "@/lib/mediaAlt";
+import Image from "next/image";
 
 export const ImageLightbox = ({
   isOpen,
@@ -44,6 +45,28 @@ export const ImageLightbox = ({
       document.body.classList.remove("lightbox-open");
     };
   }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen || safeImages.length === 0) return undefined;
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") onClose();
+      if (event.key === "ArrowRight") {
+        setCurrentIndex((previous) => (previous + 1) % safeImages.length);
+        setZoom(1);
+      }
+      if (event.key === "ArrowLeft") {
+        setCurrentIndex(
+          (previous) =>
+            (previous - 1 + safeImages.length) % safeImages.length,
+        );
+        setZoom(1);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose, safeImages.length]);
 
   const handleClose = () => {
     setZoom(1);
@@ -99,6 +122,9 @@ export const ImageLightbox = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Image gallery"
         className="fixed inset-0 z-[10050] isolate flex items-end md:items-center justify-center bg-black/95 backdrop-blur-xl p-4 pt-24 md:p-0"
         onClick={handleClose}
       >
@@ -113,6 +139,7 @@ export const ImageLightbox = ({
           <div className="flex items-center gap-3 pointer-events-auto">
             <button 
               onClick={toggleZoom}
+              aria-label={zoom > 1 ? "Zoom out image" : "Zoom in image"}
               className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors backdrop-blur-md"
               title="Toggle Zoom"
             >
@@ -120,12 +147,14 @@ export const ImageLightbox = ({
             </button>
             <button 
               onClick={toggleFullScreen}
+              aria-label={isFullScreen ? "Exit full screen" : "View full screen"}
               className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors backdrop-blur-md"
             >
               {isFullScreen ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
             </button>
             <button 
               onClick={handleClose}
+              aria-label="Close image gallery"
               className="w-10 h-10 rounded-full bg-white/20 hover:bg-red-500 text-white flex items-center justify-center transition-all backdrop-blur-md border border-white/10"
             >
               <X size={20} />
@@ -138,12 +167,14 @@ export const ImageLightbox = ({
           <>
             <button 
               onClick={handlePrev}
+              aria-label="View previous image"
               className="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/5 hover:bg-white/10 text-white flex items-center justify-center transition-all z-[210] border border-white/5"
             >
               <ChevronLeft size={24} />
             </button>
             <button 
               onClick={handleNext}
+              aria-label="View next image"
               className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/5 hover:bg-white/10 text-white flex items-center justify-center transition-all z-[210] border border-white/5"
             >
               <ChevronRight size={24} />
@@ -181,13 +212,17 @@ export const ImageLightbox = ({
             <button
               key={i}
               onClick={(e) => { e.stopPropagation(); setCurrentIndex(i); setZoom(1); }}
+              aria-label={`View image ${i + 1}: ${imageAlts[i]}`}
               className={`w-14 h-14 rounded-lg overflow-hidden border-2 transition-all ${
                 i === currentIndex ? "border-accent scale-110 shadow-lg shadow-accent/20" : "border-transparent opacity-40 hover:opacity-100"
               }`}
             >
-              <img
+              <Image
                 src={img}
                 alt={`${imageAlts[i]} thumbnail`}
+                width={56}
+                height={56}
+                sizes="56px"
                 className="w-full h-full object-cover"
               />
             </button>

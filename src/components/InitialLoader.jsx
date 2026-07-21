@@ -58,7 +58,7 @@ export default function InitialLoader() {
               ease: "easeInOut",
             },
           }}
-          className="initial-loader-shell fixed inset-0 z-[10000] flex items-center justify-center bg-background"
+          className="initial-loader-shell fixed inset-0 z-[10000] hidden items-center justify-center bg-background md:flex"
         >
           <div className="absolute h-[600px] w-[600px] rounded-full bg-accent/20 opacity-15 blur-[150px]" />
 
@@ -78,6 +78,7 @@ export default function InitialLoader() {
                   height={80}
                   loading="eager"
                   className="w-20 h-20 object-contain animate-pulse"
+                  sizes="80px"
                 />
                 <div className="absolute inset-[-30px] animate-spin rounded-full border border-dashed border-accent/10 [animation-duration:12s]" />
               </div>

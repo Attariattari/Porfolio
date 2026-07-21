@@ -13,7 +13,6 @@ export const metadata = {
   twitter: { card: "summary_large_image", images: [getSeoImage("/contact-preview.png")] },
 };
 
-export default async function BookCallPage({ searchParams }) {
-  const resolvedSearchParams = await searchParams;
-  return <BookCallClient initialServiceSlug={resolvedSearchParams?.service || ""} />;
+export default function BookCallPage() {
+  return <BookCallClient />;
 }

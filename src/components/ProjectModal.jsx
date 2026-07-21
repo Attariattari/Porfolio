@@ -15,6 +15,7 @@ import { Button } from "./ui";
 import dynamic from "next/dynamic";
 import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
 import { getProjectMediaAlt } from "@/lib/mediaAlt";
+import Image from "next/image";
 
 const ImageLightbox = dynamic(
   () => import("./ImageLightbox").then((mod) => mod.ImageLightbox),
@@ -35,6 +36,17 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
 
   const [activeSlide, setActiveSlide] = React.useState(0);
   const scrollRef = React.useRef(null);
+
+  React.useEffect(() => {
+    if (!selectedProject || lightboxIndex !== null) return undefined;
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") setSelectedProject(null);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [lightboxIndex, selectedProject, setSelectedProject]);
 
   if (!selectedProject) return null;
 
@@ -66,6 +78,9 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: "100%" }}
           transition={{ type: "spring", damping: 30, stiffness: 300 }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="project-modal-title"
           className="relative w-full max-w-6xl h-[calc(100dvh-4rem)] md:h-auto max-h-[100dvh] md:max-h-[92vh] bg-card border-0 md:border border-border rounded-t-[2.5rem] md:rounded-[2.5rem] shadow-2xl overflow-y-auto md:overflow-hidden flex flex-col md:flex-row"
         >
           {/* Mobile Drag Handle Indicator */}
@@ -74,6 +89,7 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
           {/* Close Button */}
           <button
             onClick={() => setSelectedProject(null)}
+            aria-label="Close project details"
             className="absolute top-4 right-4 md:top-6 md:right-6 z-[120] w-10 h-10 rounded-full bg-background/80 md:bg-muted backdrop-blur-md text-foreground flex items-center justify-center hover:bg-accent hover:text-accent-foreground transition-all shadow-xl cursor-pointer border border-border/50"
           >
             <X className="w-5 h-5" />
@@ -86,7 +102,7 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
               <span className="inline-block px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-[10px] font-bold uppercase tracking-widest">
                 {selectedProject.category}
               </span>
-              <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-foreground leading-[1.1]">
+              <h2 id="project-modal-title" className="text-3xl md:text-5xl font-extrabold tracking-tight text-foreground leading-[1.1]">
                 {selectedProject.title}
               </h2>
               <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
@@ -148,9 +164,12 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
                       className="flex-shrink-0 w-[85vw]"
                       onDoubleClick={() => openLightbox(i)}
                     >
-                      <img
+                      <Image
                         src={getSafeImageSrc(img)}
                         alt={getProjectMediaAlt(selectedProject, "gallery", i)}
+                        width={1600}
+                        height={1000}
+                        sizes="85vw"
                         className="w-full aspect-[16/10] object-cover rounded-2xl border border-border shadow-md select-none pointer-events-none"
                       />
                     </motion.div>
@@ -164,6 +183,7 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
                       <button
                         key={i}
                         onClick={() => setActiveSlide(i)}
+                        aria-label={`Show project image ${i + 1}`}
                         className={`transition-all duration-300 rounded-full ${
                           i === activeSlide
                             ? "w-6 h-1.5 bg-accent"
@@ -297,9 +317,12 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
                   className="rounded-xl overflow-hidden border border-border shadow-xl group cursor-zoom-in"
                   onClick={() => openLightbox(0)}
                 >
-                  <img
+                  <Image
                     src={getSafeImageSrc(selectedProject.thumbnail || selectedProject.thumbnailImage || selectedProject.image)}
                     alt={getProjectMediaAlt(selectedProject)}
+                    width={1600}
+                    height={1000}
+                    sizes="40vw"
                     className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 </div>
@@ -309,9 +332,12 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
                     className="rounded-xl overflow-hidden border border-border shadow-xl group cursor-zoom-in"
                     onClick={() => openLightbox(i + 1)}
                   >
-                    <img
+                    <Image
                       src={getSafeImageSrc(img)}
                       alt={getProjectMediaAlt(selectedProject, "gallery", i)}
+                      width={1600}
+                      height={1000}
+                      sizes="40vw"
                       className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                   </div>

@@ -3,14 +3,17 @@ import { portfolioData } from "@/lib/data";
 import { AboutController } from "@/controllers/AboutController";
 import { serializeDoc } from "@/lib/mongooseHelper";
 import { SITE_URL } from "@/lib/config";
-import { buildCanonical, getSeoImage } from "@/lib/seo";
+import { buildCanonical, ensureSeoDescription, getSeoImage } from "@/lib/seo";
 import { getAboutPageData } from "@/lib/content/getAboutPageData";
+import BreadcrumbSchema from "@/components/seo/BreadcrumbSchema";
 
 export async function generateMetadata() {
   const profile = await AboutController.get().catch(() => null);
   const title = profile?.seoTitle || "About Muhyo Tech | Full-Stack Developer in Lahore";
-  const description = profile?.seoDescription ||
-    "Meet Pir Ghulam Muhyo Din, the full-stack developer behind Muhyo Tech, building Next.js websites, MERN applications, and business dashboards in Lahore.";
+  const description = ensureSeoDescription(
+    profile?.seoDescription,
+    "Meet Pir Ghulam Muhyo Din, the full-stack developer behind Muhyo Tech, building Next.js websites, MERN applications, and business dashboards in Lahore.",
+  );
   return {
     title: { absolute: title },
     description,
@@ -61,6 +64,12 @@ export default async function AboutPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+      />
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: SITE_URL },
+          { name: "About", url: buildCanonical("/about") },
+        ]}
       />
       <About data={about} />
     </div>

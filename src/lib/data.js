@@ -164,13 +164,13 @@ export const aboutData = {
     },
     whatIBuild: [
         { icon: "Globe", title: "Custom Websites", description: "Premium responsive websites built around your brand, offer, and conversion goals.", link: "/services/custom-website-development" },
-        { icon: "Layers", title: "Full-Stack Web Applications", description: "Modern app experiences with frontend, backend, database, and deployment handled together.", link: "/services/mern-stack-development" },
+        { icon: "Layers", title: "Full-Stack Web Applications", description: "Modern app experiences with frontend, backend, database, and deployment handled together.", link: "/services/mern-stack-web-development" },
         { icon: "LayoutDashboard", title: "Admin Dashboards", description: "Secure management panels for content, users, services, analytics, and business workflows.", link: "/services/admin-dashboard-development" },
         { icon: "User", title: "Portfolio Websites", description: "Personal brand and professional portfolio sites that present work clearly and attract opportunities.", link: "/projects" },
         { icon: "Building2", title: "Business Websites", description: "Trust-building websites for companies, local businesses, service providers, and startups.", link: "/services" },
         { icon: "Database", title: "API & Database Integration", description: "REST APIs, MongoDB models, authentication, uploads, email flows, and third-party integrations.", link: "/services/api-integration" },
         { icon: "RefreshCw", title: "Website Redesign", description: "Modern redesigns that improve structure, responsiveness, speed, and visual credibility.", link: "/contact" },
-        { icon: "Search", title: "SEO-Friendly Web Setup", description: "Clean metadata, semantic sections, fast pages, and scalable structure for better discoverability.", link: "/services/seo-optimization" },
+        { icon: "Search", title: "SEO-Friendly Web Setup", description: "Clean metadata, semantic sections, fast pages, and scalable structure for better discoverability.", link: "/services/seo-friendly-website-setup" },
     ],
     skills: {
         frontend: ["Next.js", "React.js", "Tailwind CSS", "Framer Motion"],

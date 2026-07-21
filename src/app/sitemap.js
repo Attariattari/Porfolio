@@ -5,6 +5,8 @@ import { ServiceController } from "@/controllers/ServiceController";
 import { isBlogIndexable } from "@/lib/blogSeo";
 import { getCanonicalServices } from "@/lib/servicesSeo";
 
+export const revalidate = 3600;
+
 export default async function sitemap() {
     const baseUrl = SITE_URL;
 

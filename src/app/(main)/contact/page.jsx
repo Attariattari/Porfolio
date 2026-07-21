@@ -2,6 +2,7 @@ import React from "react";
 import Contact from "@/components/Contact";
 import EditorialBackground from "@/components/ui/EditorialBackground";
 import { buildCanonical, getSeoImage } from "@/lib/seo";
+import BreadcrumbSchema from "@/components/seo/BreadcrumbSchema";
 
 export const metadata = {
   title: { absolute: "Contact Muhyo Tech | Start a Web Development Project" },
@@ -32,15 +33,21 @@ export const metadata = {
 export default function ContactPage({ isHomePage = false }) {
   return (
     <div className="min-h-screen relative overflow-hidden ">
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: buildCanonical("/") },
+          { name: "Contact", url: buildCanonical("/contact") },
+        ]}
+      />
       {!isHomePage && <EditorialBackground text="CONTACT" />}
 
       {/* Dynamic Background Elements */}
       <div className="absolute top-0 right-[-10%] w-[700px] h-[700px] bg-accent/5 rounded-full blur-[150px] pointer-events-none -z-10 animate-floating" />
       <div className="absolute bottom-[-10%] left-[-5%] w-[600px] h-[600px]  rounded-full blur-[130px] pointer-events-none -z-10 animate-floating [animation-delay:3s]" />
 
-      <main className="max-w-7xl mx-auto relative z-10">
+      <section className="max-w-7xl mx-auto relative z-10" aria-label="Contact Muhyo Tech">
         <Contact />
-      </main>
+      </section>
 
       {/* Side Scroll / Status Tracker */}
       <div className="fixed right-8 top-1/2 -translate-y-1/2 hidden xl:flex flex-col gap-5 z-50">

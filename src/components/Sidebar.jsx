@@ -159,6 +159,7 @@ export default function Sidebar({ data }) {
               width={40}
               height={40}
               className="w-full h-full object-contain p-1"
+              sizes="40px"
               priority
             />
           </div>
@@ -197,6 +198,7 @@ export default function Sidebar({ data }) {
                     width={56}
                     height={56}
                     className="w-full h-full object-contain p-2.5"
+                    sizes="56px"
                     priority
                   />
                 </div>

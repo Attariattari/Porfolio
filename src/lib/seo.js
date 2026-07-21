@@ -31,6 +31,21 @@ export function cleanSeoText(value = "", maxLength = 155) {
   return `${shortened.slice(0, end).trim()}…`;
 }
 
+export function ensureSeoDescription(
+  value = "",
+  fallback = defaultSeoData.description,
+  minLength = 120,
+  maxLength = 155,
+) {
+  const primary = cleanSeoText(value, maxLength);
+  if (primary.length >= minLength) return primary;
+
+  return cleanSeoText(
+    [primary, fallback].filter(Boolean).join(" "),
+    maxLength,
+  );
+}
+
 export function buildCanonical(path = "") {
   return absoluteUrl(path).replace(/\/$/, "");
 }

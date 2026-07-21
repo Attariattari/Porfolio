@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -16,6 +16,14 @@ import { Button } from "@/components/ui";
 import { bookCallContent } from "@/lib/data";
 
 const { callFor, nextSteps, preparation, faqs, badges } = bookCallContent;
+
+const subscribeToLocation = (callback) => {
+  window.addEventListener("popstate", callback);
+  return () => window.removeEventListener("popstate", callback);
+};
+
+const getServiceFromLocation = () =>
+  new URLSearchParams(window.location.search).get("service") || "";
 
 function FAQItem({ question, answer }) {
   const [open, setOpen] = useState(false);
@@ -36,8 +44,15 @@ function FAQItem({ question, answer }) {
 }
 
 export default function BookCallClient({ initialServiceSlug = "" }) {
+  const queryServiceSlug = useSyncExternalStore(
+    subscribeToLocation,
+    getServiceFromLocation,
+    () => initialServiceSlug,
+  );
+  const selectedServiceSlug = initialServiceSlug || queryServiceSlug;
+
   return (
-    <main className="relative min-h-screen overflow-hidden px-6 py-8">
+    <div className="relative min-h-screen overflow-hidden px-6 py-8">
       <EditorialBackground text="BOOK CALL" />
 
       <section className="relative z-10 mx-auto grid min-h-[70vh] max-w-7xl items-center gap-12 lg:grid-cols-[1fr_420px]">
@@ -103,7 +118,8 @@ export default function BookCallClient({ initialServiceSlug = "" }) {
         </div>
         <div className="rounded-2xl border border-border/60 bg-card/55 p-6 shadow-xl backdrop-blur-xl md:p-8">
           <BookingForm
-            initialServiceSlug={initialServiceSlug}
+            key={selectedServiceSlug || "general-booking"}
+            initialServiceSlug={selectedServiceSlug}
             source="page"
             sourcePage="/book-a-call"
             submitLabel="Submit Booking Request"
@@ -181,6 +197,6 @@ export default function BookCallClient({ initialServiceSlug = "" }) {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

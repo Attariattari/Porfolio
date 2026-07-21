@@ -4,6 +4,7 @@ import { GoalController } from "@/controllers/GoalController";
 import { serializeDoc } from "@/lib/mongooseHelper";
 
 import { buildCanonical, getSeoImage } from "@/lib/seo";
+import BreadcrumbSchema from "@/components/seo/BreadcrumbSchema";
 
 export const revalidate = 300; // ISR: Revalidate every 5 minutes
 
@@ -26,13 +27,6 @@ export const metadata = {
     description: "Explore Muhyo Tech's strategic roadmap, active SaaS projects, and future digital product direction.",
     images: [getSeoImage("/goals-preview.png")],
   },
-};
-
-const schemaData = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "Muhyo Tech",
-  description: "Goals and Roadmap for Muhyo Tech digital products",
 };
 
 export default async function GoalsPage() {
@@ -63,12 +57,35 @@ export default async function GoalsPage() {
     ...GoalController.getGoalsPageData(),
     recentProgress,
   };
+  const schemaData = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Muhyo Tech Goals and Product Roadmap",
+    description: metadata.description,
+    url: buildCanonical("/goals"),
+    isPartOf: { "@id": `${buildCanonical("/")}#website` },
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: goals.length,
+      itemListElement: goals.slice(0, 30).map((goal, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: goal.title || goal.name || `Goal ${index + 1}`,
+      })),
+    },
+  };
 
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
+      />
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: buildCanonical("/") },
+          { name: "Goals & Roadmap", url: buildCanonical("/goals") },
+        ]}
       />
       <GoalsClient
         initialGoals={goals || []}

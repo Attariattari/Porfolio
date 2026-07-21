@@ -3,8 +3,9 @@ import { ProjectController } from "@/controllers/ProjectController";
 import ProjectDetailView from "@/components/ProjectDetailView";
 import { serializeDoc } from "@/lib/mongooseHelper";
 import { SITE_URL } from "@/lib/config";
-import { buildCanonical, cleanSeoText, getSeoImage, removeBrandSuffix } from "@/lib/seo";
+import { buildCanonical, cleanSeoText, ensureSeoDescription, getSeoImage, removeBrandSuffix } from "@/lib/seo";
 import { portfolioData } from "@/lib/data";
+import BreadcrumbSchema from "@/components/seo/BreadcrumbSchema";
 
 // 1. Enable ISR (Revalidate every hour)
 export const revalidate = 3600;
@@ -26,7 +27,10 @@ export async function generateMetadata({ params }) {
   }
 
   const canonicalUrl = buildCanonical(`/projects/${project.slug}`);
-  const description = cleanSeoText(project.seoDescription || project.shortDescription || project.description, 155);
+  const description = ensureSeoDescription(
+    project.seoDescription || project.shortDescription || project.description,
+    `Explore ${project.title}, a ${project.category || "web development"} project by Muhyo Tech, including its goals, features, technology stack, and engineering results.`,
+  );
   const image = getSeoImage(project.heroImage || project.thumbnailImage || project.image || project.thumbnail);
 
   return {
@@ -50,6 +54,7 @@ export async function generateMetadata({ params }) {
       description,
       images: [image],
     },
+    robots: { index: true, follow: true },
   };
 }
 
@@ -78,11 +83,15 @@ export default async function ProjectPage({ params }) {
   const canonicalUrl = buildCanonical(`/projects/${project.slug}`);
   const image = getSeoImage(project.heroImage || project.thumbnailImage || project.image || project.thumbnail);
 
+  const projectDescription = ensureSeoDescription(
+    project.seoDescription || project.shortDescription || project.description,
+    `Explore ${project.title}, a ${project.category || "web development"} project by Muhyo Tech, including its goals, features, technology stack, and engineering results.`,
+  );
   const projectSchema = {
     "@context": "https://schema.org",
     "@type": "CreativeWork",
     name: project.title,
-    description: cleanSeoText(project.seoDescription || project.shortDescription || project.description, 155),
+    description: projectDescription,
     image,
     creator: { "@id": `${baseUrl}/#organization` },
     about: (project.techStack || []).map((name) => ({ "@type": "Thing", name })),
@@ -98,6 +107,13 @@ export default async function ProjectPage({ params }) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(projectSchema) }}
+      />
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: SITE_URL },
+          { name: "Projects", url: buildCanonical("/projects") },
+          { name: project.title, url: canonicalUrl },
+        ]}
       />
       <ProjectDetailView
         project={project}

@@ -617,12 +617,13 @@ const Portfolio = ({ projects }) => {
                             className="absolute inset-0 transition-transform duration-1000 group-hover/img-side:scale-110"
                           >
                             {/* Dark gradient overlay — same as ServiceSlider */}
-                            <img
+                            <Image
                               src={getSafeImageSrc(project.thumbnail || project.thumbnailImage || project.image)}
                               alt={getProjectMediaAlt(project)}
-                              className="absolute inset-0 h-full w-full object-cover"
+                              fill
+                              sizes="(max-width: 1024px) 100vw, 50vw"
+                              className="object-cover"
                               loading="lazy"
-                              decoding="async"
                             />
                             <div className="theme-media-gradient absolute inset-0" />
                             <div className="theme-media-tint absolute inset-0" />

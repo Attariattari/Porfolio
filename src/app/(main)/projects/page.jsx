@@ -3,6 +3,8 @@ import { portfolioData } from "@/lib/data";
 import { ProjectController } from "@/controllers/ProjectController";
 import { serializeDoc } from "@/lib/mongooseHelper";
 import { buildCanonical, getSeoImage } from "@/lib/seo";
+import { SITE_URL } from "@/lib/config";
+import BreadcrumbSchema from "@/components/seo/BreadcrumbSchema";
 
 // P1 OPTIMIZATION: Enable ISR (Incremental Static Regeneration)
 // Revalidate every 5 minutes for optimal cache hit rate
@@ -36,5 +38,39 @@ export default async function ProjectsPage() {
     (dbProjects?.length > 0 ? serializeDoc(dbProjects) : null) ||
     portfolioData.projects;
 
-  return <Portfolio projects={projects} />;
+  const projectsSchema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Muhyo Tech Web Development Projects",
+    description: metadata.description,
+    url: buildCanonical("/projects"),
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: projects.length,
+      itemListElement: projects
+        .filter((project) => project.slug)
+        .map((project, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          name: project.title,
+          url: buildCanonical(`/projects/${project.slug}`),
+        })),
+    },
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(projectsSchema) }}
+      />
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: SITE_URL },
+          { name: "Projects", url: buildCanonical("/projects") },
+        ]}
+      />
+      <Portfolio projects={projects} />
+    </>
+  );
 }

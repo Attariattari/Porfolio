@@ -164,8 +164,17 @@ export const getBlogSeoTitle = (blog = {}) =>
 
 export const getBlogSeoDescription = (blog = {}) => {
   const preferred = blog.seoDescription || blog.summary;
-  if (stripBlogHtml(preferred).length >= 80) return truncateAtWord(preferred, 155);
-  return truncateAtWord(blog.content || preferred, 155);
+  const base =
+    stripBlogHtml(preferred).length >= 80
+      ? truncateAtWord(preferred, 155)
+      : truncateAtWord(blog.content || preferred, 155);
+
+  if (base.length >= 120) return base;
+
+  return truncateAtWord(
+    `${base} Read ${blog.title || "this Muhyo Tech engineering guide"} for practical context, implementation decisions, and reliable web development guidance.`,
+    155,
+  );
 };
 
 export const toIsoBlogDate = (value) => {

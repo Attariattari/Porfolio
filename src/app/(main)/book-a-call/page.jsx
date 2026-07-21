@@ -1,5 +1,6 @@
 import BookCallClient from "../book-call/BookCallClient";
 import { buildCanonical, getSeoImage } from "@/lib/seo";
+import BreadcrumbSchema from "@/components/seo/BreadcrumbSchema";
 
 export const metadata = {
   title: "Book a Website Development Project Call",
@@ -13,7 +14,16 @@ export const metadata = {
   twitter: { card: "summary_large_image", images: [getSeoImage("/contact-preview.png")] },
 };
 
-export default async function BookACallPage({ searchParams }) {
-  const resolvedSearchParams = await searchParams;
-  return <BookCallClient initialServiceSlug={resolvedSearchParams?.service || ""} />;
+export default function BookACallPage() {
+  return (
+    <>
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: buildCanonical("/") },
+          { name: "Book a Call", url: buildCanonical("/book-a-call") },
+        ]}
+      />
+      <BookCallClient />
+    </>
+  );
 }
