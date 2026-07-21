@@ -23,6 +23,78 @@ import dbConnect from "@/lib/dbConnect";
 import { SiteConfig } from "@/models/Portfolio";
 import { resolveHomeSeo } from "@/lib/homeSeo";
 import { SITE_URL } from "@/lib/config";
+import { getAboutPageData } from "@/lib/content/getAboutPageData";
+
+const compactHomeService = (service = {}) => ({
+  _id: service._id,
+  id: service.id,
+  slug: service.slug,
+  title: service.title,
+  shortDescription: service.shortDescription,
+  description: service.description,
+  problemSolved: service.problemSolved,
+  heroImage: service.heroImage,
+  banner: service.banner,
+  image: service.image,
+  heroImageAlt: service.heroImageAlt,
+  imageAlt: service.imageAlt,
+  benefits: service.benefits,
+  techStack: service.techStack?.slice?.(0, 4) || service.techStack,
+  technologies: service.technologies?.slice?.(0, 4) || service.technologies,
+});
+
+const compactHomeProject = (project = {}) => ({
+  _id: project._id,
+  id: project.id,
+  slug: project.slug,
+  title: project.title,
+  category: project.category,
+  description: project.description,
+  techStack: project.techStack?.slice?.(0, 4) || project.techStack,
+  thumbnail: project.thumbnail,
+  thumbnailImage: project.thumbnailImage,
+  image: project.image,
+  thumbnailAlt: project.thumbnailAlt,
+  imageAlt: project.imageAlt,
+  heroImageAlt: project.heroImageAlt,
+  demoLink: project.demoLink,
+  githubLink: project.githubLink,
+});
+
+const compactHomeBlog = (blog = {}) => ({
+  _id: blog._id,
+  id: blog.id,
+  slug: blog.slug,
+  title: blog.title,
+  summary: blog.summary,
+  image: blog.image,
+  featuredImage: blog.featuredImage
+    ? { url: blog.featuredImage.url, alt: blog.featuredImage.alt }
+    : undefined,
+  featured: blog.featured,
+  category: blog.category,
+  date: blog.date,
+  readTime: blog.readTime,
+  author: blog.author,
+  tags: blog.tags,
+  publishStatus: blog.publishStatus,
+});
+
+const compactHomeAbout = (about = {}) => ({
+  name: about.name,
+  avatarAlt: about.avatarAlt,
+  typewriterWords: about.typewriterWords,
+  hero: {
+    badge: about.hero?.badge,
+    title: about.hero?.title,
+    headline: about.hero?.headline,
+    description: about.hero?.description,
+    image: about.hero?.image,
+    imageAlt: about.hero?.imageAlt,
+    highlights: about.hero?.highlights,
+    ctas: about.hero?.ctas,
+  },
+});
 
 // ISR (Incremental Static Regeneration) - High Speed
 export const revalidate = 3600;
@@ -94,6 +166,7 @@ export default async function HomePage() {
       ? dbFeaturedServices
       : portfolioData.services.filter((s) => s.featured),
   );
+  const homeServices = services.slice(0, 3).map(compactHomeService);
 
   // 2. PROJECTS: Check DB featured first, fallback to data.js featured
   const dbFeaturedProjects = (dbProjects || []).filter(
@@ -103,15 +176,21 @@ export default async function HomePage() {
     dbFeaturedProjects.length > 0
       ? dbFeaturedProjects
       : portfolioData.projects.filter((p) => p.featured);
+  const homeProjects = projects.slice(0, 4).map(compactHomeProject);
 
   // 3. BLOGS: Use optimized resolver
   const blogs = resolveFeaturedBlogs(dbBlogs, portfolioData.blogs);
+  const homeBlogs = blogs.slice(0, 3).map(compactHomeBlog);
   // --- END FEATURED PATCH ---
 
   // Ensure about data prioritizes database - NO EARLY FALLBACK
   const serializedAbout = dbAbout ? serializeDoc(dbAbout) : null;
-  const about =
-    serializedAbout && serializedAbout.name ? serializedAbout : null;
+  const about = getAboutPageData(
+    serializedAbout && serializedAbout.name
+      ? serializedAbout
+      : portfolioData.about,
+  );
+  const homeAbout = compactHomeAbout(about);
 
   // Ensure hero data prioritizes database
   const serializedHero = dbHero ? serializeDoc(dbHero) : null;
@@ -121,12 +200,12 @@ export default async function HomePage() {
   return (
     <>
       <Hero initialData={hero} />
-      <About data={about} isHomePage={true} />
+      <About data={homeAbout} isHomePage={true} />
       <Skills data={skills} />
-      <Services data={services} showViewAll={true} />
-      <Projects data={projects} showViewAll={true} />
-      <Blog data={blogs} isHomePage={true} />
-      <Contact isHomePage={true} about={about} />
+      <Services data={homeServices} showViewAll={true} />
+      <Projects data={homeProjects} showViewAll={true} />
+      <Blog data={homeBlogs} isHomePage={true} />
+      <Contact isHomePage={true} />
       <HomeFinalCTA />
     </>
   );
