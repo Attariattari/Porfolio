@@ -1,4 +1,4 @@
-import Sidebar from "@/components/Sidebar";
+import ProfessionalSidebar from "@/components/ProfessionalSidebar";
 import { BottomNav } from "@/components/BottomNav";
 import Footer from "@/components/Footer";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
@@ -85,7 +85,7 @@ export default async function MainLayout({ children }) {
       <InitialLoader />
       <DeferredNavigationWatcher />
       <ScrollProgress />
-      <Sidebar data={globalAbout} />
+      <ProfessionalSidebar data={globalAbout} />
       <BottomNav />
       <AnimatedBackground />
       <DeferredWhatsAppButton />
