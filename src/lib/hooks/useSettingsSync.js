@@ -1,13 +1,14 @@
 import { useEffect } from 'react';
 import { disposeSocket, initializeSocket, SOCKET_EVENTS } from '@/lib/socket';
 import useAdminStore from '@/lib/store/adminStore';
+import usePublicSettingsStore from '@/lib/store/publicSettingsStore';
 
 /**
  * Hook for real-time settings synchronization
  * Listens for settings updates and refreshes the store
  */
 export function useSettingsSync() {
-  const { fetchSettings } = useAdminStore();
+  const fetchSettings = usePublicSettingsStore((state) => state.fetchSettings);
 
   useEffect(() => {
     let active = true;
@@ -26,7 +27,7 @@ export function useSettingsSync() {
       // Listen for settings updates from other clients
       socket?.on(SOCKET_EVENTS.SETTINGS_UPDATED, (updatedSettings) => {
         // Update store with real-time settings
-        useAdminStore.setState({ settings: updatedSettings });
+        usePublicSettingsStore.setState({ settings: updatedSettings });
       });
     } catch (error) {
       console.error('Socket initialization failed:', error);

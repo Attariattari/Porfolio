@@ -1025,11 +1025,12 @@ html.not-found-active .site-main-shell {
  * while the browser can postpone layout/paint work until they approach the
  * viewport. Desktop rendering remains unchanged.
  */
+.performance-section {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 900px;
+}
+
 @media (max-width: 767px) {
-    .performance-section {
-        content-visibility: auto;
-        contain-intrinsic-size: auto 900px;
-    }
 
     /* The route fallback already covers the server wait. Avoid a duplicate
        overlay after hydration so the hero can become the mobile LCP. */

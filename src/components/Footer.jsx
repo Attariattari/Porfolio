@@ -18,13 +18,13 @@ import { toast } from "sonner";
 import SocialLinks from "./SocialLinks";
 
 import { portfolioData } from "@/lib/data";
-import useAdminStore from "@/lib/store/adminStore";
+import usePublicSettingsStore from "@/lib/store/publicSettingsStore";
 
 export default function Footer({ data, socials = [] }) {
   const pathname = usePathname();
   const footerData = portfolioData.siteConfig.footer;
   const about = data || portfolioData.about;
-  const settings = useAdminStore((state) => state.settings);
+  const settings = usePublicSettingsStore((state) => state.settings);
   const brandAccent = settings?.siteAccent || about.lastName || "Tech";
   const configuredTitle = settings?.siteTitle || about.firstName || "Muhyo";
   const brandTitle = configuredTitle.toLowerCase().endsWith(brandAccent.toLowerCase())

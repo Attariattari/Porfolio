@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import useAdminStore from "@/lib/store/adminStore";
+import usePublicSettingsStore from "@/lib/store/publicSettingsStore";
 import { useSettingsSync } from "@/lib/hooks/useSettingsSync";
 
 /**
@@ -9,7 +9,7 @@ import { useSettingsSync } from "@/lib/hooks/useSettingsSync";
  * Syncs settings for main website
  */
 export default function MainDataProvider({ children }) {
-  const { fetchSettings } = useAdminStore();
+  const fetchSettings = usePublicSettingsStore((state) => state.fetchSettings);
 
   // Initialize socket sync for real-time updates
   useSettingsSync();
