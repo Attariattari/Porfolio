@@ -1,12 +1,31 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ZoomIn, ZoomOut, Maximize2, Minimize2, Download, ChevronLeft, ChevronRight } from "lucide-react";
 import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
 import { ensureMuhyoTechAlt } from "@/lib/mediaAlt";
 import Image from "next/image";
+
+const imageSlideVariants = {
+  enter: (direction) => ({
+    opacity: direction === 0 ? 1 : 0.65,
+    x: direction === 0 ? 0 : direction > 0 ? "100vw" : "-100vw",
+    scale: 1,
+  }),
+  exit: (direction) => ({
+    opacity: 0.65,
+    x: direction > 0 ? "-100vw" : "100vw",
+    scale: 1,
+  }),
+};
+
+const imageSlideTransition = {
+  x: { type: "spring", stiffness: 280, damping: 30, mass: 0.8 },
+  opacity: { duration: 0.18 },
+  scale: { type: "spring", stiffness: 220, damping: 25 },
+};
 
 export const ImageLightbox = ({
   isOpen,
@@ -19,6 +38,16 @@ export const ImageLightbox = ({
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [zoom, setZoom] = useState(1);
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const [slideDirection, setSlideDirection] = useState(0);
+  const mainImageDragRef = useRef({ moved: false });
+  const thumbnailTrackRef = useRef(null);
+  const thumbnailRefs = useRef([]);
+  const thumbnailDragRef = useRef({
+    pointerId: null,
+    startX: 0,
+    startScrollLeft: 0,
+    moved: false,
+  });
   const safeImages = (Array.isArray(images) ? images : []).map((image) => getSafeImageSrc(image));
   const imageAlts = safeImages.map((_, index) =>
     ensureMuhyoTechAlt(alts[index], `${alt} ${index + 1}`),
@@ -30,6 +59,7 @@ export const ImageLightbox = ({
     const resetFrame = window.requestAnimationFrame(() => {
       setCurrentIndex(initialIndex);
       setZoom(1);
+      setSlideDirection(0);
     });
 
     return () => window.cancelAnimationFrame(resetFrame);
@@ -52,10 +82,12 @@ export const ImageLightbox = ({
     const handleKeyDown = (event) => {
       if (event.key === "Escape") onClose();
       if (event.key === "ArrowRight") {
+        setSlideDirection(1);
         setCurrentIndex((previous) => (previous + 1) % safeImages.length);
         setZoom(1);
       }
       if (event.key === "ArrowLeft") {
+        setSlideDirection(-1);
         setCurrentIndex(
           (previous) =>
             (previous - 1 + safeImages.length) % safeImages.length,
@@ -68,6 +100,99 @@ export const ImageLightbox = ({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose, safeImages.length]);
 
+  useEffect(() => {
+    if (!isOpen) return undefined;
+
+    const frame = window.requestAnimationFrame(() => {
+      const track = thumbnailTrackRef.current;
+      const activeThumbnail = thumbnailRefs.current[currentIndex];
+      if (!track || !activeThumbnail) return;
+
+      const trackBounds = track.getBoundingClientRect();
+      const thumbnailBounds = activeThumbnail.getBoundingClientRect();
+      const edgeSpacing = 8;
+      let scrollDistance = 0;
+
+      if (thumbnailBounds.left < trackBounds.left + edgeSpacing) {
+        scrollDistance =
+          thumbnailBounds.left - trackBounds.left - edgeSpacing;
+      } else if (thumbnailBounds.right > trackBounds.right - edgeSpacing) {
+        scrollDistance =
+          thumbnailBounds.right - trackBounds.right + edgeSpacing;
+      }
+
+      if (scrollDistance === 0) return;
+
+      const reduceMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+
+      track.scrollBy({
+        left: scrollDistance,
+        behavior: reduceMotion ? "auto" : "smooth",
+      });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [currentIndex, isOpen]);
+
+  const scrollThumbnailTrack = (direction) => {
+    const track = thumbnailTrackRef.current;
+    if (!track) return;
+
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    track.scrollBy({
+      left: direction * Math.max(280, track.clientWidth * 0.75),
+      behavior: reduceMotion ? "auto" : "smooth",
+    });
+  };
+
+  const handleThumbnailPointerDown = (event) => {
+    if (event.pointerType !== "mouse" || event.button !== 0) return;
+
+    const track = thumbnailTrackRef.current;
+    if (!track) return;
+
+    thumbnailDragRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startScrollLeft: track.scrollLeft,
+      moved: false,
+    };
+    track.setPointerCapture(event.pointerId);
+  };
+
+  const handleThumbnailPointerMove = (event) => {
+    const drag = thumbnailDragRef.current;
+    const track = thumbnailTrackRef.current;
+    if (!track || drag.pointerId !== event.pointerId) return;
+
+    const distance = event.clientX - drag.startX;
+    if (Math.abs(distance) > 4) drag.moved = true;
+    if (!drag.moved) return;
+
+    event.preventDefault();
+    track.scrollLeft = drag.startScrollLeft - distance;
+  };
+
+  const handleThumbnailPointerEnd = (event) => {
+    const drag = thumbnailDragRef.current;
+    const track = thumbnailTrackRef.current;
+    if (!track || drag.pointerId !== event.pointerId) return;
+
+    if (track.hasPointerCapture(event.pointerId)) {
+      track.releasePointerCapture(event.pointerId);
+    }
+    drag.pointerId = null;
+
+    window.setTimeout(() => {
+      drag.moved = false;
+    }, 0);
+  };
+
   const handleClose = () => {
     setZoom(1);
     onClose();
@@ -75,23 +200,48 @@ export const ImageLightbox = ({
 
   const handleNext = (e) => {
     e?.stopPropagation();
+    setSlideDirection(1);
     setCurrentIndex((prev) => (prev + 1) % safeImages.length);
     setZoom(1);
   };
 
   const handlePrev = (e) => {
     e?.stopPropagation();
+    setSlideDirection(-1);
     setCurrentIndex((prev) => (prev - 1 + safeImages.length) % safeImages.length);
     setZoom(1);
   };
 
   const handleImageClick = (e) => {
     e?.stopPropagation();
+    if (mainImageDragRef.current.moved) return;
     if (zoom > 1) {
       setZoom(1);
     } else {
       setZoom(2.5);
     }
+  };
+
+  const handleMainImageDrag = (_, info) => {
+    if (Math.abs(info.offset.x) > 4 || Math.abs(info.offset.y) > 4) {
+      mainImageDragRef.current.moved = true;
+    }
+  };
+
+  const handleMainImageDragEnd = (_, info) => {
+    if (zoom === 1) {
+      const shouldChangeImage =
+        Math.abs(info.offset.x) > 70 || Math.abs(info.velocity.x) > 600;
+
+      if (shouldChangeImage) {
+        if (info.offset.x < 0) handleNext();
+        else handlePrev();
+      }
+    }
+
+    window.setTimeout(() => {
+      mainImageDragRef.current.moved = false;
+    }, 0);
   };
 
   const toggleZoom = (e) => {
@@ -189,44 +339,108 @@ export const ImageLightbox = ({
           animate={{ scale: 1, opacity: 1 }}
           onClick={(e) => e.stopPropagation()}
         >
-          <motion.img
-            key={currentIndex}
-            src={safeImages[currentIndex]}
-            alt={imageAlts[currentIndex]}
-            className={`max-w-full max-h-full object-contain rounded-sm shadow-2xl ${
-              zoom > 1 ? "cursor-zoom-out" : "cursor-zoom-in"
-            }`}
-            animate={{ 
-              scale: zoom,
-            }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            onClick={handleImageClick}
-            drag={zoom > 1}
-            dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-          />
+          <div className="relative flex h-full w-full items-center justify-center overflow-hidden">
+            <AnimatePresence initial={false} custom={slideDirection}>
+              <motion.img
+                key={currentIndex}
+                src={safeImages[currentIndex]}
+                alt={imageAlts[currentIndex]}
+                custom={slideDirection}
+                variants={imageSlideVariants}
+                initial="enter"
+                animate={{ opacity: 1, x: 0, scale: zoom }}
+                exit="exit"
+                transition={imageSlideTransition}
+                draggable={false}
+                className={`absolute max-h-full max-w-full select-none rounded-sm object-contain shadow-2xl ${
+                  zoom > 1
+                    ? "cursor-zoom-out"
+                    : "cursor-grab active:cursor-grabbing"
+                }`}
+                onClick={handleImageClick}
+                onDragStart={() => {
+                  mainImageDragRef.current.moved = false;
+                }}
+                onDrag={handleMainImageDrag}
+                onDragEnd={handleMainImageDragEnd}
+                drag={zoom > 1 ? true : "x"}
+                dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+                dragElastic={zoom > 1 ? 0.2 : 0.8}
+                dragMomentum={false}
+              />
+            </AnimatePresence>
+          </div>
         </motion.div>
 
         {/* Thumbnails Strip (Desktop) */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 hidden md:flex gap-3 p-3 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl z-[210]">
-          {safeImages.map((img, i) => (
-            <button
-              key={i}
-              onClick={(e) => { e.stopPropagation(); setCurrentIndex(i); setZoom(1); }}
-              aria-label={`View image ${i + 1}: ${imageAlts[i]}`}
-              className={`w-14 h-14 rounded-lg overflow-hidden border-2 transition-all ${
-                i === currentIndex ? "border-accent scale-110 shadow-lg shadow-accent/20" : "border-transparent opacity-40 hover:opacity-100"
-              }`}
-            >
-              <Image
-                src={img}
-                alt={`${imageAlts[i]} thumbnail`}
-                width={56}
-                height={56}
-                sizes="56px"
-                className="w-full h-full object-cover"
-              />
-            </button>
-          ))}
+        <div
+          className="absolute bottom-6 left-1/2 z-[210] hidden w-[calc(100vw-8rem)] max-w-6xl -translate-x-1/2 items-center gap-1 overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-2 backdrop-blur-xl md:flex"
+          onClick={(event) => event.stopPropagation()}
+        >
+          <button
+            type="button"
+            onClick={() => scrollThumbnailTrack(-1)}
+            aria-label="Scroll thumbnails left"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-black/30 text-white/75 transition-colors hover:bg-white/15 hover:text-white"
+          >
+            <ChevronLeft size={18} />
+          </button>
+
+          <div
+            ref={thumbnailTrackRef}
+            className="no-scrollbar flex min-w-0 flex-1 cursor-grab snap-x snap-mandatory select-none gap-3 overflow-x-auto px-1 py-2 active:cursor-grabbing"
+            aria-label="Image gallery thumbnails"
+            onPointerDown={handleThumbnailPointerDown}
+            onPointerMove={handleThumbnailPointerMove}
+            onPointerUp={handleThumbnailPointerEnd}
+            onPointerCancel={handleThumbnailPointerEnd}
+          >
+            {safeImages.map((img, i) => (
+              <button
+                key={i}
+                ref={(element) => {
+                  thumbnailRefs.current[i] = element;
+                }}
+                type="button"
+                onClick={(event) => {
+                  if (thumbnailDragRef.current.moved) {
+                    event.preventDefault();
+                    return;
+                  }
+                  setSlideDirection(i === currentIndex ? 0 : i > currentIndex ? 1 : -1);
+                  setCurrentIndex(i);
+                  setZoom(1);
+                }}
+                aria-label={`View image ${i + 1}: ${imageAlts[i]}`}
+                aria-pressed={i === currentIndex}
+                className={`h-14 w-14 shrink-0 snap-center overflow-hidden rounded-lg border-2 transition-[border-color,opacity,transform,box-shadow] duration-200 ${
+                  i === currentIndex
+                    ? "scale-110 border-accent opacity-100 shadow-lg shadow-accent/20"
+                    : "border-transparent opacity-40 hover:opacity-100"
+                }`}
+              >
+                <Image
+                  src={img}
+                  alt={`${imageAlts[i]} thumbnail`}
+                  width={56}
+                  height={56}
+                  sizes="56px"
+                  quality={50}
+                  draggable={false}
+                  className="h-full w-full object-cover"
+                />
+              </button>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => scrollThumbnailTrack(1)}
+            aria-label="Scroll thumbnails right"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-black/30 text-white/75 transition-colors hover:bg-white/15 hover:text-white"
+          >
+            <ChevronRight size={18} />
+          </button>
         </div>
       </motion.div>
     </AnimatePresence>,

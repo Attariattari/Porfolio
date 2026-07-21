@@ -65,11 +65,12 @@ export default function FeaturedBlogSlider({ featuredBlogs, onImageClick }) {
                 <Image
                   src={getSafeImageSrc(blog.image || blog.featuredImage?.url, "/portfolio-hero.png")}
                   alt={getBlogImageAlt(blog)}
-                  fill
+                  width={1600}
+                  height={1000}
                   priority={idx === 0}
                   loading={idx === 0 ? undefined : "lazy"}
                   sizes="(max-width: 1024px) 100vw, 420px"
-                  className="object-cover transition-transform duration-1000 group-hover:scale-110 cursor-zoom-in"
+                  className="absolute left-1/2 top-1/2 h-full w-auto min-w-full max-w-none -translate-x-1/2 -translate-y-1/2 cursor-zoom-in object-cover transition-transform duration-1000 group-hover:scale-110"
                   onClick={() => onImageClick(idx)}
                 />
                 <div className="theme-image-wash absolute inset-0" />
