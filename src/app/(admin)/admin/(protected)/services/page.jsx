@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import useAdminStore from "@/lib/store/adminStore";
-import DataTable from "@/components/admin/DataTable";
 import FormModal from "@/components/admin/FormModal";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import { z } from "zod";
@@ -12,7 +11,9 @@ import ImageUploader from "@/components/admin/ImageUploader";
 import { Controller } from "react-hook-form";
 import { useFieldArray } from "react-hook-form";
 import { AnimatePresence } from "framer-motion";
-import { Download, Plus, Trash2 } from "lucide-react";
+import { Download, Plus, Trash2, BriefcaseBusiness, Search, Pencil, ExternalLink, Star, Layers3 } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import StatusBadge from "@/components/ui/StatusBadge";
 import { getServiceMediaAlt } from "@/lib/mediaAlt";
 
@@ -113,7 +114,8 @@ const RepeaterField = ({ control, register, name, label, template, fields }) => 
 };
 
 export default function ServicesPage() {
-  const { services, fetchServices, addService, updateService, deleteService, reorderServices, importServices } =
+  const router = useRouter();
+  const { services, fetchServices, addService, updateService, deleteService, importServices } =
     useAdminStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -125,6 +127,7 @@ export default function ServicesPage() {
   const [isImporting, setIsImporting] = useState(false);
   const [importSummary, setImportSummary] = useState(null);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [serviceSearch, setServiceSearch] = useState("");
 
   // Sync with DB on mount
   useEffect(() => {
@@ -519,9 +522,19 @@ export default function ServicesPage() {
     },
   ];
 
+  const groupedFields = fields.map((field) => {
+    const contentFields = ["shortDescription", "fullDescription", "overview", "problemsSolved", "deliverables", "features", "benefits", "processSteps", "technologies", "clientRequirements", "faqs"];
+    const deliveryFields = ["deliveryNote", "deliveryTime", "quoteNote", "ctaTitle", "ctaDescription", "ctaPrimaryText", "ctaSecondaryText"];
+    const seoFields = ["seoTitle", "seoDescription", "keywords", "targetKeywords", "localKeywords", "relatedServices", "relatedProjects"];
+    const mediaFields = ["heroImage", "heroImageAlt", "images"];
+    return { ...field, section: mediaFields.includes(field.name) ? "Media & presentation" : contentFields.includes(field.name) ? "Service content" : deliveryFields.includes(field.name) ? "Delivery & call to action" : seoFields.includes(field.name) ? "Search & related content" : "Service essentials" };
+  });
+
+  const visibleServices = services.filter((service) => `${service.title || ""} ${service.slug || ""} ${service.category || ""}`.toLowerCase().includes(serviceSearch.toLowerCase()));
+
   const handleAdd = () => {
     setEditingService(null);
-    setIsModalOpen(true);
+    router.push("/admin/services/new");
   };
 
   const handleEdit = (service) => {
@@ -573,7 +586,7 @@ export default function ServicesPage() {
           : [],
     };
     setEditingService(formatted);
-    setIsModalOpen(true);
+    router.push(`/admin/services/${service._id || service.slug}`);
   };
 
   const handleDelete = (item) => {
@@ -679,19 +692,12 @@ export default function ServicesPage() {
   };
 
   return (
-    <div className="space-y-8 pb-20">
-      <div className="flex justify-between items-end mb-4">
-        <div>
-          <h1 className="text-2xl md:text-4xl font-black italic uppercase tracking-tighter text-foreground">
-            Solution{" "}
-            <span className="text-accent underline decoration-accent/20 underline-offset-8">
-              Core
-            </span>
-          </h1>
-          <p className="text-[10px] md:text-sm text-muted-foreground mt-2 md:mt-4 font-medium tracking-tight uppercase tracking-widest">
-            Orchestrate the services that drive digital performance.
-          </p>
-        </div>
+    <div className="mx-auto max-w-[1500px] space-y-6 pb-20">
+      <header className="relative overflow-hidden rounded-[28px] border border-white/[0.08] bg-[#0d1727] p-6 sm:p-8">
+        <div className="pointer-events-none absolute -right-20 -top-24 size-72 rounded-full bg-indigo-400/[0.07] blur-3xl" />
+        <div className="relative flex flex-col justify-between gap-6 lg:flex-row lg:items-center">
+          <div className="flex items-start gap-4"><span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-indigo-400/10 text-indigo-300 ring-1 ring-inset ring-indigo-400/15"><BriefcaseBusiness className="size-5" /></span><div><p className="text-[10px] font-bold uppercase tracking-[.24em] text-indigo-300">Service catalog</p><h1 className="mt-2 text-2xl font-semibold tracking-[-.035em] text-white sm:text-3xl">Services management</h1><p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">Create, organize and publish the solutions presented to your clients.</p></div></div>
+          <div className="flex flex-wrap gap-2"><button type="button" onClick={handleAdd} className="inline-flex items-center gap-2 rounded-xl bg-indigo-300 px-5 py-3 text-xs font-bold text-slate-950 hover:bg-indigo-200"><Plus className="size-4" />New service</button>
         {isSuperAdmin && (
           <button
             type="button"
@@ -699,55 +705,30 @@ export default function ServicesPage() {
               setImportSummary(null);
               setIsImportOpen(true);
             }}
-            className="inline-flex items-center gap-2 rounded-2xl border border-accent/30 bg-accent/10 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-accent hover:bg-accent/15"
+            className="inline-flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.035] px-4 py-3 text-xs font-semibold text-slate-400 hover:bg-white/[0.06] hover:text-white"
           >
             <Download className="h-4 w-4" />
-            Import Services
+            Import
           </button>
-        )}
-      </div>
+        )}</div></div>
+      </header>
 
-      <DataTable
-        title="Active Services"
-        columns={columns}
-        data={services}
-        onAdd={handleAdd}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onReorder={reorderServices}
-        filters={[
-          {
-            key: 'publishStatus',
-            label: 'All Publish Status',
-            options: [
-              { label: 'Published', value: 'published' },
-              { label: 'Pending', value: 'pending' },
-              { label: 'Draft', value: 'draft' }
-            ]
-          },
-          {
-            key: 'featured',
-            label: 'All Featured',
-            options: [
-              { label: 'Featured', value: 'true' },
-              { label: 'Standard', value: 'false' }
-            ]
-          }
-        ]}
-      />
+      <section data-columns={columns.length} className="overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#0d1727]">
+        <div className="flex flex-col justify-between gap-4 border-b border-white/[0.07] p-4 sm:flex-row sm:items-center sm:p-5"><div><p className="text-sm font-semibold text-slate-200">Your service catalog</p><p className="mt-1 text-xs text-slate-600">{services.length} services · {services.filter((item) => (item.status || item.publishStatus) === "published").length} published</p></div><label className="relative w-full sm:w-72"><Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-600" /><input value={serviceSearch} onChange={(event) => setServiceSearch(event.target.value)} placeholder="Search services..." className="w-full rounded-xl border border-white/[0.08] bg-slate-950/35 py-3 pl-10 pr-4 text-sm outline-none placeholder:text-slate-700 focus:border-indigo-400/40" /></label></div>
+        <div className="grid gap-4 p-4 sm:p-5 md:grid-cols-2 xl:grid-cols-3">{visibleServices.map((service) => <ServiceCard key={service._id || service.slug} service={service} onEdit={() => handleEdit(service)} onDelete={() => handleDelete(service)} />)}</div>
+        {visibleServices.length === 0 && <div className="grid min-h-72 place-items-center text-center"><div><Layers3 className="mx-auto size-9 text-slate-700" /><p className="mt-4 text-sm font-semibold text-slate-300">No matching services</p><p className="mt-1 text-xs text-slate-600">Try a different search term.</p></div></div>}
+      </section>
 
       <AnimatePresence>
-        {isModalOpen && (
+        {false && isModalOpen && (
           <FormModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
-            title={
-              editingService ? "Recalibrate Service" : "Deploy New Initiative"
-            }
+            title={editingService ? "Edit service" : "Create new service"}
             schema={serviceSchema}
             defaultValues={editingService}
             onSubmit={onSubmit}
-            fields={fields}
+            fields={groupedFields}
           />
         )}
       </AnimatePresence>
@@ -867,5 +848,21 @@ export default function ServicesPage() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+function ServiceCard({ service, onEdit, onDelete }) {
+  const image = service.heroImage || service.banner || service.images?.[0] || service.gallery?.[0];
+  const status = service._isFromDataJs ? "template" : service.status || service.publishStatus || "draft";
+  const technologies = (Array.isArray(service.techStack) && service.techStack.length ? service.techStack : service.technologies || []).slice(0, 3);
+
+  return (
+    <article className="group overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.025] transition hover:border-indigo-400/20 hover:bg-indigo-400/[0.025]">
+      <div className="relative aspect-[16/8] overflow-hidden bg-slate-950/50">
+        {image ? <img src={image} alt={getServiceMediaAlt(service)} className="size-full object-cover transition duration-500 group-hover:scale-[1.03]" /> : <div className="grid size-full place-items-center"><BriefcaseBusiness className="size-8 text-slate-700" /></div>}
+        <div className="absolute inset-x-0 top-0 flex items-start justify-between p-3"><span className={`rounded-full border px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider backdrop-blur-md ${status === "published" ? "border-emerald-300/20 bg-emerald-400/15 text-emerald-200" : status === "pending" ? "border-amber-300/20 bg-amber-400/15 text-amber-200" : "border-white/10 bg-slate-950/60 text-slate-400"}`}>{status}</span>{(service.featured || service.isFeatured) && <span className="grid size-8 place-items-center rounded-full bg-amber-300 text-slate-950"><Star className="size-3.5 fill-current" /></span>}</div>
+      </div>
+      <div className="p-5"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="text-[9px] font-bold uppercase tracking-[.16em] text-indigo-300/70">{service.category || "Digital service"}</p><h2 className="mt-2 truncate text-base font-semibold text-slate-100">{service.title}</h2><p className="mt-1 truncate text-[10px] text-slate-600">/services/{service.slug}</p></div></div><p className="mt-4 line-clamp-2 min-h-10 text-xs leading-5 text-slate-500">{service.shortDescription || service.description || "No service summary added yet."}</p><div className="mt-4 flex min-h-6 flex-wrap gap-1.5">{technologies.map((tech) => <span key={typeof tech === "string" ? tech : tech?.name} className="rounded-md bg-white/[0.045] px-2 py-1 text-[9px] text-slate-500">{typeof tech === "string" ? tech : tech?.name || tech?.title}</span>)}</div><div className="mt-5 flex items-center gap-2 border-t border-white/[0.06] pt-4"><button onClick={onEdit} className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-indigo-400/10 py-2.5 text-[10px] font-bold uppercase tracking-wider text-indigo-300 hover:bg-indigo-400/15"><Pencil className="size-3.5" />Edit</button>{!service._isFromDataJs && <button onClick={onDelete} className="grid size-9 place-items-center rounded-lg text-slate-600 hover:bg-rose-400/10 hover:text-rose-300"><Trash2 className="size-3.5" /></button>}<Link href={`/services/${service.slug}`} target="_blank" className="grid size-9 place-items-center rounded-lg border border-white/[0.07] text-slate-500 hover:text-white"><ExternalLink className="size-3.5" /></Link></div></div>
+    </article>
   );
 }

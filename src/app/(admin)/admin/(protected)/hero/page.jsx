@@ -11,7 +11,7 @@ export default async function AdminHeroPage() {
     const staticHero = portfolioData.siteConfig.hero;
 
     return (
-        <div className="p-4">
+        <div>
             <HeroForm initialData={heroData} staticFallback={staticHero} />
         </div>
     );

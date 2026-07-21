@@ -65,7 +65,8 @@ export const EnhancedVisitorChart = ({ data, view = 'daily' }) => {
     if (view === 'hourly') {
       return `${value}:00`;
     }
-    const date = new Date(value);
+    const [year, month, day] = String(value).split('-').map(Number);
+    const date = new Date(year, month - 1, day);
     return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
   };
 

@@ -85,7 +85,7 @@ export default function VisitorAnalyticsPage() {
   }, [queryClient]);
 
   // Queries with shorter polling intervals for "0 delay" feel
-  const { data: visitorsData, isLoading: visitorsLoading } = useQuery({
+  const { data: visitorsData, isLoading: visitorsLoading, isFetching: visitorsFetching } = useQuery({
     queryKey: ['analytics-visitors', period, view],
     queryFn: () => fetchAnalyticsData(`/api/admin/analytics/visitors?period=${period}&view=${view}`),
     refetchInterval: 5000,
@@ -289,6 +289,11 @@ export default function VisitorAnalyticsPage() {
               Unique visitors compared with the previous calendar month
             </p>
           </div>
+          {visitorsFetching && !visitorsLoading && (
+            <span className="text-[9px] font-black uppercase tracking-widest text-accent animate-pulse">
+              Updating {period} days
+            </span>
+          )}
           <label className="flex flex-col gap-2">
             <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Select month</span>
             <select
@@ -352,6 +357,11 @@ export default function VisitorAnalyticsPage() {
             </h2>
             <p className="text-xs text-muted-foreground mt-2 uppercase tracking-[0.1em]">
               {view === 'daily' ? 'Daily unique visitors' : `Unique visitors by hour, last ${period} days`}
+              {visitorsData?.range && (
+                <span className="ml-2 text-accent">
+                  {visitorsData.range.from} → {visitorsData.range.to}
+                </span>
+              )}
             </p>
           </div>
 

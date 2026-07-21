@@ -80,9 +80,9 @@ export default function Hero({ initialData = null }) {
     transitionEasing: "cubic-bezier(.03,.98,.52,.99)",
   };
 
-  const features = data.features.map((feature) => ({
+  const features = (Array.isArray(data.features) ? data.features : []).map((feature) => ({
     ...feature,
-    icon: iconMap[feature.icon],
+    icon: iconMap[feature.icon] || Zap,
   }));
 
   return (

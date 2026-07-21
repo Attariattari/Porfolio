@@ -1,310 +1,74 @@
 "use client";
 
-import {
-  Search,
-  ChevronLeft,
-  ChevronRight,
-  Eye,
-  Trash2,
-  Calendar,
-  Clock,
-  Filter,
-  ArrowUpDown
-} from "lucide-react";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { CalendarDays, ChevronLeft, ChevronRight, Clock3, Search, SlidersHorizontal, Trash2, UserRound, ArrowUpRight } from "lucide-react";
 import { useDeleteBooking } from "@/app/(admin)/hooks/useBookings";
-import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import { BOOKING_STATUS_OPTIONS } from "@/lib/constants";
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
 
-const STATUS_FILTER_OPTIONS = [
-  { value: "", label: "All Status" },
-  ...BOOKING_STATUS_OPTIONS,
-];
+const statusStyle = {
+  new: "bg-amber-400/10 text-amber-300 border-amber-400/20",
+  read: "bg-sky-400/10 text-sky-300 border-sky-400/20",
+  seen: "bg-sky-400/10 text-sky-300 border-sky-400/20",
+  confirmed: "bg-violet-400/10 text-violet-300 border-violet-400/20",
+  completed: "bg-emerald-400/10 text-emerald-300 border-emerald-400/20",
+  rejected: "bg-rose-400/10 text-rose-300 border-rose-400/20",
+  cancelled: "bg-slate-400/10 text-slate-400 border-slate-400/20",
+};
 
-export default function BookingList({
-  bookings = [],
-  pagination,
-  loading,
-  filters,
-  onFilterChange,
-  onPageChange,
-  onSelectBooking,
-}) {
+export default function BookingList({ bookings = [], pagination, loading, filters, onFilterChange, onPageChange, onSelectBooking }) {
   const [searchInput, setSearchInput] = useState(filters.search || "");
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, bookingId: null });
   const deleteMutation = useDeleteBooking();
+  const services = [{ value: "", label: "Every service" }, ...Array.from(new Map(bookings.map((booking) => [booking.serviceSlug || booking.service, { value: booking.serviceSlug || booking.service, label: booking.serviceTitle || booking.service }]).filter(([value]) => value)).values())];
 
-  const handleSearch = (e) => {
-    setSearchInput(e.target.value);
-    onFilterChange({ search: e.target.value });
-  };
-
-  const handleDelete = async () => {
-    if (!deleteModal.bookingId) return;
-    deleteMutation.mutate(deleteModal.bookingId, {
-      onSuccess: () => {
-        setDeleteModal({ isOpen: false, bookingId: null });
-      }
-    });
-  };
-
-  const getStatusBadge = (status) => {
-    const badges = {
-      new: "bg-amber-500/10 text-amber-500 border-amber-500/20 shadow-sm",
-      read: "bg-muted text-muted-foreground border-border",
-      seen: "bg-muted text-muted-foreground border-border",
-      confirmed: "bg-accent/10 text-accent border-accent/20 shadow-sm",
-      completed: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20 shadow-sm",
-      rejected: "bg-red-500/10 text-red-400 border-red-500/20",
-      cancelled: "bg-muted text-muted-foreground border-border",
-    };
-    return badges[status] || "bg-muted text-muted-foreground border-border";
-  };
-
-  const formatDate = (date) => {
-    return new Date(date).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric"
-    });
-  };
-
-  const serviceFilterOptions = [
-    { value: "", label: "All Services" },
-    ...Array.from(
-      new Map(
-        bookings
-          .map((booking) => [
-            booking.serviceSlug || booking.service,
-            {
-              value: booking.serviceSlug || booking.service,
-              label: booking.serviceTitle || booking.service || "Unknown Service",
-            },
-          ])
-          .filter(([value]) => Boolean(value)),
-      ).values(),
-    ),
-  ];
-
-  const getBookingService = (booking) =>
-    booking.serviceTitle || booking.service || booking.serviceSlug || "Selected service";
+  const handleDelete = () => deleteMutation.mutate(deleteModal.bookingId, { onSuccess: () => setDeleteModal({ isOpen: false, bookingId: null }) });
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center bg-card/50 border border-border/70 p-2 rounded-2xl backdrop-blur-md">
-        <div className="flex-1 relative group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-accent transition-colors" />
-          <input
-            type="text"
-            placeholder="Search bookings..."
-            className="w-full pl-10 pr-4 py-2.5 bg-muted/50 border border-border/70 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-accent/40 focus:bg-muted transition-all placeholder:text-muted-foreground/80"
-            value={searchInput}
-            onChange={handleSearch}
-          />
+    <section className="overflow-hidden rounded-[26px] border border-white/[0.08] bg-[#0d1727] shadow-[0_30px_80px_-45px_rgba(0,0,0,.9)]">
+      <div className="flex flex-col gap-4 border-b border-white/[0.07] p-4 lg:flex-row lg:items-center lg:justify-between lg:p-5">
+        <div className="relative max-w-xl flex-1">
+          <Search className="absolute left-4 top-1/2 size-4 -translate-y-1/2 text-slate-500" />
+          <input value={searchInput} onChange={(event) => { setSearchInput(event.target.value); onFilterChange({ search: event.target.value }); }} placeholder="Find a client, email or service..." className="w-full rounded-xl border border-white/[0.08] bg-slate-950/40 py-3 pl-11 pr-4 text-sm outline-none placeholder:text-slate-600 focus:border-cyan-400/40" />
         </div>
-
-        <div className="flex flex-wrap md:flex-nowrap gap-2">
-          <div className="relative min-w-[160px]">
-            <select
-              className="w-full pl-4 pr-10 py-2.5 bg-muted/50 border border-border/70 rounded-xl text-xs font-semibold text-foreground/80 appearance-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-accent/40"
-              value={filters.service || ""}
-              onChange={(e) => onFilterChange({ service: e.target.value || null })}
-            >
-              {serviceFilterOptions.map((opt) => (
-                <option key={opt.value} value={opt.value} className="bg-card text-foreground">{opt.label}</option>
-              ))}
-            </select>
-            <Filter className="absolute right-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
-          </div>
-
-          <div className="relative min-w-[140px]">
-            <select
-              className="w-full pl-4 pr-10 py-2.5 bg-muted/50 border border-border/70 rounded-xl text-xs font-semibold text-foreground/80 appearance-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-accent/40"
-              value={filters.status || ""}
-              onChange={(e) => onFilterChange({ status: e.target.value || null })}
-            >
-              {STATUS_FILTER_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value} className="bg-card text-foreground">{opt.label}</option>
-              ))}
-            </select>
-            <ArrowUpDown className="absolute right-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
-          </div>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <FilterSelect value={filters.service || ""} onChange={(value) => onFilterChange({ service: value || null })} options={services} />
+          <FilterSelect value={filters.status || ""} onChange={(value) => onFilterChange({ status: value || null })} options={[{ value: "", label: "Every status" }, ...BOOKING_STATUS_OPTIONS]} />
         </div>
       </div>
 
-      <div className="bg-gradient-to-br from-card/60 to-transparent border border-border rounded-[2rem] overflow-hidden backdrop-blur-xl shadow-3xl">
-        <div className="min-h-[400px]">
-          {loading ? (
-             <div className="flex flex-col justify-center items-center py-32 gap-4">
-                <div className="w-12 h-12 border-2 border-accent/20 border-t-accent rounded-full animate-spin" />
-                <p className="text-xs font-black uppercase tracking-[0.3em] text-accent/60">Fetching Schedules...</p>
-             </div>
-          ) : bookings.length === 0 ? (
-            <div className="py-32 text-center">
-              <Calendar className="w-12 h-12 text-muted-foreground/80 mx-auto mb-4 opacity-20" />
-              <p className="text-muted-foreground font-bold uppercase tracking-widest">No Bookings Found</p>
-            </div>
-          ) : (
-            <>
-              {/* Mobile Card View */}
-              <div className="md:hidden divide-y divide-white/[0.03]">
-                {bookings.map((booking) => (
-                  <div
-                    key={booking._id}
-                    className={`p-6 space-y-4 hover:bg-card/50 transition-colors relative group ${
-                      booking.status === 'new' ? 'bg-accent/[0.03] border-l-2 border-accent' : ''
-                    }`}
-                  >
-                    <div className="flex justify-between items-start">
-                      <div className="flex items-center gap-3">
-                        {booking.status === 'new' && (
-                          <div className="relative flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
-                          </div>
-                        )}
-                        <div>
-                          <div className="font-bold text-foreground text-sm">{booking.name}</div>
-                          <div className="text-[10px] text-muted-foreground">{booking.email}</div>
-                        </div>
-                      </div>
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-[0.1em] border ${getStatusBadge(booking.status)}`}>
-                        {booking.status}
-                      </span>
+      <div className="min-h-[440px] p-3 sm:p-5">
+        {loading ? <Loading /> : bookings.length === 0 ? <Empty /> : (
+          <div className="space-y-2.5">
+            {bookings.map((booking, index) => {
+              const service = booking.serviceTitle || booking.service || booking.serviceSlug || "Consultation";
+              const initials = booking.name?.split(" ").map((part) => part[0]).slice(0, 2).join("").toUpperCase() || "CL";
+              return (
+                <motion.article key={booking._id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.035 }} onClick={() => onSelectBooking(booking)} className="group cursor-pointer rounded-2xl border border-white/[0.065] bg-white/[0.025] p-4 transition hover:border-cyan-400/20 hover:bg-cyan-400/[0.035] sm:p-5">
+                  <div className="grid items-center gap-4 md:grid-cols-[minmax(220px,1.25fr)_minmax(160px,.8fr)_minmax(180px,.8fr)_auto]">
+                    <div className="flex min-w-0 items-center gap-3.5">
+                      <div className="relative grid size-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-cyan-300/20 to-blue-500/10 text-xs font-black text-cyan-200 ring-1 ring-inset ring-cyan-300/15">{initials}{booking.status === "new" && <span className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full border-2 border-[#0d1727] bg-amber-300" />}</div>
+                      <div className="min-w-0"><h3 className="truncate text-sm font-semibold text-slate-100">{booking.name}</h3><p className="mt-1 truncate text-xs text-slate-500">{booking.email}</p></div>
                     </div>
-
-                    <div className="grid grid-cols-2 gap-4 bg-card/50 p-3 rounded-xl border border-border/70">
-                      <div className="space-y-1">
-                        <span className="text-[8px] font-black uppercase tracking-[0.1em] text-muted-foreground">Service</span>
-                        <div className="text-[10px] font-bold text-foreground/80 truncate">{getBookingService(booking)}</div>
-                      </div>
-                      <div className="space-y-1">
-                        <span className="text-[8px] font-black uppercase tracking-[0.1em] text-muted-foreground">Schedule</span>
-                        <div className="text-[10px] font-bold text-foreground/80 flex items-center gap-1">
-                          <Calendar className="w-2.5 h-2.5 text-accent" /> {booking.preferredDate}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex justify-end gap-2 pt-2">
-                      <button onClick={() => onSelectBooking(booking)} className="flex-1 py-2 rounded-xl bg-accent/10 border border-accent/20 text-accent hover:bg-accent hover:text-foreground transition-all flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest">
-                        <Eye className="w-3.5 h-3.5" /> View Detail
-                      </button>
-                      <button onClick={() => setDeleteModal({ isOpen: true, bookingId: booking._id })} className="p-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500 hover:text-foreground transition-all">
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
+                    <div><p className="text-[9px] font-bold uppercase tracking-[0.16em] text-slate-600">Service</p><p className="mt-1 truncate text-sm capitalize text-slate-300">{service}</p></div>
+                    <div className="flex gap-5"><div><p className="text-[9px] font-bold uppercase tracking-[0.16em] text-slate-600">Date</p><p className="mt-1 flex items-center gap-1.5 text-xs text-slate-300"><CalendarDays className="size-3.5 text-cyan-400" />{booking.preferredDate || "Pending"}</p></div><div><p className="text-[9px] font-bold uppercase tracking-[0.16em] text-slate-600">Time</p><p className="mt-1 flex items-center gap-1.5 text-xs text-slate-300"><Clock3 className="size-3.5 text-slate-500" />{booking.preferredTime || "—"}</p></div></div>
+                    <div className="flex items-center justify-between gap-2 md:justify-end"><span className={`rounded-full border px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.13em] ${statusStyle[booking.status] || statusStyle.read}`}>{booking.status}</span><button onClick={(event) => { event.stopPropagation(); setDeleteModal({ isOpen: true, bookingId: booking._id }); }} className="grid size-9 place-items-center rounded-lg text-slate-600 opacity-100 transition hover:bg-rose-400/10 hover:text-rose-300 md:opacity-0 md:group-hover:opacity-100"><Trash2 className="size-4" /></button><ArrowUpRight className="size-4 text-slate-600 transition group-hover:text-cyan-300" /></div>
                   </div>
-                ))}
-              </div>
-
-              {/* Desktop Table View */}
-              <div className="hidden md:block overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-border/70 bg-card/40">
-                      <th className="px-8 py-6 text-left text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">CLIENT</th>
-                      <th className="px-8 py-6 text-left text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">SERVICE</th>
-                      <th className="px-8 py-6 text-left text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">SCHEDULE</th>
-                      <th className="px-8 py-6 text-left text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">STATUS</th>
-                      <th className="px-8 py-6 text-right text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">OPS</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/[0.03]">
-                    {bookings.map((booking) => (
-                      <motion.tr
-                        key={booking._id}
-                        layout
-                        className={`hover:bg-muted/40 transition-all group ${
-                          booking.status === 'new' ? 'bg-accent/[0.03] border-l-2 border-accent' : ''
-                        }`}
-                      >
-                        <td className="px-8 py-5">
-                          <div className="flex items-center gap-3">
-                             {booking.status === 'new' && (
-                                <div className="relative flex h-2 w-2">
-                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
-                                  <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
-                                </div>
-                             )}
-                             <div>
-                               <div className="font-bold text-foreground text-sm">{booking.name}</div>
-                               <div className="text-[10px] text-muted-foreground">{booking.email}</div>
-                             </div>
-                          </div>
-                        </td>
-                        <td className="px-8 py-5">
-                          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{getBookingService(booking)}</span>
-                          {booking.sourcePage && (
-                            <div className="mt-1 text-[9px] font-semibold text-muted-foreground/80">{booking.sourcePage}</div>
-                          )}
-                        </td>
-                        <td className="px-8 py-5">
-                          <div className="flex items-center gap-2 text-xs text-foreground/80">
-                            <Calendar className="w-3 h-3 text-accent" /> {booking.preferredDate}
-                          </div>
-                          <div className="flex items-center gap-2 text-[10px] text-muted-foreground mt-1">
-                            <Clock className="w-3 h-3" /> {booking.preferredTime}
-                          </div>
-                        </td>
-                        <td className="px-8 py-5">
-                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.15em] border ${getStatusBadge(booking.status)}`}>
-                            {booking.status}
-                          </span>
-                        </td>
-                        <td className="px-8 py-5">
-                          <div className="flex justify-end gap-2">
-                            <button onClick={() => onSelectBooking(booking)} className="p-2 rounded-xl bg-accent/10 border border-accent/20 text-accent hover:bg-accent hover:text-foreground transition-all">
-                              <Eye className="w-4 h-4" />
-                            </button>
-                            <button onClick={() => setDeleteModal({ isOpen: true, bookingId: booking._id })} className="p-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500 hover:text-foreground transition-all">
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </motion.tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </>
-          )}
-        </div>
-
-        {pagination && pagination.totalPages > 1 && (
-          <div className="border-t border-border/70 px-8 py-6 flex justify-between items-center bg-card/40">
-            <p className="text-[10px] font-black uppercase text-muted-foreground">Page {pagination.page} / {pagination.totalPages}</p>
-            <div className="flex gap-2">
-              <button
-                onClick={() => onPageChange(pagination.page - 1)}
-                disabled={!pagination.hasPrev || loading}
-                className="p-2 rounded-xl border border-border bg-muted/50 text-muted-foreground hover:text-foreground disabled:opacity-50 transition-all font-black"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => onPageChange(pagination.page + 1)}
-                disabled={!pagination.hasNext || loading}
-                className="p-2 rounded-xl border border-border bg-muted/50 text-muted-foreground hover:text-foreground disabled:opacity-50 transition-all font-black"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
+                </motion.article>
+              );
+            })}
           </div>
         )}
       </div>
 
-      <AnimatePresence>
-        {deleteModal.isOpen && (
-          <DeleteConfirmationModal
-            isOpen={deleteModal.isOpen}
-            loading={deleteMutation.isPending}
-            onClose={() => setDeleteModal({ isOpen: false, bookingId: null })}
-            onConfirm={handleDelete}
-          />
-        )}
-      </AnimatePresence>
-    </div>
+      {pagination && pagination.totalPages > 1 && <Pagination pagination={pagination} loading={loading} onPageChange={onPageChange} label={`${pagination.total || ""} bookings`} />}
+      <AnimatePresence>{deleteModal.isOpen && <DeleteConfirmationModal isOpen loading={deleteMutation.isPending} onClose={() => setDeleteModal({ isOpen: false, bookingId: null })} onConfirm={handleDelete} />}</AnimatePresence>
+    </section>
   );
 }
+
+function FilterSelect({ value, onChange, options }) { return <label className="relative min-w-40"><SlidersHorizontal className="absolute left-3.5 top-1/2 size-3.5 -translate-y-1/2 text-slate-500" /><select value={value} onChange={(event) => onChange(event.target.value)} className="w-full appearance-none rounded-xl border border-white/[0.08] bg-slate-950/40 py-3 pl-9 pr-8 text-xs text-slate-300 outline-none focus:border-cyan-400/40">{options.map((option) => <option key={option.value} value={option.value} className="bg-slate-900">{option.label}</option>)}</select></label>; }
+function Pagination({ pagination, loading, onPageChange, label }) { return <div className="flex items-center justify-between border-t border-white/[0.07] px-5 py-4"><p className="text-xs text-slate-500">Page <span className="text-slate-300">{pagination.page}</span> of {pagination.totalPages} · {label}</p><div className="flex gap-2"><button disabled={!pagination.hasPrev || loading} onClick={() => onPageChange(pagination.page - 1)} className="grid size-9 place-items-center rounded-lg border border-white/[0.08] text-slate-400 disabled:opacity-30"><ChevronLeft className="size-4" /></button><button disabled={!pagination.hasNext || loading} onClick={() => onPageChange(pagination.page + 1)} className="grid size-9 place-items-center rounded-lg border border-white/[0.08] text-slate-400 disabled:opacity-30"><ChevronRight className="size-4" /></button></div></div>; }
+function Loading() { return <div className="grid min-h-[390px] place-items-center"><div className="text-center"><div className="mx-auto size-8 animate-spin rounded-full border-2 border-cyan-300/15 border-t-cyan-300" /><p className="mt-4 text-[10px] font-bold uppercase tracking-[.2em] text-slate-600">Loading schedule</p></div></div>; }
+function Empty() { return <div className="grid min-h-[390px] place-items-center text-center"><div><UserRound className="mx-auto size-9 text-slate-700" /><p className="mt-4 text-sm font-semibold text-slate-300">No matching bookings</p><p className="mt-1 text-xs text-slate-600">Try adjusting your search or filters.</p></div></div>; }

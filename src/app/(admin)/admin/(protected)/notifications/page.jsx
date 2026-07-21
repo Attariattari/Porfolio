@@ -1,216 +1,232 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import useAdminStore from "@/lib/store/adminStore";
-import { motion, AnimatePresence } from "framer-motion";
-import { Bell, Search, Filter, Trash2, Check, UserCheck, UserX, MessageSquare, ShieldAlert, Cpu, Loader2, ArrowRightCircle } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
+import { useEffect, useMemo, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  Bell,
+  BellRing,
+  Check,
+  CheckCheck,
+  ChevronRight,
+  Circle,
+  Inbox,
+  Loader2,
+  Mail,
+  RefreshCw,
+  Search,
+  ShieldCheck,
+  Sparkles,
+  Trash2,
+  UserCheck,
+  UserRoundPlus,
+  UserX,
+  X,
+} from "lucide-react";
+import { format, formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
-import { formatName } from "@/lib/utils";
+import useAdminStore from "@/lib/store/adminStore";
+
+const filters = [
+  { id: "all", label: "All notifications", icon: Inbox },
+  { id: "unread", label: "Unread", icon: BellRing },
+  { id: "read", label: "Read", icon: CheckCheck },
+  { id: "user_requests", label: "Access requests", icon: UserRoundPlus },
+  { id: "MESSAGE", label: "Messages", icon: Mail },
+  { id: "SYSTEM", label: "System", icon: ShieldCheck },
+];
+
+function getNotificationMeta(type = "") {
+  const normalized = type.toUpperCase();
+  if (normalized.includes("USER") || normalized.includes("REQUEST") || normalized.includes("VERIFY")) {
+    return { label: "Access", Icon: UserRoundPlus, tone: "violet" };
+  }
+  if (normalized.includes("MESSAGE")) return { label: "Message", Icon: Mail, tone: "emerald" };
+  return { label: "System", Icon: ShieldCheck, tone: "amber" };
+}
+
+const tones = {
+  violet: "bg-violet-500/10 text-violet-500 border-violet-500/20",
+  emerald: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
+  amber: "bg-amber-500/10 text-amber-500 border-amber-500/20",
+};
 
 export default function NotificationsPage() {
-    const { notifications, fetchNotifications, updateNotification, deleteNotification, updateUserStatus } = useAdminStore();
-    const [filter, setFilter] = useState("all");
-    const [loading, setLoading] = useState(true);
+  const { notifications, fetchNotifications, updateNotification, deleteNotification, updateUserStatus } = useAdminStore();
+  const [filter, setFilter] = useState("all");
+  const [query, setQuery] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-    useEffect(() => {
-        let active = true;
-        const refresh = () => fetchNotifications().then(() => {
-            if (active) setLoading(false);
-        });
-        refresh();
-        const interval = window.setInterval(() => {
-            if (document.visibilityState === "visible") refresh();
-        }, 15000);
-        return () => {
-            active = false;
-            window.clearInterval(interval);
-        };
-    }, [fetchNotifications]);
+  const refresh = async (quiet = false) => {
+    if (!quiet) setRefreshing(true);
+    await fetchNotifications();
+    setLoading(false);
+    setRefreshing(false);
+  };
 
-    const filteredNotifications = notifications.filter(n => {
-        if (filter === "all") return true;
-        if (filter === "unread") return n.status === "unread";
-        if (filter === "read") return n.status === "read";
-        if (filter === "user_requests") return n.type === "USER_REQUEST";
-        return n.type === filter;
-    });
-
-    const markAllRead = async () => {
-        const unread = notifications.filter(n => n.status === "unread");
-        for (const n of unread) { await updateNotification(n._id || n.id, "read"); }
-        toast.success("Security monitors stabilized.");
+  useEffect(() => {
+    let active = true;
+    fetchNotifications().finally(() => active && setLoading(false));
+    const interval = window.setInterval(() => {
+      if (document.visibilityState === "visible") fetchNotifications();
+    }, 15000);
+    return () => {
+      active = false;
+      window.clearInterval(interval);
     };
+  }, [fetchNotifications]);
 
-    if (loading) return (
-        <div className="flex flex-col items-center justify-center min-h-[400px]">
-             <Loader2 className="w-12 h-12 text-accent animate-spin opacity-50 mb-6" />
-             <p className="text-[10px] font-black uppercase text-muted-foreground tracking-[0.4em] animate-pulse">Syncing Event Log...</p>
-        </div>
-    );
+  const unreadCount = notifications.filter((item) => item.status === "unread").length;
+  const readCount = notifications.length - unreadCount;
+  const requestCount = notifications.filter((item) => item.type === "USER_REQUEST" && item.status === "unread").length;
 
+  const filteredNotifications = useMemo(() => {
+    const needle = query.trim().toLowerCase();
+    return notifications.filter((item) => {
+      const filterMatches =
+        filter === "all" ||
+        (filter === "unread" && item.status === "unread") ||
+        (filter === "read" && item.status !== "unread") ||
+        (filter === "user_requests" && ["USER_REQUEST", "REVERIFY_REQUEST"].includes(item.type)) ||
+        item.type === filter;
+      const searchMatches = !needle || `${item.title || ""} ${item.message || ""} ${item.type || ""}`.toLowerCase().includes(needle);
+      return filterMatches && searchMatches;
+    });
+  }, [filter, notifications, query]);
+
+  const markAllRead = async () => {
+    const unread = notifications.filter((item) => item.status === "unread");
+    await Promise.all(unread.map((item) => updateNotification(item._id || item.id, "read")));
+    toast.success(unread.length ? "All notifications marked as read." : "You are already all caught up.");
+  };
+
+  const handleAccess = async (notification, decision) => {
+    const match = notification.message?.match(/\(([^)]+)\)/);
+    const email = match ? match[1] : notification.message?.split(" ")[0];
+    if (!email) return toast.error("User email could not be found.");
+    await updateUserStatus(email, decision);
+    toast.success(decision === "approve" ? "Access request approved." : "Access request denied.");
+    refresh(true);
+  };
+
+  if (loading) {
     return (
-        <div className="space-y-8 max-w-7xl mx-auto">
-            {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-border/70">
-                <div>
-                    <h1 className="text-4xl font-black italic tracking-tighter uppercase text-foreground mb-2">
-                        MUHYO TECH <span className="text-accent">Log</span>
-                    </h1>
-                    <p className="text-muted-foreground text-sm font-medium tracking-tight opacity-70">
-                        Detailed event stream and administrative alerts.
-                    </p>
-                </div>
-
-                <div className="flex items-center gap-4">
-                    <button
-                        onClick={markAllRead}
-                        className="px-6 py-4 bg-accent/10 border border-accent/20 rounded-2xl text-[10px] font-black uppercase text-accent tracking-widest hover:bg-accent hover:text-foreground transition-all shadow-lg shadow-accent/5 flex items-center gap-3"
-                    >
-                        <Check className="w-4 h-4" /> Stabilize Log
-                    </button>
-                    <div className="px-5 py-4 bg-muted/50 border border-border rounded-2xl flex items-center gap-3">
-                         <Bell className="w-5 h-5 text-muted-foreground" />
-                         <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Unread Logs: <span className="text-accent">{notifications.filter(n=>n.status==='unread').length}</span></p>
-                    </div>
-                </div>
-            </div>
-
-            {/* Controls */}
-            <div className="flex flex-wrap gap-2">
-                {['all', 'unread', 'read', 'user_requests', 'MESSAGE', 'SYSTEM'].map((f) => (
-                    <button
-                        key={f}
-                        onClick={() => setFilter(f)}
-                        className={`px-5 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border ${
-                            filter === f
-                            ? 'bg-accent text-foreground border-accent shadow-xl shadow-accent/20'
-                            : 'bg-card/40 text-muted-foreground border-border/70 hover:border-accent/30'
-                        }`}
-                    >
-                        {f.replace('_', ' ')}
-                    </button>
-                ))}
-            </div>
-
-            {/* Log List */}
-            <div className="grid gap-4">
-                <AnimatePresence mode="popLayout">
-                    {filteredNotifications.length === 0 ? (
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-20 text-center bg-card/20 border border-border/70 rounded-[3rem]">
-                             <ShieldAlert className="w-16 h-16 text-muted-foreground/80 mx-auto mb-6 opacity-30" />
-                             <h3 className="text-xl font-bold text-muted-foreground uppercase tracking-widest italic">All Quiet in the Console.</h3>
-                             <p className="text-sm text-muted-foreground/80 mt-2 font-medium tracking-tight">No events match your current filter criteria.</p>
-                        </motion.div>
-                    ) : (
-                        filteredNotifications.map((n) => {
-                            const Icon = n.type === 'USER_REQUEST' ? UserCheck : n.type === 'MESSAGE' ? MessageSquare : Cpu;
-                            const isUnread = n.status === 'unread';
-                            const isPendingUser = n.type === 'USER_REQUEST' && n.status === 'unread';
-                            const nId = n._id || n.id;
-
-                            return (
-                                <motion.div
-                                    key={nId}
-                                    layout
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: 20 }}
-                                    className={`group relative bg-card/60 backdrop-blur-2xl border border-border/70 p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all hover:bg-muted/40 ${isUnread ? 'border-l-4 border-l-blue-500' : ''}`}
-                                >
-                                    <div className="flex items-start md:items-center gap-4 md:gap-8 flex-1">
-                                        <div className={`w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl flex items-center justify-center border shrink-0 transition-all ${isUnread ? 'bg-accent/10 border-accent/30 text-accent' : 'bg-muted/50 border-border/70 text-muted-foreground/80 opacity-60'}`}>
-                                            <Icon className="w-5 h-5 md:w-6 md:h-6" />
-                                        </div>
-
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-1 md:mb-2">
-                                                <h3 className={`text-base md:text-lg font-black italic tracking-tight truncate ${isUnread ? 'text-foreground' : 'text-muted-foreground'}`}>{n.title}</h3>
-                                                <div className="flex items-center gap-2">
-                                                    <span className={`text-[7px] md:text-[8px] font-black uppercase tracking-[0.2em] px-2 py-0.5 md:py-1 rounded-md ${
-                                                        n.type === 'USER_REQUEST' ? 'bg-accent/10 text-accent' :
-                                                        n.type === 'MESSAGE' ? 'bg-indigo-600/10 text-indigo-500' :
-                                                        'bg-muted text-muted-foreground'
-                                                    }`}>
-                                                        {n.type}
-                                                    </span>
-                                                    <span className="text-[8px] md:text-[9px] text-muted-foreground font-bold uppercase tracking-widest opacity-60">
-                                                        {formatDistanceToNow(new Date(n.createdAt))} ago
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <p className={`text-[11px] md:text-sm font-medium tracking-tight leading-relaxed line-clamp-2 md:line-clamp-none ${isUnread ? 'text-foreground/80' : 'text-muted-foreground opacity-60'}`}>
-                                                {n.message}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center justify-between md:justify-end gap-4 border-t border-border/70 md:border-t-0 pt-4 md:pt-0">
-                                        {isPendingUser && (
-                                            <div className="flex gap-2">
-                                                <button
-                                                    onClick={async () => {
-                                                        const match = n.message.match(/\(([^)]+)\)/);
-                                                        const email = match ? match[1] : n.message.split(' ')[0];
-                                                        await updateUserStatus(email, 'approve');
-                                                    }}
-                                                    className="p-3 md:p-4 bg-emerald-600/10 text-emerald-500 border border-emerald-600/20 rounded-xl md:rounded-2xl hover:bg-emerald-600 hover:text-foreground transition-all shadow-xl shadow-emerald-500/10"
-                                                    title="Approve immediately"
-                                                >
-                                                    <UserCheck className="w-5 h-5 md:w-6 md:h-6" />
-                                                </button>
-                                                <button
-                                                    onClick={async () => {
-                                                        const match = n.message.match(/\(([^)]+)\)/);
-                                                        const email = match ? match[1] : n.message.split(' ')[0];
-                                                        await updateUserStatus(email, 'deny');
-                                                    }}
-                                                    className="p-3 md:p-4 bg-red-600/10 text-red-500 border border-red-600/20 rounded-xl md:rounded-2xl hover:bg-red-600 hover:text-foreground transition-all shadow-xl shadow-red-500/10"
-                                                    title="Deny immediately"
-                                                >
-                                                    <UserX className="w-5 h-5 md:w-6 md:h-6" />
-                                                </button>
-                                                <div className="w-px h-8 bg-muted mx-1 md:hidden" />
-                                            </div>
-                                        )}
-
-                                        <div className="flex items-center gap-2 md:gap-3 group-hover:opacity-100 transition-opacity ml-auto md:ml-0">
-                                            {isUnread ? (
-                                                <button
-                                                    onClick={() => updateNotification(nId, 'read')}
-                                                    className="p-3 md:p-4 bg-accent/10 text-accent rounded-xl md:rounded-2xl border border-accent/20 hover:bg-accent hover:text-accent-foreground transition-all"
-                                                    title="Mark read"
-                                                >
-                                                    <Check className="w-4 h-4 md:w-5 md:h-5" />
-                                                </button>
-                                            ) : (
-                                                <button
-                                                    onClick={() => updateNotification(nId, 'unread')}
-                                                    className="p-3 md:p-4 bg-muted text-muted-foreground rounded-xl md:rounded-2xl border border-border/70 hover:bg-muted hover:text-foreground transition-all"
-                                                    title="Mark unread"
-                                                >
-                                                    <ArrowRightCircle className="w-4 h-4 md:w-5 md:h-5 rotate-180" />
-                                                </button>
-                                            )}
-                                            <button
-                                                onClick={() => deleteNotification(nId)}
-                                                className="p-3 md:p-4 bg-red-500/10 text-red-500 rounded-xl md:rounded-2xl border border-red-500/20 hover:bg-red-500 hover:text-foreground transition-all"
-                                                title="Delete entry"
-                                            >
-                                                <Trash2 className="w-4 h-4 md:w-5 md:h-5" />
-                                            </button>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            );
-                        })
-                    )}
-                </AnimatePresence>
-            </div>
-
-            <div className="pt-10 opacity-30 text-center">
-                 <p className="text-[10px] font-black uppercase tracking-[0.5em] text-muted-foreground/80">Administrative Log Manifest v2.4 • SECURE_RECORD_ALPHA</p>
-            </div>
+      <div className="flex min-h-[520px] flex-col items-center justify-center rounded-[2rem] border border-border/70 bg-card/40">
+        <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent/10 text-accent">
+          <Loader2 className="h-6 w-6 animate-spin" />
         </div>
+        <p className="text-sm font-semibold text-foreground">Loading notifications</p>
+        <p className="mt-1 text-xs text-muted-foreground">Bringing your latest activity together…</p>
+      </div>
     );
+  }
+
+  return (
+    <main className="mx-auto max-w-7xl space-y-6 pb-12">
+      <section className="relative overflow-hidden rounded-[2rem] border border-border/70 bg-card p-6 shadow-sm md:p-8">
+        <div className="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full bg-accent/10 blur-3xl" />
+        <div className="relative flex flex-col justify-between gap-6 lg:flex-row lg:items-center">
+          <div className="flex items-start gap-4">
+            <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent text-accent-foreground shadow-lg shadow-accent/20">
+              <Bell className="h-6 w-6" />
+              {unreadCount > 0 && <span className="absolute -right-1 -top-1 h-3.5 w-3.5 rounded-full border-[3px] border-card bg-blue-500" />}
+            </div>
+            <div>
+              <div className="mb-1 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-accent">
+                <Sparkles className="h-3.5 w-3.5" /> Admin workspace
+              </div>
+              <h1 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">Notification center</h1>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+                Review account requests, messages and system activity. Unread updates stay highlighted until you review them.
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <button onClick={() => refresh()} disabled={refreshing} className="inline-flex h-11 items-center gap-2 rounded-xl border border-border bg-background px-4 text-sm font-semibold text-foreground transition hover:bg-muted disabled:opacity-60">
+              <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} /> Refresh
+            </button>
+            <button onClick={markAllRead} disabled={!unreadCount} className="inline-flex h-11 items-center gap-2 rounded-xl bg-foreground px-5 text-sm font-semibold text-background transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40">
+              <CheckCheck className="h-4 w-4" /> Mark all as read
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section className="grid gap-3 sm:grid-cols-3">
+        {[
+          { label: "Unread", value: unreadCount, note: "Needs your attention", Icon: BellRing, style: "text-blue-500 bg-blue-500/10" },
+          { label: "Read", value: readCount, note: "Already reviewed", Icon: CheckCheck, style: "text-emerald-500 bg-emerald-500/10" },
+          { label: "Pending access", value: requestCount, note: "Requires a decision", Icon: UserRoundPlus, style: "text-violet-500 bg-violet-500/10" },
+        ].map(({ label, value, note, Icon, style }) => (
+          <div key={label} className="flex items-center gap-4 rounded-2xl border border-border/70 bg-card p-4 shadow-sm">
+            <div className={`flex h-11 w-11 items-center justify-center rounded-xl ${style}`}><Icon className="h-5 w-5" /></div>
+            <div><p className="text-2xl font-bold leading-none text-foreground">{value}</p><p className="mt-1 text-sm font-semibold text-foreground">{label}</p><p className="text-xs text-muted-foreground">{note}</p></div>
+          </div>
+        ))}
+      </section>
+
+      <section className="overflow-hidden rounded-[2rem] border border-border/70 bg-card shadow-sm">
+        <div className="border-b border-border/70 p-4 md:p-5">
+          <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+            <div className="flex gap-2 overflow-x-auto pb-1 xl:pb-0">
+              {filters.map(({ id, label, icon: Icon }) => {
+                const count = id === "all" ? notifications.length : id === "unread" ? unreadCount : id === "read" ? readCount : null;
+                return <button key={id} onClick={() => setFilter(id)} className={`inline-flex shrink-0 items-center gap-2 rounded-xl px-3.5 py-2.5 text-xs font-semibold transition ${filter === id ? "bg-foreground text-background shadow-sm" : "text-muted-foreground hover:bg-muted hover:text-foreground"}`}><Icon className="h-4 w-4" />{label}{count !== null && <span className={`rounded-md px-1.5 py-0.5 text-[10px] ${filter === id ? "bg-background/15" : "bg-muted"}`}>{count}</span>}</button>;
+              })}
+            </div>
+            <div className="relative w-full xl:w-72">
+              <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search notifications…" className="h-11 w-full rounded-xl border border-border bg-background pl-10 pr-10 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-accent focus:ring-4 focus:ring-accent/10" />
+              {query && <button onClick={() => setQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"><X className="h-4 w-4" /></button>}
+            </div>
+          </div>
+        </div>
+
+        <div className="p-3 md:p-5">
+          <AnimatePresence mode="popLayout">
+            {!filteredNotifications.length ? (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex min-h-80 flex-col items-center justify-center px-6 text-center">
+                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-muted text-muted-foreground"><Inbox className="h-7 w-7" /></div>
+                <h2 className="text-lg font-bold text-foreground">No notifications found</h2>
+                <p className="mt-1 max-w-sm text-sm leading-6 text-muted-foreground">Try another filter or clear your search. New updates will appear here automatically.</p>
+              </motion.div>
+            ) : filteredNotifications.map((notification, index) => {
+              const id = notification._id || notification.id;
+              const unread = notification.status === "unread";
+              const pendingRequest = ["USER_REQUEST", "REVERIFY_REQUEST"].includes(notification.type) && unread;
+              const { label, Icon, tone } = getNotificationMeta(notification.type);
+              const createdAt = new Date(notification.createdAt);
+              return (
+                <motion.article key={id} layout initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: .98 }} transition={{ delay: Math.min(index * .025, .15) }} className={`group relative mb-3 overflow-hidden rounded-2xl border p-4 transition md:p-5 ${unread ? "border-blue-500/25 bg-blue-500/[0.055] shadow-sm" : "border-border/70 bg-background/35 hover:bg-muted/35"}`}>
+                  {unread && <span className="absolute inset-y-0 left-0 w-1 bg-blue-500" />}
+                  <div className="flex gap-3 md:gap-4">
+                    <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border ${tones[tone]} ${!unread ? "grayscale-[.35] opacity-70" : ""}`}><Icon className="h-5 w-5" /></div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                        <div className="min-w-0">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <h2 className={`text-sm md:text-base ${unread ? "font-bold text-foreground" : "font-semibold text-foreground/75"}`}>{notification.title || "Notification"}</h2>
+                            {unread ? <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-blue-500"><Circle className="h-1.5 w-1.5 fill-current" /> Unread</span> : <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-500"><Check className="h-3 w-3" /> Read</span>}
+                            <span className={`rounded-full border px-2 py-1 text-[10px] font-bold uppercase tracking-wider ${tones[tone]}`}>{label}</span>
+                          </div>
+                          <p className={`mt-2 max-w-3xl text-sm leading-6 ${unread ? "text-foreground/80" : "text-muted-foreground"}`}>{notification.message}</p>
+                          <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground"><span title={format(createdAt, "PPpp")}>{formatDistanceToNow(createdAt, { addSuffix: true })}</span><span>•</span><span>{format(createdAt, "MMM d, yyyy · h:mm a")}</span></div>
+                        </div>
+                        <div className="flex shrink-0 flex-wrap items-center gap-2">
+                          {pendingRequest && <><button onClick={() => handleAccess(notification, "approve")} className="inline-flex h-9 items-center gap-2 rounded-lg bg-emerald-500 px-3 text-xs font-bold text-white transition hover:bg-emerald-600"><UserCheck className="h-4 w-4" /> Approve</button><button onClick={() => handleAccess(notification, "deny")} className="inline-flex h-9 items-center gap-2 rounded-lg border border-red-500/25 bg-red-500/10 px-3 text-xs font-bold text-red-500 transition hover:bg-red-500 hover:text-white"><UserX className="h-4 w-4" /> Deny</button></>}
+                          <button onClick={() => updateNotification(id, unread ? "read" : "unread")} className="inline-flex h-9 items-center gap-2 rounded-lg border border-border bg-card px-3 text-xs font-semibold text-foreground transition hover:bg-muted" title={unread ? "Mark as read" : "Mark as unread"}>{unread ? <Check className="h-4 w-4" /> : <BellRing className="h-4 w-4" />}<span className="hidden sm:inline">{unread ? "Mark read" : "Mark unread"}</span></button>
+                          <button onClick={() => deleteNotification(id)} className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-red-500" title="Delete notification"><Trash2 className="h-4 w-4" /></button>
+                        </div>
+                      </div>
+                    </div>
+                    <ChevronRight className="mt-3 hidden h-4 w-4 text-muted-foreground/30 md:block" />
+                  </div>
+                </motion.article>
+              );
+            })}
+          </AnimatePresence>
+        </div>
+      </section>
+    </main>
+  );
 }

@@ -36,11 +36,13 @@ export const NotificationController = {
   /**
    * Mark notification as read
    */
-  markAsRead: async (id) => {
+  updateStatus: async (id, status = "read") => {
     await dbConnect();
+    const allowedStatuses = ["unread", "read", "approved", "denied"];
+    const nextStatus = allowedStatuses.includes(status) ? status : "read";
     const notification = await Notification.findByIdAndUpdate(
       id,
-      { status: "read" },
+      { status: nextStatus },
       { new: true }
     );
     if (!notification) throw new Error("Notification not found");
@@ -50,6 +52,8 @@ export const NotificationController = {
     emitSocketEvent(SOCKET_EVENTS.NOTIFICATION_UPDATED, serialized);
     return serialized;
   },
+
+  markAsRead: async (id) => NotificationController.updateStatus(id, "read"),
 
   /**
    * Mark all as read

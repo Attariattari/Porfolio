@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from "react";
 import useAdminStore from "@/lib/store/adminStore";
-import DataTable from "@/components/admin/DataTable";
 import FormModal from "@/components/admin/FormModal";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import { z } from "zod";
 import { toast } from "sonner";
 import { AnimatePresence } from "framer-motion";
-import { User, Briefcase, GraduationCap, PlusCircle } from "lucide-react";
+import { User, Briefcase, GraduationCap, Pencil, Plus, Trash2, Code2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const profileSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -43,6 +43,7 @@ const resumeSectionsSchema = z.object({
 });
 
 export default function ResumePage() {
+  const router = useRouter();
   const { resumeData, fetchResume, updateResume } = useAdminStore();
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isExpModalOpen, setIsExpModalOpen] = useState(false);
@@ -162,7 +163,7 @@ export default function ResumePage() {
 
   const handleExpAdd = () => {
     setEditingExp(null);
-    setIsExpModalOpen(true);
+    router.push("/admin/resume/experience/new");
   };
 
   const onExpSubmit = async (data) => {
@@ -200,7 +201,7 @@ export default function ResumePage() {
 
   const handleExpEdit = (exp) => {
     setEditingExp(exp);
-    setIsExpModalOpen(true);
+    router.push(`/admin/resume/experience/${exp.index}`);
   };
 
   const handleExpDelete = async (id) => {
@@ -220,113 +221,68 @@ export default function ResumePage() {
   }));
 
   return (
-    <div className="space-y-12 pb-20">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div>
-          <h1 className="text-2xl md:text-4xl font-black italic uppercase tracking-tighter text-foreground">
-            Career{" "}
-            <span className="text-secondary underline decoration-secondary/20 underline-offset-8">
-              Blueprint
-            </span>
-          </h1>
-          <p className="text-[10px] md:text-sm text-muted-foreground mt-4 font-medium tracking-tight uppercase tracking-widest">
-            Orchestrate your professional journey and executive presence.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-3">
+    <div className="mx-auto max-w-[1500px] space-y-6 pb-20">
+      <header className="relative overflow-hidden rounded-[28px] border border-white/[0.08] bg-[#0d1727] p-6 sm:p-8"><div className="pointer-events-none absolute -right-20 -top-24 size-72 rounded-full bg-blue-400/[0.06] blur-3xl" /><div className="relative flex flex-col justify-between gap-6 lg:flex-row lg:items-center"><div className="flex items-start gap-4"><span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-blue-400/10 text-blue-300 ring-1 ring-inset ring-blue-400/15"><Briefcase className="size-5" /></span><div><p className="text-[10px] font-bold uppercase tracking-[.24em] text-blue-300">Career workspace</p><h1 className="mt-2 text-2xl font-semibold tracking-[-.035em] text-white sm:text-3xl">Resume management</h1><p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">Maintain your profile, experience and professional credentials.</p></div></div><div className="flex flex-wrap gap-2">
           <button
-            onClick={() => setIsSectionsModalOpen(true)}
-            className="px-8 py-4 bg-muted/50 border border-border rounded-2xl hover:bg-muted hover:border-border transition-all font-black uppercase text-[10px] tracking-widest flex items-center gap-4 text-foreground"
+            onClick={() => router.push("/admin/resume/sections")}
+            className="inline-flex h-11 items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.035] px-4 text-xs font-semibold text-slate-400 transition hover:text-white"
           >
             <GraduationCap className="w-4 h-4 text-secondary" />
             Edit Resume Sections
           </button>
           <button
-            onClick={() => setIsProfileModalOpen(true)}
-            className="px-8 py-4 bg-muted/50 border border-border rounded-2xl hover:bg-muted hover:border-border transition-all font-black uppercase text-[10px] tracking-widest flex items-center gap-4 text-foreground"
+            onClick={() => router.push("/admin/resume/profile")}
+            className="inline-flex h-11 items-center gap-2 rounded-xl bg-blue-300 px-4 text-xs font-bold text-slate-950 transition hover:bg-blue-200"
           >
             <User className="w-4 h-4 text-secondary" />
             Edit Profile Core
           </button>
-        </div>
-      </div>
+        </div></div></header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="p-8 border border-border/70 bg-card/40 rounded-[2.5rem]">
-          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 mb-6 flex items-center gap-2">
-            <User className="w-3 h-3" /> Profile Snapshot
-          </h3>
-          <div className="space-y-6">
-            <div>
-              <span className="text-[10px] uppercase font-black tracking-widest text-secondary block mb-1">
-                Professional Identity
-              </span>
-              <p className="text-xl font-black italic text-foreground">
-                {resumeData?.name || "Initializing..."}
-              </p>
-            </div>
-            <div>
-              <span className="text-[10px] uppercase font-black tracking-widest text-secondary block mb-1">
-                Market Position
-              </span>
-              <p className="font-bold opacity-80 text-foreground/90">
-                {resumeData?.role || "Sector Unspecified"}
-              </p>
-            </div>
-            <div>
-              <span className="text-[10px] uppercase font-black tracking-widest text-secondary block mb-1">
-                Strategic Narrative
-              </span>
-              <p className="text-sm text-muted-foreground leading-relaxed italic">
-                {resumeData?.tagline ||
-                  "Architecting high-performance digital ecosystems."}
-              </p>
-            </div>
-          </div>
+      <section className="overflow-hidden rounded-[26px] border border-white/[0.08] bg-[#0d1727]">
+        <div className="grid lg:grid-cols-[1.35fr_.65fr]">
+          <div className="relative p-6 sm:p-8 lg:p-10"><div className="pointer-events-none absolute -left-16 -top-20 size-56 rounded-full bg-blue-400/[0.055] blur-3xl" /><div className="relative flex flex-col gap-6 sm:flex-row sm:items-center"><div className="grid size-20 shrink-0 place-items-center rounded-[22px] bg-gradient-to-br from-blue-300 to-indigo-500 text-xl font-black text-slate-950 shadow-[0_18px_45px_-20px_rgba(125,211,252,.7)]">{(resumeData?.name || "Resume").split(" ").map((part) => part[0]).slice(0, 2).join("").toUpperCase()}</div><div className="min-w-0"><p className="text-[9px] font-bold uppercase tracking-[.2em] text-blue-300">Professional profile</p><h2 className="mt-2 truncate text-2xl font-semibold tracking-tight text-white sm:text-3xl">{resumeData?.name || "Your name"}</h2><p className="mt-2 text-sm font-semibold text-blue-200/80">{resumeData?.role || "Professional role"}</p><p className="mt-4 max-w-2xl text-sm leading-6 text-slate-500">{resumeData?.tagline || "Add a concise professional tagline."}</p></div></div><div className="relative mt-7 border-t border-white/[0.07] pt-6"><p className="text-[9px] font-bold uppercase tracking-[.18em] text-slate-600">Career summary</p><p className="mt-2 line-clamp-3 text-sm leading-6 text-slate-400">{resumeData?.aboutSummary || resumeData?.about || "Add your professional summary from Edit Profile Core."}</p></div></div>
+          <div className="border-t border-white/[0.07] bg-white/[0.018] p-5 sm:p-7 lg:border-l lg:border-t-0"><p className="mb-4 text-[9px] font-bold uppercase tracking-[.2em] text-slate-600">Career at a glance</p><div className="space-y-2">{(resumeData?.stats || []).map((stat, index) => <div key={index} className="flex items-center justify-between rounded-xl border border-white/[0.065] bg-slate-950/25 px-4 py-3"><span className="text-xs text-slate-500">{stat.label}</span><span className="text-lg font-semibold text-white">{stat.value}</span></div>)}</div><div className="mt-5 grid grid-cols-3 gap-2 border-t border-white/[0.07] pt-5"><OverviewCount icon={Briefcase} value={(resumeData?.experience || []).length} label="Roles" /><OverviewCount icon={GraduationCap} value={(resumeData?.education || []).length} label="Education" /><OverviewCount icon={Code2} value={(resumeData?.skillCategories || resumeData?.skills || []).length} label="Skill sets" /></div></div>
         </div>
-
-        <div className="p-8 border border-border/70 bg-card/40 rounded-[2.5rem]">
-          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 mb-6 flex items-center gap-2">
-            <PlusCircle className="w-3 h-3" /> Professional Metrics
-          </h3>
-          <div className="grid grid-cols-3 gap-4">
-            {(resumeData?.stats || []).map((stat, i) => (
-              <div
-                key={i}
-                className="p-4 bg-muted/50 rounded-2xl border border-border/70 flex flex-col items-center justify-center text-center group hover:bg-muted transition-colors"
-              >
-                <span className="text-2xl font-black italic mb-1 text-foreground group-hover:scale-110 transition-transform">
-                  {stat.value}
-                </span>
-                <span className="text-[8px] uppercase font-black tracking-widest opacity-50 text-foreground">
-                  {stat.label}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      </section>
 
       <div className="space-y-8">
-        <div className="flex items-center justify-between border-b border-border/70 pb-6">
-          <h2 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-4 text-foreground">
-            <Briefcase className="w-8 h-8 text-secondary" />
-            Professional History
+        <div className="flex flex-col justify-between gap-4 border-b border-white/[0.07] pb-5 sm:flex-row sm:items-center">
+          <h2 className="flex items-center gap-3 text-base font-semibold text-slate-100">
+            <span className="grid size-9 place-items-center rounded-xl bg-blue-400/10 text-blue-300"><Briefcase className="size-4" /></span>
+            Work experience
           </h2>
+          <button onClick={handleExpAdd} className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-300 px-4 py-3 text-xs font-bold text-slate-950 hover:bg-blue-200"><Plus className="size-4" />Add experience</button>
         </div>
 
-        <DataTable
-          title="Active Chronology"
-          columns={expColumns}
-          data={expDataWithId}
-          onAdd={handleExpAdd}
-          onEdit={handleExpEdit}
-          onDelete={handleExpDelete}
-        />
+        <div data-columns={expColumns.length} className="relative space-y-3 before:absolute before:bottom-8 before:left-[27px] before:top-8 before:w-px before:bg-blue-400/15">{expDataWithId.map((exp, index) => <div key={exp.id} className="group relative ml-0 grid gap-4 rounded-2xl border border-white/[0.07] bg-[#0d1727] p-5 pl-16 transition hover:border-blue-400/20 md:grid-cols-[1fr_180px_auto]"><span className="absolute left-[18px] top-6 z-10 grid size-5 place-items-center rounded-full border-4 border-[#0d1727] bg-blue-300 shadow-[0_0_0_1px_rgba(125,211,252,.25)]" /><div className="min-w-0"><p className="text-[9px] font-bold uppercase tracking-[.16em] text-blue-300/70">{exp.company}</p><h3 className="mt-1 truncate text-sm font-semibold text-slate-100">{exp.role}</h3><p className="mt-2 text-xs leading-5 text-slate-500">{exp.metrics}</p>{Array.isArray(exp.achievements) && exp.achievements.length > 0 && <p className="mt-2 text-[10px] text-slate-600">{exp.achievements.length} achievements documented</p>}</div><div><p className="text-[9px] font-bold uppercase tracking-[.16em] text-slate-600">Tenure</p><p className="mt-1 text-xs font-medium text-slate-300">{exp.duration}</p><span className={`mt-3 inline-flex rounded-full px-2 py-1 text-[8px] font-bold uppercase tracking-wider ${exp._isFromDataJs ? "bg-white/[0.04] text-slate-600" : "bg-emerald-400/10 text-emerald-300"}`}>{exp._isFromDataJs ? "Template" : "Live"}</span></div><div className="flex items-center gap-1 md:justify-end"><button onClick={() => handleExpEdit(exp)} className="grid size-9 place-items-center rounded-lg text-slate-600 hover:bg-blue-400/10 hover:text-blue-300"><Pencil className="size-3.5" /></button><button onClick={() => handleExpDelete(index)} className="grid size-9 place-items-center rounded-lg text-slate-600 hover:bg-rose-400/10 hover:text-rose-300"><Trash2 className="size-3.5" /></button></div></div>)}</div>
+        {expDataWithId.length === 0 && <div className="rounded-2xl border border-dashed border-white/[0.08] py-12 text-center"><Briefcase className="mx-auto size-8 text-slate-700" /><p className="mt-3 text-sm text-slate-500">No work experience added yet.</p></div>}
+      </div>
+
+      <div className="grid items-start gap-6 lg:grid-cols-2">
+        <ResumeOverviewSection icon={User} eyebrow="Contact" title="Contact information" empty="No contact details added yet.">
+          <div className="grid gap-3 sm:grid-cols-2">{(resumeData?.contact || []).map((item, index) => <div key={index} className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-4"><p className="text-[9px] font-bold uppercase tracking-[.16em] text-blue-300/70">{item.icon || `Contact ${index + 1}`}</p><p className="mt-2 break-words text-sm font-medium text-slate-300">{item.text}</p></div>)}</div>
+          {(resumeData?.contact || []).length === 0 && <EmptySection text="No contact details added yet." />}
+        </ResumeOverviewSection>
+
+        <ResumeOverviewSection icon={GraduationCap} eyebrow="Education" title="Academic background">
+          <div className="space-y-3">{(resumeData?.education || []).map((item, index) => <div key={index} className="flex flex-col justify-between gap-3 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4 sm:flex-row sm:items-center"><div><h3 className="text-sm font-semibold text-slate-200">{item.degree}</h3><p className="mt-1 text-xs text-slate-500">{item.institution}</p></div><span className="shrink-0 rounded-full bg-blue-400/10 px-3 py-1.5 text-[9px] font-bold text-blue-300">{item.duration}</span></div>)}</div>
+          {(resumeData?.education || []).length === 0 && <EmptySection text="No education records added yet." />}
+        </ResumeOverviewSection>
+
+        <ResumeOverviewSection icon={Code2} eyebrow="Expertise" title="Skill categories">
+          <div className="space-y-4">{(resumeData?.skillCategories || resumeData?.skills || []).map((group, index) => <div key={index} className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-4"><h3 className="text-xs font-semibold text-blue-300">{group.category}</h3><div className="mt-3 flex flex-wrap gap-2">{(group.items || []).map((skill, skillIndex) => <span key={skillIndex} className="rounded-lg border border-white/[0.07] bg-slate-950/25 px-3 py-1.5 text-[10px] text-slate-400">{skill}</span>)}</div></div>)}</div>
+          {(resumeData?.skillCategories || resumeData?.skills || []).length === 0 && <EmptySection text="No skill categories added yet." />}
+        </ResumeOverviewSection>
+
+        <ResumeOverviewSection icon={Briefcase} eyebrow="Portfolio" title="Notable projects">
+          <div className="space-y-3">{(resumeData?.notableProjects || resumeData?.projects || []).map((project, index) => <div key={index} className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-4"><h3 className="text-sm font-semibold text-slate-200">{project.name}</h3><div className="mt-2 flex flex-wrap gap-2">{(project.tech || []).map((technology, techIndex) => <span key={techIndex} className="text-[9px] font-medium text-blue-300/70">{technology}</span>)}</div><p className="mt-3 text-xs leading-5 text-slate-500">{project.outcome}</p></div>)}</div>
+          {(resumeData?.notableProjects || resumeData?.projects || []).length === 0 && <EmptySection text="No notable projects added yet." />}
+        </ResumeOverviewSection>
       </div>
 
       <AnimatePresence>
-        {isProfileModalOpen && (
+        {false && isProfileModalOpen && (
           <FormModal
             isOpen={isProfileModalOpen}
             onClose={() => setIsProfileModalOpen(false)}
@@ -345,7 +301,7 @@ export default function ResumePage() {
       </AnimatePresence>
 
       <AnimatePresence>
-        {isExpModalOpen && (
+        {false && isExpModalOpen && (
           <FormModal
             isOpen={isExpModalOpen}
             onClose={() => setIsExpModalOpen(false)}
@@ -364,7 +320,7 @@ export default function ResumePage() {
       </AnimatePresence>
 
       <AnimatePresence>
-        {isSectionsModalOpen && (
+        {false && isSectionsModalOpen && (
           <FormModal
             isOpen={isSectionsModalOpen}
             onClose={() => setIsSectionsModalOpen(false)}
@@ -384,4 +340,16 @@ export default function ResumePage() {
       </AnimatePresence>
     </div>
   );
+}
+
+function OverviewCount({ icon: Icon, value, label }) {
+  return <div className="text-center"><Icon className="mx-auto size-3.5 text-blue-300/70" /><p className="mt-2 text-lg font-semibold text-white">{value}</p><p className="mt-0.5 text-[8px] font-bold uppercase tracking-wider text-slate-700">{label}</p></div>;
+}
+
+function ResumeOverviewSection({ icon: Icon, eyebrow, title, children }) {
+  return <section className="overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#0d1727]"><div className="flex items-center gap-3 border-b border-white/[0.07] px-5 py-4 sm:px-6"><span className="grid size-9 place-items-center rounded-xl bg-blue-400/10 text-blue-300"><Icon className="size-4" /></span><div><p className="text-[9px] font-bold uppercase tracking-[.18em] text-slate-600">{eyebrow}</p><h2 className="mt-1 text-sm font-semibold text-slate-100">{title}</h2></div></div><div className="p-5 sm:p-6">{children}</div></section>;
+}
+
+function EmptySection({ text }) {
+  return <div className="rounded-xl border border-dashed border-white/[0.08] py-9 text-center text-xs text-slate-600">{text}</div>;
 }

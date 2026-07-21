@@ -74,8 +74,14 @@ export default function FormModal({
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 md:space-y-8 relative z-10 overflow-y-auto max-h-[60vh] md:max-h-[70vh] pr-2 md:pr-4 custom-scrollbar">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 md:gap-x-10 gap-y-6 md:gap-y-8">
-            {fields.map((field) => (
+            {fields.map((field, index) => (
               <div key={field.name} className={`${field.fullWidth ? 'md:col-span-2' : ''} flex flex-col gap-2`}>
+                {field.section && fields[index - 1]?.section !== field.section && (
+                  <div className="mb-2 mt-2 border-b border-white/[0.07] pb-4 md:col-span-2">
+                    <p className="text-[9px] font-bold uppercase tracking-[.2em] text-accent/70">Service editor</p>
+                    <h3 className="mt-1 text-sm font-semibold text-foreground">{field.section}</h3>
+                  </div>
+                )}
                 <label className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-accent/80 pl-2">
                   {field.label}
                   {field.required && <span className="text-red-500 ml-1 pb-1 transform scale-150 inline-block">*</span>}

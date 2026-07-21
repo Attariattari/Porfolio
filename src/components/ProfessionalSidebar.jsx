@@ -21,6 +21,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useTheme } from "@/components/ThemeProvider";
+import useAdminStore from "@/lib/store/adminStore";
 
 const navigation = [
   { name: "Home", href: "/", icon: Home },
@@ -95,10 +96,16 @@ export default function ProfessionalSidebar({ data }) {
   const pathname = usePathname();
   const router = useRouter();
   const { theme, setTheme } = useTheme();
+  const settings = useAdminStore((state) => state.settings);
   const [collapsed, setCollapsed] = useState(false);
   const about = data || {};
-  const firstName = about.firstName || "Muhyo";
-  const lastName = about.lastName || "Tech";
+  const brandAccent = settings?.siteAccent || about.lastName || "Tech";
+  const configuredTitle = settings?.siteTitle || about.firstName || "Muhyo";
+  const brandTitle = configuredTitle.toLowerCase().endsWith(brandAccent.toLowerCase())
+    ? configuredTitle.slice(0, -brandAccent.length).trim()
+    : configuredTitle;
+  const firstName = brandTitle || "Muhyo";
+  const lastName = brandAccent;
   const professionalTitle = about.title || "Full-Stack Engineer";
 
   const changeTheme = (nextTheme) => {

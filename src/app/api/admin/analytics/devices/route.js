@@ -6,7 +6,7 @@ import {
   ANALYTICS_TIMEZONE,
   addAnalyticsIdentityStage,
   getAnalyticsPeriod,
-  getRollingPeriodRange,
+  getCalendarDayRange,
   validVisitorIdentityStage,
 } from "@/lib/analytics/visitorAnalytics";
 
@@ -42,7 +42,7 @@ export async function GET(req) {
     if (!periodDays) {
       return NextResponse.json({ success: false, error: "Invalid period" }, { status: 400 });
     }
-    const { startDate, endDate } = getRollingPeriodRange(periodDays);
+    const { startDate, endDate } = getCalendarDayRange(periodDays, new Date(), ANALYTICS_TIMEZONE);
     const base = sessionBasePipeline(startDate, endDate);
     const knownValue = { $nin: [null, "", "Unknown", "unknown", "Not Detected"] };
 

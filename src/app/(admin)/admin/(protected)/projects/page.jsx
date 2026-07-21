@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import useAdminStore from "@/lib/store/adminStore";
-import DataTable from "@/components/admin/DataTable";
 import FormModal from "@/components/admin/FormModal";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import { z } from "zod";
@@ -13,6 +12,9 @@ import ImageUploader from "@/components/admin/ImageUploader";
 import { Controller } from "react-hook-form";
 import { AnimatePresence } from "framer-motion";
 import { getProjectMediaAlt } from "@/lib/mediaAlt";
+import Link from "next/link";
+import { BriefcaseBusiness, ExternalLink, Pencil, Plus, Search, Star, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const projectSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
@@ -72,6 +74,7 @@ const parseJsonField = (value, fallback) => {
 };
 
 export default function ProjectsPage() {
+  const router = useRouter();
   const { projects, fetchProjects, addProject, updateProject, deleteProject, reorderProjects } =
     useAdminStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -80,6 +83,7 @@ export default function ProjectsPage() {
   const [deletingId, setDeletingId] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
+  const [projectSearch, setProjectSearch] = useState("");
 
   // Sync with DB on mount
   useEffect(() => {
@@ -397,7 +401,7 @@ export default function ProjectsPage() {
 
   const handleAdd = () => {
     setEditingProject(null);
-    setIsModalOpen(true);
+    router.push("/admin/projects/new");
   };
 
   const handleEdit = (project) => {
@@ -442,7 +446,7 @@ export default function ProjectsPage() {
       images: project.gallery || project.images || [project.thumbnail || ""],
     };
     setEditingProject(formattedProject);
-    setIsModalOpen(true);
+    router.push(`/admin/projects/${project._id || project.slug}`);
   };
 
   const handleDelete = (item) => {
@@ -548,23 +552,24 @@ export default function ProjectsPage() {
     }
   };
 
+  const visibleProjects = projects.filter((project) =>
+    `${project.title || ""} ${project.category || ""} ${project.purpose || ""} ${(project.techStack || []).join(" ")}`
+      .toLowerCase()
+      .includes(projectSearch.toLowerCase()),
+  );
+
   return (
-    <div className="space-y-8 pb-20">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-4">
-        <div>
-          <h1 className="text-2xl md:text-4xl font-black italic uppercase tracking-tighter text-foreground">
-            Project <span className="text-accent">Muhyo Tech</span>
-          </h1>
-          <p className="text-[10px] md:text-sm text-muted-foreground mt-2 font-medium uppercase tracking-widest">
-            Manage and showcase your engineering masterpieces.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-3">
+    <div className="mx-auto max-w-[1500px] space-y-6 pb-20">
+      <header className="relative overflow-hidden rounded-[28px] border border-white/[0.08] bg-[#0d1727] p-6 sm:p-8">
+        <div className="pointer-events-none absolute -right-20 -top-24 size-72 rounded-full bg-fuchsia-400/[0.06] blur-3xl" />
+        <div className="relative flex flex-col justify-between gap-6 lg:flex-row lg:items-center">
+          <div className="flex items-start gap-4"><span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-fuchsia-400/10 text-fuchsia-300 ring-1 ring-inset ring-fuchsia-400/15"><BriefcaseBusiness className="size-5" /></span><div><p className="text-[10px] font-bold uppercase tracking-[.24em] text-fuchsia-300">Portfolio workspace</p><h1 className="mt-2 text-2xl font-semibold tracking-[-.035em] text-white sm:text-3xl">Projects management</h1><p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">Curate your strongest work, case studies and project outcomes.</p></div></div>
+        <div className="flex flex-wrap gap-2"><button type="button" onClick={handleAdd} className="inline-flex items-center gap-2 rounded-xl bg-fuchsia-300 px-5 py-3 text-xs font-bold text-slate-950 hover:bg-fuchsia-200"><Plus className="size-4" />New project</button>
           <button
             type="button"
             onClick={() => handleImportProjects("safe")}
             disabled={isImporting}
-            className="rounded-2xl border border-accent/30 bg-accent/10 px-5 py-3 text-xs font-black uppercase tracking-widest text-accent transition-all hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
+            className="rounded-xl border border-white/[0.08] bg-white/[0.035] px-4 py-3 text-xs font-semibold text-slate-400 transition hover:text-white disabled:opacity-50"
           >
             {isImporting ? "Importing..." : "Import Projects"}
           </button>
@@ -572,44 +577,21 @@ export default function ProjectsPage() {
             type="button"
             onClick={() => handleImportProjects("force")}
             disabled={isImporting}
-            className="rounded-2xl border border-red-400/30 bg-red-400/10 px-5 py-3 text-xs font-black uppercase tracking-widest text-red-300 transition-all hover:bg-red-400 hover:text-foreground disabled:opacity-50"
+            className="rounded-xl border border-rose-400/15 bg-rose-400/[0.05] px-4 py-3 text-xs font-semibold text-rose-300 transition hover:bg-rose-400/10 disabled:opacity-50"
           >
             Force Update
           </button>
-        </div>
-      </div>
+        </div></div>
+      </header>
 
-      <DataTable
-        title="Active Projects"
-        columns={columns}
-        data={projects}
-        onAdd={handleAdd}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onReorder={reorderProjects}
-        filters={[
-          {
-            key: 'publishStatus',
-            label: 'All Publish Status',
-            options: [
-              { label: 'Published', value: 'published' },
-              { label: 'Pending', value: 'pending' },
-              { label: 'Draft', value: 'draft' }
-            ]
-          },
-          {
-            key: 'featured',
-            label: 'All Featured',
-            options: [
-              { label: 'Featured', value: 'true' },
-              { label: 'Standard', value: 'false' }
-            ]
-          }
-        ]}
-      />
+      <section data-columns={columns.length} data-reorder={Boolean(reorderProjects)} className="overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#0d1727]">
+        <div className="flex flex-col justify-between gap-4 border-b border-white/[0.07] p-4 sm:flex-row sm:items-center sm:p-5"><div><p className="text-sm font-semibold text-slate-200">Project library</p><p className="mt-1 text-xs text-slate-600">{projects.length} projects · {projects.filter((item) => item.publishStatus === "published").length} published · {projects.filter((item) => item.featured).length} featured</p></div><label className="relative w-full sm:w-72"><Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-600" /><input value={projectSearch} onChange={(event) => setProjectSearch(event.target.value)} placeholder="Search projects..." className="w-full rounded-xl border border-white/[0.08] bg-slate-950/35 py-3 pl-10 pr-4 text-sm outline-none placeholder:text-slate-700 focus:border-fuchsia-400/40" /></label></div>
+        <div className="grid gap-4 p-4 sm:p-5 md:grid-cols-2 xl:grid-cols-3">{visibleProjects.map((project) => <ProjectCard key={project._id || project.slug || project.title} project={project} onEdit={() => handleEdit(project)} onDelete={() => handleDelete(project)} />)}</div>
+        {visibleProjects.length === 0 && <div className="grid min-h-72 place-items-center text-center"><div><BriefcaseBusiness className="mx-auto size-9 text-slate-700" /><p className="mt-4 text-sm font-semibold text-slate-300">No matching projects</p><p className="mt-1 text-xs text-slate-600">Try another title, category or technology.</p></div></div>}
+      </section>
 
       <AnimatePresence>
-        {isModalOpen && (
+        {false && isModalOpen && (
           <FormModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
@@ -637,5 +619,21 @@ export default function ProjectsPage() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+function ProjectCard({ project, onEdit, onDelete }) {
+  const preview = project.thumbnail || project.thumbnailImage || project.heroImage || project.gallery?.[0] || project.images?.[0];
+  const status = project._isFromDataJs ? "template" : project.publishStatus || "draft";
+  const techStack = Array.isArray(project.techStack) ? project.techStack.slice(0, 4) : [];
+
+  return (
+    <article className="group overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.025] transition hover:border-fuchsia-400/20 hover:bg-fuchsia-400/[0.025]">
+      <div className="relative aspect-[16/9] overflow-hidden bg-slate-950/50">
+        {preview ? <Image src={preview} alt={getProjectMediaAlt(project)} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition duration-500 group-hover:scale-[1.03]" /> : <div className="grid size-full place-items-center"><BriefcaseBusiness className="size-8 text-slate-700" /></div>}
+        <div className="absolute inset-x-0 top-0 flex items-start justify-between p-3"><span className={`rounded-full border px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider backdrop-blur-md ${status === "published" ? "border-emerald-300/20 bg-emerald-400/15 text-emerald-200" : status === "pending" ? "border-amber-300/20 bg-amber-400/15 text-amber-200" : "border-white/10 bg-slate-950/60 text-slate-400"}`}>{status}</span>{project.featured && <span className="grid size-8 place-items-center rounded-full bg-amber-300 text-slate-950"><Star className="size-3.5 fill-current" /></span>}</div>
+      </div>
+      <div className="p-5"><p className="text-[9px] font-bold uppercase tracking-[.16em] text-fuchsia-300/70">{project.category || "Project"}{project.year ? ` · ${project.year}` : ""}</p><h2 className="mt-2 truncate text-base font-semibold text-slate-100">{project.title}</h2><p className="mt-1 truncate text-[10px] text-slate-600">{project.projectType || project.purpose || "Case study"}</p><p className="mt-4 line-clamp-2 min-h-10 text-xs leading-5 text-slate-500">{project.shortDescription || project.description || project.impact || "No project summary added yet."}</p><div className="mt-4 flex min-h-6 flex-wrap gap-1.5">{techStack.map((tech) => <span key={tech} className="rounded-md bg-white/[0.045] px-2 py-1 text-[9px] text-slate-500">{tech}</span>)}</div><div className="mt-5 flex items-center gap-2 border-t border-white/[0.06] pt-4"><button onClick={onEdit} className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-fuchsia-400/10 py-2.5 text-[10px] font-bold uppercase tracking-wider text-fuchsia-300 hover:bg-fuchsia-400/15"><Pencil className="size-3.5" />Edit project</button>{!project._isFromDataJs && <button onClick={onDelete} className="grid size-9 place-items-center rounded-lg text-slate-600 hover:bg-rose-400/10 hover:text-rose-300"><Trash2 className="size-3.5" /></button>}{project.slug && <Link href={`/projects/${project.slug}`} target="_blank" className="grid size-9 place-items-center rounded-lg border border-white/[0.07] text-slate-500 hover:text-white"><ExternalLink className="size-3.5" /></Link>}</div></div>
+    </article>
   );
 }

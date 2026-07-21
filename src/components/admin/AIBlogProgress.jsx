@@ -174,50 +174,48 @@ export default function AIBlogProgress({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-overlay/80 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/85 p-4 backdrop-blur-md sm:p-6">
       <motion.div
         initial={{ opacity: 0, scale: 0.9, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-        className="bg-card border border-border w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl"
+        className="relative w-full max-w-3xl overflow-hidden rounded-[26px] border border-white/[0.1] bg-[#0d1727] shadow-[0_35px_100px_-35px_rgba(0,0,0,.95)]"
       >
+        <div className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-violet-400/[0.08] blur-3xl" />
         {/* Header */}
-        <div className="px-6 py-4 border-b border-border/70 flex justify-between items-center bg-muted/50">
+        <div className="relative flex items-center justify-between border-b border-white/[0.08] px-5 py-5 sm:px-7">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-accent/20 rounded-lg">
-              <Sparkles className="w-5 h-5 text-accent animate-pulse" />
+            <div className="relative grid size-11 place-items-center rounded-2xl bg-violet-400/10 text-violet-300 ring-1 ring-inset ring-violet-400/15">
+              <Sparkles className="size-5 animate-pulse" />
+              <span className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full border-2 border-[#0d1727] bg-emerald-300" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-foreground uppercase tracking-tight">
-                AI Content Forge
+              <p className="text-[9px] font-bold uppercase tracking-[.22em] text-violet-300">AI writing assistant</p>
+              <h2 className="mt-1 text-base font-semibold text-white sm:text-lg">
+                {mode === "image" ? "Generating article visual" : "Creating a new article"}
               </h2>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-black">
-                Autonomous Pipeline Active
-              </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-muted-foreground hover:text-foreground transition-colors"
+            className="grid size-9 place-items-center rounded-xl border border-white/[0.08] text-slate-500 transition hover:bg-white/[0.05] hover:text-white"
           >
-            <XCircle className="w-6 h-6" />
+            <XCircle className="size-4" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[70vh] overflow-y-auto">
+        <div className="relative grid max-h-[72vh] grid-cols-1 gap-0 overflow-y-auto md:grid-cols-[.9fr_1.1fr]">
           {/* Left: Progress Log */}
-          <div className="space-y-4">
-            <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2">
-              Live Execution Log
-            </h3>
-            <div className="space-y-3">
+          <div className="border-b border-white/[0.07] p-5 sm:p-7 md:border-b-0 md:border-r">
+            <div className="mb-5 flex items-center justify-between"><div><p className="text-[9px] font-bold uppercase tracking-[.2em] text-slate-600">Generation progress</p><h3 className="mt-1 text-sm font-semibold text-slate-200">Live activity</h3></div><span className="rounded-full border border-violet-400/15 bg-violet-400/[0.07] px-2.5 py-1 text-[8px] font-bold uppercase tracking-wider text-violet-300">{currentStatus.replaceAll("_", " ")}</span></div>
+            <div className="relative space-y-1 before:absolute before:bottom-4 before:left-[7px] before:top-4 before:w-px before:bg-white/[0.07]">
               {steps.map((step, i) => (
                 <motion.div
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   key={step.id}
-                  className="flex gap-3 text-xs"
+                  className="relative flex gap-3 rounded-xl px-0 py-2.5 text-xs"
                 >
                   <div className="mt-0.5">
                     {step.status === "COMPLETED" ? (
@@ -232,7 +230,7 @@ export default function AIBlogProgress({
                     )}
                   </div>
                   <div>
-                    <p className="text-foreground/80 font-medium">
+                    <p className="font-medium leading-5 text-slate-300">
                       {step.retry > 0 && (
                         <span className="text-amber-500 mr-1">
                           [Retry {step.retry}]
@@ -240,28 +238,24 @@ export default function AIBlogProgress({
                       )}
                       {step.message}
                     </p>
-                    <p className="text-[9px] text-muted-foreground font-mono mt-0.5">
+                    <p className="mt-0.5 text-[8px] font-bold uppercase tracking-wider text-slate-700">
                       {step.status}
                     </p>
                   </div>
                 </motion.div>
               ))}
               {steps.length === 0 && (
-                <p className="text-muted-foreground text-xs italic">
-                  Initializing neural link...
-                </p>
+                <div className="rounded-xl border border-dashed border-white/[0.08] px-4 py-8 text-center"><Loader2 className="mx-auto size-5 animate-spin text-violet-300" /><p className="mt-3 text-xs text-slate-600">Preparing the AI workspace...</p></div>
               )}
             </div>
           </div>
 
           {/* Right: Live Preview */}
-          <div className="bg-overlay/40 rounded-xl border border-border/70 p-4 space-y-4">
-            <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2">
-              Asset Generation
-            </h3>
+          <div className="space-y-5 bg-white/[0.018] p-5 sm:p-7">
+            <div><p className="text-[9px] font-bold uppercase tracking-[.2em] text-slate-600">Live result</p><h3 className="mt-1 text-sm font-semibold text-slate-200">Article preview</h3></div>
 
             {/* Image Preview */}
-            <div className="aspect-video bg-muted/50 rounded-lg border border-border overflow-hidden relative group">
+            <div className="group relative aspect-video overflow-hidden rounded-2xl border border-white/[0.08] bg-slate-950/40">
               {imagePreview ? (
                 <img
                   src={imagePreview}
@@ -269,12 +263,12 @@ export default function AIBlogProgress({
                   className="w-full h-full object-cover animate-in fade-in duration-1000"
                 />
               ) : (
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground/80">
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-700">
                   <ImageIcon
                     className={`w-8 h-8 mb-2 ${currentStatus === "GENERATING_IMAGE" ? "animate-bounce text-accent/50" : ""}`}
                   />
-                  <span className="text-[9px] uppercase font-bold tracking-widest">
-                    Visualizing...
+                  <span className="text-[9px] font-bold uppercase tracking-widest">
+                    Preparing visual
                   </span>
                 </div>
               )}
@@ -288,10 +282,10 @@ export default function AIBlogProgress({
                   animate={{ opacity: 1 }}
                   className="space-y-1"
                 >
-                  <h4 className="text-sm font-bold text-foreground leading-tight">
+                  <h4 className="text-base font-semibold leading-snug text-slate-100">
                     {blogPreview.title}
                   </h4>
-                  <p className="text-[10px] text-muted-foreground line-clamp-3 leading-relaxed">
+                  <p className="mt-2 line-clamp-3 text-xs leading-5 text-slate-500">
                     {blogPreview.summary}
                   </p>
                 </motion.div>
@@ -306,10 +300,10 @@ export default function AIBlogProgress({
 
             {/* Final Status */}
             {currentStatus === "COMPLETED" && (
-              <div className="bg-green-500/10 border border-green-500/20 p-3 rounded-lg flex items-center gap-3">
+              <div className="flex items-center gap-3 rounded-xl border border-emerald-400/20 bg-emerald-400/[0.07] p-3">
                 <CheckCircle2 className="w-5 h-5 text-green-500" />
-                <span className="text-xs font-bold text-green-500 uppercase tracking-tight">
-                  Published to Network
+                <span className="text-xs font-semibold text-emerald-300">
+                  Article generation completed
                 </span>
               </div>
             )}
@@ -326,11 +320,12 @@ export default function AIBlogProgress({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-border/70 bg-muted/50 text-center">
-          <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-[0.2em]">
+        <div className="relative flex items-center justify-center gap-2 border-t border-white/[0.07] px-6 py-4">
+          <span className={`size-1.5 rounded-full ${currentStatus === "COMPLETED" ? "bg-emerald-300" : "animate-pulse bg-violet-300"}`} />
+          <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-slate-600">
             {currentStatus === "COMPLETED"
-              ? "System Idle - Success"
-              : "AI Agent Protocol in Progress"}
+              ? "Workflow completed successfully"
+              : "Keep this window open while AI is working"}
           </p>
         </div>
       </motion.div>

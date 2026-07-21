@@ -7,7 +7,7 @@ import {
   addAnalyticsIdentityStage,
   calculateGrowthRate,
   getAnalyticsPeriod,
-  getRollingPeriodRange,
+  getCalendarDayRange,
   getUniqueCount,
   validVisitorIdentityStage,
 } from "@/lib/analytics/visitorAnalytics";
@@ -35,7 +35,9 @@ export async function GET(req) {
       return NextResponse.json({ success: false, error: "Invalid period" }, { status: 400 });
     }
 
-    const { startDate, endDate, previousStartDate } = getRollingPeriodRange(periodDays);
+    const { startDate, endDate, previousStartDate, dateKeys } = getCalendarDayRange(
+      periodDays, new Date(), ANALYTICS_TIMEZONE,
+    );
     const currentRange = { $gte: startDate, $lte: endDate };
     const previousRange = { $gte: previousStartDate, $lt: startDate };
 
@@ -179,6 +181,15 @@ export async function GET(req) {
       : null;
     const avgSessionDuration = averageSessionDuration[0]?.average;
     const growthRate = calculateGrowthRate(currentVerifiedCount, previousVerifiedCount);
+    const trendByDate = new Map(dailyTrend.map((item) => [item._id, item]));
+    const completeDailyTrend = dateKeys.map((dateKey) => ({
+      _id: dateKey,
+      date: dateKey,
+      count: trendByDate.get(dateKey)?.count || 0,
+      uniqueCount: trendByDate.get(dateKey)?.uniqueCount || 0,
+      sessions: trendByDate.get(dateKey)?.sessions || 0,
+      pageViews: trendByDate.get(dateKey)?.pageViews || 0,
+    }));
 
     return NextResponse.json({
       success: true,
@@ -201,10 +212,15 @@ export async function GET(req) {
             : "Live comparison",
           periodDays,
         },
-        trend: dailyTrend,
+        trend: completeDailyTrend,
         hourly: hourlyBreakdown,
         view,
         timezone: ANALYTICS_TIMEZONE,
+        range: {
+          from: dateKeys[0],
+          to: dateKeys[dateKeys.length - 1],
+          days: periodDays,
+        },
       },
     });
   } catch (error) {

@@ -5,7 +5,6 @@ import Image from "next/image";
 import useAdminStore from "@/lib/store/adminStore";
 import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
 import { getBlogImageAlt } from "@/lib/blogImageAlt";
-import DataTable from "@/components/admin/DataTable";
 import FormModal from "@/components/admin/FormModal";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import { z } from "zod";
@@ -15,8 +14,9 @@ import ImageUploader from "@/components/admin/ImageUploader";
 import { Controller } from "react-hook-form";
 import { AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
-import { Sparkles, CheckCircle2, Mail, RefreshCcw, Copy } from "lucide-react";
+import { Sparkles, CheckCircle2, Mail, RefreshCcw, Copy, BookOpen, Search, Pencil, Trash2, ExternalLink, Star, Plus } from "lucide-react";
 import AIBlogProgress from "@/components/admin/AIBlogProgress";
+import { useRouter } from "next/navigation";
 
 const blogSchema = z.object({
   title: z.string().min(10, "Title is too short for SEO"),
@@ -34,6 +34,7 @@ const blogSchema = z.object({
 });
 
 export default function BlogsPage() {
+  const router = useRouter();
   const {
     blogs,
     blogsLastFetchedAt,
@@ -50,6 +51,7 @@ export default function BlogsPage() {
   const [deletingId, setDeletingId] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [autoGenerateImages, setAutoGenerateImages] = useState(false);
+  const [blogSearch, setBlogSearch] = useState("");
 
   // Sync entries on mount
   useEffect(() => {
@@ -387,7 +389,7 @@ export default function BlogsPage() {
 
   const handleAdd = () => {
     setEditingBlog(null);
-    setIsModalOpen(true);
+    router.push("/admin/blogs/new");
   };
 
   const handleView = (blog) => {
@@ -409,7 +411,7 @@ export default function BlogsPage() {
         : [],
     };
     setEditingBlog(formatted);
-    setIsModalOpen(true);
+    router.push(`/admin/blogs/${blog._id || blog.slug}`);
   };
 
   const handleDelete = (item) => {
@@ -488,25 +490,20 @@ export default function BlogsPage() {
     );
   });
   const hasPendingImage = !!pendingImageBlog;
+  const visibleBlogs = blogs.filter((blog) =>
+    `${blog.title || ""} ${blog.category || ""} ${(blog.tags || []).join(" ")}`
+      .toLowerCase()
+      .includes(blogSearch.toLowerCase()),
+  );
+  const aiActionRenderer = columns.find((column) => column.key === "ai_actions")?.render;
 
   return (
-    <div className="space-y-8 pb-20">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-4">
-        <div>
-          <h1 className="text-2xl md:text-4xl font-black italic uppercase tracking-tighter text-foreground">
-            Narrative{" "}
-            <span className="text-accent underline decoration-accent/20 underline-offset-8">
-              Forge
-            </span>
-          </h1>
-          <p className="text-[10px] md:text-sm text-muted-foreground mt-2 md:mt-4 font-medium tracking-tight uppercase tracking-widest">
-            Publish and manage intellectual property across the network.
-          </p>
-        </div>
+    <div className="mx-auto max-w-[1500px] space-y-6 pb-20">
+      <header className="relative overflow-hidden rounded-[28px] border border-white/[0.08] bg-[#0d1727] p-6 sm:p-8"><div className="pointer-events-none absolute -right-20 -top-24 size-72 rounded-full bg-violet-400/[0.07] blur-3xl" /><div className="relative flex flex-col justify-between gap-6 xl:flex-row xl:items-center"><div className="flex items-start gap-4"><span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-violet-400/10 text-violet-300 ring-1 ring-inset ring-violet-400/15"><BookOpen className="size-5" /></span><div><p className="text-[10px] font-bold uppercase tracking-[.24em] text-violet-300">Editorial workspace</p><h1 className="mt-2 text-2xl font-semibold tracking-[-.035em] text-white sm:text-3xl">Blog management</h1><p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">Create, review and publish articles across your portfolio.</p></div></div>
 
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+        <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center"><button onClick={handleAdd} className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-violet-300 px-4 text-xs font-bold text-slate-950 hover:bg-violet-200"><Plus className="size-4" />New article</button>
           <label
-            className={`flex h-10 cursor-pointer select-none items-center justify-between gap-3 rounded-lg border px-3 text-[10px] font-black uppercase tracking-widest transition-colors ${
+            className={`flex h-11 cursor-pointer select-none items-center justify-between gap-3 rounded-xl border px-3 text-[10px] font-bold uppercase tracking-wider transition-colors ${
               autoGenerateImages
                 ? "border-accent/40 bg-accent/10 text-accent"
                 : "border-border bg-muted/50 text-muted-foreground hover:text-foreground"
@@ -550,7 +547,7 @@ export default function BlogsPage() {
               }
               setIsAIProgressOpen(true);
             }}
-            className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest text-foreground shadow-lg transition-all hover:scale-105 active:scale-95 group ${
+            className={`flex h-11 items-center justify-center gap-2 rounded-xl px-4 text-[10px] font-bold uppercase tracking-wider text-white transition-all group ${
               hasPendingImage
                 ? autoGenerateImages
                   ? "bg-gradient-to-r from-amber-500 to-orange-600 shadow-amber-500/20 hover:shadow-amber-500/40"
@@ -571,41 +568,14 @@ export default function BlogsPage() {
                 : "Send Image Prompt"
               : "AI Start Blog Generate"}
           </button>
-        </div>
-      </div>
+        </div></div></header>
 
-      <DataTable
-        title="Administer Blogs"
-        columns={columns}
-        data={blogs}
-        onAdd={handleAdd}
-        onEdit={handleEdit}
-        onView={handleView}
-        onDelete={handleDelete}
-        onReorder={reorderBlogs}
-        filters={[
-          {
-            key: "publishStatus",
-            label: "All Publish Status",
-            options: [
-              { label: "Published", value: "published" },
-              { label: "Pending", value: "pending" },
-              { label: "Draft", value: "draft" },
-            ],
-          },
-          {
-            key: "featured",
-            label: "All Featured",
-            options: [
-              { label: "Featured", value: "true" },
-              { label: "Standard", value: "false" },
-            ],
-          },
-        ]}
-      />
+      <div className="grid overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0d1727] sm:grid-cols-4"><BlogMetric label="Total articles" value={blogs.length} /><BlogMetric label="Published" value={blogs.filter((item) => item.publishStatus === "published").length} /><BlogMetric label="Drafts" value={blogs.filter((item) => item.publishStatus === "draft").length} /><BlogMetric label="AI generated" value={blogs.filter((item) => item.aiGenerated).length} last /></div>
+
+      <section data-columns={columns.length} data-reorder={Boolean(reorderBlogs)} className="overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#0d1727]"><div className="flex flex-col justify-between gap-4 border-b border-white/[0.07] p-4 sm:flex-row sm:items-center sm:p-5"><div><p className="text-sm font-semibold text-slate-200">Article library</p><p className="mt-1 text-xs text-slate-600">Manage manual and AI-assisted content in one place.</p></div><label className="relative w-full sm:w-72"><Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-600" /><input value={blogSearch} onChange={(event) => setBlogSearch(event.target.value)} placeholder="Search articles..." className="w-full rounded-xl border border-white/[0.08] bg-slate-950/35 py-3 pl-10 pr-4 text-sm outline-none placeholder:text-slate-700 focus:border-violet-400/40" /></label></div><div className="grid gap-4 p-4 sm:p-5 md:grid-cols-2 xl:grid-cols-3">{visibleBlogs.map((blog) => <BlogCard key={blog._id || blog.slug || blog.title} blog={blog} aiActions={aiActionRenderer?.(blog)} onEdit={() => handleEdit(blog)} onView={() => handleView(blog)} onDelete={() => handleDelete(blog)} />)}</div>{visibleBlogs.length === 0 && <div className="grid min-h-72 place-items-center text-center"><div><BookOpen className="mx-auto size-9 text-slate-700" /><p className="mt-4 text-sm font-semibold text-slate-300">No matching articles</p><p className="mt-1 text-xs text-slate-600">Try another title, category or tag.</p></div></div>}</section>
 
       <AnimatePresence>
-        {isModalOpen && (
+        {false && isModalOpen && (
           <FormModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
@@ -650,4 +620,13 @@ export default function BlogsPage() {
       </AnimatePresence>
     </div>
   );
+}
+
+function BlogMetric({ label, value, last = false }) { return <div className={`p-5 sm:p-6 ${last ? "" : "border-b border-white/[0.07] sm:border-b-0 sm:border-r"}`}><p className="text-[9px] font-bold uppercase tracking-[.18em] text-slate-600">{label}</p><p className="mt-1 text-2xl font-semibold text-white">{value}</p></div>; }
+
+function BlogCard({ blog, aiActions, onEdit, onView, onDelete }) {
+  const image = getSafeImageSrc(blog.image || blog.featuredImage?.url || blog.images?.[0]);
+  const status = blog._isFromDataJs ? "template" : blog.publishStatus || "draft";
+  const date = blog.createdAt ? format(new Date(blog.createdAt), "MMM d, yyyy") : "Not published";
+  return <article className="group overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.025] transition hover:border-violet-400/20 hover:bg-violet-400/[0.025]"><div className="relative aspect-[16/9] overflow-hidden bg-slate-950/50"><Image src={image} alt={getBlogImageAlt(blog)} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition duration-500 group-hover:scale-[1.03]" /><div className="absolute inset-x-0 top-0 flex items-start justify-between p-3"><span className={`rounded-full border px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider backdrop-blur-md ${status === "published" ? "border-emerald-300/20 bg-emerald-400/15 text-emerald-200" : status === "pending" ? "border-amber-300/20 bg-amber-400/15 text-amber-200" : "border-white/10 bg-slate-950/60 text-slate-400"}`}>{status}</span>{blog.featured && <span className="grid size-8 place-items-center rounded-full bg-amber-300 text-slate-950"><Star className="size-3.5 fill-current" /></span>}</div></div><div className="p-5"><div className="flex items-center justify-between gap-3"><p className="text-[9px] font-bold uppercase tracking-[.16em] text-violet-300/70">{blog.category || "Article"}</p><p className="text-[9px] text-slate-600">{date}</p></div><h2 className="mt-2 line-clamp-2 min-h-10 text-base font-semibold leading-5 text-slate-100">{blog.title}</h2><p className="mt-3 line-clamp-2 min-h-10 text-xs leading-5 text-slate-500">{blog.summary || "No article summary added yet."}</p><div className="mt-4 flex min-h-7 flex-wrap items-center gap-1.5">{aiActions}</div><div className="mt-5 flex items-center gap-2 border-t border-white/[0.06] pt-4"><button onClick={onEdit} className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-violet-400/10 py-2.5 text-[10px] font-bold uppercase tracking-wider text-violet-300 hover:bg-violet-400/15"><Pencil className="size-3.5" />Edit article</button>{!blog._isFromDataJs && <button onClick={onDelete} className="grid size-9 place-items-center rounded-lg text-slate-600 hover:bg-rose-400/10 hover:text-rose-300"><Trash2 className="size-3.5" /></button>}<button onClick={onView} className="grid size-9 place-items-center rounded-lg border border-white/[0.07] text-slate-500 hover:text-white"><ExternalLink className="size-3.5" /></button></div></div></article>;
 }

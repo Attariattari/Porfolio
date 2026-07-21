@@ -37,19 +37,52 @@ function getTimezoneOffset(date, timezone) {
   return asUtc - date.getTime();
 }
 
+function toZonedUtc(year, month, day, timezone) {
+  const guess = new Date(Date.UTC(year, month - 1, day));
+  const firstPass = new Date(guess.getTime() - getTimezoneOffset(guess, timezone));
+  return new Date(guess.getTime() - getTimezoneOffset(firstPass, timezone));
+}
+
+export function getCalendarDayRange(periodDays, now = new Date(), timezone = ANALYTICS_TIMEZONE) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: timezone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(now);
+  const values = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+  const calendarToday = new Date(Date.UTC(
+    Number(values.year), Number(values.month) - 1, Number(values.day),
+  ));
+  const firstCalendarDay = new Date(calendarToday);
+  firstCalendarDay.setUTCDate(firstCalendarDay.getUTCDate() - (periodDays - 1));
+  const previousCalendarDay = new Date(firstCalendarDay);
+  previousCalendarDay.setUTCDate(previousCalendarDay.getUTCDate() - periodDays);
+
+  const startDate = toZonedUtc(
+    firstCalendarDay.getUTCFullYear(), firstCalendarDay.getUTCMonth() + 1,
+    firstCalendarDay.getUTCDate(), timezone,
+  );
+  const previousStartDate = toZonedUtc(
+    previousCalendarDay.getUTCFullYear(), previousCalendarDay.getUTCMonth() + 1,
+    previousCalendarDay.getUTCDate(), timezone,
+  );
+  const dateKeys = Array.from({ length: periodDays }, (_, index) => {
+    const date = new Date(firstCalendarDay);
+    date.setUTCDate(date.getUTCDate() + index);
+    return date.toISOString().slice(0, 10);
+  });
+
+  return { startDate, endDate: now, previousStartDate, dateKeys };
+}
+
 export function getCalendarMonthRange(monthKey, timezone = ANALYTICS_TIMEZONE) {
   if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(monthKey)) return null;
   const [year, month] = monthKey.split("-").map(Number);
-  const toZonedUtc = (targetYear, targetMonth) => {
-    const guess = new Date(Date.UTC(targetYear, targetMonth - 1, 1));
-    const firstPass = new Date(guess.getTime() - getTimezoneOffset(guess, timezone));
-    return new Date(guess.getTime() - getTimezoneOffset(firstPass, timezone));
-  };
-
   return {
-    startDate: toZonedUtc(year, month),
-    endDate: toZonedUtc(year, month + 1),
-    previousStartDate: toZonedUtc(year, month - 1),
+    startDate: toZonedUtc(year, month, 1, timezone),
+    endDate: toZonedUtc(year, month + 1, 1, timezone),
+    previousStartDate: toZonedUtc(year, month - 1, 1, timezone),
   };
 }
 

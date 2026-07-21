@@ -34,18 +34,27 @@ const mergeObject = (fallback = {}, source = {}) => {
 export function getAboutPageData(dbData = null) {
   const merged = mergeObject(aboutData, dbData || {});
   const hero = mergeObject(aboutData.hero, merged.hero || {});
+  const explicitHero = dbData?.hero || {};
+  const story = mergeObject(aboutData.story, merged.story || {});
   const availability = mergeObject(aboutData.availability, merged.availability || {});
+
+  if (!hasContent(dbData?.story?.paragraphs) && hasContent(dbData?.longDescription)) {
+    story.paragraphs = String(dbData.longDescription)
+      .split(/\n\s*\n/)
+      .map((paragraph) => paragraph.trim())
+      .filter(Boolean);
+  }
 
   return {
     ...merged,
     hero: {
       ...hero,
-      title: hero.title || merged.company || aboutData.company,
-      headline: hero.headline || merged.role || aboutData.role,
-      description: hero.description || merged.bio || aboutData.bio,
-      image: hero.image || merged.avatar || aboutData.avatar,
+      title: explicitHero.title || merged.company || hero.title || aboutData.company,
+      headline: explicitHero.headline || merged.role || hero.headline || aboutData.role,
+      description: explicitHero.description || merged.bio || hero.description || aboutData.bio,
+      image: explicitHero.image || merged.avatar || hero.image || aboutData.avatar,
     },
-    story: mergeObject(aboutData.story, merged.story || {}),
+    story,
     skills: mergeObject(aboutData.skills, merged.skills || {}),
     availability: {
       ...availability,
@@ -62,4 +71,3 @@ export function getAboutPageData(dbData = null) {
     finalCTA: mergeObject(aboutData.finalCTA, merged.finalCTA || {}),
   };
 }
-

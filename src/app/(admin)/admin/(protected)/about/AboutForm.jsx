@@ -66,16 +66,9 @@ const aboutSchema = z.object({
 });
 
 const SectionHeader = ({ icon: Icon, title, desc }) => (
-  <div className="mb-8 border-b border-border/70 pb-6">
-    <div className="flex items-center gap-3 mb-2">
-      <div className="p-2.5 rounded-xl bg-accent/10 border border-accent/20 text-accent">
-        <Icon className="w-5 h-5" />
-      </div>
-      <h2 className="text-xl font-black uppercase italic tracking-tighter">
-        {title}
-      </h2>
-    </div>
-    <p className="text-sm text-muted-foreground font-medium">{desc}</p>
+  <div className="mb-6 flex items-start gap-3 border-b border-white/[0.07] pb-5">
+    <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-sky-400/10 text-sky-300 ring-1 ring-inset ring-sky-400/15"><Icon className="size-4" /></div>
+    <div><p className="text-[9px] font-bold uppercase tracking-[.2em] text-slate-600">About content</p><h2 className="mt-1 text-sm font-semibold text-slate-100">{title}</h2><p className="mt-1 text-xs leading-5 text-slate-500">{desc}</p></div>
   </div>
 );
 
@@ -102,7 +95,7 @@ function getStructuredSections(source = aboutData) {
   );
 }
 
-const inputClass = "w-full rounded-xl border border-border bg-muted/50 px-4 py-3 text-sm outline-none transition-all focus:border-accent/40 focus:ring-2 focus:ring-accent/20";
+const inputClass = "w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-4 py-3 text-sm text-slate-200 outline-none transition-all placeholder:text-slate-700 focus:border-sky-400/40";
 
 function EditorField({ label, multiline = false, rows = 3, ...props }) {
   return (
@@ -121,19 +114,19 @@ function EditorField({ label, multiline = false, rows = 3, ...props }) {
 
 function RepeatableEditor({ title, items = [], fields, onChange, onAdd, onRemove }) {
   return (
-    <div className="space-y-4 rounded-2xl border border-border bg-card/50 p-5">
+    <div className="space-y-4 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-5">
       <div className="flex items-center justify-between gap-4">
-        <h3 className="text-sm font-black uppercase tracking-wide text-foreground">{title}</h3>
+        <h3 className="text-sm font-semibold text-slate-200">{title}</h3>
         <button
           type="button"
           onClick={onAdd}
-          className="inline-flex items-center gap-2 rounded-lg bg-accent/10 px-3 py-2 text-[10px] font-black uppercase tracking-widest text-accent transition-colors hover:bg-accent hover:text-accent-foreground"
+          className="inline-flex items-center gap-2 rounded-lg border border-sky-400/20 bg-sky-400/[0.06] px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-sky-300 transition-colors hover:bg-sky-400/10"
         >
           <Plus className="h-3.5 w-3.5" /> Add
         </button>
       </div>
       {items.map((item, index) => (
-        <div key={`${title}-${index}`} className="space-y-4 rounded-xl border border-border bg-background/55 p-4">
+        <div key={`${title}-${index}`} className="space-y-4 rounded-xl border border-white/[0.07] bg-slate-950/25 p-4">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-black uppercase tracking-widest text-accent">
               {title} {index + 1}
@@ -364,24 +357,18 @@ export default function AboutForm() {
   };
 
   return (
-    <div className={`max-w-5xl mx-auto space-y-12 pb-10 transition-all duration-1000 p-4 rounded-[3rem] ${isHighlighted ? "bg-accent/5 ring-2 ring-accent/20" : ""}`}>
-      <div className="flex justify-between items-end mb-6">
-        <div>
-          <h1 className="text-4xl font-black italic uppercase tracking-tighter">
-            About{" "}
-            <span className="text-accent underline decoration-accent/20 underline-offset-8">
-              Profile
-            </span>
-          </h1>
-          <p className="text-muted-foreground mt-3 font-medium">
-            Manage your professional profile information and online presence
-          </p>
+    <div className={`mx-auto max-w-[1500px] space-y-6 pb-20 transition-all duration-1000 ${isHighlighted ? "ring-2 ring-sky-400/20" : ""}`}>
+      <header className="relative overflow-hidden rounded-[26px] border border-white/[0.08] bg-[#0d1727] p-6 sm:p-8">
+        <div className="pointer-events-none absolute -right-20 -top-24 size-72 rounded-full bg-sky-400/[0.06] blur-3xl" />
+        <div className="relative flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
+          <div className="flex items-start gap-4"><span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-sky-400/10 text-sky-300 ring-1 ring-inset ring-sky-400/15"><User className="size-5" /></span><div><p className="text-[10px] font-bold uppercase tracking-[.24em] text-sky-300">Profile editor</p><h1 className="mt-2 text-2xl font-semibold tracking-[-.035em] text-white sm:text-3xl">About page</h1><p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">Manage your professional identity, story, experience and supporting page content.</p></div></div>
+          <button type="submit" form="about-editor-form" disabled={isSaving} className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-sky-300 px-6 text-xs font-bold text-slate-950 transition hover:bg-sky-200 disabled:opacity-50"><Save className="size-4" />{isSaving ? "Saving changes" : "Publish profile"}</button>
         </div>
-      </div>
+      </header>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
+      <form id="about-editor-form" onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* ====== AVATAR SECTION ====== */}
-        <div className="bg-card/40 border border-border/70 p-10 rounded-[3rem]">
+        <div className="rounded-[24px] border border-white/[0.08] bg-[#0d1727] p-6 sm:p-8">
           <SectionHeader
             icon={User}
             title="Profile Photo"
@@ -395,6 +382,8 @@ export default function AboutForm() {
                 <ImageUploader
                   images={field.value || []}
                   onChange={field.onChange}
+                  compact
+                  maxFiles={1}
                 />
               )}
             />
@@ -405,15 +394,15 @@ export default function AboutForm() {
             )}
             <input
               {...register("avatarAlt")}
-              className="mt-4 w-full px-5 py-4 bg-muted/50 border border-border rounded-xl text-sm outline-none"
+              className={`${inputClass} mt-4`}
               placeholder="Accessible avatar description"
             />
           </div>
         </div>
 
         {/* ====== IDENTITY SECTION ====== */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-          <div className="bg-card/40 border border-border/70 p-10 rounded-[3rem]">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div className="rounded-[24px] border border-white/[0.08] bg-[#0d1727] p-6 sm:p-8">
             <SectionHeader
               icon={Briefcase}
               title="Professional Identity"
@@ -478,7 +467,7 @@ export default function AboutForm() {
           </div>
 
           {/* ====== CONTACT SECTION ====== */}
-          <div className="bg-card/40 border border-border/70 p-10 rounded-[3rem]">
+        <div className="rounded-[24px] border border-white/[0.08] bg-[#0d1727] p-6 sm:p-8">
             <SectionHeader
               icon={MapPin}
               title="Contact Information"
@@ -549,7 +538,7 @@ export default function AboutForm() {
         </div>
 
         {/* ====== CONTENT SECTION ====== */}
-        <div className="bg-card/40 border border-border/70 p-10 rounded-[3rem]">
+        <div className="rounded-[24px] border border-white/[0.08] bg-[#0d1727] p-6 sm:p-8">
           <SectionHeader
             icon={FileText}
             title="Professional Content"
@@ -585,7 +574,7 @@ export default function AboutForm() {
         </div>
 
         {/* ====== WORK EXPERIENCE ====== */}
-        <div className="bg-card/40 border border-border/70 p-10 rounded-[3rem]">
+        <div className="rounded-[24px] border border-white/[0.08] bg-[#0d1727] p-6 sm:p-8">
           <div className="flex justify-between items-start mb-8 border-b border-border/70 pb-6">
             <div className="flex items-center gap-3">
               <div className="p-2.5 rounded-xl bg-accent/10 border border-accent/20 text-accent">
@@ -689,7 +678,7 @@ export default function AboutForm() {
         </div>
 
         {/* ====== STRUCTURED ABOUT PAGE SECTIONS ====== */}
-        <div className="bg-card/40 border border-border/70 p-10 rounded-[3rem]">
+        <div className="rounded-[24px] border border-white/[0.08] bg-[#0d1727] p-6 sm:p-8">
           <SectionHeader
             icon={FileText}
             title="Search Metadata"
@@ -711,14 +700,14 @@ export default function AboutForm() {
         </div>
 
         {/* ====== STRUCTURED ABOUT PAGE SECTIONS ====== */}
-        <div className="bg-card/40 border border-border/70 p-10 rounded-[3rem]">
+        <div className="rounded-[24px] border border-white/[0.08] bg-[#0d1727] p-6 sm:p-8">
           <SectionHeader
             icon={Target}
             title="Structured About Page Sections"
             desc="Manage the visible About page content with simple fields—no code required"
           />
           <div className="relative z-10 space-y-6">
-            <div className="space-y-5 rounded-2xl border border-border bg-card/50 p-5">
+            <div className="space-y-5 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-5">
               <h3 className="text-sm font-black uppercase tracking-wide text-foreground">Hero & Professional Identity</h3>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <EditorField label="Badge" value={sections.hero?.badge || ""} onChange={(event) => updateSectionField("hero", "badge", event.target.value)} />
@@ -748,7 +737,7 @@ export default function AboutForm() {
               </div>
             </div>
 
-            <div className="space-y-5 rounded-2xl border border-border bg-card/50 p-5">
+            <div className="space-y-5 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-5">
               <h3 className="text-sm font-black uppercase tracking-wide text-foreground">Professional Story</h3>
               <EditorField label="Section title" value={sections.story?.title || ""} onChange={(event) => updateSectionField("story", "title", event.target.value)} />
               <EditorField
@@ -774,7 +763,7 @@ export default function AboutForm() {
               onRemove={(index) => removeListItem("whatIBuild", index)}
             />
 
-            <div className="space-y-5 rounded-2xl border border-border bg-card/50 p-5">
+            <div className="space-y-5 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-5">
               <h3 className="text-sm font-black uppercase tracking-wide text-foreground">Skills & Technologies</h3>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 {Object.keys(sections.skills || {}).map((category) => (
@@ -823,7 +812,7 @@ export default function AboutForm() {
               />
             ))}
 
-            <div className="space-y-5 rounded-2xl border border-border bg-card/50 p-5">
+            <div className="space-y-5 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-5">
               <h3 className="text-sm font-black uppercase tracking-wide text-foreground">Availability & Contact Highlight</h3>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <EditorField label="Title" value={sections.availability?.title || ""} onChange={(event) => updateSectionField("availability", "title", event.target.value)} />
@@ -835,7 +824,7 @@ export default function AboutForm() {
               <p className="text-xs leading-5 text-muted-foreground">Email, phone, location and working hours are synchronized from the Contact Information section above.</p>
             </div>
 
-            <div className="space-y-5 rounded-2xl border border-border bg-card/50 p-5">
+            <div className="space-y-5 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-5">
               <h3 className="text-sm font-black uppercase tracking-wide text-foreground">Final Call to Action</h3>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <EditorField label="Badge" value={sections.finalCTA?.badge || ""} onChange={(event) => updateSectionField("finalCTA", "badge", event.target.value)} />
@@ -850,7 +839,7 @@ export default function AboutForm() {
                   ["secondaryButton", "Secondary button"],
                   ["tertiaryButton", "Third button"],
                 ].map(([group, label]) => (
-                  <div key={group} className="space-y-3 rounded-xl border border-border bg-background/55 p-4">
+                  <div key={group} className="space-y-3 rounded-xl border border-white/[0.07] bg-slate-950/25 p-4">
                     <span className="text-[10px] font-black uppercase tracking-widest text-accent">{label}</span>
                     <EditorField label="Label" value={sections.finalCTA?.[group]?.label || ""} onChange={(event) => updateNestedSectionField("finalCTA", group, "label", event.target.value)} />
                     <EditorField label="Link" value={sections.finalCTA?.[group]?.href || ""} onChange={(event) => updateNestedSectionField("finalCTA", group, "href", event.target.value)} />

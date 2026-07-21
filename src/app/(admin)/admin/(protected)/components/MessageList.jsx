@@ -1,346 +1,53 @@
 "use client";
 
-import {
-  Search,
-  ChevronLeft,
-  ChevronRight,
-  Eye,
-  Trash2,
-  Loader,
-  MessageSquare,
-  Filter,
-  ArrowUpDown,
-  MoreVertical,
-} from "lucide-react";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useDeleteMessage } from "@/app/(admin)/hooks/useMessages";
+import { motion } from "framer-motion";
+import { ChevronLeft, ChevronRight, Inbox, Search, SlidersHorizontal, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { useDeleteMessage } from "@/app/(admin)/hooks/useMessages";
+import { SERVICE_OPTIONS, STATUS_OPTIONS } from "@/lib/constants";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
 
-import { SERVICE_OPTIONS, STATUS_OPTIONS } from "@/lib/constants";
+const statusStyle = { new: "bg-amber-300 text-slate-950", seen: "bg-sky-400/10 text-sky-300 ring-1 ring-sky-400/20", replied: "bg-emerald-400/10 text-emerald-300 ring-1 ring-emerald-400/20" };
 
-
-
-const STATUS_FILTER_OPTIONS = [
-  { value: "", label: "All Status" },
-  ...STATUS_OPTIONS,
-];
-
-export default function MessageList({
-  messages,
-  pagination,
-  loading,
-  filters,
-  availableServices = [],
-  onFilterChange,
-  onPageChange,
-  onSelectMessage,
-  onDeleteSuccess,
-}) {
-  // Generate dynamic service filter options
-  const serviceFilterOptions = [
-    { value: "", label: "All Services" },
-    ...availableServices.map(svc => {
-      const predefined = SERVICE_OPTIONS.find(opt => opt.value === svc);
-      return {
-        value: svc,
-        label: predefined ? predefined.label : svc.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
-      };
-    })
-  ];
+export default function MessageList({ messages = [], pagination, loading, filters, availableServices = [], onFilterChange, onPageChange, onSelectMessage, onDeleteSuccess }) {
   const [searchInput, setSearchInput] = useState(filters.search || "");
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, messageId: null });
   const { deleteMessage, loading: deleting } = useDeleteMessage();
-
-  const handleSearch = (e) => {
-    setSearchInput(e.target.value);
-    onFilterChange({ search: e.target.value });
-  };
+  const serviceOptions = [{ value: "", label: "All topics" }, ...availableServices.map((service) => ({ value: service, label: SERVICE_OPTIONS.find((option) => option.value === service)?.label || service.replaceAll("-", " ") }))];
 
   const handleDelete = async () => {
-    if (!deleteModal.messageId) return;
-
     const result = await deleteMessage(deleteModal.messageId);
-    if (result.success) {
-      toast.success("Message deleted successfully.");
-      setDeleteModal({ isOpen: false, messageId: null });
-      onDeleteSuccess?.();
-    } else {
-      toast.error(result.error || "Failed to delete message");
-    }
-  };
-
-  const getStatusBadge = (status) => {
-    const badges = {
-      new: "bg-amber-500/10 text-amber-500 border-amber-500/20 shadow-sm",
-      seen: "bg-accent/10 text-accent border-accent/20 shadow-sm",
-      replied: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20 shadow-sm",
-    };
-    return badges[status] || "bg-muted text-muted-foreground border-border";
-  };
-
-  const formatDate = (date) => {
-    return new Date(date).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    if (!result.success) return toast.error(result.error || "Could not delete message");
+    toast.success("Message deleted"); setDeleteModal({ isOpen: false, messageId: null }); onDeleteSuccess?.();
   };
 
   return (
-    <div className="flex flex-col gap-6">
-      {/* Search & Filters Toolbar */}
-      <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center bg-card/50 border border-border/70 p-2 rounded-2xl backdrop-blur-md">
-        <div className="flex-1 relative group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-          <input
-            type="text"
-            placeholder="Search messages..."
-            className="w-full pl-10 pr-4 py-2.5 bg-muted/50 border border-border/70 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-primary/40 focus:bg-muted transition-all placeholder:text-muted-foreground/80"
-            value={searchInput}
-            onChange={handleSearch}
-          />
-        </div>
+    <section className="grid min-h-[590px] overflow-hidden rounded-[26px] border border-white/[0.08] bg-[#0b1423] shadow-[0_30px_80px_-45px_rgba(0,0,0,.9)] lg:grid-cols-[250px_1fr]">
+      <aside className="border-b border-white/[0.07] bg-white/[0.025] p-5 lg:border-b-0 lg:border-r">
+        <div className="flex items-center gap-3 border-b border-white/[0.07] pb-5"><span className="grid size-10 place-items-center rounded-xl bg-violet-400/10 text-violet-300"><Inbox className="size-5" /></span><div><p className="text-sm font-semibold text-slate-100">Inbox</p><p className="text-xs text-slate-500">{pagination?.total ?? messages.length} conversations</p></div></div>
+        <p className="mb-3 mt-5 text-[9px] font-bold uppercase tracking-[.2em] text-slate-600">Message status</p>
+        <nav className="flex gap-2 overflow-x-auto lg:flex-col">
+          {[{ value: "", label: "All messages" }, ...STATUS_OPTIONS].map((option) => <button key={option.value} onClick={() => onFilterChange({ status: option.value || null })} className={`flex items-center justify-between whitespace-nowrap rounded-xl px-3 py-2.5 text-left text-xs transition ${(!filters.status && !option.value) || filters.status === option.value ? "bg-violet-400/10 font-semibold text-violet-200 ring-1 ring-inset ring-violet-400/15" : "text-slate-500 hover:bg-white/[0.035] hover:text-slate-300"}`}><span>{option.label}</span>{option.value === "new" && <span className="size-1.5 rounded-full bg-amber-300" />}</button>)}
+        </nav>
+        <p className="mb-3 mt-6 text-[9px] font-bold uppercase tracking-[.2em] text-slate-600">Topic</p>
+        <label className="relative block"><SlidersHorizontal className="absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-slate-600" /><select value={filters.service || ""} onChange={(event) => onFilterChange({ service: event.target.value || null })} className="w-full appearance-none rounded-xl border border-white/[0.07] bg-slate-950/35 py-2.5 pl-9 pr-3 text-xs capitalize text-slate-400 outline-none">{serviceOptions.map((option) => <option key={option.value} value={option.value} className="bg-slate-900">{option.label}</option>)}</select></label>
+      </aside>
 
-        <div className="flex flex-wrap md:flex-nowrap gap-2">
-          <div className="relative min-w-[160px]">
-            <select
-              className="w-full pl-4 pr-10 py-2.5 bg-muted/50 border border-border/70 rounded-xl text-xs font-semibold text-foreground/80 appearance-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary/40 focus:bg-muted transition-all"
-              value={filters.service || ""}
-              onChange={(e) => onFilterChange({ service: e.target.value || null })}
-            >
-              {serviceFilterOptions.map((opt) => (
-                <option key={opt.value} value={opt.value} className="bg-card text-foreground">
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-            <Filter className="absolute right-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
-          </div>
-
-          <div className="relative min-w-[140px]">
-            <select
-              className="w-full pl-4 pr-10 py-2.5 bg-muted/50 border border-border/70 rounded-xl text-xs font-semibold text-foreground/80 appearance-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary/40 focus:bg-muted transition-all"
-              value={filters.status || ""}
-              onChange={(e) => onFilterChange({ status: e.target.value || null })}
-            >
-              {STATUS_FILTER_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value} className="bg-card text-foreground">
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-            <ArrowUpDown className="absolute right-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
-          </div>
+      <div className="min-w-0">
+        <div className="border-b border-white/[0.07] p-4"><div className="relative"><Search className="absolute left-4 top-1/2 size-4 -translate-y-1/2 text-slate-600" /><input value={searchInput} onChange={(event) => { setSearchInput(event.target.value); onFilterChange({ search: event.target.value }); }} placeholder="Search sender, email or message..." className="w-full rounded-xl border border-white/[0.07] bg-slate-950/35 py-3 pl-11 pr-4 text-sm outline-none placeholder:text-slate-600 focus:border-violet-400/35" /></div></div>
+        <div className="min-h-[470px]">
+          {loading ? <div className="grid min-h-[470px] place-items-center"><div className="size-8 animate-spin rounded-full border-2 border-violet-300/15 border-t-violet-300" /></div> : messages.length === 0 ? <div className="grid min-h-[470px] place-items-center text-center"><div><Inbox className="mx-auto size-10 text-slate-700" /><p className="mt-4 text-sm font-semibold text-slate-300">Your inbox is clear</p><p className="mt-1 text-xs text-slate-600">No messages match this view.</p></div></div> : <div className="divide-y divide-white/[0.055]">{messages.map((message, index) => <MessageRow key={message._id} message={message} index={index} onOpen={() => onSelectMessage(message)} onDelete={() => setDeleteModal({ isOpen: true, messageId: message._id })} deleting={deleting} />)}</div>}
         </div>
+        {pagination && pagination.totalPages > 1 && <div className="flex items-center justify-between border-t border-white/[0.07] px-5 py-4"><p className="text-xs text-slate-500">Page {pagination.page} of {pagination.totalPages}</p><div className="flex gap-2"><button disabled={!pagination.hasPrev || loading} onClick={() => onPageChange(pagination.page - 1)} className="grid size-9 place-items-center rounded-lg border border-white/[0.08] text-slate-400 disabled:opacity-30"><ChevronLeft className="size-4" /></button><button disabled={!pagination.hasNext || loading} onClick={() => onPageChange(pagination.page + 1)} className="grid size-9 place-items-center rounded-lg border border-white/[0.08] text-slate-400 disabled:opacity-30"><ChevronRight className="size-4" /></button></div></div>}
       </div>
-
-      {/* Main Container */}
-      <div className="bg-gradient-to-br from-card/60 to-transparent border border-border rounded-[2rem] overflow-hidden backdrop-blur-xl shadow-3xl">
-        <div className="min-h-[400px]">
-          {loading ? (
-            <div className="flex flex-col justify-center items-center py-32 gap-4">
-              <div className="relative">
-                <div className="w-12 h-12 border-2 border-accent/20 border-t-accent rounded-full animate-spin" />
-                <div className="absolute inset-0 blur-lg bg-accent/20 rounded-full animate-pulse" />
-              </div>
-              <p className="text-xs font-black uppercase tracking-[0.3em] text-accent/60 animate-pulse">Syncing Streams...</p>
-            </div>
-          ) : messages.length === 0 ? (
-            <div className="py-32 text-center">
-              <div className="w-20 h-20 bg-muted/50 rounded-full flex items-center justify-center mx-auto mb-6 border border-border">
-                <MessageSquare className="w-8 h-8 text-muted-foreground/80" />
-              </div>
-              <p className="text-muted-foreground font-bold uppercase tracking-widest">No Transmissions Found</p>
-              <p className="text-muted-foreground/80 text-xs mt-2">Adjust your filters to see more results</p>
-            </div>
-          ) : (
-            <>
-              {/* Mobile Card View */}
-              <div className="md:hidden divide-y divide-white/[0.03]">
-                {messages.map((message, idx) => (
-                  <div
-                    key={message._id}
-                    className={`p-6 space-y-4 hover:bg-card/50 transition-colors relative group ${
-                      message.status === 'new' ? 'bg-accent/[0.03] border-l-2 border-accent' : ''
-                    }`}
-                  >
-                    <div className="flex justify-between items-start">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-black text-[10px] ${
-                          message.status === 'new' ? 'bg-accent text-foreground' : 'bg-muted/50 text-muted-foreground'
-                        }`}>
-                          {message.name.charAt(0).toUpperCase()}
-                        </div>
-                        <div>
-                          <p className="font-bold text-foreground text-sm tracking-tight">{message.name}</p>
-                          <p className="text-[10px] text-muted-foreground font-medium">{formatDate(message.createdAt)}</p>
-                        </div>
-                      </div>
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-[0.15em] border ${getStatusBadge(message.status)}`}>
-                        {message.status}
-                      </span>
-                    </div>
-
-                    <p className="text-[11px] text-foreground/80 line-clamp-2 font-medium bg-card/50 px-3 py-2 rounded-lg border border-border/70 italic">
-                      &ldquo;{message.subject || message.message}&rdquo;
-                    </p>
-
-                    <div className="flex items-center gap-2 text-[8px] font-black uppercase tracking-[0.1em] text-muted-foreground">
-                      <span className="w-1 h-1 bg-accent rounded-full" />
-                      {message.service?.replace("-", " ") || "General Inquiry"}
-                    </div>
-
-                    <div className="flex justify-end gap-2 pt-2">
-                      <button onClick={() => onSelectMessage(message)} className="flex-1 py-2 rounded-xl bg-accent/10 border border-accent/20 text-accent hover:bg-accent hover:text-foreground transition-all flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest">
-                        <Eye className="w-3.5 h-3.5" /> Read
-                      </button>
-                      <button onClick={() => setDeleteModal({ isOpen: true, messageId: message._id })} className="p-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500 hover:text-foreground transition-all">
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Desktop Table View */}
-              <div className="hidden md:block overflow-x-auto">
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr className="border-b border-border/70 bg-card/40">
-                      <th className="px-8 py-6 text-left text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground w-[25%]">
-                        SENDER IDENTITY
-                      </th>
-                      <th className="px-8 py-6 text-left text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground w-[35%]">
-                        CARRIER PAYLOAD
-                      </th>
-                      <th className="px-8 py-6 text-left text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-                        PROTOCOL
-                      </th>
-                      <th className="px-8 py-6 text-left text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-                        STATUS
-                      </th>
-                      <th className="px-8 py-6 text-right text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-                        TIMESTAMP
-                      </th>
-                      <th className="px-8 py-6 text-right text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-                        OPS
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/[0.03]">
-                    {messages.map((message, idx) => (
-                      <motion.tr
-                        key={message._id}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: idx * 0.03 }}
-                        className="hover:bg-muted/40 transition-all group"
-                      >
-                        <td className="px-8 py-5">
-                          <div className="flex items-center gap-3">
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-black text-[10px] ${
-                              message.status === 'new' ? 'bg-accent text-foreground' : 'bg-muted/50 text-muted-foreground'
-                            }`}>
-                              {message.name.charAt(0).toUpperCase()}
-                            </div>
-                            <div>
-                              <p className="font-bold text-foreground text-sm tracking-tight group-hover:text-accent transition-colors">
-                                {message.name}
-                              </p>
-                              <p className="text-[10px] text-muted-foreground font-medium">
-                                {message.email}
-                              </p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-8 py-5">
-                          <p className="text-sm text-foreground/80 line-clamp-1 font-medium bg-card/50 px-3 py-1.5 rounded-lg border border-border/70">
-                            {message.subject || message.message}
-                          </p>
-                        </td>
-                        <td className="px-8 py-5">
-                          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest inline-flex items-center gap-2">
-                            <span className="w-1 h-1 bg-accent rounded-full" />
-                            {message.service?.replace("-", " ") || "General"}
-                          </span>
-                        </td>
-                        <td className="px-8 py-5">
-                          <span
-                            className={`inline-flex items-center px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.15em] border ${getStatusBadge(
-                              message.status
-                            )}`}
-                          >
-                            {message.status}
-                          </span>
-                        </td>
-                        <td className="px-8 py-5 text-right whitespace-nowrap">
-                          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-tighter">
-                            {formatDate(message.createdAt)}
-                          </p>
-                        </td>
-                        <td className="px-8 py-5">
-                          <div className="flex justify-end gap-2 transition-opacity">
-                            <button
-                              onClick={(e) => { e.stopPropagation(); onSelectMessage(message); }}
-                              className="p-2 rounded-xl bg-accent/10 border border-accent/20 text-accent hover:bg-accent hover:text-foreground transition-all shadow-lg shadow-accent/10"
-                              title="Open Stream"
-                            >
-                              <Eye className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={(e) => { e.stopPropagation(); setDeleteModal({ isOpen: true, messageId: message._id }); }}
-                              disabled={deleting}
-                              className="p-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500 hover:text-foreground transition-all disabled:opacity-50"
-                              title="Delete Message"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </motion.tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* Pagination */}
-        {pagination && pagination.totalPages > 1 && (
-          <div className="border-t border-border/70 px-8 py-6 flex flex-col sm:flex-row justify-between items-center gap-4 bg-card/40">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-              Page {pagination.page} / {pagination.totalPages} <span className="mx-2 text-muted-foreground/20">|</span> Total {pagination.total} Messages
-            </p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => onPageChange(pagination.page - 1)}
-                disabled={!pagination.hasPrev || loading}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-muted/50 text-muted-foreground font-black text-[10px] uppercase tracking-widest hover:text-foreground hover:bg-muted disabled:opacity-50 transition-all active:scale-95"
-              >
-                <ChevronLeft className="w-4 h-4" /> PREV
-              </button>
-              <button
-                onClick={() => onPageChange(pagination.page + 1)}
-                disabled={!pagination.hasNext || loading}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-muted/50 text-muted-foreground font-black text-[10px] uppercase tracking-widest hover:text-foreground hover:bg-muted disabled:opacity-50 transition-all active:scale-95"
-              >
-                NEXT <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-
-      <DeleteConfirmationModal
-        isOpen={deleteModal.isOpen}
-        loading={deleting}
-        onClose={() => setDeleteModal({ isOpen: false, messageId: null })}
-        onConfirm={handleDelete}
-      />
-    </div>
+      <DeleteConfirmationModal isOpen={deleteModal.isOpen} loading={deleting} onClose={() => setDeleteModal({ isOpen: false, messageId: null })} onConfirm={handleDelete} />
+    </section>
   );
+}
+
+function MessageRow({ message, index, onOpen, onDelete, deleting }) {
+  const initials = message.name?.split(" ").map((part) => part[0]).slice(0, 2).join("").toUpperCase() || "M";
+  const date = new Date(message.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+  return <motion.article initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: index * .025 }} onClick={onOpen} className={`group cursor-pointer px-4 py-4 transition hover:bg-violet-400/[0.035] sm:px-6 ${message.status === "new" ? "bg-violet-400/[0.025]" : ""}`}><div className="flex gap-3.5"><div className={`grid size-10 shrink-0 place-items-center rounded-full text-[10px] font-black ${message.status === "new" ? "bg-violet-400 text-white" : "bg-white/[0.06] text-slate-400"}`}>{initials}</div><div className="min-w-0 flex-1"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><h3 className={`truncate text-sm ${message.status === "new" ? "font-bold text-white" : "font-medium text-slate-300"}`}>{message.name}</h3><p className="mt-0.5 truncate text-xs text-slate-600">{message.email}</p></div><div className="flex shrink-0 items-center gap-2"><span className="hidden text-[10px] text-slate-600 sm:block">{date}</span><span className={`rounded-full px-2 py-1 text-[8px] font-black uppercase tracking-[.12em] ${statusStyle[message.status] || statusStyle.seen}`}>{message.status}</span></div></div><p className="mt-3 truncate text-sm font-medium text-slate-300">{message.subject || "General inquiry"}</p><p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-500">{message.message}</p><div className="mt-3 flex items-center justify-between"><span className="rounded-md bg-white/[0.04] px-2 py-1 text-[9px] capitalize text-slate-500">{message.service?.replaceAll("-", " ") || "General"}</span><button disabled={deleting} onClick={(event) => { event.stopPropagation(); onDelete(); }} className="grid size-8 place-items-center rounded-lg text-slate-700 opacity-100 hover:bg-rose-400/10 hover:text-rose-300 sm:opacity-0 sm:group-hover:opacity-100"><Trash2 className="size-3.5" /></button></div></div></div></motion.article>;
 }

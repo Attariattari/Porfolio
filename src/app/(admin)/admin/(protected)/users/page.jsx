@@ -1,490 +1,198 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import useAdminStore from "@/lib/store/adminStore";
-import { motion, AnimatePresence } from "framer-motion";
-import { Users, Search, Filter, ShieldCheck, Mail, Calendar, UserCheck, UserX, Loader2, Trash2, ShieldAlert, AlertCircle, RefreshCw, Settings, Shield, X, Check, CheckSquare, Square, Zap } from "lucide-react";
-import { format } from "date-fns";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  AlertCircle, CalendarDays, Check, CheckCircle2, ChevronRight, Clock3,
+  Loader2, Mail, RefreshCw, Search, Settings2, Shield, ShieldCheck,
+  Sparkles, Trash2, UserCheck, Users, UserX, X,
+} from "lucide-react";
+import { format, formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
+import useAdminStore from "@/lib/store/adminStore";
 import { formatName } from "@/lib/utils";
 
-const PermissionsModal = ({ user, actorRole, onClose, onUpdate }) => {
-    const defaultPermissions = {
-        projects: { create: false, edit: false, delete: false },
-        services: { create: false, edit: false, delete: false },
-        blogs: { create: false, edit: false, delete: false },
-        skills: { create: false, edit: false, delete: false },
-        about: { edit: false },
-        resume: { edit: false }
-    };
+const permissionModules = [
+  { id: "projects", label: "Projects", description: "Portfolio case studies", actions: ["create", "edit", "delete"] },
+  { id: "services", label: "Services", description: "Service catalogue", actions: ["create", "edit", "delete"] },
+  { id: "blogs", label: "Articles", description: "Blog and publishing", actions: ["create", "edit", "delete"] },
+  { id: "skills", label: "Skills", description: "Expertise library", actions: ["create", "edit", "delete"] },
+  { id: "about", label: "About", description: "Profile information", actions: ["edit"] },
+  { id: "resume", label: "Resume", description: "Career information", actions: ["edit"] },
+];
 
-    // Robust merge: ensures every nested field exists in local state
-    const [permissions, setPermissions] = useState(() => {
-        const merged = { ...defaultPermissions };
-        if (user && user.permissions) {
-            Object.keys(defaultPermissions).forEach(module => {
-                if (user.permissions[module]) {
-                    merged[module] = { ...defaultPermissions[module], ...user.permissions[module] };
-                }
-            });
-        }
-        return merged;
-    });
-    const [role, setRole] = useState(user?.role || "admin");
-    const [isSaving, setIsSaving] = useState(false);
+const defaultPermissions = Object.fromEntries(permissionModules.map(({ id, actions }) => [id, Object.fromEntries(actions.map((action) => [action, false]))]));
 
-    // Check if actor is Root Admin to allow promotion to Super Admin
-    const canPromoteToSuper = actorRole === 'root-super-admin';
-    const availableRoles = canPromoteToSuper ? ['super-admin', 'admin', 'user'] : ['admin', 'user'];
-
-    const togglePermission = (module, action) => {
-        setPermissions(prev => {
-            const updated = JSON.parse(JSON.stringify(prev)); // Deep clone for force refresh
-            updated[module][action] = !updated[module][action];
-            console.log(`Toggling ${module}:${action} to ${updated[module][action]}`);
-            return updated;
-        });
-    };
-
-    const handleSave = async () => {
-        setIsSaving(true);
-        console.log("Saving Permissions for", user.email, { role, permissions });
-        const res = await onUpdate(user.email, role, permissions);
-        setIsSaving(false);
-        if (res.success) onClose();
-    };
-
-    const modules = [
-        { id: 'projects', label: 'Projects', actions: ['create', 'edit', 'delete'] },
-        { id: 'services', label: 'Services', actions: ['create', 'edit', 'delete'] },
-        { id: 'blogs', label: 'Blogs', actions: ['create', 'edit', 'delete'] },
-        { id: 'skills', label: 'Skills', actions: ['create', 'edit', 'delete'] },
-        { id: 'about', label: 'About', actions: ['edit'] },
-        { id: 'resume', label: 'Resume', actions: ['edit'] },
-    ];
-
-    return (
-        <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-overlay/80 backdrop-blur-sm"
-        >
-            <motion.div
-                initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-                className="bg-card border border-border w-full max-w-2xl rounded-[2rem] overflow-hidden shadow-2xl flex flex-col"
-            >
-                {/* Modal Header */}
-                <div className="p-6 border-b border-border/70 flex items-center justify-between bg-card/50">
-                    <div className="flex items-center gap-4">
-                        <div className="p-3 bg-accent/10 rounded-xl">
-                            <Shield className="w-6 h-6 text-accent" />
-                        </div>
-                        <div>
-                            <h2 className="text-xl font-black italic uppercase text-foreground leading-none mb-1">Calibrate <span className="text-accent">Authority</span></h2>
-                            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">{user.email}</p>
-                        </div>
-                    </div>
-                    <button onClick={onClose} className="p-2 text-muted-foreground hover:text-foreground transition-colors">
-                        <X className="w-6 h-6" />
-                    </button>
-                </div>
-
-                {/* Modal Content */}
-                <div className="p-8 space-y-8 overflow-y-auto max-h-[60vh] custom-scrollbar">
-                    {/* Role Selection */}
-                    <div>
-                        <p className="text-[10px] font-black uppercase text-muted-foreground tracking-[0.2em] mb-4">Functional Role</p>
-                        <div className="flex flex-wrap gap-4">
-                            {availableRoles.map((r) => (
-                                <button
-                                    key={r}
-                                    onClick={() => setRole(r)}
-                                    className={`flex-1 min-w-[120px] p-4 rounded-2xl border transition-all text-center uppercase text-[10px] font-black tracking-widest ${
-                                        role === r
-                                            ? (r === 'super-admin' ? 'bg-accent border-accent text-foreground' : 'bg-accent border-accent text-foreground')
-                                            : 'bg-muted/50 border-border/70 text-muted-foreground hover:border-border'
-                                    }`}
-                                >
-                                    {r === 'super-admin' ? '🛡️ Super Admin' : r}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Permissions Grid */}
-                    <div className="space-y-6">
-                        <p className="text-[10px] font-black uppercase text-muted-foreground tracking-[0.2em]">Action Permissions</p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {modules.map((mod) => (
-                                <div key={mod.id} className="p-5 bg-card/50 border border-border/70 rounded-2xl">
-                                    <h3 className="text-xs font-black uppercase text-foreground mb-4 tracking-wider border-b border-border/70 pb-2">{mod.label}</h3>
-                                    <div className="flex flex-wrap gap-2">
-                                        {mod.actions.map(action => (
-                                            <button
-                                                key={action}
-                                                onClick={() => togglePermission(mod.id, action)}
-                                                className={`px-3 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-widest border transition-all flex items-center gap-2 ${
-                                                    permissions[mod.id]?.[action]
-                                                    ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500'
-                                                    : 'bg-muted/50 border-border/70 text-muted-foreground/80 hover:text-muted-foreground'
-                                                }`}
-                                            >
-                                                {permissions[mod.id]?.[action] ? <CheckSquare className="w-3 h-3" /> : <Square className="w-3 h-3" />}
-                                                {action}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Modal Footer */}
-                <div className="p-6 border-t border-border/70 bg-card/40 flex items-center justify-end gap-4">
-                    <button onClick={onClose} className="px-6 py-3 text-muted-foreground text-[10px] font-black uppercase tracking-widest hover:text-foreground transition-colors">
-                        Cancel
-                    </button>
-                    <button
-                        onClick={handleSave}
-                        disabled={isSaving}
-                        className="px-8 py-3 bg-accent hover:bg-accent disabled:opacity-50 text-foreground text-[10px] font-black uppercase tracking-[0.2em] rounded-xl transition-all shadow-xl shadow-accent/20 flex items-center gap-2"
-                    >
-                        {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
-                        Apply Authorization
-                    </button>
-                </div>
-            </motion.div>
-        </motion.div>
-    );
+const statusMeta = {
+  approved: { label: "Active", Icon: CheckCircle2, classes: "border-emerald-500/20 bg-emerald-500/10 text-emerald-500" },
+  pending: { label: "Pending", Icon: Clock3, classes: "border-amber-500/20 bg-amber-500/10 text-amber-500" },
+  denied: { label: "Denied", Icon: UserX, classes: "border-red-500/20 bg-red-500/10 text-red-500" },
+  removed: { label: "Removed", Icon: Trash2, classes: "border-slate-500/20 bg-slate-500/10 text-slate-500" },
 };
 
+function initials(user) {
+  const source = user.name?.trim() || user.email || "U";
+  return source.split(/[\s@]+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
+}
+
+function UserAvatar({ user }) {
+  const [failed, setFailed] = useState(false);
+  const avatar = user.avatar || user.profileImage || user.picture || "";
+
+  if (!avatar || failed) {
+    return <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-blue-500 text-sm font-bold text-white shadow-md shadow-violet-500/15">{initials(user)}</div>;
+  }
+
+  return <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl border border-border bg-muted shadow-md shadow-violet-500/10">
+    {/* eslint-disable-next-line @next/next/no-img-element */}
+    <img src={avatar} alt={`${user.name || "User"} profile`} className="h-full w-full object-cover" referrerPolicy="no-referrer" onError={() => setFailed(true)} />
+  </div>;
+}
+
+function roleLabel(role) {
+  if (role === "root-super-admin") return "Root administrator";
+  if (role === "super-admin") return "Super administrator";
+  if (role === "admin") return "Administrator";
+  return "Team member";
+}
+
+function PermissionsPanel({ user, actorRole, onClose, onUpdate }) {
+  const [role, setRole] = useState(user?.role || "admin");
+  const [saving, setSaving] = useState(false);
+  const [permissions, setPermissions] = useState(() => Object.fromEntries(
+    permissionModules.map(({ id }) => [id, { ...defaultPermissions[id], ...(user?.permissions?.[id] || {}) }])
+  ));
+  const roles = actorRole === "root-super-admin" ? ["super-admin", "admin", "user"] : ["admin", "user"];
+  const enabledCount = Object.values(permissions).reduce((total, actions) => total + Object.values(actions).filter(Boolean).length, 0);
+
+  const toggle = (module, action) => setPermissions((current) => ({
+    ...current, [module]: { ...current[module], [action]: !current[module][action] },
+  }));
+
+  const save = async () => {
+    setSaving(true);
+    const result = await onUpdate(user.email, role, permissions);
+    setSaving(false);
+    if (result.success) onClose();
+  };
+
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex justify-end bg-black/60 backdrop-blur-sm" onMouseDown={onClose}>
+      <motion.aside initial={{ x: 60, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: 60, opacity: 0 }} transition={{ type: "spring", damping: 28, stiffness: 260 }} onMouseDown={(event) => event.stopPropagation()} className="flex h-full w-full max-w-2xl flex-col border-l border-border bg-card shadow-2xl">
+        <header className="flex items-start justify-between border-b border-border/70 p-6 md:p-8">
+          <div className="flex gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-500/10 text-violet-500"><Shield className="h-5 w-5" /></div>
+            <div><p className="text-xs font-bold uppercase tracking-[.16em] text-violet-500">Access management</p><h2 className="mt-1 text-2xl font-bold tracking-tight text-foreground">Role & permissions</h2><p className="mt-1 text-sm text-muted-foreground">{user.email}</p></div>
+          </div>
+          <button onClick={onClose} className="flex h-10 w-10 items-center justify-center rounded-xl border border-border text-muted-foreground transition hover:bg-muted hover:text-foreground"><X className="h-5 w-5" /></button>
+        </header>
+
+        <div className="flex-1 space-y-8 overflow-y-auto p-6 md:p-8">
+          <section>
+            <div className="mb-3 flex items-center justify-between"><div><h3 className="text-sm font-bold text-foreground">Account role</h3><p className="text-xs text-muted-foreground">Choose the user’s level of responsibility.</p></div></div>
+            <div className="grid gap-3 sm:grid-cols-3">
+              {roles.map((item) => <button key={item} onClick={() => setRole(item)} className={`rounded-2xl border p-4 text-left transition ${role === item ? "border-violet-500 bg-violet-500/10 ring-4 ring-violet-500/10" : "border-border bg-background/40 hover:bg-muted/40"}`}><div className="mb-3 flex items-center justify-between"><ShieldCheck className={`h-5 w-5 ${role === item ? "text-violet-500" : "text-muted-foreground"}`} />{role === item && <Check className="h-4 w-4 text-violet-500" />}</div><p className="text-sm font-bold capitalize text-foreground">{item.replaceAll("-", " ")}</p></button>)}
+            </div>
+          </section>
+
+          <section>
+            <div className="mb-4 flex items-end justify-between"><div><h3 className="text-sm font-bold text-foreground">Content permissions</h3><p className="text-xs text-muted-foreground">Enable only the actions this user needs.</p></div><span className="rounded-full bg-muted px-2.5 py-1 text-xs font-bold text-muted-foreground">{enabledCount} enabled</span></div>
+            <div className="space-y-3">
+              {permissionModules.map((module) => <div key={module.id} className="rounded-2xl border border-border/70 bg-background/35 p-4"><div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-sm font-bold text-foreground">{module.label}</p><p className="text-xs text-muted-foreground">{module.description}</p></div><div className="flex flex-wrap gap-2">{module.actions.map((action) => { const enabled = permissions[module.id]?.[action]; return <button key={action} onClick={() => toggle(module.id, action)} className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-semibold capitalize transition ${enabled ? "border-emerald-500/25 bg-emerald-500/10 text-emerald-500" : "border-border bg-card text-muted-foreground hover:text-foreground"}`}><span className={`flex h-4 w-4 items-center justify-center rounded ${enabled ? "bg-emerald-500 text-white" : "border border-border"}`}>{enabled && <Check className="h-3 w-3" />}</span>{action}</button>; })}</div></div></div>)}
+            </div>
+          </section>
+        </div>
+
+        <footer className="flex items-center justify-between gap-3 border-t border-border/70 bg-background/30 p-5 md:px-8"><p className="hidden text-xs text-muted-foreground sm:block">Changes apply immediately after saving.</p><div className="ml-auto flex gap-3"><button onClick={onClose} className="h-11 rounded-xl border border-border px-5 text-sm font-semibold text-foreground hover:bg-muted">Cancel</button><button onClick={save} disabled={saving} className="inline-flex h-11 items-center gap-2 rounded-xl bg-foreground px-5 text-sm font-semibold text-background transition hover:opacity-90 disabled:opacity-50">{saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />} Save access</button></div></footer>
+      </motion.aside>
+    </motion.div>
+  );
+}
 
 export default function UserManagementPage() {
-    const searchParams = useSearchParams();
-    const highlightId = searchParams.get("highlight");
-    const [highlightedItem, setHighlightedItem] = useState(null);
-    const rowRefs = useRef({});
+  const searchParams = useSearchParams();
+  const highlightId = searchParams.get("highlight");
+  const rowRefs = useRef({});
+  const { users = [], fetchUsers, updateUserStatus, updateUserPermissions } = useAdminStore();
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [session, setSession] = useState(null);
 
-    const { users, fetchUsers, updateUserStatus, updateUserPermissions } = useAdminStore();
-    const [search, setSearch] = useState("");
-    const [statusFilter, setStatusFilter] = useState("all");
-    const [loading, setLoading] = useState(true);
-    const [selectedUser, setSelectedUser] = useState(null);
-    const [isPermissionsOpen, setIsPermissionsOpen] = useState(false);
-    const [session, setSession] = useState(null);
+  useEffect(() => { fetch("/api/admin/me").then((response) => response.json()).then(setSession); }, []);
+  useEffect(() => {
+    let active = true;
+    fetchUsers().finally(() => active && setLoading(false));
+    const interval = window.setInterval(() => { if (document.visibilityState === "visible") fetchUsers(); }, 15000);
+    return () => { active = false; window.clearInterval(interval); };
+  }, [fetchUsers]);
+  useEffect(() => {
+    if (!highlightId || !users.length) return;
+    const timer = window.setTimeout(() => rowRefs.current[highlightId]?.scrollIntoView({ behavior: "smooth", block: "center" }), 300);
+    return () => window.clearTimeout(timer);
+  }, [highlightId, users]);
 
-    useEffect(() => {
-        fetch("/api/admin/me")
-            .then(res => res.json())
-            .then(data => setSession(data));
-    }, []);
+  const counts = useMemo(() => ({
+    all: users.length,
+    approved: users.filter((user) => user.status === "approved").length,
+    pending: users.filter((user) => user.status === "pending").length,
+    admin: users.filter((user) => ["admin", "super-admin", "root-super-admin"].includes(user.role)).length,
+  }), [users]);
+  const filteredUsers = useMemo(() => users.filter((user) => {
+    const needle = search.trim().toLowerCase();
+    const matchesSearch = !needle || `${user.name || ""} ${user.email || ""} ${user.role || ""}`.toLowerCase().includes(needle);
+    return matchesSearch && (statusFilter === "all" || user.status === statusFilter);
+  }), [search, statusFilter, users]);
 
-    useEffect(() => {
-        const startTimer = window.setTimeout(() => {
-          if (!highlightId || users.length === 0) return;
-            setHighlightedItem(highlightId);
+  const handleAction = async (email, action) => {
+    await updateUserStatus(email, action);
+    toast.success(action === "approve" ? "User account is now active." : action === "deny" ? "Access request denied." : "User removed from active access.");
+  };
+  const refresh = async () => { setRefreshing(true); await fetchUsers(); setRefreshing(false); };
 
-            const timer = setTimeout(() => {
-                setHighlightedItem(null);
-            }, 4000);
+  if (loading) return <div className="flex min-h-[520px] flex-col items-center justify-center rounded-[2rem] border border-border/70 bg-card/40"><div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent/10 text-accent"><Loader2 className="h-6 w-6 animate-spin" /></div><p className="text-sm font-semibold text-foreground">Loading users</p><p className="mt-1 text-xs text-muted-foreground">Preparing your team directory…</p></div>;
 
-            setTimeout(() => {
-                const element = rowRefs.current[highlightId];
-                if (element) {
-                    element.scrollIntoView({ behavior: "smooth", block: "center" });
-                }
-            }, 500);
-
-        }, 0);
-        return () => window.clearTimeout(startTimer);
-    }, [highlightId, users]);
-
-    useEffect(() => {
-        fetchUsers().then(() => setLoading(false));
-
-        const interval = setInterval(fetchUsers, 15000);
-        return () => clearInterval(interval);
-    }, []);
-
-    const filteredUsers = (users || []).filter(u => {
-        if (!u || !u.email) return false;
-        const matchesSearch = u.email.toLowerCase().includes(search.toLowerCase()) ||
-                              (u.name && u.name.toLowerCase().includes(search.toLowerCase()));
-        const matchesStatus = statusFilter === "all" || u.status === statusFilter;
-        return matchesSearch && matchesStatus;
-    });
-
-    const handleAction = async (email, action) => {
-        toast.promise(updateUserStatus(email, action), {
-            loading: `Executing ${action} protocol...`,
-            success: `Identity recalibrated: ${action}`,
-            error: "Protocol failure."
-        });
-    };
-
-    if (loading) return (
-        <div className="flex flex-col items-center justify-center min-h-[400px]">
-             <Loader2 className="w-12 h-12 text-accent animate-spin opacity-50 mb-6" />
-             <p className="text-[10px] font-black uppercase text-muted-foreground tracking-[0.4em] animate-pulse">Syncing Muhyo Tech Records...</p>
+  return (
+    <main className="mx-auto max-w-7xl space-y-6 pb-12">
+      <section className="relative overflow-hidden rounded-[2rem] border border-border/70 bg-card p-6 shadow-sm md:p-8">
+        <div className="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full bg-violet-500/10 blur-3xl" />
+        <div className="relative flex flex-col justify-between gap-6 lg:flex-row lg:items-center">
+          <div className="flex items-start gap-4"><div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-violet-500 text-white shadow-lg shadow-violet-500/20"><Users className="h-6 w-6" /></div><div><div className="mb-1 flex items-center gap-2 text-xs font-bold uppercase tracking-[.18em] text-violet-500"><Sparkles className="h-3.5 w-3.5" /> Team workspace</div><h1 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">Users & access</h1><p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">Review new requests, manage active accounts and control who can update portfolio content.</p></div></div>
+          <button onClick={refresh} disabled={refreshing} className="inline-flex h-11 w-fit items-center gap-2 rounded-xl border border-border bg-background px-4 text-sm font-semibold text-foreground transition hover:bg-muted disabled:opacity-50"><RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} /> Refresh users</button>
         </div>
-    );
+      </section>
 
-    return (
-        <div className="space-y-8 max-w-7xl mx-auto">
-            {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-border/70">
-                <div>
-                    <h1 className="text-4xl font-black italic tracking-tighter uppercase text-foreground mb-2">
-                        User <span className="text-accent">Directory</span>
-                    </h1>
-                    <p className="text-muted-foreground text-sm font-medium tracking-tight opacity-70">
-                        Manage personnel roles and modular access authorizations.
-                    </p>
-                </div>
+      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {[{ label: "Total users", value: counts.all, note: "All registered accounts", Icon: Users, color: "text-blue-500 bg-blue-500/10" }, { label: "Active", value: counts.approved, note: "Can access the workspace", Icon: UserCheck, color: "text-emerald-500 bg-emerald-500/10" }, { label: "Pending review", value: counts.pending, note: "Waiting for approval", Icon: Clock3, color: "text-amber-500 bg-amber-500/10" }, { label: "Administrators", value: counts.admin, note: "Elevated access", Icon: ShieldCheck, color: "text-violet-500 bg-violet-500/10" }].map(({ label, value, note, Icon, color }) => <div key={label} className="flex items-center gap-4 rounded-2xl border border-border/70 bg-card p-4 shadow-sm"><div className={`flex h-11 w-11 items-center justify-center rounded-xl ${color}`}><Icon className="h-5 w-5" /></div><div><p className="text-2xl font-bold leading-none text-foreground">{value}</p><p className="mt-1 text-sm font-semibold text-foreground">{label}</p><p className="text-xs text-muted-foreground">{note}</p></div></div>)}
+      </section>
 
-                <div className="flex items-center gap-4">
-                    <button onClick={() => fetchUsers()} className="p-4 bg-muted/50 hover:bg-muted rounded-2xl text-muted-foreground hover:text-foreground transition-all">
-                        <RefreshCw className="w-5 h-5" />
-                    </button>
-                    <div className="px-5 py-4 bg-accent/10 border border-accent/20 rounded-2xl flex items-center gap-3">
-                        <Users className="w-5 h-5 text-accent" />
-                        <div>
-                             <p className="text-[9px] font-black uppercase tracking-widest text-accent">Total Personnel</p>
-                             <p className="text-xl font-bold text-foreground">{(users || []).length}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Controls */}
-            <div className="flex flex-col md:flex-row gap-4">
-                <div className="relative flex-1 group">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-accent transition-colors" />
-                    <input
-                        type="text"
-                        placeholder="Search identity map..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="w-full bg-card/40 border border-border/70 p-4 pl-12 rounded-2xl text-foreground text-sm outline-none focus:border-accent/30 transition-all backdrop-blur-md"
-                    />
-                </div>
-                <div className="flex flex-wrap gap-2">
-                    {['all', 'pending', 'approved', 'denied', 'removed'].map((status) => (
-                        <button
-                            key={status}
-                            onClick={() => setStatusFilter(status)}
-                            className={`px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${
-                                statusFilter === status
-                                ? 'bg-accent text-foreground border-accent'
-                                : 'bg-card/40 text-muted-foreground border-border/70 hover:border-accent/30'
-                            }`}
-                        >
-                            {status}
-                        </button>
-                    ))}
-                </div>
-            </div>
-
-            {/* Users Data Display */}
-            <div className="bg-card/40 backdrop-blur-3xl border border-border/70 rounded-[2.5rem] overflow-hidden shadow-2xl">
-                <AnimatePresence mode="popLayout">
-                    {filteredUsers.length === 0 ? (
-                        <div className="py-20 text-center">
-                            <AlertCircle className="w-12 h-12 text-muted-foreground/80 mx-auto mb-4 opacity-20" />
-                            <p className="text-muted-foreground font-bold uppercase tracking-widest">No matching personnel records</p>
-                        </div>
-                    ) : (
-                        <>
-                            {/* Mobile Card View */}
-                            <div className="md:hidden divide-y divide-border">
-                                {filteredUsers.map((u) => (
-                                    <motion.div
-                                        key={u._id || u.email}
-                                        ref={(el) => (rowRefs.current[u._id] = el)}
-                                        layout
-                                        className={`p-6 space-y-4 transition-all duration-1000 relative ${
-                                            highlightedItem === u._id
-                                            ? "bg-accent/10 border-l-4 border-l-blue-600 shadow-inner"
-                                            : "hover:bg-card/50"
-                                        }`}
-                                    >
-                                        <div className="flex justify-between items-start">
-                                            <div className="flex items-center gap-4">
-                                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${highlightedItem === u._id ? "bg-accent text-foreground" : "bg-accent/10 border border-accent/20 text-accent"}`}>
-                                                    <Mail className="w-4 h-4" />
-                                                </div>
-                                                <div>
-                                                    <p className={`text-sm font-black italic transition-all ${highlightedItem === u._id ? "text-accent scale-105 origin-left" : "text-foreground"}`}>{u.name ? formatName(u.name) : "Unknown Identity"}</p>
-                                                    <p className="text-[10px] text-muted-foreground font-bold uppercase truncate max-w-[150px]">{u.email}</p>
-                                                </div>
-                                            </div>
-                                            <span className={`px-2 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-widest border ${
-                                                u.status === 'approved' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' :
-                                                u.status === 'pending' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20 animate-pulse' :
-                                                'bg-red-500/10 text-red-500 border-red-500/20'
-                                            }`}>
-                                                {u.status}
-                                            </span>
-                                        </div>
-
-                                        <div className="flex items-center justify-between pt-2">
-                                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Commissioned: {u.createdAt ? format(new Date(u.createdAt), "MMM d, yyyy") : "N/A"}</span>
-
-                                            <div className="flex gap-2">
-                                                {u.role === 'root-super-admin' ? (
-                                                    <div className="text-[8px] font-black uppercase text-amber-500 flex items-center gap-1 bg-amber-500/10 px-2 py-1 rounded-lg border border-amber-500/20">
-                                                        <Zap className="w-3 h-3 fill-amber-500" /> Root Admin
-                                                    </div>
-                                                ) : (
-                                                    <div className="flex gap-2">
-                                                        {u.role === 'super-admin' && (
-                                                            <div className="text-[8px] font-black uppercase text-accent flex items-center gap-1 bg-accent/10 px-2 py-1 rounded-lg border border-accent/20 mr-1">
-                                                                <ShieldCheck className="w-3 h-3" /> Super
-                                                            </div>
-                                                        )}
-                                                        {u.status === 'approved' && (
-                                                            <button
-                                                                onClick={() => { setSelectedUser(u); setIsPermissionsOpen(true); }}
-                                                                className="p-2 bg-accent/10 text-accent border border-accent/20 rounded-lg hover:bg-accent hover:text-foreground transition-all"
-                                                            >
-                                                                <Settings className="w-4 h-4" />
-                                                            </button>
-                                                        ) }
-                                                        {u.status === 'pending' && (
-                                                            <button
-                                                                onClick={() => handleAction(u.email, 'approve')}
-                                                                className="p-2 bg-emerald-600/10 text-emerald-500 border border-emerald-600/20 rounded-lg hover:bg-emerald-600 hover:text-foreground transition-all"
-                                                            >
-                                                                <UserCheck className="w-4 h-4" />
-                                                            </button>
-                                                        )}
-                                                        <button
-                                                            onClick={() => handleAction(u.email, u.status === 'removed' ? 'approve' : 'remove')}
-                                                            className={`p-2 border rounded-lg transition-all ${
-                                                                u.status === 'removed' ? 'bg-emerald-600/10 text-emerald-500 border-emerald-600/20 hover:bg-emerald-600' : 'bg-red-600/10 text-red-500 border-red-600/20 hover:bg-red-600'
-                                                            }`}
-                                                        >
-                                                            {u.status === 'removed' ? <RefreshCw className="w-4 h-4" /> : <Trash2 className="w-4 h-4" />}
-                                                        </button>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                ))}
-                            </div>
-
-                            {/* Desktop Table View */}
-                            <div className="hidden md:block">
-                                <table className="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr className="border-b border-border/70 bg-card/50">
-                                            <th className="p-6 text-[10px] font-black uppercase text-muted-foreground tracking-[0.2em]">Personnel</th>
-                                            <th className="p-6 text-[10px] font-black uppercase text-muted-foreground tracking-[0.2em]">Status</th>
-                                            <th className="p-6 text-[10px] font-black uppercase text-muted-foreground tracking-[0.2em]">Commissioned</th>
-                                            <th className="p-6 text-[10px] font-black uppercase text-muted-foreground tracking-[0.2em] text-right">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-border">
-                                        {filteredUsers.map((u) => (
-                                            <motion.tr
-                                                key={u._id || u.email}
-                                                ref={(el) => (rowRefs.current[u._id] = el)}
-                                                layout
-                                                className={`transition-all duration-1000 group ${
-                                                    highlightedItem === u._id
-                                                    ? "bg-accent/10 shadow-inner"
-                                                    : "hover:bg-card/50"
-                                                }`}
-                                            >
-                                                <td className="p-6">
-                                                    <div className="flex items-center gap-4">
-                                                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${highlightedItem === u._id ? "bg-accent text-foreground scale-110 shadow-lg" : "bg-accent/10 border border-accent/20 text-accent"}`}>
-                                                            <Mail className="w-5 h-5" />
-                                                        </div>
-                                                        <div>
-                                                            <p className={`text-sm font-black italic transition-all ${highlightedItem === u._id ? "text-accent scale-105 origin-left" : "text-foreground"}`}>{u.name ? formatName(u.name) : "Unknown"}</p>
-                                                            <p className="text-[10px] text-muted-foreground font-bold uppercase">{u.email}</p>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td className="p-6">
-                                                    <span className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border flex items-center gap-2 w-fit ${
-                                                        u.status === 'approved' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' :
-                                                        u.status === 'pending' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20 animate-pulse' :
-                                                        'bg-red-500/10 text-red-500 border-red-500/20'
-                                                    }`}>
-                                                        {u.status}
-                                                    </span>
-                                                </td>
-                                                <td className="p-6">
-                                                    <span className="text-xs font-bold text-muted-foreground">{u.createdAt ? format(new Date(u.createdAt), "MMM d, yyyy") : "N/A"}</span>
-                                                </td>
-                                                <td className="p-6">
-                                                    <div className="flex items-center justify-end gap-2">
-                                                        {u.role === 'root-super-admin' ? (
-                                                            <div className="text-[9px] font-black uppercase text-amber-500 flex items-center gap-2 bg-amber-500/10 px-4 py-2 rounded-xl border border-amber-500/20">
-                                                                <Zap className="w-4 h-4 fill-amber-500" /> Root Admin
-                                                            </div>
-                                                        ) : (
-                                                            <div className="flex items-center gap-2">
-                                                                {u.role === 'super-admin' && (
-                                                                    <div className="text-[9px] font-black uppercase text-accent flex items-center gap-2 bg-accent/10 px-4 py-2 rounded-xl border border-accent/20">
-                                                                        <ShieldCheck className="w-4 h-4" /> Super Admin
-                                                                    </div>
-                                                                )}
-                                                                <div className="flex gap-2">
-                                                                    {u.status === 'approved' && (
-                                                                        <button
-                                                                            onClick={() => { setSelectedUser(u); setIsPermissionsOpen(true); }}
-                                                                            className="p-3 bg-accent/10 text-accent border border-accent/20 rounded-xl hover:bg-accent hover:text-foreground transition-all shadow-lg"
-                                                                            title="Configure Permissions"
-                                                                        >
-                                                                            <Settings className="w-5 h-5" />
-                                                                        </button>
-                                                                    ) }
-                                                                    {u.status === 'pending' && (
-                                                                        <button
-                                                                            onClick={() => handleAction(u.email, 'approve')}
-                                                                            className="p-3 bg-emerald-600/10 text-emerald-500 border border-emerald-600/20 rounded-xl hover:bg-emerald-600 hover:text-foreground transition-all"
-                                                                        >
-                                                                            <UserCheck className="w-5 h-5" />
-                                                                        </button>
-                                                                    )}
-                                                                    <button
-                                                                        onClick={() => handleAction(u.email, u.status === 'removed' ? 'approve' : 'remove')}
-                                                                        className={`p-3 border rounded-xl transition-all shadow-lg ${
-                                                                            u.status === 'removed' ? 'bg-emerald-600/10 text-emerald-500 border-emerald-600/20 hover:bg-emerald-600 hover:text-foreground' : 'bg-red-600/10 text-red-500 border-red-600/20 hover:bg-red-600 hover:text-foreground'
-                                                                        }`}
-                                                                    >
-                                                                        {u.status === 'removed' ? <RefreshCw className="w-5 h-5" /> : <Trash2 className="w-5 h-5" />}
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </td>
-                                            </motion.tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </>
-                    )}
-                </AnimatePresence>
-            </div>
-
-            {/* Modal */}
-            <AnimatePresence>
-                {isPermissionsOpen && (
-                    <PermissionsModal
-                        user={selectedUser}
-                        actorRole={session?.role}
-                        onClose={() => setIsPermissionsOpen(false)}
-                        onUpdate={updateUserPermissions}
-                    />
-                )}
-            </AnimatePresence>
+      <section className="rounded-[2rem] border border-border/70 bg-card p-4 shadow-sm md:p-5">
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+          <div className="relative flex-1 xl:max-w-md"><Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search by name, email or role…" className="h-11 w-full rounded-xl border border-border bg-background pl-10 pr-10 text-sm text-foreground outline-none transition focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10" />{search && <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"><X className="h-4 w-4" /></button>}</div>
+          <div className="flex gap-2 overflow-x-auto">{["all", "pending", "approved", "denied", "removed"].map((status) => <button key={status} onClick={() => setStatusFilter(status)} className={`shrink-0 rounded-xl px-4 py-2.5 text-xs font-semibold capitalize transition ${statusFilter === status ? "bg-foreground text-background" : "bg-muted/60 text-muted-foreground hover:text-foreground"}`}>{status === "approved" ? "Active" : status}{status === "pending" && counts.pending > 0 && <span className="ml-2 rounded-md bg-amber-500 px-1.5 py-0.5 text-[10px] text-white">{counts.pending}</span>}</button>)}</div>
         </div>
-    );
+      </section>
+
+      <section>
+        <div className="mb-4 flex items-end justify-between"><div><h2 className="text-lg font-bold text-foreground">Team directory</h2><p className="text-sm text-muted-foreground">Showing {filteredUsers.length} of {users.length} users</p></div></div>
+        <AnimatePresence mode="popLayout">
+          {!filteredUsers.length ? <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex min-h-80 flex-col items-center justify-center rounded-[2rem] border border-dashed border-border bg-card/40 px-6 text-center"><div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-muted text-muted-foreground"><AlertCircle className="h-7 w-7" /></div><h3 className="text-lg font-bold text-foreground">No users found</h3><p className="mt-1 text-sm text-muted-foreground">Try changing your search or account-status filter.</p></motion.div> : <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{filteredUsers.map((user, index) => {
+            const id = user._id || user.email; const meta = statusMeta[user.status] || statusMeta.pending; const StatusIcon = meta.Icon; const isRoot = user.role === "root-super-admin"; const highlighted = highlightId === user._id;
+            return <motion.article key={id} ref={(element) => { if (user._id) rowRefs.current[user._id] = element; }} layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: .98 }} transition={{ delay: Math.min(index * .025, .15) }} className={`group relative overflow-hidden rounded-[1.6rem] border bg-card p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg ${highlighted ? "border-violet-500 ring-4 ring-violet-500/10" : "border-border/70"}`}>
+              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-violet-500 via-blue-500 to-cyan-400 opacity-0 transition group-hover:opacity-100" />
+              <div className="flex items-start justify-between gap-3"><div className="flex min-w-0 items-center gap-3"><UserAvatar user={user} /><div className="min-w-0"><h3 className="truncate text-base font-bold text-foreground">{user.name ? formatName(user.name) : "Unnamed user"}</h3><p className="truncate text-xs text-muted-foreground">{user.email}</p></div></div><span className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${meta.classes}`}><StatusIcon className="h-3 w-3" />{meta.label}</span></div>
+              <div className="my-5 grid grid-cols-2 gap-3"><div className="rounded-xl bg-muted/45 p-3"><p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Role</p><p className="mt-1 truncate text-xs font-semibold text-foreground">{roleLabel(user.role)}</p></div><div className="rounded-xl bg-muted/45 p-3"><p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Joined</p><p className="mt-1 text-xs font-semibold text-foreground">{user.createdAt ? format(new Date(user.createdAt), "MMM d, yyyy") : "Not available"}</p></div></div>
+              {user.createdAt && <div className="mb-4 flex items-center gap-2 text-xs text-muted-foreground"><CalendarDays className="h-3.5 w-3.5" /> Joined {formatDistanceToNow(new Date(user.createdAt), { addSuffix: true })}</div>}
+              <div className="flex items-center gap-2 border-t border-border/70 pt-4">{isRoot ? <div className="flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-amber-500/10 text-xs font-bold text-amber-500"><ShieldCheck className="h-4 w-4" /> Protected root account</div> : <>{user.status === "pending" && <><button onClick={() => handleAction(user.email, "approve")} className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-500 text-xs font-bold text-white transition hover:bg-emerald-600"><UserCheck className="h-4 w-4" /> Approve</button><button onClick={() => handleAction(user.email, "deny")} className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-3 text-xs font-bold text-red-500 hover:bg-red-500 hover:text-white"><UserX className="h-4 w-4" /> Deny</button></>}{user.status === "approved" && <button onClick={() => setSelectedUser(user)} className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-foreground text-xs font-bold text-background transition hover:opacity-90"><Settings2 className="h-4 w-4" /> Manage access <ChevronRight className="h-3.5 w-3.5" /></button>}{user.status !== "pending" && <button onClick={() => handleAction(user.email, user.status === "removed" ? "approve" : "remove")} className={`flex h-10 w-10 items-center justify-center rounded-xl border transition ${user.status === "removed" ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-500" : "border-border text-muted-foreground hover:border-red-500/20 hover:bg-red-500/10 hover:text-red-500"}`} title={user.status === "removed" ? "Restore user" : "Remove user"}>{user.status === "removed" ? <RefreshCw className="h-4 w-4" /> : <Trash2 className="h-4 w-4" />}</button>}</>}</div>
+            </motion.article>;
+          })}</div>}
+        </AnimatePresence>
+      </section>
+
+      <AnimatePresence>{selectedUser && <PermissionsPanel user={selectedUser} actorRole={session?.role} onClose={() => setSelectedUser(null)} onUpdate={updateUserPermissions} />}</AnimatePresence>
+    </main>
+  );
 }

@@ -291,27 +291,39 @@
     .admin-theme-scope {
         background-color: var(--background);
         color: var(--foreground);
+        /* Legacy Tailwind palettes inside admin resolve through the active
+           website theme instead of fixed framework colors. */
+        --color-blue-200: color-mix(in srgb, var(--accent) 28%, transparent);
+        --color-blue-300: color-mix(in srgb, var(--accent) 48%, var(--foreground));
+        --color-blue-400: color-mix(in srgb, var(--accent) 78%, var(--foreground));
+        --color-blue-500: var(--accent); --color-blue-600: color-mix(in srgb, var(--accent) 88%, var(--foreground));
+        --color-cyan-200: var(--color-blue-200); --color-cyan-300: var(--color-blue-300); --color-cyan-400: var(--color-blue-400); --color-cyan-500: var(--accent);
+        --color-sky-200: var(--color-blue-200); --color-sky-300: var(--color-blue-300); --color-sky-400: var(--color-blue-400);
+        --color-indigo-200: var(--color-blue-200); --color-indigo-300: var(--color-blue-300); --color-indigo-400: var(--color-blue-400); --color-indigo-500: var(--accent); --color-indigo-900: color-mix(in srgb, var(--accent) 24%, var(--card));
+        --color-violet-200: var(--color-blue-200); --color-violet-300: var(--color-blue-300); --color-violet-400: var(--color-blue-400); --color-violet-500: var(--accent); --color-violet-600: var(--color-blue-600);
+        --color-purple-400: var(--color-blue-400); --color-purple-500: var(--accent); --color-purple-600: var(--color-blue-600);
+        --color-fuchsia-200: var(--color-blue-200); --color-fuchsia-300: var(--color-blue-300); --color-fuchsia-400: var(--color-blue-400);
+        --color-teal-400: var(--color-blue-400); --color-teal-600: var(--color-blue-600);
+
+        --color-emerald-100: color-mix(in srgb, var(--status-success) 12%, transparent); --color-emerald-200: color-mix(in srgb, var(--status-success) 25%, transparent); --color-emerald-300: color-mix(in srgb, var(--status-success) 52%, var(--foreground)); --color-emerald-400: color-mix(in srgb, var(--status-success) 78%, var(--foreground)); --color-emerald-500: var(--status-success); --color-emerald-600: color-mix(in srgb, var(--status-success) 88%, var(--foreground)); --color-emerald-800: color-mix(in srgb, var(--status-success) 45%, var(--card));
+        --color-green-200: var(--color-emerald-200); --color-green-300: var(--color-emerald-300); --color-green-400: var(--color-emerald-400); --color-green-500: var(--status-success); --color-green-600: var(--color-emerald-600); --color-green-700: color-mix(in srgb, var(--status-success) 70%, var(--card)); --color-green-900: color-mix(in srgb, var(--status-success) 25%, var(--card));
+
+        --color-amber-100: color-mix(in srgb, var(--status-warning) 12%, transparent); --color-amber-200: color-mix(in srgb, var(--status-warning) 25%, transparent); --color-amber-300: color-mix(in srgb, var(--status-warning) 52%, var(--foreground)); --color-amber-400: color-mix(in srgb, var(--status-warning) 78%, var(--foreground)); --color-amber-500: var(--status-warning); --color-amber-600: color-mix(in srgb, var(--status-warning) 88%, var(--foreground)); --color-amber-800: color-mix(in srgb, var(--status-warning) 42%, var(--card));
+        --color-yellow-300: var(--color-amber-300); --color-yellow-400: var(--color-amber-400); --color-yellow-500: var(--status-warning); --color-yellow-600: var(--color-amber-600); --color-yellow-700: color-mix(in srgb, var(--status-warning) 70%, var(--card)); --color-yellow-900: color-mix(in srgb, var(--status-warning) 25%, var(--card));
+        --color-orange-200: var(--color-amber-200); --color-orange-300: var(--color-amber-300); --color-orange-400: var(--color-amber-400); --color-orange-500: var(--status-warning); --color-orange-600: var(--color-amber-600); --color-orange-700: var(--color-yellow-700); --color-orange-900: var(--color-yellow-900);
+
+        --color-red-200: color-mix(in srgb, var(--status-danger) 25%, transparent); --color-red-300: color-mix(in srgb, var(--status-danger) 52%, var(--foreground)); --color-red-400: color-mix(in srgb, var(--status-danger) 78%, var(--foreground)); --color-red-500: var(--status-danger); --color-red-600: color-mix(in srgb, var(--status-danger) 88%, var(--foreground)); --color-red-700: color-mix(in srgb, var(--status-danger) 70%, var(--card)); --color-red-900: color-mix(in srgb, var(--status-danger) 25%, var(--card));
+        --color-rose-300: var(--color-red-300); --color-rose-400: var(--color-red-400); --color-rose-500: var(--status-danger);
+
+        --color-slate-100: var(--foreground); --color-slate-200: color-mix(in srgb, var(--foreground) 86%, var(--muted)); --color-slate-300: color-mix(in srgb, var(--muted-foreground) 78%, var(--foreground)); --color-slate-400: var(--muted-foreground); --color-slate-500: var(--muted-foreground); --color-slate-600: color-mix(in srgb, var(--muted-foreground) 75%, var(--background)); --color-slate-700: var(--muted); --color-slate-900: var(--card); --color-slate-950: var(--background);
+        --color-zinc-300: var(--color-slate-300); --color-zinc-400: var(--color-slate-400);
     }
     /* The admin workspace needs solid navy surfaces in Dark mode. The public
        dark palette intentionally uses translucent cards, but nested admin
        layouts made those cards blend into the page and look like Black mode. */
     html.dark:not(.black) .admin-theme-scope {
-        --background: #08111f;
-        --foreground: #f1f5f9;
-        --card: #111c2f;
-        --card-foreground: #f8fafc;
-        --muted: #18263d;
-        --muted-foreground: #a5b4c7;
-        --popover: #132036;
-        --popover-foreground: #f8fafc;
-        --border: rgba(148, 163, 184, 0.18);
-        --input: rgba(148, 163, 184, 0.16);
-        --chart-grid: rgba(148, 163, 184, 0.13);
-        --chart-axis: #9aabc0;
         background-color: var(--background);
-        background-image:
-            radial-gradient(circle at 82% -8%, rgba(var(--accent-rgb), 0.13), transparent 34rem),
-            linear-gradient(145deg, #0a1424 0%, #08111f 48%, #0b1627 100%);
+        background-image: radial-gradient(circle at 82% -8%, color-mix(in srgb, var(--accent) 13%, transparent), transparent 34rem);
         background-attachment: fixed;
     }
     html.dark:not(.black) .admin-theme-scope :is(
@@ -332,24 +344,24 @@
         background-color: color-mix(in srgb, var(--card) 84%, var(--muted));
     }
     html.dark:not(.black) .admin-theme-scope .admin-sidebar-shell {
-        background-color: #0c1728 !important;
-        background-image: linear-gradient(180deg, #101d31 0%, #0b1626 55%, #091321 100%);
-        border-color: rgba(148, 163, 184, 0.2) !important;
-        box-shadow: 18px 0 50px -32px rgba(0, 0, 0, 0.85);
+        background-color: var(--card) !important;
+        background-image: linear-gradient(180deg, color-mix(in srgb, var(--card) 94%, var(--accent)), var(--card));
+        border-color: var(--border) !important;
+        box-shadow: 18px 0 50px -32px color-mix(in srgb, var(--overlay) 70%, transparent);
     }
     html.dark:not(.black) .admin-theme-scope .admin-sidebar-brand {
-        background-image: linear-gradient(135deg, rgba(var(--accent-rgb), 0.13), rgba(17, 28, 47, 0.78));
-        border-color: rgba(148, 163, 184, 0.18) !important;
+        background-image: linear-gradient(135deg, color-mix(in srgb, var(--accent) 13%, transparent), color-mix(in srgb, var(--card) 78%, transparent));
+        border-color: var(--border) !important;
     }
     html.dark:not(.black) .admin-theme-scope .admin-sidebar-footer {
-        background-color: rgba(17, 28, 47, 0.92) !important;
-        border-color: rgba(148, 163, 184, 0.18) !important;
+        background-color: color-mix(in srgb, var(--card) 92%, transparent) !important;
+        border-color: var(--border) !important;
     }
     html.dark:not(.black) .admin-theme-scope .admin-topbar-shell {
-        background-color: rgba(10, 20, 36, 0.92) !important;
-        background-image: linear-gradient(90deg, rgba(12, 24, 41, 0.96), rgba(15, 29, 49, 0.9));
-        border-color: rgba(148, 163, 184, 0.2) !important;
-        box-shadow: 0 12px 35px -28px rgba(0, 0, 0, 0.9);
+        background-color: color-mix(in srgb, var(--background) 92%, transparent) !important;
+        background-image: linear-gradient(90deg, color-mix(in srgb, var(--card) 96%, transparent), color-mix(in srgb, var(--card) 90%, transparent));
+        border-color: var(--border) !important;
+        box-shadow: 0 12px 35px -28px color-mix(in srgb, var(--overlay) 75%, transparent);
     }
     .admin-theme-scope :is(input, textarea, select) {
         border-color: var(--border);
@@ -409,6 +421,41 @@
     }
     .admin-theme-scope [class*="border-white/"] {
         border-color: var(--border) !important;
+    }
+    /* Remove fixed dark surfaces left by older admin editors. These selectors
+       are deliberately scoped so the public website remains untouched. */
+    .admin-theme-scope [class*="bg-[#"] {
+        background-color: var(--card) !important;
+    }
+    .admin-theme-scope [class*="border-[#"] {
+        border-color: var(--border) !important;
+    }
+    .admin-theme-scope [class*="from-[#"] {
+        --tw-gradient-from: color-mix(in srgb, var(--card) 96%, var(--accent)) var(--tw-gradient-from-position) !important;
+        --tw-gradient-to: color-mix(in srgb, var(--card) 96%, var(--accent) 0%) var(--tw-gradient-to-position) !important;
+    }
+    .admin-theme-scope [class*="to-[#"] {
+        --tw-gradient-to: var(--card) var(--tw-gradient-to-position) !important;
+    }
+    .admin-theme-scope [class*="shadow-["] {
+        --tw-shadow-color: color-mix(in srgb, var(--overlay) 26%, transparent) !important;
+    }
+    .admin-theme-scope .text-white {
+        color: var(--foreground) !important;
+    }
+    .admin-theme-scope :is(
+        [class*="bg-blue-"], [class*="bg-cyan-"], [class*="bg-sky-"],
+        [class*="bg-indigo-"], [class*="bg-violet-"], [class*="bg-purple-"],
+        [class*="bg-fuchsia-"], [class*="bg-teal-"]
+    ):is(.text-white, .text-slate-950) {
+        color: var(--accent-foreground) !important;
+    }
+    .admin-theme-scope :is(
+        [class*="bg-emerald-"], [class*="bg-green-"],
+        [class*="bg-amber-"], [class*="bg-yellow-"], [class*="bg-orange-"],
+        [class*="bg-red-"], [class*="bg-rose-"]
+    ):is(.text-white, .text-slate-950) {
+        color: var(--status-foreground) !important;
     }
     .admin-auth-input:-webkit-autofill,
     .admin-auth-input:-webkit-autofill:hover,

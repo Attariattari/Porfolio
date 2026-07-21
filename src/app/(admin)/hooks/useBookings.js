@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useEffect } from "react";
+import { initializeSocket, SOCKET_EVENTS, disposeSocket } from "@/lib/socket";
 
 const fetchBookings = async (filters) => {
   const params = new URLSearchParams();
@@ -118,12 +119,25 @@ export const useRealTimeBookingUpdates = () => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
+    const socket = initializeSocket();
+    if (!socket) return;
+
     const refreshBookings = () => {
       queryClient.invalidateQueries({ queryKey: ["bookings"] });
       queryClient.invalidateQueries({ queryKey: ["booking-stats"] });
     };
 
-    const interval = setInterval(refreshBookings, 15000);
-    return () => clearInterval(interval);
+    socket.on(SOCKET_EVENTS.NEW_BOOKING, refreshBookings);
+    socket.on(SOCKET_EVENTS.BOOKING_UPDATED, refreshBookings);
+    socket.on(SOCKET_EVENTS.BOOKING_DELETED, refreshBookings);
+    socket.on(SOCKET_EVENTS.BOOKING_STATS_UPDATED, refreshBookings);
+
+    return () => {
+      socket.off(SOCKET_EVENTS.NEW_BOOKING, refreshBookings);
+      socket.off(SOCKET_EVENTS.BOOKING_UPDATED, refreshBookings);
+      socket.off(SOCKET_EVENTS.BOOKING_DELETED, refreshBookings);
+      socket.off(SOCKET_EVENTS.BOOKING_STATS_UPDATED, refreshBookings);
+      disposeSocket(socket);
+    };
   }, [queryClient]);
 };

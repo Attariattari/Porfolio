@@ -85,16 +85,9 @@ const socialLinksSchema = z.object({
 });
 
 const SectionHeader = ({ icon: Icon, title, desc }) => (
-  <div className="mb-8 border-b border-border/70 pb-6">
-    <div className="flex items-center gap-3 mb-2">
-      <div className="p-2.5 rounded-xl bg-accent/10 border border-accent/20 text-accent">
-        <Icon className="w-5 h-5" />
-      </div>
-      <h2 className="text-xl font-black uppercase italic tracking-tighter">
-        {title}
-      </h2>
-    </div>
-    <p className="text-sm text-muted-foreground font-medium">{desc}</p>
+  <div className="mb-6 flex items-start gap-3 border-b border-white/[0.07] pb-5">
+    <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-cyan-400/10 text-cyan-300"><Icon className="size-4" /></span>
+    <div><p className="text-[9px] font-bold uppercase tracking-[.18em] text-slate-600">Profile connections</p><h2 className="mt-1 text-sm font-semibold text-slate-100">{title}</h2><p className="mt-1 text-xs leading-5 text-slate-500">{desc}</p></div>
   </div>
 );
 
@@ -185,23 +178,11 @@ export default function SocialLinksForm() {
   );
 
   return (
-    <div className="max-w-5xl mx-auto space-y-12 pb-10">
-      <div className="flex justify-between items-end mb-6">
-        <div>
-          <h1 className="text-4xl font-black italic uppercase tracking-tighter">
-            Social{" "}
-            <span className="text-accent underline decoration-accent/20 underline-offset-8">
-              Links
-            </span>
-          </h1>
-          <p className="text-muted-foreground mt-3 font-medium">
-            Manage your professional social profiles with real-time frontend sync
-          </p>
-        </div>
-      </div>
+    <div className="mx-auto max-w-6xl space-y-6 pb-20">
+      <header className="relative overflow-hidden rounded-[28px] border border-white/[0.08] bg-[#0d1727] p-6 sm:p-8"><div className="pointer-events-none absolute -right-20 -top-24 size-72 rounded-full bg-cyan-400/[0.06] blur-3xl" /><div className="relative flex flex-col justify-between gap-5 sm:flex-row sm:items-center"><div className="flex items-start gap-4"><span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-cyan-400/10 text-cyan-300 ring-1 ring-inset ring-cyan-400/15"><Globe className="size-5" /></span><div><p className="text-[10px] font-bold uppercase tracking-[.24em] text-cyan-300">Public presence</p><h1 className="mt-2 text-2xl font-semibold tracking-[-.035em] text-white sm:text-3xl">Social links</h1><p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">Manage the professional profiles shown across your portfolio.</p></div></div><button type="submit" form="social-links-form" disabled={isSaving} className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-cyan-300 px-5 text-xs font-bold text-slate-950 hover:bg-cyan-200 disabled:opacity-50"><Save className="size-4" />{isSaving ? "Saving" : "Save changes"}</button></div></header>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
-        <div className="bg-card/40 border border-border/70 p-10 rounded-[3rem]">
+      <form id="social-links-form" onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <div className="rounded-[24px] border border-white/[0.08] bg-[#0d1727] p-6 sm:p-8">
           <SectionHeader
             icon={Globe}
             title="Active Social Profiles"
@@ -218,14 +199,14 @@ export default function SocialLinksForm() {
               return (
                 <div
                   key={field.id}
-                  className="group flex items-center gap-4 p-4 rounded-2xl bg-card/50 border border-border/70 hover:border-accent/30 transition-all"
+                  className="group flex items-center gap-4 rounded-2xl border border-white/[0.07] bg-white/[0.025] p-4 transition hover:border-cyan-400/20 hover:bg-cyan-400/[0.025]"
                 >
-                  <div className="p-3 rounded-xl bg-accent/10 border border-accent/20 text-accent">
+                  <div className="grid size-11 shrink-0 place-items-center rounded-xl bg-cyan-400/10 text-cyan-300">
                     <Icon className="w-5 h-5" />
                   </div>
 
                   <div className="flex-1 space-y-1">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-accent/60">
+                    <label className="text-[9px] font-bold uppercase tracking-[.15em] text-slate-600">
                       {PLATFORM_LABELS[platformKey]}
                     </label>
                     <input
@@ -248,7 +229,7 @@ export default function SocialLinksForm() {
                           ? "Enter complete WhatsApp URL"
                           : `Enter ${PLATFORM_LABELS[platformKey]} username or URL`
                       }
-                      className="w-full bg-transparent border-none p-0 text-sm font-medium focus:ring-0 placeholder:text-muted-foreground/20 text-foreground"
+                      className="mt-1 w-full border-none bg-transparent p-0 text-sm font-medium text-slate-200 outline-none placeholder:text-slate-700"
                     />
                   </div>
 
@@ -280,7 +261,7 @@ export default function SocialLinksForm() {
                         key={platform}
                         type="button"
                         onClick={() => append({ platform, url: "" })}
-                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-muted/50 border border-border hover:border-accent/40 hover:bg-accent/5 text-xs font-bold transition-all group"
+                        className="group flex items-center gap-2 rounded-xl border border-white/[0.07] bg-white/[0.025] px-4 py-2.5 text-xs font-semibold text-slate-400 transition hover:border-cyan-400/25 hover:text-cyan-300"
                       >
                         <Icon className="w-4 h-4 text-muted-foreground/50 group-hover:text-accent" />
                         {PLATFORM_LABELS[platform]}
@@ -300,7 +281,7 @@ export default function SocialLinksForm() {
           )}
         </div>
 
-        <div className="flex justify-end gap-4">
+        <div className="hidden">
           <button
             type="submit"
             disabled={isSaving}

@@ -58,7 +58,7 @@ export async function OrganizationSchema() {
           name: config.siteTitle || "Muhyo Tech",
           alternateName: "Muhyo Tech",
           url: SITE_URL,
-          email: "MuhyoTech@gmail.com",
+          email: config.email || "MuhyoTech@gmail.com",
           logo: getSeoImage("/logo.png"),
           image: getSeoImage("/home-preview.png"),
           description:
@@ -73,7 +73,7 @@ export async function OrganizationSchema() {
             jobTitle: "Founder & Lead Developer",
           },
           foundingDate: "2023",
-          foundingLocation: "Lahore, Pakistan",
+          foundingLocation: config.location || "Lahore, Pakistan",
           knowsAbout: [
             "Web Development",
             "Next.js",
@@ -100,8 +100,8 @@ export async function OrganizationSchema() {
           image: getSeoImage("/home-preview.png"),
           logo: getSeoImage("/logo.png"),
           telephone: "+92-322-4458481",
-          email: "MuhyoTech@gmail.com",
-          location: "Lahore, Punjab, Pakistan",
+          email: config.email || "MuhyoTech@gmail.com",
+          location: config.location || "Lahore, Punjab, Pakistan",
           address,
           areaServed: ["Lahore", "Pakistan"],
           priceRange: "$$",

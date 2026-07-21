@@ -18,8 +18,10 @@ import {
   Cpu,
   Sparkles,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function GoalsAdminPage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("goals"); // goals, roadmap, milestones
   const [goals, setGoals] = useState([]);
   const [roadmap, setRoadmap] = useState([]);
@@ -178,7 +180,7 @@ export default function GoalsAdminPage() {
       order: goals.length,
       publishStatus: "published",
     });
-    setIsModalOpen(true);
+    router.push("/admin/goals/new");
   };
 
   const handleSaveGoal = async () => {
@@ -256,7 +258,7 @@ export default function GoalsAdminPage() {
       order: goal.order || 0,
       publishStatus: goal.publishStatus || "published",
     });
-    setIsModalOpen(true);
+    router.push(`/admin/goals/${goal._id || encodeURIComponent(goal.title)}`);
   };
 
   const handleUpdateConfig = async (newData) => {
@@ -438,15 +440,10 @@ export default function GoalsAdminPage() {
   const dbProgressUpdates = progressUpdates.filter((p) => !p._isFromDataJs);
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="mx-auto max-w-[1500px] pb-20">
+      <div>
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Goals Management</h1>
-          <p className="text-foreground/60">
-            Manage strategic goals, roadmap, and milestones
-          </p>
-        </div>
+        <header className="relative mb-6 overflow-hidden rounded-[28px] border border-white/[0.08] bg-[#0d1727] p-6 sm:p-8"><div className="pointer-events-none absolute -right-20 -top-24 size-72 rounded-full bg-amber-400/[0.06] blur-3xl" /><div className="relative flex flex-col justify-between gap-6 lg:flex-row lg:items-center"><div className="flex items-start gap-4"><span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-amber-400/10 text-amber-300 ring-1 ring-inset ring-amber-400/15"><Target className="size-5" /></span><div><p className="text-[10px] font-bold uppercase tracking-[.24em] text-amber-300">Strategy workspace</p><h1 className="mt-2 text-2xl font-semibold tracking-[-.035em] text-white sm:text-3xl">Goals management</h1><p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">Plan objectives, track progress and manage your long-term roadmap.</p></div></div><button onClick={handleAddGoal} className="inline-flex items-center justify-center gap-2 rounded-xl bg-amber-300 px-5 py-3 text-xs font-bold text-slate-950 hover:bg-amber-200"><Plus className="size-4" />New goal</button></div></header>
 
         {/* Import Prompt */}
         {showImportPrompt && (
@@ -480,7 +477,7 @@ export default function GoalsAdminPage() {
         )}
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+        <div className="mb-6 grid overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0d1727] sm:grid-cols-2 lg:grid-cols-5">
           {[
             { label: "Total Goals", value: stats.totalGoals, icon: Target },
             {
@@ -502,29 +499,29 @@ export default function GoalsAdminPage() {
           ].map((stat, idx) => (
             <div
               key={idx}
-              className="p-4 rounded-lg bg-muted border border-border"
+              className="border-b border-white/[0.07] p-5 last:border-b-0 sm:border-r lg:border-b-0"
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-foreground/60">{stat.label}</p>
-                  <p className="text-2xl font-bold mt-1">{stat.value}</p>
+                  <p className="text-[9px] font-bold uppercase tracking-[.16em] text-slate-600">{stat.label}</p>
+                  <p className="mt-1 text-2xl font-semibold text-white">{stat.value}</p>
                 </div>
-                <stat.icon className="w-6 h-6 text-accent/60" />
+                <stat.icon className="size-4 text-amber-300/60" />
               </div>
             </div>
           ))}
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-4 mb-6 border-b border-border overflow-x-auto">
+        <div className="mb-6 flex gap-1 overflow-x-auto rounded-2xl border border-white/[0.08] bg-[#0d1727] p-1.5">
           {["goals", "roadmap", "milestones", "progress", "strategic-deck"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`pb-3 px-4 font-semibold whitespace-nowrap transition-colors ${
+              className={`whitespace-nowrap rounded-xl px-4 py-2.5 text-xs font-semibold transition-colors ${
                 activeTab === tab
-                  ? "text-accent border-b-2 border-accent"
-                  : "text-foreground/60 hover:text-foreground"
+                  ? "bg-amber-400/10 text-amber-300"
+                  : "text-slate-500 hover:bg-white/[0.035] hover:text-white"
               }`}
             >
               {tab
@@ -1122,7 +1119,7 @@ export default function GoalsAdminPage() {
 
       {/* Modal */}
       <AnimatePresence>
-        {isModalOpen && (
+        {false && isModalOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

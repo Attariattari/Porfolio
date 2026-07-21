@@ -31,7 +31,7 @@ export async function POST(request) {
     if (!(await isAdmin())) return NextResponse.json({ message: "Forbidden" }, { status: 403 });
 
     if (action === "UPDATE_STATUS") {
-      const result = await NotificationController.markAsRead(id);
+      const result = await NotificationController.updateStatus(id, status);
       return NextResponse.json({ success: !!result });
     } else if (action === "DELETE") {
       const result = await NotificationController.delete(id);

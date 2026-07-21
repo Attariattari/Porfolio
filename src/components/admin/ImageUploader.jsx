@@ -33,7 +33,7 @@ import { toast } from "sonner";
 /**
  * ImageItem Component (Individual Image)
  */
-function SortableImageItem({ id, url, onRemove, onReplace }) {
+function SortableImageItem({ id, url, onRemove, onReplace, compact = false }) {
   const {
     attributes,
     listeners,
@@ -54,9 +54,9 @@ function SortableImageItem({ id, url, onRemove, onReplace }) {
     <div
       ref={setNodeRef}
       style={style}
-      className={`relative rounded-3xl overflow-hidden aspect-square group border border-border bg-muted/20 shadow-2xl transition-all duration-500 hover:border-accent/40 ${isDragging ? 'ring-2 ring-accent shadow-accent/20' : ''}`}
+      className={`relative overflow-hidden group border border-border bg-muted/20 transition-all duration-500 hover:border-accent/40 ${compact ? 'aspect-[4/3] rounded-xl shadow-lg' : 'aspect-square rounded-3xl shadow-2xl'} ${isDragging ? 'ring-2 ring-accent shadow-accent/20' : ''}`}
     >
-      <img src={url} alt="Muhyo Tech uploaded media preview" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+      <img src={url} alt="Muhyo Tech uploaded media preview" className={`w-full h-full transition-transform duration-700 group-hover:scale-105 ${compact ? 'object-contain p-3' : 'object-cover'}`} />
 
       {/* Overlay */}
       <div className="absolute inset-0 bg-overlay/60 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-3 backdrop-blur-[2px]">
@@ -102,7 +102,7 @@ function SortableImageItem({ id, url, onRemove, onReplace }) {
 /**
  * Main ImageUploader Component
  */
-export default function ImageUploader({ images = [], onChange }) {
+export default function ImageUploader({ images = [], onChange, compact = false, maxFiles }) {
   const [imageList, setImageList] = useState([]);
   const [isUrlInputOpen, setIsUrlInputOpen] = useState(false);
   const [urlInput, setUrlInput] = useState("");
@@ -163,7 +163,8 @@ export default function ImageUploader({ images = [], onChange }) {
   };
 
   const handleLocalSelect = async (e) => {
-    const files = Array.from(e.target.files);
+    const availableSlots = maxFiles ? Math.max(0, maxFiles - imageList.length) : Infinity;
+    const files = Array.from(e.target.files).slice(0, availableSlots);
     if (!files.length) return;
 
     // 1. Create temporary items with local previews
@@ -248,33 +249,33 @@ export default function ImageUploader({ images = [], onChange }) {
   };
 
   return (
-    <div className="space-y-8 w-full p-8 md:p-12 rounded-[2.5rem] bg-card/40 border border-border/70 backdrop-blur-3xl shadow-3xl">
+    <div className={`w-full bg-card/40 border border-border/70 backdrop-blur-3xl ${compact ? 'space-y-4 rounded-xl p-4' : 'space-y-8 rounded-[2.5rem] p-8 shadow-3xl md:p-12'}`}>
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-border/70 pb-8">
+      <div className={`flex justify-between border-b border-border/70 ${compact ? 'items-center gap-3 pb-4' : 'flex-col md:flex-row items-start md:items-center gap-6 pb-8'}`}>
         <div>
-           <div className="flex items-center gap-4 mb-2">
-            <ImageIcon className="w-8 h-8 text-accent animate-pulse" />
-            <h3 className="text-2xl font-black text-foreground italic uppercase tracking-tighter italic">Media Assets</h3>
+           <div className={`flex items-center ${compact ? 'gap-2' : 'gap-4 mb-2'}`}>
+            <ImageIcon className={`${compact ? 'size-4' : 'w-8 h-8 animate-pulse'} text-accent`} />
+            <h3 className={`${compact ? 'text-sm font-semibold' : 'text-2xl font-black italic uppercase tracking-tighter'} text-foreground`}>{compact ? 'Hero image' : 'Media Assets'}</h3>
            </div>
-           <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-[0.2em]">Manage high-fidelity project visuals</p>
+           {!compact && <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-[0.2em]">Manage high-fidelity project visuals</p>}
         </div>
 
-        <div className="flex flex-wrap gap-3">
+        <div className={`flex flex-wrap ${compact ? 'gap-1.5' : 'gap-3'}`}>
             <button
                 type="button"
                 onClick={() => setIsUrlInputOpen(!isUrlInputOpen)}
-                className="px-6 py-4 rounded-2xl bg-muted/40 border border-border/70 hover:border-border text-foreground font-black uppercase text-[10px] tracking-[0.2em] transition-all flex items-center gap-3 active:scale-95 group"
+                className={`${compact ? 'p-2.5 rounded-lg' : 'px-6 py-4 rounded-2xl gap-3'} bg-muted/40 border border-border/70 hover:border-border text-foreground font-bold uppercase text-[10px] transition-all flex items-center active:scale-95 group`}
             >
                 <LinkIcon className="w-4 h-4 group-hover:rotate-12 transition-transform" />
-                Add URL
+                {!compact && 'Add URL'}
             </button>
             <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="px-8 py-4 rounded-2xl bg-accent text-accent-foreground font-black uppercase text-[10px] tracking-[0.2em] transition-all flex items-center gap-3 hover:bg-accent/90 shadow-xl shadow-accent/10 active:scale-95"
+                className={`${compact ? 'px-3 py-2.5 rounded-lg gap-1.5' : 'px-8 py-4 rounded-2xl gap-3 tracking-[0.2em]'} bg-accent text-accent-foreground font-black uppercase text-[10px] transition-all flex items-center hover:bg-accent/90 active:scale-95`}
             >
                 <Plus className="w-4 h-4" />
-                Select Files
+                {compact ? 'Choose' : 'Select Files'}
             </button>
         </div>
       </div>
@@ -324,7 +325,7 @@ export default function ImageUploader({ images = [], onChange }) {
             items={imageList.map((item) => item.id)}
             strategy={rectSortingStrategy}
           >
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+            <div className={compact ? (maxFiles === 1 ? "grid grid-cols-1 gap-3" : "grid grid-cols-2 gap-3") : "grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6"}>
               <AnimatePresence mode="popLayout">
                 {imageList.map((item) => (
                   <motion.div
@@ -340,6 +341,7 @@ export default function ImageUploader({ images = [], onChange }) {
                       url={item.url}
                       onRemove={handleRemove}
                       onReplace={handleReplaceClick}
+                      compact={compact}
                     />
                   </motion.div>
                 ))}
@@ -362,7 +364,7 @@ export default function ImageUploader({ images = [], onChange }) {
               )}
 
               {/* Minimal add button always present */}
-              {imageList.length > 0 && (
+              {imageList.length > 0 && (!maxFiles || imageList.length < maxFiles) && (
                 <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}

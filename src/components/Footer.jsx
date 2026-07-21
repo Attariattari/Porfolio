@@ -18,12 +18,21 @@ import { toast } from "sonner";
 import SocialLinks from "./SocialLinks";
 
 import { portfolioData } from "@/lib/data";
+import useAdminStore from "@/lib/store/adminStore";
 
 export default function Footer({ data, socials = [] }) {
   const pathname = usePathname();
   const footerData = portfolioData.siteConfig.footer;
   const about = data || portfolioData.about;
-  const displayName = `${about.firstName || "Muhyo"} ${about.lastName || "Tech"}`;
+  const settings = useAdminStore((state) => state.settings);
+  const brandAccent = settings?.siteAccent || about.lastName || "Tech";
+  const configuredTitle = settings?.siteTitle || about.firstName || "Muhyo";
+  const brandTitle = configuredTitle.toLowerCase().endsWith(brandAccent.toLowerCase())
+    ? configuredTitle.slice(0, -brandAccent.length).trim()
+    : configuredTitle;
+  const displayName = `${brandTitle || "Muhyo"} ${brandAccent}`;
+  const publicEmail = settings?.email || "MuhyoTech@gmail.com";
+  const publicLocation = settings?.location || "Chota, Mohlanwal Road, Badu Pura Chung, Lahore 53720, Pakistan";
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
@@ -112,8 +121,8 @@ export default function Footer({ data, socials = [] }) {
                   />
                 </div>
                 <span className="text-xl font-bold tracking-tight text-foreground">
-                  {about.firstName || "Muhyo"}
-                  <span className="text-accent">{about.lastName || "Tech"}</span>
+                  {brandTitle || "Muhyo"}{" "}
+                  <span className="text-accent">{brandAccent}</span>
                 </span>
               </Link>
 
@@ -232,11 +241,11 @@ export default function Footer({ data, socials = [] }) {
                 <ul className="space-y-3">
                   <li>
                     <a
-                      href="mailto:MuhyoTech@gmail.com"
+                      href={`mailto:${publicEmail}`}
                       className="group flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-accent"
                       aria-label="Email Muhyo Tech"
                     >
-                      MuhyoTech@gmail.com
+                      {publicEmail}
                       <ExternalLink
                         size={12}
                         className="ml-1 opacity-50 transition-opacity group-hover:opacity-100"
@@ -265,8 +274,7 @@ export default function Footer({ data, socials = [] }) {
                   </li>
                   <li>
                     <address className="mb-0 text-sm font-medium not-italic leading-relaxed text-muted-foreground">
-                      Chota, Mohlanwal Road, Badu Pura Chung, Lahore 53720,
-                      Pakistan
+                      {publicLocation}
                     </address>
                   </li>
                   <li>
@@ -327,11 +335,11 @@ export default function Footer({ data, socials = [] }) {
         <div className="pt-5 flex flex-col md:flex-row justify-between items-center gap-5">
           <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8">
             <p className="mb-0 text-[11px] font-medium text-muted-foreground">
-              &copy; {new Date().getFullYear()} Muhyo Tech. All rights reserved.
+              &copy; {new Date().getFullYear()} {displayName}. All rights reserved.
             </p>
             <div className="hidden md:block w-[1px] h-4 bg-border/60" />
             <address className="mb-0 text-[11px] font-medium not-italic text-muted-foreground">
-              Chota, Mohlanwal Road, Badu Pura Chung, Lahore 53720, Pakistan
+              {publicLocation}
             </address>
           </div>
 

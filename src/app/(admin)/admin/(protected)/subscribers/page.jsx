@@ -8,7 +8,7 @@ import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import { z } from "zod";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { Mail, Send, Filter, Users, UserCheck, UserX, CheckSquare, Square, MoreHorizontal, ShieldAlert, Zap, Loader2, RefreshCcw } from "lucide-react";
+import { Mail, Send, Filter, Users, UserCheck, UserX, CheckSquare, Square, Zap, RefreshCcw, Eye, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
 const newsletterSchema = z.object({
@@ -338,30 +338,29 @@ export default function SubscribersPage() {
   };
 
   return (
-    <div className="space-y-8 pb-20">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+    <div className="mx-auto max-w-[1500px] space-y-7 pb-20">
+      <div className="relative overflow-hidden rounded-[28px] border border-white/[0.08] bg-gradient-to-br from-[#101b2c] to-[#0b1422] p-6 sm:p-8">
+        <div className="pointer-events-none absolute -right-16 -top-20 size-64 rounded-full bg-emerald-400/[0.07] blur-3xl" />
+        <div className="relative flex flex-col justify-between gap-6 md:flex-row md:items-center">
         <div>
-          <h1 className="text-2xl md:text-4xl font-black italic uppercase tracking-tighter text-foreground">
-            Newsletter <span className="text-accent underline decoration-accent/20 underline-offset-8">Hub</span>
-          </h1>
-          <p className="text-[10px] md:text-sm text-muted-foreground mt-2 md:mt-4 font-medium tracking-tight uppercase tracking-widest">
-            Manage the global audience core and deploy multi-tier intelligence.
-          </p>
+          <p className="text-[10px] font-bold uppercase tracking-[.24em] text-emerald-300">Audience workspace</p>
+          <h1 className="mt-3 text-3xl font-semibold tracking-[-.04em] text-white md:text-4xl">Newsletter subscribers</h1>
+          <p className="mt-2 max-w-xl text-sm leading-6 text-slate-400">Manage your audience, subscriber health and newsletter campaigns from one clear workspace.</p>
         </div>
 
         <div className="flex items-center gap-3">
-             <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-xl border border-border/70 mr-4">
+             <div className="flex items-center gap-1 rounded-xl border border-white/[0.08] bg-slate-950/30 p-1">
                 <button
                     onClick={() => setActiveTab("subscribers")}
-                    className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'subscribers' ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                    className={`rounded-lg px-4 py-2 text-xs font-semibold transition-all ${activeTab === 'subscribers' ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-white'}`}
                 >
-                    Active Nodes
+                    Subscribers
                 </button>
                 <button
                     onClick={() => setActiveTab("history")}
-                    className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'history' ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                    className={`rounded-lg px-4 py-2 text-xs font-semibold transition-all ${activeTab === 'history' ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-white'}`}
                 >
-                    Campaign Logs
+                    Campaign history
                 </button>
              </div>
 
@@ -373,19 +372,18 @@ export default function SubscribersPage() {
                     }
                     setIsModalOpen(true);
                 }}
-                className={`flex items-center gap-2 px-6 py-3 ${session?.role === 'super-admin' ? 'bg-accent' : 'bg-muted opacity-50'} text-foreground font-black uppercase text-xs tracking-widest rounded-xl hover:bg-accent transition-all shadow-lg active:scale-95 whitespace-nowrap`}
+                className={`flex items-center gap-2 whitespace-nowrap rounded-xl px-5 py-3 text-xs font-bold transition ${session?.role === 'super-admin' ? 'bg-emerald-300 text-slate-950 hover:bg-emerald-200' : 'bg-white/5 text-slate-600'}`}
              >
                 <Zap className="w-4 h-4" />
-                Launch Campaign
+                Create campaign
              </button>
-        </div>
+        </div></div>
       </div>
 
-      {/* Stats Hub */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <StatCard icon={<Users className="w-5 h-5" />} label="Network Reach" value={stats.total} color="blue" />
-          <StatCard icon={<UserCheck className="w-5 h-5" />} label="Validated Nodes" value={stats.active} color="emerald" />
-          <StatCard icon={<UserX className="w-5 h-5" />} label="Ghost Origins" value={stats.inactive} color="red" />
+      <div className="grid overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0d1727] sm:grid-cols-3">
+          <AudienceStat icon={<Users className="size-4" />} label="Total audience" value={stats.total} />
+          <AudienceStat icon={<UserCheck className="size-4" />} label="Active subscribers" value={stats.active} tone="emerald" />
+          <AudienceStat icon={<UserX className="size-4" />} label="Unsubscribed" value={stats.inactive} tone="rose" last />
       </div>
 
       {/* Bulk Action Bar */}
@@ -395,11 +393,11 @@ export default function SubscribersPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
-                className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[60] bg-background/90 backdrop-blur-2xl border border-border px-8 py-5 rounded-[2.5rem] shadow-2xl flex items-center gap-8"
+                className="fixed bottom-8 left-1/2 z-[60] flex -translate-x-1/2 items-center gap-5 rounded-2xl border border-white/10 bg-[#111b2b]/95 px-5 py-4 shadow-2xl backdrop-blur-2xl"
               >
                   <div className="flex flex-col">
-                      <span className="text-accent text-[11px] font-black uppercase tracking-widest">Action Required</span>
-                      <span className="text-foreground text-[10px] font-bold opacity-60 uppercase">{selectedIds.length} Nodes Selected</span>
+                      <span className="text-xs font-semibold text-white">{selectedIds.length} selected</span>
+                      <span className="text-[10px] text-slate-500">Choose a bulk action</span>
                   </div>
 
                   <div className="h-10 w-[1px] bg-muted" />
@@ -423,7 +421,7 @@ export default function SubscribersPage() {
                         onClick={() => setIsModalOpen(true)}
                         className="px-6 py-3 rounded-xl bg-accent text-foreground font-black uppercase text-[10px] tracking-widest hover:bg-accent shadow-lg shadow-accent/20 transition-all"
                       >
-                         Deploy Intelligence
+                         Send campaign
                       </button>
                       <button
                         onClick={() => setSelectedIds([])}
@@ -436,13 +434,13 @@ export default function SubscribersPage() {
           )}
       </AnimatePresence>
 
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mb-2">
+      <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
           <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-none w-full sm:w-auto">
               {["all", "active", "inactive"].map((status) => (
                   <button
                     key={status}
                     onClick={() => { setFilterStatus(status); setPage(1); }}
-                    className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all border ${
+                    className={`rounded-full border px-4 py-2 text-[10px] font-bold uppercase tracking-wider transition-all ${
                         filterStatus === status
                         ? 'bg-accent/10 border-accent text-accent'
                         : 'bg-muted/50 border-border text-muted-foreground hover:text-foreground'
@@ -457,16 +455,16 @@ export default function SubscribersPage() {
               <Filter className="absolute left-4 top-1/2 -translate-y-1/2 w-3 h-3 text-muted-foreground group-focus-within:text-accent transition-colors" />
               <input
                 type="text"
-                placeholder="PROBE NODES..."
+                placeholder="Search email address..."
                 value={search}
                 onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-                className="w-full bg-muted/50 border border-border rounded-xl py-2.5 pl-10 pr-4 text-[10px] font-black tracking-widest uppercase focus:outline-none focus:border-accent/40"
+                className="w-full rounded-xl border border-white/[0.08] bg-[#0d1727] py-3 pl-10 pr-4 text-sm outline-none placeholder:text-slate-600 focus:border-emerald-400/35"
               />
           </div>
       </div>
 
       {activeTab === 'subscribers' ? (
-        <div className="relative">
+        <div className="relative overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#0d1727]">
             {loading && (
                 <div className="absolute inset-0 z-10 bg-background/40 backdrop-blur-[2px] rounded-3xl flex items-center justify-center">
                     <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }}>
@@ -474,89 +472,17 @@ export default function SubscribersPage() {
                     </motion.div>
                 </div>
             )}
-            <DataTable
-                title="Subscriber Records"
-                columns={[
-                    {
-                        key: "select",
-                        label: (
-                            <button onClick={() => handleSelectAll(selectedIds.length !== subscribers.length)}>
-                                {selectedIds.length === subscribers.length && subscribers.length > 0 ? <CheckSquare className="w-4 h-4 text-accent" /> : <Square className="w-4 h-4" />}
-                            </button>
-                        ),
-                        render: (item) => (
-                            <button onClick={() => handleSelectOne(item._id, !selectedIds.includes(item._id))}>
-                                {selectedIds.includes(item._id) ? <CheckSquare className="w-4 h-4 text-accent" /> : <Square className="w-4 h-4 opacity-40 hover:opacity-100 transition-opacity" />}
-                            </button>
-                        )
-                    },
-                    {
-                        key: "email",
-                        label: "Subscriber Node",
-                        render: (item) => (
-                            <div className={`flex flex-col ${!item.isActive ? 'opacity-40 grayscale' : ''}`}>
-                                <span className="font-bold text-foreground tracking-tight">{item.email}</span>
-                                <span className="text-[8px] text-muted-foreground uppercase tracking-widest mt-1">ID: {item._id.slice(-6)}</span>
-                            </div>
-                        )
-                    },
-                    {
-                      key: "isActive",
-                      label: "Node Status",
-                      render: (item) => (
-                        <span className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-[0.15em] border ${
-                          item.isActive
-                            ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
-                            : 'bg-red-500/10 text-red-500 border-red-500/20'
-                        }`}>
-                          {item.isActive ? 'Active Node' : 'Terminated'}
-                        </span>
-                      ),
-                    },
-                    {
-                      key: "lastSent",
-                      label: "Last Pulse",
-                      render: (item) => (
-                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                          {item.lastSent ? format(new Date(item.lastSent), "MMM d, HH:mm") : "NEVER"}
-                        </span>
-                      ),
-                    },
-                    {
-                      key: "subscribedAt",
-                      label: "Inception",
-                      render: (item) => (
-                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                          {item.subscribedAt ? format(new Date(item.subscribedAt), "MMM d, yyyy") : "N/A"}
-                        </span>
-                      ),
-                    },
-                ]}
-                data={subscribers}
-                onDelete={(item) => {
-                    setDeletingId(item._id);
-                    setIsConfirmOpen(true);
-                }}
-                onEdit={(item) => {
-                    setEditingItem(item);
-                    setIsEditModalOpen(true);
-                }}
-                onView={(item) => setViewingItem(item)}
-                searchPlaceholder="Locate email node..."
-                totalCount={stats.total}
-                onPageChange={setPage}
-                onSearchChange={setSearch}
-                currentPage={page}
-                itemsPerPage={limit}
-                isLoading={loading}
-            />
+            <div className="flex items-center border-b border-white/[0.07] px-5 py-4"><button onClick={() => handleSelectAll(selectedIds.length !== subscribers.length)} className="mr-4 text-slate-500">{selectedIds.length === subscribers.length && subscribers.length > 0 ? <CheckSquare className="size-4 text-emerald-300" /> : <Square className="size-4" />}</button><span className="text-[10px] font-bold uppercase tracking-[.18em] text-slate-500">Audience directory</span></div>
+            <div className="divide-y divide-white/[0.055]">{subscribers.map((item) => <SubscriberRow key={item._id} item={item} selected={selectedIds.includes(item._id)} onSelect={() => handleSelectOne(item._id, !selectedIds.includes(item._id))} onView={() => setViewingItem(item)} onEdit={() => { setEditingItem(item); setIsEditModalOpen(true); }} onDelete={() => { setDeletingId(item._id); setIsConfirmOpen(true); }} />)}</div>
+            {!loading && subscribers.length === 0 && <div className="grid min-h-72 place-items-center text-center"><div><Mail className="mx-auto size-9 text-slate-700"/><p className="mt-4 text-sm text-slate-400">No subscribers found</p></div></div>}
+            {totalPages > 1 && <div className="flex items-center justify-between border-t border-white/[0.07] px-5 py-4"><p className="text-xs text-slate-500">Page {page} of {totalPages}</p><div className="flex gap-2"><button disabled={page <= 1} onClick={() => setPage(page - 1)} className="grid size-9 place-items-center rounded-lg border border-white/[0.08] disabled:opacity-30"><ChevronLeft className="size-4" /></button><button disabled={page >= totalPages} onClick={() => setPage(page + 1)} className="grid size-9 place-items-center rounded-lg border border-white/[0.08] disabled:opacity-30"><ChevronRight className="size-4" /></button></div></div>}
         </div>
       ) : (
         <DataTable
-            title="Intelligence History (Campaign Logs)"
+            title="Campaign history"
             columns={logColumns}
             data={logs}
-            searchPlaceholder="Filter mission logs..."
+            searchPlaceholder="Search campaigns..."
             isLoading={loadingLogs}
         />
       )}
@@ -662,6 +588,23 @@ export default function SubscribersPage() {
       />
     </div>
   );
+}
+
+function SubscriberRow({ item, selected, onSelect, onView, onEdit, onDelete }) {
+    return (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={`group grid items-center gap-4 px-5 py-4 transition hover:bg-emerald-400/[0.025] sm:grid-cols-[auto_minmax(220px,1fr)_140px_150px_auto] ${!item.isActive ? 'opacity-60' : ''}`}>
+            <button onClick={onSelect} className="text-slate-600">{selected ? <CheckSquare className="size-4 text-emerald-300" /> : <Square className="size-4" />}</button>
+            <div className="flex min-w-0 items-center gap-3"><span className="grid size-10 shrink-0 place-items-center rounded-full bg-emerald-400/10 text-emerald-300"><Mail className="size-4" /></span><div className="min-w-0"><p className="truncate text-sm font-semibold text-slate-200">{item.email}</p><p className="mt-1 text-[9px] uppercase tracking-wider text-slate-600">Subscriber · {item._id.slice(-6)}</p></div></div>
+            <div><p className="text-[9px] font-bold uppercase tracking-wider text-slate-600">Status</p><span className={`mt-1 inline-flex rounded-full px-2 py-1 text-[9px] font-bold ${item.isActive ? 'bg-emerald-400/10 text-emerald-300' : 'bg-rose-400/10 text-rose-300'}`}>{item.isActive ? 'Active' : 'Unsubscribed'}</span></div>
+            <div><p className="text-[9px] font-bold uppercase tracking-wider text-slate-600">Joined</p><p className="mt-1 text-xs text-slate-400">{item.subscribedAt ? format(new Date(item.subscribedAt), "MMM d, yyyy") : "Unknown"}</p></div>
+            <div className="flex items-center justify-end gap-1"><button onClick={onView} title="View details" className="grid size-8 place-items-center rounded-lg text-slate-500 hover:bg-white/5 hover:text-white"><Eye className="size-3.5" /></button><button onClick={onEdit} title="Edit subscriber" className="grid size-8 place-items-center rounded-lg text-slate-500 hover:bg-white/5 hover:text-white"><Pencil className="size-3.5" /></button><button onClick={onDelete} title="Delete subscriber" className="grid size-8 place-items-center rounded-lg text-slate-600 hover:bg-rose-400/10 hover:text-rose-300"><Trash2 className="size-3.5" /></button></div>
+        </motion.div>
+    );
+}
+
+function AudienceStat({ icon, label, value, tone = "sky", last = false }) {
+    const colors = { sky: "text-sky-300 bg-sky-400/10", emerald: "text-emerald-300 bg-emerald-400/10", rose: "text-rose-300 bg-rose-400/10" };
+    return <div className={`flex items-center gap-4 p-5 sm:p-6 ${!last ? 'border-b border-white/[0.07] sm:border-b-0 sm:border-r' : ''}`}><span className={`grid size-10 place-items-center rounded-xl ${colors[tone]}`}>{icon}</span><div><p className="text-[9px] font-bold uppercase tracking-[.18em] text-slate-600">{label}</p><p className="mt-1 text-2xl font-semibold tracking-tight text-white">{value ?? 0}</p></div></div>;
 }
 
 function DetailItem({ label, value }) {

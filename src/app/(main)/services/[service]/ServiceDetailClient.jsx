@@ -102,11 +102,13 @@ export default function ServiceDetailClient({
   const problems = normalizeArray(service.problemsSolved).length
     ? normalizeArray(service.problemsSolved)
     : defaultProblems;
-  const deliverables = normalizeArray(service.deliverables).length
-    ? normalizeArray(service.deliverables)
-    : normalizeArray(service.features).length
-      ? normalizeArray(service.features)
-      : defaultDeliverables;
+  const customDeliverables = [
+    ...normalizeArray(service.deliverables),
+    ...normalizeArray(service.features),
+  ].filter((item, index, items) =>
+    items.findIndex((candidate) => itemTitle(candidate) === itemTitle(item)) === index
+  );
+  const deliverables = customDeliverables.length ? customDeliverables : defaultDeliverables;
   const benefits = normalizeArray(service.benefits).length
     ? normalizeArray(service.benefits)
     : defaultBenefits;
@@ -385,8 +387,7 @@ export default function ServiceDetailClient({
                 <div className="flex gap-3">
                   <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-accent" />
                   <p className="text-xs font-semibold leading-relaxed text-foreground/75">
-                    Pricing depends on requirements, features, timeline, and
-                    scope. Book a call to receive a custom quote.
+                    {service.quoteNote || "Pricing depends on requirements, features, timeline, and scope. Book a call to receive a custom quote."}
                   </p>
                 </div>
               </div>
@@ -722,11 +723,11 @@ export default function ServiceDetailClient({
               </p>
               <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
                 <ServiceBookingButton service={service}>
-                  Book a Call for a Custom Quote
+                  {service.ctaPrimaryText || "Book a Call for a Custom Quote"}
                   <ArrowRight className="h-4 w-4" />
                 </ServiceBookingButton>
                 <Link href={bookCallHref}>
-                  <Button variant="secondary">Book a Call Page</Button>
+                  <Button variant="secondary">{service.ctaSecondaryText || "Book a Call Page"}</Button>
                 </Link>
                 <Link
                   href={`https://wa.me/923224458481?text=${encodeURIComponent(`Hello! I want to discuss ${service.title}.`)}`}

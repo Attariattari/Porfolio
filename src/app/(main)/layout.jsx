@@ -12,6 +12,7 @@ import { portfolioData } from "@/lib/data";
 import { serializeDoc } from "@/lib/mongooseHelper";
 import { SITE_URL } from "@/lib/config";
 import { getSeoImage } from "@/lib/seo";
+import MainDataProvider from "./MainDataProvider";
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
@@ -84,6 +85,7 @@ export default async function MainLayout({ children }) {
   const globalSocials = serializeDoc(dbSocials) || [];
 
   return (
+    <MainDataProvider>
     <div
       className="relative pb-32 transition-colors duration-300 md:pb-0"
     >
@@ -104,5 +106,6 @@ export default async function MainLayout({ children }) {
         <Footer data={globalAbout} socials={globalSocials} />
       </div>
     </div>
+    </MainDataProvider>
   );
 }

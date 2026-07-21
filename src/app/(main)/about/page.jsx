@@ -17,6 +17,9 @@ export async function generateMetadata() {
   return {
     title: { absolute: title },
     description,
+    keywords: Array.isArray(profile?.keywords) && profile.keywords.length > 0
+      ? profile.keywords
+      : undefined,
     alternates: { canonical: buildCanonical("/about") },
     openGraph: {
       title,

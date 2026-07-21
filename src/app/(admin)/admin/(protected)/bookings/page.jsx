@@ -1,17 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useBookings, useBookingStats, useRealTimeBookingUpdates } from "@/app/(admin)/hooks/useBookings";
 import BookingList from "../components/BookingList";
-import BookingDetailModal from "../components/BookingDetailModal";
-import { Calendar, Clock, CheckCircle2, AlertCircle, RefreshCw, Loader2 } from "lucide-react";
+import { CalendarDays, CheckCircle2, Inbox, RefreshCw, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
-import { motion, AnimatePresence } from "framer-motion";
 
 export default function BookingsPage() {
-  const [selectedBooking, setSelectedBooking] = useState(null);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const router = useRouter();
   const [filters, setFilters] = useState({
     page: 1,
     limit: 10,
@@ -27,8 +24,7 @@ export default function BookingsPage() {
   useRealTimeBookingUpdates();
 
   const handleSelectBooking = (booking) => {
-    setSelectedBooking(booking);
-    setIsDetailOpen(true);
+    router.push(`/admin/bookings/${booking._id}`);
   };
 
   const handleFilterChange = (newFilters) => {
@@ -49,73 +45,52 @@ export default function BookingsPage() {
   const viewId = searchParams.get("view");
 
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      if (!viewId || !bookingsQuery.data?.bookings) return;
-      const target = bookingsQuery.data.bookings.find(b => b._id === viewId);
-      if (target) {
-        setSelectedBooking(target);
-        setIsDetailOpen(true);
-      }
-    }, 0);
-    return () => window.clearTimeout(timer);
-  }, [viewId, bookingsQuery.data]);
+    if (viewId) {
+      router.push(`/admin/bookings/${viewId}`);
+    }
+  }, [viewId, router]);
+
+  const totalBookings = statsQuery.data?.total ?? 0;
+  const completionRate = totalBookings > 0
+    ? Math.round(((statsQuery.data?.completed ?? 0) / totalBookings) * 100)
+    : 0;
 
   return (
-    <div className="space-y-10 max-w-[1600px] mx-auto pb-20">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div>
-          <h1 className="text-5xl font-black italic uppercase text-foreground tracking-tighter leading-none mb-4">
-            Call <span className="text-accent underline decoration-accent/20 underline-offset-12">Bookings</span>
-          </h1>
-          <p className="text-muted-foreground text-sm font-medium tracking-wide leading-relaxed max-w-2xl">
-            SaaS-level scheduling architecture. Manage your <span className="text-foreground italic">strategic pipeline</span> with instant feedback and professional status workflows.
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
+    <div className="mx-auto max-w-[1600px] space-y-6 pb-20">
+      <section className="relative overflow-hidden rounded-[28px] border border-white/[0.08] bg-[#0d1727] shadow-[0_28px_80px_-50px_rgba(0,0,0,.9)]">
+        <div className="pointer-events-none absolute -right-20 -top-24 size-72 rounded-full bg-cyan-400/[0.06] blur-3xl" />
+        <div className="relative flex flex-col justify-between gap-6 border-b border-white/[0.07] p-6 sm:p-8 md:flex-row md:items-center">
+          <div className="flex items-start gap-4">
+            <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-cyan-300 text-slate-950 shadow-[0_12px_35px_-14px_rgba(103,232,249,.8)]">
+              <CalendarDays className="size-5" />
+            </span>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[.24em] text-cyan-300/80">Scheduling workspace</p>
+              <h1 className="mt-2 text-2xl font-semibold tracking-[-.035em] text-white sm:text-3xl">Booking management</h1>
+              <p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">Review new requests, prepare calls and keep every client appointment moving forward.</p>
+            </div>
+          </div>
           <button
             onClick={handleRefresh}
             disabled={bookingsQuery.isFetching || statsQuery.isFetching}
-            className="p-3.5 rounded-2xl bg-muted/50 border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-all shadow-2xl disabled:opacity-50"
+            className="inline-flex items-center justify-center gap-2 self-start rounded-xl border border-white/[0.08] bg-white/[0.035] px-4 py-3 text-xs font-semibold text-slate-400 transition hover:bg-white/[0.06] hover:text-white disabled:opacity-50 md:self-auto"
           >
-            <RefreshCw className={`w-5 h-5 ${(bookingsQuery.isFetching || statsQuery.isFetching) ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`size-4 ${(bookingsQuery.isFetching || statsQuery.isFetching) ? 'animate-spin' : ''}`} />
+            Refresh data
           </button>
         </div>
-      </div>
+        <div className="grid md:grid-cols-[1.25fr_1fr_1fr_1fr]">
+          <div className="flex items-center justify-between border-b border-white/[0.07] bg-amber-300/[0.035] p-5 md:border-b-0 md:border-r sm:p-6">
+            <div><p className="text-[9px] font-bold uppercase tracking-[.18em] text-amber-300/70">Needs attention</p>{statsQuery.isLoading ? <StatSkeleton /> : <p className="mt-2 text-3xl font-semibold tracking-tight text-white">{statsQuery.data?.new ?? 0}</p>}<p className="mt-1 text-xs text-slate-500">New booking requests</p></div>
+            <span className="relative grid size-11 place-items-center rounded-full bg-amber-300/10 text-amber-300"><Inbox className="size-4" />{(statsQuery.data?.new ?? 0) > 0 && <span className="absolute right-0 top-0 size-2 rounded-full bg-amber-300 ring-4 ring-[#101a29]" />}</span>
+          </div>
+          <OverviewMetric label="All bookings" value={totalBookings} icon={CalendarDays} loading={statsQuery.isLoading} />
+          <OverviewMetric label="Confirmed" value={statsQuery.data?.confirmed ?? 0} icon={ShieldCheck} loading={statsQuery.isLoading} />
+          <OverviewMetric label="Completion rate" value={`${completionRate}%`} icon={CheckCircle2} loading={statsQuery.isLoading} last />
+        </div>
+      </section>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatsCard
-          label="Total Bookings"
-          value={statsQuery.data?.total}
-          icon={Calendar}
-          color="blue"
-          loading={statsQuery.isLoading}
-        />
-        <StatsCard
-          label="New Requests"
-          value={statsQuery.data?.new}
-          icon={AlertCircle}
-          color="amber"
-          loading={statsQuery.isLoading}
-          highlight={statsQuery.data?.new > 0}
-        />
-        <StatsCard
-          label="Confirmed"
-          value={statsQuery.data?.confirmed}
-          icon={Clock}
-          color="purple"
-          loading={statsQuery.isLoading}
-        />
-        <StatsCard
-          label="Completed"
-          value={statsQuery.data?.completed}
-          icon={CheckCircle2}
-          color="emerald"
-          loading={statsQuery.isLoading}
-        />
-      </div>
-
-      <div className="relative group">
-        <div className="absolute -inset-1 bg-gradient-to-r from-accent/20 to-accent/20 rounded-[2.5rem] blur-2xl opacity-10 group-hover:opacity-20 transition duration-1000"></div>
+      <div>
         <BookingList
           bookings={bookingsQuery.data?.data || []}
           pagination={bookingsQuery.data?.pagination}
@@ -126,58 +101,14 @@ export default function BookingsPage() {
           onSelectBooking={handleSelectBooking}
         />
       </div>
-
-      <AnimatePresence>
-        {isDetailOpen && selectedBooking && (
-          <BookingDetailModal
-            booking={selectedBooking}
-            isOpen={isDetailOpen}
-            onClose={() => {
-              setIsDetailOpen(false);
-              setSelectedBooking(null);
-            }}
-          />
-        )}
-      </AnimatePresence>
     </div>
   );
 }
 
-function StatsCard({ label, value, icon: Icon, color, loading, highlight }) {
-  const colorMap = {
-    blue: "from-accent/20 to-accent/5 border-accent/30 text-accent",
-    amber: "from-amber-500/20 to-amber-600/5 border-amber-500/30 text-amber-500",
-    purple: "from-purple-500/20 to-purple-600/5 border-purple-500/30 text-purple-500",
-    emerald: "from-emerald-500/20 to-emerald-600/5 border-emerald-500/30 text-emerald-500",
-  };
+function OverviewMetric({ label, value, icon: Icon, loading, last = false }) {
+  return <div className={`flex items-center justify-between border-b border-white/[0.07] p-5 md:border-b-0 sm:p-6 ${last ? "" : "md:border-r"}`}><div><p className="text-[9px] font-bold uppercase tracking-[.18em] text-slate-600">{label}</p>{loading ? <StatSkeleton /> : <p className="mt-2 text-2xl font-semibold tracking-tight text-slate-100">{value}</p>}</div><Icon className="size-4 text-slate-600" /></div>;
+}
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className={`relative overflow-hidden bg-gradient-to-br ${colorMap[color]} border rounded-[2rem] p-8 backdrop-blur-md shadow-3xl group hover:-translate-y-1 transition-all duration-500`}
-    >
-      {highlight && (
-        <div className="absolute top-6 right-6 flex h-3 w-3">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-current opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-3 w-3 bg-current"></span>
-        </div>
-      )}
-      <div className="flex items-center justify-between relative z-10">
-        <div className="space-y-2">
-          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground group-hover:text-muted-foreground transition-colors uppercase">{label}</p>
-          {loading ? (
-             <div className="h-10 w-20 flex items-center">
-                <div className="h-6 w-16 bg-muted/50 animate-pulse rounded-lg" />
-             </div>
-          ) : (
-            <p className="text-5xl font-black text-foreground tracking-tighter">{value ?? 0}</p>
-          )}
-        </div>
-        <div className="p-4 rounded-[1.25rem] bg-muted/50 border border-border group-hover:scale-110 transition-transform duration-500 shadow-xl">
-          <Icon className="w-8 h-8" />
-        </div>
-      </div>
-    </motion.div>
-  );
+function StatSkeleton() {
+  return <div className="mt-3 h-7 w-12 animate-pulse rounded-md bg-white/[0.06]" />;
 }

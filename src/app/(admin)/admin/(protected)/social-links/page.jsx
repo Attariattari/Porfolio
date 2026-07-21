@@ -7,7 +7,7 @@ export const metadata = {
 
 export default function SocialLinksPage() {
   return (
-    <div className="px-6 py-10">
+    <div>
       <SocialLinksForm />
     </div>
   );
