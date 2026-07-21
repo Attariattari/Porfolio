@@ -221,13 +221,13 @@ export default function AdminSidebar() {
           x: isMobile && !sidebarOpen ? -288 : 0,
         }}
         transition={{ type: "spring", damping: 20, stiffness: 150 }}
-        className="fixed left-0 top-0 z-[70] flex h-full flex-col border-r border-border/60 bg-background shadow-2xl"
+        className="admin-sidebar-shell fixed left-0 top-0 z-[70] flex h-full flex-col border-r border-border/60 bg-background shadow-2xl"
       >
         {/* Inner Wrapper for content transition safety */}
         <div className="flex-1 flex flex-col w-full h-full overflow-hidden relative">
           {/* Branding */}
           <div
-            className="flex h-20 shrink-0 items-center overflow-hidden border-b border-border/60 bg-gradient-to-br from-accent/5 to-transparent px-6"
+            className="admin-sidebar-brand flex h-20 shrink-0 items-center overflow-hidden border-b border-border/60 bg-gradient-to-br from-accent/5 to-transparent px-6"
           >
             <div className="flex items-center gap-3 min-w-max">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent text-accent-foreground shadow-lg shadow-accent/20">
@@ -298,7 +298,7 @@ export default function AdminSidebar() {
           </nav>
 
           {/* User Profile & Logout */}
-          <div className="p-4 border-t border-border/60 space-y-4 shrink-0 bg-card/35">
+          <div className="admin-sidebar-footer p-4 border-t border-border/60 space-y-4 shrink-0 bg-card/35">
             <div
               className={`flex items-center gap-3 ${isCollapsed ? "justify-center" : "px-2"}`}
             >

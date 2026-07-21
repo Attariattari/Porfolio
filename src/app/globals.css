@@ -331,6 +331,26 @@
     html.dark:not(.black) .admin-theme-scope :is(input, textarea, select) {
         background-color: color-mix(in srgb, var(--card) 84%, var(--muted));
     }
+    html.dark:not(.black) .admin-theme-scope .admin-sidebar-shell {
+        background-color: #0c1728 !important;
+        background-image: linear-gradient(180deg, #101d31 0%, #0b1626 55%, #091321 100%);
+        border-color: rgba(148, 163, 184, 0.2) !important;
+        box-shadow: 18px 0 50px -32px rgba(0, 0, 0, 0.85);
+    }
+    html.dark:not(.black) .admin-theme-scope .admin-sidebar-brand {
+        background-image: linear-gradient(135deg, rgba(var(--accent-rgb), 0.13), rgba(17, 28, 47, 0.78));
+        border-color: rgba(148, 163, 184, 0.18) !important;
+    }
+    html.dark:not(.black) .admin-theme-scope .admin-sidebar-footer {
+        background-color: rgba(17, 28, 47, 0.92) !important;
+        border-color: rgba(148, 163, 184, 0.18) !important;
+    }
+    html.dark:not(.black) .admin-theme-scope .admin-topbar-shell {
+        background-color: rgba(10, 20, 36, 0.92) !important;
+        background-image: linear-gradient(90deg, rgba(12, 24, 41, 0.96), rgba(15, 29, 49, 0.9));
+        border-color: rgba(148, 163, 184, 0.2) !important;
+        box-shadow: 0 12px 35px -28px rgba(0, 0, 0, 0.9);
+    }
     .admin-theme-scope :is(input, textarea, select) {
         border-color: var(--border);
         background-color: color-mix(in srgb, var(--card) 88%, var(--muted));

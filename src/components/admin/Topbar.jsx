@@ -120,7 +120,7 @@ export default function Topbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-border/60 bg-background/80 px-4 backdrop-blur-xl md:px-8">
+    <nav className="admin-topbar-shell sticky top-0 z-30 flex h-20 items-center justify-between border-b border-border/60 bg-background/80 px-4 backdrop-blur-xl md:px-8">
       <div className="flex items-center gap-4 md:gap-6">
         <button
           onClick={toggleSidebar}
