@@ -1,5 +1,24 @@
 import { servicesSeedData } from "@/data/services.seed";
 
+export const bookCallContent = {
+    callFor: ["Custom Website Development", "Full-Stack Web App", "Admin Dashboard", "Website Redesign", "API / Database Integration", "SEO-Friendly Website Setup"],
+    nextSteps: ["Submit Your Details", "Requirement Review", "Project Discussion", "Custom Quote / Next Step"],
+    preparation: ["Project idea or business goal", "Pages/features you need", "Reference websites if available", "Logo/brand details if available", "Existing website link if redesign", "Domain/hosting details if available", "Timeline expectations"],
+    faqs: [
+        ["Is the project discussion free?", "Yes. The discussion helps understand your requirements and the right next step before any project scope is finalized."],
+        ["What should I share before booking?", "Share your project idea, business goal, required pages/features, references, and any existing website link if available."],
+        ["Can I discuss a website redesign?", "Yes. You can discuss redesign goals, current website issues, content structure, performance, and conversion improvements."],
+        ["Can you build admin dashboards?", "Yes. Muhyo Tech can plan and build dashboards for content, leads, bookings, users, analytics, and custom workflows."],
+        ["Can you connect APIs and databases?", "Yes. Projects can include API integrations, MongoDB, authentication, file uploads, email, payments, and internal systems."],
+        ["Do you help with deployment?", "Yes. Deployment support, domain guidance, hosting setup, and launch checks can be discussed based on project scope."],
+        ["How is pricing decided?", "Pricing depends on project scope, features, timeline, and level of customization. After reviewing your requirements, Muhyo Tech can guide you with a custom quote."],
+        ["How long does a project take?", "Timeline depends on project size, content readiness, integrations, revisions, and technical requirements."],
+        ["Can I select a specific service?", "Yes. Choose the service that best matches your project. If you are not sure, select the closest option and explain your goal in the message."],
+        ["What happens after I submit the form?", "After reviewing your message, I'll guide you with the right approach based on your project scope and requirements."],
+    ],
+    badges: ["Project Discussion", "Web Development", "Full-Stack Solutions", "Custom Quote"],
+};
+
 const CURRENT_YEAR = new Date().getFullYear();
 
 export const SOCIAL_LINKS = {
@@ -2119,3 +2138,556 @@ portfolioData.about = aboutData;
 portfolioData.home = homeData;
 portfolioData.services = servicesSeedData;
 
+
+
+export const privacyDocument = {
+  type: "Privacy Policy",
+  slug: "privacy",
+  title: "Privacy explained without the fine-print fog.",
+  description:
+    "This Policy explains what information Muhyo Tech collects through its website, why it is used, which service providers may process it, and the choices available to you.",
+  effectiveDate: "July 14, 2026",
+  updatedDate: "July 14, 2026",
+  version: "2.0",
+  readTime: "10 minutes",
+  highlights: [
+    { icon: "fingerprint", title: "Purpose-led collection", text: "We collect information needed to respond, arrange calls, deliver services, secure the site, and understand performance." },
+    { icon: "lock", title: "Protected operations", text: "Access controls, validation, rate limits, authentication, and reputable infrastructure help protect stored information." },
+    { icon: "shield", title: "Meaningful choices", text: "You can unsubscribe and may request access, correction, or deletion where applicable." },
+  ],
+  sections: [
+    {
+      id: "who-we-are",
+      icon: "fingerprint",
+      title: "Who we are",
+      paragraphs: [
+        "Muhyo Tech is a software and web-engineering business based in Lahore, Pakistan. For information submitted through muhyotech.com, Muhyo Tech determines how and why that information is used unless a project agreement states otherwise.",
+        "Privacy questions or requests can be sent through our contact page. We may ask for reasonable verification before acting on a request to protect your information from unauthorised access.",
+      ],
+    },
+    {
+      id: "information-collected",
+      icon: "scroll",
+      title: "Information we collect",
+      paragraphs: ["The information collected depends on how you use the website and which information you choose to provide."],
+      items: [
+        "Contact information such as your name, email address, phone number, company, and preferred contact method.",
+        "Inquiry and project information such as service interest, objectives, budget or timeline context, messages, attachments, and communication history.",
+        "Booking information such as requested service, preferred date and time, project type, source page, and booking status.",
+        "Newsletter information such as email address, subscription status, subscription date, and email-delivery history.",
+        "Authorised admin information such as account details, role, authentication records, security events, and activity logs.",
+        "Technical and usage information such as IP address, browser and device information, user agent, pages viewed, referrer, session identifier, session duration, clicks, interaction count, and scroll depth.",
+        "Media or other files you intentionally upload through an authorised feature or secure upload link.",
+      ],
+    },
+    {
+      id: "collection-methods",
+      icon: "globe",
+      title: "How information is collected",
+      paragraphs: [
+        "Information is collected directly when you complete a form, book a call, subscribe, communicate with us, provide project material, or use an authorised account. Some technical information is collected automatically when the website loads or as you interact with it.",
+        "We may also receive limited information from service providers, referral sources, social platforms, or business partners when you choose to interact through those services.",
+      ],
+    },
+    {
+      id: "how-we-use-data",
+      icon: "check",
+      title: "How we use information",
+      items: [
+        "Respond to questions, qualify project requests, prepare proposals, and communicate about services.",
+        "Schedule, confirm, manage, and follow up on calls or project discussions.",
+        "Deliver agreed software services, manage client relationships, and maintain business records.",
+        "Send newsletters or updates you requested and process unsubscribe choices.",
+        "Operate, personalise, troubleshoot, secure, monitor, and improve the website and admin systems.",
+        "Measure page performance, traffic, engagement, content usefulness, and conversion journeys.",
+        "Prevent spam, abuse, fraud, unauthorised access, and other security threats.",
+        "Meet legal obligations, enforce agreements, resolve disputes, and protect legitimate rights.",
+      ],
+    },
+    {
+      id: "legal-bases",
+      icon: "scale",
+      title: "Reasons we process information",
+      paragraphs: [
+        "Where privacy law requires a legal basis, processing may rely on your consent, steps requested before entering a contract, performance of a contract, compliance with legal obligations, or legitimate interests such as responding to business inquiries, maintaining security, and improving services.",
+        "You can withdraw consent for future processing where consent is the basis, including by unsubscribing from marketing email. Withdrawal does not make earlier lawful processing unlawful.",
+      ],
+    },
+    {
+      id: "cookies-analytics",
+      icon: "fingerprint",
+      title: "Cookies, local storage, and analytics",
+      paragraphs: [
+        "The website uses browser storage and similar technologies for functionality, security, session continuity, preferences, and visitor measurement. A visitor session identifier and session start time may be stored locally to understand aggregate site use.",
+      ],
+      items: [
+        "Google Analytics may load when a measurement ID is configured and may process device, page, and interaction information under Google's own policies.",
+        "Vercel Analytics and Speed Insights may collect performance and usage measurements to help us improve reliability and speed.",
+        "Authentication cookies and browser storage support authorised admin sessions and security controls.",
+        "You can limit cookies or clear browser storage through browser settings, but some protected or preference-based features may stop working correctly.",
+      ],
+      note: "The website does not currently respond to a universal browser “Do Not Track” signal because there is no consistently adopted standard. Available browser and provider controls can still be used.",
+    },
+    {
+      id: "sharing",
+      icon: "globe",
+      title: "Service providers and sharing",
+      paragraphs: [
+        "We do not sell personal information. We may disclose limited information to providers that help operate the website and business, only for relevant services and subject to their own contractual and legal responsibilities.",
+      ],
+      items: [
+        "Vercel or comparable infrastructure providers for hosting, delivery, analytics, and performance monitoring.",
+        "MongoDB or comparable database providers for application and business records.",
+        "Cloudinary for uploaded and website media storage and delivery.",
+        "Email delivery providers and Nodemailer-compatible infrastructure for inquiries, confirmations, security messages, and newsletters.",
+        "Google Analytics when configured for website measurement.",
+        "Professional advisers, authorities, or counterparties when reasonably required by law, security, a dispute, or a business transaction.",
+      ],
+    },
+    {
+      id: "international-transfers",
+      icon: "globe",
+      title: "International processing",
+      paragraphs: [
+        "Some providers operate infrastructure in multiple countries, so information may be processed outside your country. Where required, we use available contractual, organisational, or provider safeguards and consider the nature of the information and service involved.",
+      ],
+    },
+    {
+      id: "retention",
+      icon: "scroll",
+      title: "Data retention",
+      paragraphs: [
+        "We retain information only for as long as reasonably needed for the purpose collected, an active business relationship, security, dispute handling, backups, or legal and accounting obligations. Retention depends on the information and context.",
+      ],
+      items: [
+        "Unsuccessful or inactive inquiries may be removed when no longer useful for follow-up, security, or recordkeeping.",
+        "Project and transaction records may be retained longer to support contracts, accounting, warranties, and disputes.",
+        "Newsletter records remain active until you unsubscribe or the address is disabled, subject to limited suppression records needed to honour the choice.",
+        "Security, analytics, and technical records may be retained for shorter operational periods or in aggregated form.",
+      ],
+    },
+    {
+      id: "security",
+      icon: "lock",
+      title: "Security",
+      paragraphs: [
+        "Muhyo Tech uses reasonable technical and organisational safeguards appropriate to the website, including access controls, authentication, permissions, input validation, rate limiting, secure upload links, logging, and managed infrastructure.",
+        "No internet transmission, storage platform, or security method is completely risk-free. Please avoid sending unnecessary sensitive information through public forms and contact us promptly if you suspect misuse.",
+      ],
+    },
+    {
+      id: "your-rights",
+      icon: "shield",
+      title: "Your choices and rights",
+      paragraphs: ["Depending on your location and applicable law, you may have some or all of the following rights:"],
+      items: [
+        "Ask whether we hold personal information about you and request access to it.",
+        "Request correction of inaccurate or incomplete information.",
+        "Request deletion or restriction where there is no overriding reason to retain or process the information.",
+        "Object to certain processing or withdraw consent for future processing.",
+        "Request a portable copy of information you provided where applicable.",
+        "Unsubscribe from marketing email using the link in the message or by contacting us.",
+        "Complain to an appropriate privacy or data-protection authority where that right is available.",
+      ],
+      note: "Rights are not absolute. We may need to verify identity, retain limited records, protect another person's rights, or decline a request where permitted by law.",
+    },
+    {
+      id: "children",
+      icon: "shield",
+      title: "Children's privacy",
+      paragraphs: [
+        "Muhyo Tech provides business and professional technology services and the website is not directed to children under 16. We do not knowingly request personal information from children. If you believe a child submitted information, contact us so we can review and delete it where appropriate.",
+      ],
+    },
+    {
+      id: "ai-processing",
+      icon: "sparkle",
+      title: "AI-assisted processing",
+      paragraphs: [
+        "AI-assisted tools may support content drafting, image generation, workflow automation, technical analysis, or service delivery. We aim to avoid placing unnecessary personal information into such tools and apply human judgement where output affects client work.",
+        "The public website does not use solely automated decision-making that produces legal or similarly significant effects for visitors.",
+      ],
+    },
+    {
+      id: "external-sites",
+      icon: "globe",
+      title: "External websites",
+      paragraphs: [
+        "Links to social networks, repositories, messaging services, client websites, and other external platforms are governed by those providers' privacy practices. Review their notices before providing information to them.",
+      ],
+    },
+    {
+      id: "policy-updates",
+      icon: "scroll",
+      title: "Updates to this Policy",
+      paragraphs: [
+        "We may update this Policy when website features, providers, business practices, or legal requirements change. Material revisions will be reflected by a new updated date and version on this page. Please review it periodically.",
+      ],
+    },
+    {
+      id: "privacy-contact",
+      icon: "fingerprint",
+      title: "Privacy contact",
+      paragraphs: [
+        "Submit privacy questions or requests through the Muhyo Tech contact page and clearly mark the message as a privacy request. Include the email address or other detail associated with your interaction so we can locate relevant records after appropriate verification.",
+      ],
+    },
+  ],
+};
+
+export const termsDocument = {
+  type: "Terms of Service",
+  slug: "terms",
+  title: "Terms built for clear collaboration.",
+  description:
+    "These Terms explain how you may use the Muhyo Tech website and how general inquiries, bookings, content, and software-service discussions are handled. A signed proposal or project agreement may add project-specific terms.",
+  effectiveDate: "July 14, 2026",
+  updatedDate: "July 14, 2026",
+  version: "2.0",
+  readTime: "9 minutes",
+  highlights: [
+    { icon: "scroll", title: "Website use", text: "Clear rules for browsing, inquiries, bookings, and permitted use of our content." },
+    { icon: "scale", title: "Project clarity", text: "Proposals, scopes, milestones, payments, and ownership are confirmed separately for each engagement." },
+    { icon: "shield", title: "Practical protection", text: "Reasonable limits protect visitors, clients, Muhyo Tech, and the integrity of the platform." },
+  ],
+  sections: [
+    {
+      id: "acceptance",
+      icon: "check",
+      title: "Acceptance of these Terms",
+      paragraphs: [
+        "By accessing muhyotech.com, submitting a form, booking a call, subscribing to updates, or otherwise using this website, you agree to these Terms of Service and our Privacy Policy.",
+        "If you do not agree, please do not use the website. If you use the website for a company or other organisation, you confirm that you are authorised to act for it.",
+      ],
+    },
+    {
+      id: "services",
+      icon: "sparkle",
+      title: "Muhyo Tech services",
+      paragraphs: [
+        "Muhyo Tech provides professional website development, web applications, UI/UX implementation, backend and API work, performance and technical SEO improvements, deployment support, automation, AI-assisted workflows, and related digital services.",
+        "Website descriptions, case studies, timelines, technology references, and service pages are general information—not a binding offer or guaranteed result. The final scope is defined in a written proposal, statement of work, invoice, or contract accepted by both parties.",
+      ],
+    },
+    {
+      id: "inquiries",
+      icon: "fingerprint",
+      title: "Inquiries, bookings, and communication",
+      paragraphs: [
+        "You agree to provide accurate, current information when sending a message, requesting a quote, booking a call, or subscribing to communications. A booking request is not confirmed until Muhyo Tech accepts it or sends confirmation.",
+      ],
+      items: [
+        "Do not impersonate another person or submit misleading project information.",
+        "Do not use forms for spam, unlawful solicitation, malware, or abusive content.",
+        "Electronic communication may be used to respond to your request, coordinate a project, and send service-related notices.",
+      ],
+    },
+    {
+      id: "project-agreements",
+      icon: "scroll",
+      title: "Project scope, fees, and changes",
+      paragraphs: [
+        "Each paid engagement may have its own deliverables, dependencies, timeline, revision limits, payment schedule, cancellation terms, and support period. Those written project terms control if they conflict with these website Terms.",
+      ],
+      items: [
+        "Estimates may change when requirements, integrations, content, access, or technical constraints change.",
+        "Work outside an approved scope may require a revised estimate or change request.",
+        "Clients are responsible for timely feedback, approvals, content, credentials, licences, and other agreed dependencies.",
+        "Payment, refund, suspension, and cancellation rules will be stated in the applicable proposal or invoice.",
+      ],
+      note: "Submitting a contact or booking form alone does not create a client relationship or require either party to proceed.",
+    },
+    {
+      id: "intellectual-property",
+      icon: "gavel",
+      title: "Intellectual property",
+      paragraphs: [
+        "The Muhyo Tech name, website design, original copy, code, graphics, service descriptions, articles, and other website materials are owned by Muhyo Tech or used under permission and are protected by applicable intellectual-property laws.",
+      ],
+      items: [
+        "You may view and share links to public pages for lawful, personal, or internal business evaluation.",
+        "You may not copy, resell, scrape, republish, remove attribution from, or create misleading derivatives of protected website material without written permission.",
+        "You retain ownership of materials you provide for a project and confirm that you have permission to use them.",
+        "Ownership and licence rights for project deliverables are defined in the project agreement and commonly transfer only after full payment, subject to third-party and pre-existing components.",
+      ],
+    },
+    {
+      id: "acceptable-use",
+      icon: "shield",
+      title: "Acceptable use",
+      paragraphs: ["You must use the website lawfully and must not interfere with its operation, security, availability, or other users."],
+      items: [
+        "Do not attempt unauthorised access to accounts, admin areas, servers, APIs, databases, or security controls.",
+        "Do not introduce malicious code, run disruptive automated requests, bypass rate limits, or probe for vulnerabilities without written authorisation.",
+        "Do not use website content or communication features to violate privacy, intellectual-property, fraud, harassment, or other applicable laws.",
+        "We may restrict access, preserve evidence, or report activity when reasonably necessary to protect the website or comply with law.",
+      ],
+    },
+    {
+      id: "ai-content",
+      icon: "sparkle",
+      title: "AI-assisted features and content",
+      paragraphs: [
+        "Muhyo Tech may use AI-assisted tools in research, drafting, image creation, workflow automation, quality review, or software delivery. Human review and engineering judgement remain important, but AI-assisted output can contain errors or require refinement.",
+        "Blog posts, technical resources, examples, and AI-generated material are educational and general in nature. They are not legal, financial, medical, cybersecurity, or other regulated professional advice and should not replace advice tailored to your circumstances.",
+      ],
+    },
+    {
+      id: "third-parties",
+      icon: "globe",
+      title: "Third-party services and links",
+      paragraphs: [
+        "The website may link to or rely on third-party platforms such as hosting, analytics, cloud media, email, social networks, repositories, or client websites. Third parties operate under their own terms and privacy practices.",
+        "Muhyo Tech is not responsible for third-party availability, content, policies, security, or changes. A link or technology reference does not automatically mean endorsement or partnership.",
+      ],
+    },
+    {
+      id: "availability",
+      icon: "globe",
+      title: "Availability and changes",
+      paragraphs: [
+        "We work to keep the website accurate, secure, and available, but uninterrupted or error-free operation is not guaranteed. Features, content, service descriptions, and availability may be changed, suspended, or removed when reasonably necessary.",
+        "We may update these Terms as the website, services, or legal requirements evolve. The updated date and version appear on this page. Continued use after an update means you accept the revised Terms.",
+      ],
+    },
+    {
+      id: "disclaimers",
+      icon: "scale",
+      title: "Disclaimers and liability",
+      paragraphs: [
+        "The website and public content are provided on an “as available” basis. To the maximum extent permitted by applicable law, Muhyo Tech disclaims warranties that are not expressly stated in a signed project agreement.",
+        "To the maximum extent permitted by law, Muhyo Tech will not be liable for indirect, incidental, special, consequential, or lost-profit damages arising from public website use, reliance on general content, third-party services, or events outside reasonable control. Nothing in these Terms excludes liability that cannot legally be excluded.",
+      ],
+    },
+    {
+      id: "governing-law",
+      icon: "gavel",
+      title: "Governing law and disputes",
+      paragraphs: [
+        "These website Terms are governed by the applicable laws of Pakistan. Before starting formal proceedings, both sides should first attempt in good faith to resolve a dispute through written communication. Project contracts may specify a different or more detailed dispute process.",
+      ],
+    },
+    {
+      id: "contact",
+      icon: "fingerprint",
+      title: "Contact",
+      paragraphs: [
+        "Questions about these Terms, permissions, or a project agreement can be submitted through the Muhyo Tech contact page. Please include enough detail for us to identify and respond to your request.",
+      ],
+    },
+  ],
+};
+
+export const professionalCopy = {
+  "web-development": {
+    eyebrow: "Performance Web Engineering",
+    description:
+      "Launch a fast, conversion-focused website built with clean architecture, strong SEO foundations, and a polished user experience that helps visitors trust your brand quickly.",
+    promise:
+      "A modern web platform that feels premium, loads quickly, ranks better, and makes it easier for customers to take action.",
+  },
+  "ui-ux-design": {
+    eyebrow: "Product Design & UX Strategy",
+    description:
+      "Turn complex ideas into clear, elegant interfaces with thoughtful user journeys, refined visuals, and practical design systems your team can keep using.",
+    promise:
+      "A smoother experience that reduces confusion, improves engagement, and makes your product feel easier to understand from the first visit.",
+  },
+  "api-development": {
+    eyebrow: "Backend Systems & APIs",
+    description:
+      "Build secure APIs, dashboards, databases, and automation flows that keep your product reliable as users, data, and business operations grow.",
+    promise:
+      "A dependable backend foundation that reduces manual work, protects sensitive data, and gives your frontend the speed it needs.",
+  },
+  "mobile-app-development": {
+    eyebrow: "Mobile Product Development",
+    description:
+      "Create polished iOS and Android experiences with smooth flows, reliable performance, and the features users expect from a modern mobile product.",
+    promise:
+      "A mobile app experience that keeps your brand close to users and supports daily engagement without feeling heavy or confusing.",
+  },
+  "cloud-devops": {
+    eyebrow: "Cloud Infrastructure & DevOps",
+    description:
+      "Stabilize releases, automate deployments, and prepare your application for growth with secure cloud infrastructure and practical monitoring.",
+    promise:
+      "A calmer engineering workflow with fewer deployment risks, better uptime, and infrastructure that can scale with demand.",
+  },
+  "seo-digital-growth": {
+    eyebrow: "SEO & Growth Systems",
+    description:
+      "Improve visibility with technical SEO, content structure, analytics, and conversion improvements that help the right customers find and trust you.",
+    promise:
+      "A stronger growth foundation that brings qualified traffic, clearer insights, and more useful paths from search to conversion.",
+  },
+};
+
+export const defaultProblems = [
+  "Slow or outdated website",
+  "Poor mobile experience",
+  "Weak online presence",
+  "Unprofessional design",
+  "Low visitor trust",
+  "Broken contact flow",
+  "Difficult content updates",
+  "No SEO-friendly structure",
+  "No scalable backend",
+  "No proper admin/dashboard system",
+];
+
+export const defaultDeliverables = [
+  "Modern responsive design",
+  "Clean UI/UX structure",
+  "Mobile-friendly pages",
+  "SEO-ready layout",
+  "Contact form integration",
+  "Admin panel if required",
+  "Database integration if required",
+  "API integration if required",
+  "Fast loading structure",
+  "Deployment support",
+  "Domain/hosting guidance",
+  "Basic performance optimization",
+];
+
+export const defaultBenefits = [
+  "Better first impression",
+  "More trust from visitors",
+  "Improved mobile experience",
+  "Faster website performance",
+  "Easier lead generation",
+  "Scalable website foundation",
+  "Professional brand presence",
+  "SEO-friendly starting point",
+];
+
+export const defaultProcess = [
+  {
+    title: "Requirement Discussion",
+    description:
+      "We clarify your goals, audience, current challenges, and the result your business needs.",
+  },
+  {
+    title: "Project Planning",
+    description:
+      "We map pages, features, integrations, content needs, and the practical build direction.",
+  },
+  {
+    title: "Design Direction",
+    description:
+      "We shape the visual structure, user flow, and interface style around your brand and audience.",
+  },
+  {
+    title: "Development",
+    description:
+      "We build the approved solution with responsive layouts, clean code, and scalable foundations.",
+  },
+  {
+    title: "Testing and Optimization",
+    description:
+      "We review mobile behavior, performance, forms, content, SEO basics, and key user flows.",
+  },
+  {
+    title: "Review and Revisions",
+    description:
+      "You review the work and we refine details based on agreed project scope and priorities.",
+  },
+  {
+    title: "Deployment Support",
+    description:
+      "We help prepare launch, deployment, domain setup, and handover details where required.",
+  },
+  {
+    title: "Ongoing Support if Needed",
+    description:
+      "After delivery, support or improvement work can continue depending on your requirements.",
+  },
+];
+
+export const defaultClientRequirements = [
+  "Business name",
+  "Logo if available",
+  "Website content",
+  "Page list",
+  "Brand colors if available",
+  "Reference websites",
+  "Images/media",
+  "Contact details",
+  "Feature requirements",
+  "Domain/hosting details if available",
+];
+
+export const defaultTrustPoints = [
+  "Modern web development approach",
+  "Clean responsive UI",
+  "SEO-friendly structure",
+  "Secure backend thinking",
+  "Scalable code",
+  "Professional communication",
+  "Real business-focused solutions",
+  "Ongoing support mindset",
+];
+
+export const defaultFaq = [
+  {
+    question: "How do I get started with this service?",
+    answer:
+      "You can book a call or send a message with your project idea, business goals, and any current website or reference links.",
+  },
+  {
+    question: "Do you provide custom website development?",
+    answer:
+      "Yes. The work is shaped around your requirements, features, content, brand, and business goals.",
+  },
+  {
+    question: "Can you redesign my existing website?",
+    answer:
+      "Yes. Existing websites can be reviewed and improved for better design, speed, structure, mobile experience, and conversion flow.",
+  },
+  {
+    question: "Will the website be mobile responsive?",
+    answer:
+      "Yes. Responsive behavior is part of the build so the experience works professionally across mobile, tablet, and desktop screens.",
+  },
+  {
+    question: "Can you build an admin panel?",
+    answer:
+      "Yes, if your project requires content management, user management, dashboards, or internal tools, an admin panel can be planned into the scope.",
+  },
+  {
+    question: "Can you connect APIs or databases?",
+    answer:
+      "Yes. Projects can include database setup, API integrations, authentication, contact systems, uploads, automation, or third-party services when needed.",
+  },
+  {
+    question: "Do you help with deployment?",
+    answer:
+      "Yes. Deployment support, domain guidance, hosting setup, and launch checks can be included depending on project scope.",
+  },
+  {
+    question: "Do you provide SEO-friendly structure?",
+    answer:
+      "Yes. Pages can be built with clean structure, metadata, performance-minded layout, and content organization that gives SEO a stronger starting point.",
+  },
+  {
+    question: "What do you need from me before starting?",
+    answer:
+      "Helpful items include business details, page list, content, logo, brand direction, reference websites, images, required features, and domain or hosting details if available.",
+  },
+  {
+    question: "How is pricing decided?",
+    answer:
+      "Pricing depends on the project scope, features, timeline, and level of customization. You can book a call or send a message to discuss your requirements and receive a custom quote.",
+  },
+  {
+    question: "Can I request changes during the project?",
+    answer:
+      "Yes. Review and revision points are part of the process, with changes handled according to the agreed scope and priorities.",
+  },
+  {
+    question: "Do you provide support after delivery?",
+    answer:
+      "Yes. Post-delivery support can be discussed based on the project type, business needs, and ongoing improvement goals.",
+  },
+];

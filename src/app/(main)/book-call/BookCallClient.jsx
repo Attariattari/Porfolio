@@ -13,47 +13,9 @@ import {
 import BookingForm from "@/components/bookings/BookingForm";
 import EditorialBackground from "@/components/ui/EditorialBackground";
 import { Button } from "@/components/ui";
+import { bookCallContent } from "@/lib/data";
 
-const callFor = [
-  "Custom Website Development",
-  "Full-Stack Web App",
-  "Admin Dashboard",
-  "Website Redesign",
-  "API / Database Integration",
-  "SEO-Friendly Website Setup",
-];
-
-const nextSteps = [
-  "Submit Your Details",
-  "Requirement Review",
-  "Project Discussion",
-  "Custom Quote / Next Step",
-];
-
-const preparation = [
-  "Project idea or business goal",
-  "Pages/features you need",
-  "Reference websites if available",
-  "Logo/brand details if available",
-  "Existing website link if redesign",
-  "Domain/hosting details if available",
-  "Timeline expectations",
-];
-
-const faqs = [
-  ["Is the project discussion free?", "Yes. The discussion helps understand your requirements and the right next step before any project scope is finalized."],
-  ["What should I share before booking?", "Share your project idea, business goal, required pages/features, references, and any existing website link if available."],
-  ["Can I discuss a website redesign?", "Yes. You can discuss redesign goals, current website issues, content structure, performance, and conversion improvements."],
-  ["Can you build admin dashboards?", "Yes. Muhyo Tech can plan and build dashboards for content, leads, bookings, users, analytics, and custom workflows."],
-  ["Can you connect APIs and databases?", "Yes. Projects can include API integrations, MongoDB, authentication, file uploads, email, payments, and internal systems."],
-  ["Do you help with deployment?", "Yes. Deployment support, domain guidance, hosting setup, and launch checks can be discussed based on project scope."],
-  ["How is pricing decided?", "Pricing depends on project scope, features, timeline, and level of customization. After reviewing your requirements, Muhyo Tech can guide you with a custom quote."],
-  ["How long does a project take?", "Timeline depends on project size, content readiness, integrations, revisions, and technical requirements."],
-  ["Can I select a specific service?", "Yes. Choose the service that best matches your project. If you are not sure, select the closest option and explain your goal in the message."],
-  ["What happens after I submit the form?", "After reviewing your message, I'll guide you with the right approach based on your project scope and requirements."],
-];
-
-const badges = ["Project Discussion", "Web Development", "Full-Stack Solutions", "Custom Quote"];
+const { callFor, nextSteps, preparation, faqs, badges } = bookCallContent;
 
 function FAQItem({ question, answer }) {
   const [open, setOpen] = useState(false);

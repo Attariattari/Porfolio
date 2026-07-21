@@ -21,6 +21,16 @@ import { Button } from "@/components/ui";
 import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
 import { getServiceSearchContent } from "@/lib/serviceSearchContent";
 import {
+  professionalCopy,
+  defaultProblems,
+  defaultDeliverables,
+  defaultBenefits,
+  defaultProcess,
+  defaultClientRequirements,
+  defaultTrustPoints,
+  defaultFaq,
+} from "@/lib/data";
+import {
   FAQItem,
   HeroMotion,
   ListMotionCard,
@@ -28,220 +38,6 @@ import {
   Reveal,
   ServiceBookingButton,
 } from "./ServiceDetailInteractions";
-
-const professionalCopy = {
-  "web-development": {
-    eyebrow: "Performance Web Engineering",
-    description:
-      "Launch a fast, conversion-focused website built with clean architecture, strong SEO foundations, and a polished user experience that helps visitors trust your brand quickly.",
-    promise:
-      "A modern web platform that feels premium, loads quickly, ranks better, and makes it easier for customers to take action.",
-  },
-  "ui-ux-design": {
-    eyebrow: "Product Design & UX Strategy",
-    description:
-      "Turn complex ideas into clear, elegant interfaces with thoughtful user journeys, refined visuals, and practical design systems your team can keep using.",
-    promise:
-      "A smoother experience that reduces confusion, improves engagement, and makes your product feel easier to understand from the first visit.",
-  },
-  "api-development": {
-    eyebrow: "Backend Systems & APIs",
-    description:
-      "Build secure APIs, dashboards, databases, and automation flows that keep your product reliable as users, data, and business operations grow.",
-    promise:
-      "A dependable backend foundation that reduces manual work, protects sensitive data, and gives your frontend the speed it needs.",
-  },
-  "mobile-app-development": {
-    eyebrow: "Mobile Product Development",
-    description:
-      "Create polished iOS and Android experiences with smooth flows, reliable performance, and the features users expect from a modern mobile product.",
-    promise:
-      "A mobile app experience that keeps your brand close to users and supports daily engagement without feeling heavy or confusing.",
-  },
-  "cloud-devops": {
-    eyebrow: "Cloud Infrastructure & DevOps",
-    description:
-      "Stabilize releases, automate deployments, and prepare your application for growth with secure cloud infrastructure and practical monitoring.",
-    promise:
-      "A calmer engineering workflow with fewer deployment risks, better uptime, and infrastructure that can scale with demand.",
-  },
-  "seo-digital-growth": {
-    eyebrow: "SEO & Growth Systems",
-    description:
-      "Improve visibility with technical SEO, content structure, analytics, and conversion improvements that help the right customers find and trust you.",
-    promise:
-      "A stronger growth foundation that brings qualified traffic, clearer insights, and more useful paths from search to conversion.",
-  },
-};
-
-const defaultProblems = [
-  "Slow or outdated website",
-  "Poor mobile experience",
-  "Weak online presence",
-  "Unprofessional design",
-  "Low visitor trust",
-  "Broken contact flow",
-  "Difficult content updates",
-  "No SEO-friendly structure",
-  "No scalable backend",
-  "No proper admin/dashboard system",
-];
-
-const defaultDeliverables = [
-  "Modern responsive design",
-  "Clean UI/UX structure",
-  "Mobile-friendly pages",
-  "SEO-ready layout",
-  "Contact form integration",
-  "Admin panel if required",
-  "Database integration if required",
-  "API integration if required",
-  "Fast loading structure",
-  "Deployment support",
-  "Domain/hosting guidance",
-  "Basic performance optimization",
-];
-
-const defaultBenefits = [
-  "Better first impression",
-  "More trust from visitors",
-  "Improved mobile experience",
-  "Faster website performance",
-  "Easier lead generation",
-  "Scalable website foundation",
-  "Professional brand presence",
-  "SEO-friendly starting point",
-];
-
-const defaultProcess = [
-  {
-    title: "Requirement Discussion",
-    description:
-      "We clarify your goals, audience, current challenges, and the result your business needs.",
-  },
-  {
-    title: "Project Planning",
-    description:
-      "We map pages, features, integrations, content needs, and the practical build direction.",
-  },
-  {
-    title: "Design Direction",
-    description:
-      "We shape the visual structure, user flow, and interface style around your brand and audience.",
-  },
-  {
-    title: "Development",
-    description:
-      "We build the approved solution with responsive layouts, clean code, and scalable foundations.",
-  },
-  {
-    title: "Testing and Optimization",
-    description:
-      "We review mobile behavior, performance, forms, content, SEO basics, and key user flows.",
-  },
-  {
-    title: "Review and Revisions",
-    description:
-      "You review the work and we refine details based on agreed project scope and priorities.",
-  },
-  {
-    title: "Deployment Support",
-    description:
-      "We help prepare launch, deployment, domain setup, and handover details where required.",
-  },
-  {
-    title: "Ongoing Support if Needed",
-    description:
-      "After delivery, support or improvement work can continue depending on your requirements.",
-  },
-];
-
-const defaultClientRequirements = [
-  "Business name",
-  "Logo if available",
-  "Website content",
-  "Page list",
-  "Brand colors if available",
-  "Reference websites",
-  "Images/media",
-  "Contact details",
-  "Feature requirements",
-  "Domain/hosting details if available",
-];
-
-const defaultTrustPoints = [
-  "Modern web development approach",
-  "Clean responsive UI",
-  "SEO-friendly structure",
-  "Secure backend thinking",
-  "Scalable code",
-  "Professional communication",
-  "Real business-focused solutions",
-  "Ongoing support mindset",
-];
-
-const defaultFaq = [
-  {
-    question: "How do I get started with this service?",
-    answer:
-      "You can book a call or send a message with your project idea, business goals, and any current website or reference links.",
-  },
-  {
-    question: "Do you provide custom website development?",
-    answer:
-      "Yes. The work is shaped around your requirements, features, content, brand, and business goals.",
-  },
-  {
-    question: "Can you redesign my existing website?",
-    answer:
-      "Yes. Existing websites can be reviewed and improved for better design, speed, structure, mobile experience, and conversion flow.",
-  },
-  {
-    question: "Will the website be mobile responsive?",
-    answer:
-      "Yes. Responsive behavior is part of the build so the experience works professionally across mobile, tablet, and desktop screens.",
-  },
-  {
-    question: "Can you build an admin panel?",
-    answer:
-      "Yes, if your project requires content management, user management, dashboards, or internal tools, an admin panel can be planned into the scope.",
-  },
-  {
-    question: "Can you connect APIs or databases?",
-    answer:
-      "Yes. Projects can include database setup, API integrations, authentication, contact systems, uploads, automation, or third-party services when needed.",
-  },
-  {
-    question: "Do you help with deployment?",
-    answer:
-      "Yes. Deployment support, domain guidance, hosting setup, and launch checks can be included depending on project scope.",
-  },
-  {
-    question: "Do you provide SEO-friendly structure?",
-    answer:
-      "Yes. Pages can be built with clean structure, metadata, performance-minded layout, and content organization that gives SEO a stronger starting point.",
-  },
-  {
-    question: "What do you need from me before starting?",
-    answer:
-      "Helpful items include business details, page list, content, logo, brand direction, reference websites, images, required features, and domain or hosting details if available.",
-  },
-  {
-    question: "How is pricing decided?",
-    answer:
-      "Pricing depends on the project scope, features, timeline, and level of customization. You can book a call or send a message to discuss your requirements and receive a custom quote.",
-  },
-  {
-    question: "Can I request changes during the project?",
-    answer:
-      "Yes. Review and revision points are part of the process, with changes handled according to the agreed scope and priorities.",
-  },
-  {
-    question: "Do you provide support after delivery?",
-    answer:
-      "Yes. Post-delivery support can be discussed based on the project type, business needs, and ongoing improvement goals.",
-  },
-];
 
 const normalizeArray = (value) => {
   if (!value) return [];
