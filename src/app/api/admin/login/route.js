@@ -11,7 +11,10 @@ export async function POST(request) {
        return NextResponse.json({ 
            success: false, 
            code: result.code, 
-           message: result.message 
+           message: result.message,
+           appealStatus: result.appealStatus,
+           restrictionReason: result.restrictionReason,
+           appealToken: result.appealToken,
        }, { status: 401 });
     }
 

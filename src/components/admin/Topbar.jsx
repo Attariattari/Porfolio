@@ -34,6 +34,8 @@ export default function Topbar() {
       try {
         const res = await fetch("/api/admin/me", { cache: "no-store" });
         if (res.status === 401 || res.status === 403) {
+          localStorage.removeItem("admin_token");
+          localStorage.removeItem("token");
           window.location.href = "/admin/login";
           return;
         }
@@ -47,7 +49,7 @@ export default function Topbar() {
     };
 
     refreshAdminState();
-    const interval = setInterval(refreshAdminState, 15000);
+    const interval = setInterval(refreshAdminState, 5000);
     return () => {
       cancelled = true;
       clearInterval(interval);

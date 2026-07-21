@@ -1,11 +1,12 @@
 import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import { toast } from 'sonner';
 import { portfolioData as initialData } from '@/lib/data';
 
 const ADMIN_BLOG_CACHE_TTL = 5 * 60 * 1000;
 let pendingBlogsRequest = null;
 
-const useAdminStore = create((set, get) => ({
+const useAdminStore = create(persist((set, get) => ({
   // Core Data (Flat for direct reactivity)
   projects: initialData.projects || [],
   services: initialData.services || [],
@@ -646,16 +647,20 @@ const useAdminStore = create((set, get) => ({
         body: JSON.stringify({ email, action }),
       });
       if (res.ok) {
-        toast.success(`User ${email} ${action === 'approve' ? 'authorized' : 'denied'}.`);
+        const labels = { approve: "authorized", restore: "restored", restrict: "restricted", deny: "denied", remove: "removed" };
+        toast.success(`User ${email} ${labels[action] || "updated"}.`);
         await get().fetchUsers();
         await get().fetchNotifications();
+        return { success: true };
       } else {
         const result = await res.json();
         toast.error(result.message || "Action failed.");
+        return { success: false, error: result.message };
       }
     } catch (err) {
       toast.error("Network authority offline.");
       console.error("Authority fail: Status update denied.");
+      return { success: false, error: "Network authority offline." };
     }
   },
 
@@ -778,6 +783,11 @@ const useAdminStore = create((set, get) => ({
       console.error("[STORE] Logout error:", err);
     }
   },
+}), {
+  name: "muhyo-admin-ui",
+  storage: createJSONStorage(() => localStorage),
+  partialize: (state) => ({ sidebarCollapsed: state.sidebarCollapsed }),
+  version: 1,
 }));
 
 export default useAdminStore;

@@ -5,11 +5,10 @@ import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   AlertCircle, CalendarDays, Check, CheckCircle2, ChevronRight, Clock3,
-  Crown, Loader2, Mail, RefreshCw, Search, Settings2, Shield, ShieldCheck,
+  Crown, Loader2, Mail, RefreshCw, Search, Settings2, Shield, ShieldAlert, ShieldCheck,
   Sparkles, Trash2, UserCheck, Users, UserX, X,
 } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
-import { toast } from "sonner";
 import useAdminStore from "@/lib/store/adminStore";
 import { formatName } from "@/lib/utils";
 
@@ -34,6 +33,7 @@ const statusMeta = {
   pending: { label: "Pending", Icon: Clock3, classes: "border-amber-500/20 bg-amber-500/10 text-amber-500" },
   denied: { label: "Denied", Icon: UserX, classes: "border-red-500/20 bg-red-500/10 text-red-500" },
   removed: { label: "Removed", Icon: Trash2, classes: "border-slate-500/20 bg-slate-500/10 text-slate-500" },
+  restricted: { label: "Restricted", Icon: ShieldAlert, classes: "border-red-500/20 bg-red-500/10 text-red-500" },
 };
 
 function initials(user) {
@@ -134,6 +134,18 @@ function AutomaticFullAccessNotice() {
   return <section className="rounded-2xl border border-amber-500/20 bg-amber-500/[0.055] p-5"><div className="flex items-start gap-3"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-500"><Crown className="h-5 w-5" /></span><div><div className="flex flex-wrap items-center gap-2"><h3 className="text-sm font-bold text-foreground">Automatic full access</h3><span className="rounded-full bg-emerald-500/10 px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-emerald-500">All enabled</span></div><p className="mt-1.5 text-xs leading-5 text-muted-foreground">Super administrators receive every current and future permission automatically. Change the account role to Administrator or Team member if granular permissions are required.</p></div></div></section>;
 }
 
+function AccountActions({ user, session, isRoot, isProtectedSuper, onSelect, onAction }) {
+  const actorIsRoot = session?.role === "root-super-admin";
+  if (isRoot || isProtectedSuper) return <div className="flex items-center gap-2 border-t border-border/70 pt-4"><button onClick={onSelect} className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl border border-amber-500/20 bg-amber-500/10 text-xs font-bold text-amber-500 transition hover:bg-amber-500/15"><Crown className="h-4 w-4" /> View full access <ChevronRight className="h-3.5 w-3.5" /></button></div>;
+  if (user.status === "restricted") return <div className="flex items-center gap-2 border-t border-border/70 pt-4">{actorIsRoot ? <button onClick={() => onAction(user.email, "restore")} className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-500 text-xs font-bold text-white transition hover:bg-emerald-600"><UserCheck className="h-4 w-4" /> Restore account access</button> : <div className="flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-red-500/10 text-xs font-bold text-red-500"><ShieldAlert className="h-4 w-4" /> Restricted by root</div>}</div>;
+  return <div className="flex items-center gap-2 border-t border-border/70 pt-4">
+    {user.status === "pending" && <><button onClick={() => onAction(user.email, "approve")} className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-500 text-xs font-bold text-white transition hover:bg-emerald-600"><UserCheck className="h-4 w-4" /> Approve</button><button onClick={() => onAction(user.email, "deny")} className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-3 text-xs font-bold text-red-500 hover:bg-red-500 hover:text-white"><UserX className="h-4 w-4" /> Deny</button></>}
+    {user.status === "approved" && <button onClick={onSelect} className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-foreground text-xs font-bold text-background transition hover:opacity-90"><Settings2 className="h-4 w-4" /> Manage access <ChevronRight className="h-3.5 w-3.5" /></button>}
+    {user.status === "approved" && actorIsRoot && <button onClick={() => onAction(user.email, "restrict")} className="flex h-10 w-10 items-center justify-center rounded-xl border border-red-500/20 text-red-500 transition hover:bg-red-500 hover:text-white" title="Restrict account access"><ShieldAlert className="h-4 w-4" /></button>}
+    {user.status !== "pending" && user.status !== "approved" && <button onClick={() => onAction(user.email, user.status === "removed" ? "approve" : "remove")} className={`flex h-10 flex-1 items-center justify-center gap-2 rounded-xl border text-xs font-bold transition ${user.status === "removed" ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-500" : "border-border text-muted-foreground hover:border-red-500/20 hover:bg-red-500/10 hover:text-red-500"}`}>{user.status === "removed" ? <><RefreshCw className="h-4 w-4" /> Restore user</> : <><Trash2 className="h-4 w-4" /> Remove user</>}</button>}
+  </div>;
+}
+
 export default function UserManagementPage() {
   const searchParams = useSearchParams();
   const highlightId = searchParams.get("highlight");
@@ -150,7 +162,7 @@ export default function UserManagementPage() {
   useEffect(() => {
     let active = true;
     fetchUsers().finally(() => active && setLoading(false));
-    const interval = window.setInterval(() => { if (document.visibilityState === "visible") fetchUsers(); }, 15000);
+    const interval = window.setInterval(() => { if (document.visibilityState === "visible") fetchUsers(); }, 5000);
     return () => { active = false; window.clearInterval(interval); };
   }, [fetchUsers]);
   useEffect(() => {
@@ -173,7 +185,6 @@ export default function UserManagementPage() {
 
   const handleAction = async (email, action) => {
     await updateUserStatus(email, action);
-    toast.success(action === "approve" ? "User account is now active." : action === "deny" ? "Access request denied." : "User removed from active access.");
   };
   const refresh = async () => { setRefreshing(true); await fetchUsers(); setRefreshing(false); };
 
@@ -196,7 +207,7 @@ export default function UserManagementPage() {
       <section className="rounded-[2rem] border border-border/70 bg-card p-4 shadow-sm md:p-5">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div className="relative flex-1 xl:max-w-md"><Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search by name, email or role…" className="h-11 w-full rounded-xl border border-border bg-background pl-10 pr-10 text-sm text-foreground outline-none transition focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10" />{search && <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"><X className="h-4 w-4" /></button>}</div>
-          <div className="flex gap-2 overflow-x-auto">{["all", "pending", "approved", "denied", "removed"].map((status) => <button key={status} onClick={() => setStatusFilter(status)} className={`shrink-0 rounded-xl px-4 py-2.5 text-xs font-semibold capitalize transition ${statusFilter === status ? "bg-foreground text-background" : "bg-muted/60 text-muted-foreground hover:text-foreground"}`}>{status === "approved" ? "Active" : status}{status === "pending" && counts.pending > 0 && <span className="ml-2 rounded-md bg-amber-500 px-1.5 py-0.5 text-[10px] text-white">{counts.pending}</span>}</button>)}</div>
+          <div className="flex gap-2 overflow-x-auto">{["all", "pending", "approved", "restricted", "denied", "removed"].map((status) => <button key={status} onClick={() => setStatusFilter(status)} className={`shrink-0 rounded-xl px-4 py-2.5 text-xs font-semibold capitalize transition ${statusFilter === status ? "bg-foreground text-background" : "bg-muted/60 text-muted-foreground hover:text-foreground"}`}>{status === "approved" ? "Active" : status}{status === "pending" && counts.pending > 0 && <span className="ml-2 rounded-md bg-amber-500 px-1.5 py-0.5 text-[10px] text-white">{counts.pending}</span>}</button>)}</div>
         </div>
       </section>
 
@@ -204,13 +215,14 @@ export default function UserManagementPage() {
         <div className="mb-4 flex items-end justify-between"><div><h2 className="text-lg font-bold text-foreground">Team directory</h2><p className="text-sm text-muted-foreground">Showing {filteredUsers.length} of {users.length} users</p></div></div>
         <AnimatePresence mode="popLayout">
           {!filteredUsers.length ? <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex min-h-80 flex-col items-center justify-center rounded-[2rem] border border-dashed border-border bg-card/40 px-6 text-center"><div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-muted text-muted-foreground"><AlertCircle className="h-7 w-7" /></div><h3 className="text-lg font-bold text-foreground">No users found</h3><p className="mt-1 text-sm text-muted-foreground">Try changing your search or account-status filter.</p></motion.div> : <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{filteredUsers.map((user, index) => {
-            const id = user._id || user.email; const meta = statusMeta[user.status] || statusMeta.pending; const StatusIcon = meta.Icon; const isRoot = isRootAccount(user); const isProtectedSuper = user.role === "super-admin" && session?.role !== "root-super-admin"; const highlighted = highlightId === user._id;
+            const id = user._id || user.email; const meta = statusMeta[user.status] || statusMeta.pending; const StatusIcon = meta.Icon; const isRoot = isRootAccount(user); const isProtectedSuper = user.role === "super-admin" && user.status === "approved" && session?.role !== "root-super-admin"; const highlighted = highlightId === user._id;
             return <motion.article key={id} ref={(element) => { if (user._id) rowRefs.current[user._id] = element; }} layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: .98 }} transition={{ delay: Math.min(index * .025, .15) }} className={`group relative overflow-hidden rounded-[1.6rem] border bg-card p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg ${highlighted ? "border-violet-500 ring-4 ring-violet-500/10" : "border-border/70"}`}>
               <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-violet-500 via-blue-500 to-cyan-400 opacity-0 transition group-hover:opacity-100" />
               <div className="flex items-start justify-between gap-3"><div className="flex min-w-0 items-center gap-3"><UserAvatar user={user} /><div className="min-w-0"><h3 className="truncate text-base font-bold text-foreground">{user.name ? formatName(user.name) : "Unnamed user"}</h3><p className="truncate text-xs text-muted-foreground">{user.email}</p></div></div><span className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${meta.classes}`}><StatusIcon className="h-3 w-3" />{meta.label}</span></div>
               <div className="my-5 grid grid-cols-2 gap-3"><div className="rounded-xl bg-muted/45 p-3"><p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Role</p><p className="mt-1 truncate text-xs font-semibold text-foreground">{roleLabel(user.role)}</p></div><div className="rounded-xl bg-muted/45 p-3"><p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Joined</p><p className="mt-1 text-xs font-semibold text-foreground">{user.createdAt ? format(new Date(user.createdAt), "MMM d, yyyy") : "Not available"}</p></div></div>
               {user.createdAt && <div className="mb-4 flex items-center gap-2 text-xs text-muted-foreground"><CalendarDays className="h-3.5 w-3.5" /> Joined {formatDistanceToNow(new Date(user.createdAt), { addSuffix: true })}</div>}
-              <div className="flex items-center gap-2 border-t border-border/70 pt-4">{isRoot || isProtectedSuper ? <button onClick={() => setSelectedUser(user)} className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl border border-amber-500/20 bg-amber-500/10 text-xs font-bold text-amber-500 transition hover:bg-amber-500/15"><Crown className="h-4 w-4" /> View full access <ChevronRight className="h-3.5 w-3.5" /></button> : <>{user.status === "pending" && <><button onClick={() => handleAction(user.email, "approve")} className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-500 text-xs font-bold text-white transition hover:bg-emerald-600"><UserCheck className="h-4 w-4" /> Approve</button><button onClick={() => handleAction(user.email, "deny")} className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-3 text-xs font-bold text-red-500 hover:bg-red-500 hover:text-white"><UserX className="h-4 w-4" /> Deny</button></>}{user.status === "approved" && <button onClick={() => setSelectedUser(user)} className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-foreground text-xs font-bold text-background transition hover:opacity-90"><Settings2 className="h-4 w-4" /> Manage access <ChevronRight className="h-3.5 w-3.5" /></button>}{user.status !== "pending" && <button onClick={() => handleAction(user.email, user.status === "removed" ? "approve" : "remove")} className={`flex h-10 w-10 items-center justify-center rounded-xl border transition ${user.status === "removed" ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-500" : "border-border text-muted-foreground hover:border-red-500/20 hover:bg-red-500/10 hover:text-red-500"}`} title={user.status === "removed" ? "Restore user" : "Remove user"}>{user.status === "removed" ? <RefreshCw className="h-4 w-4" /> : <Trash2 className="h-4 w-4" />}</button>}</>}</div>
+              {user.status === "restricted" && user.accessAppeal?.status === "pending" && <div className="mb-4 rounded-xl border border-amber-500/20 bg-amber-500/[0.06] p-3"><div className="flex items-center gap-2 text-xs font-bold text-amber-500"><Mail className="h-3.5 w-3.5" /> Restoration appeal pending</div><p className="mt-2 line-clamp-3 text-xs leading-5 text-muted-foreground">{user.accessAppeal.message}</p></div>}
+              <AccountActions user={user} session={session} isRoot={isRoot} isProtectedSuper={isProtectedSuper} onSelect={() => setSelectedUser(user)} onAction={handleAction} />
             </motion.article>;
           })}</div>}
         </AnimatePresence>

@@ -105,6 +105,10 @@ export default function AuthContainer({
   const [linkPasskey, setLinkPasskey] = useState("");
   const [linkLoading, setLinkLoading] = useState(false);
   const [linkError, setLinkError] = useState("");
+  const [appeal, setAppeal] = useState("");
+  const [appealStatus, setAppealStatus] = useState(null);
+  const [restrictionReason, setRestrictionReason] = useState("");
+  const [appealToken, setAppealToken] = useState("");
   useEffect(() => {
     if (view !== "pending" || !email) return;
     let cancelled = false;
@@ -127,6 +131,28 @@ export default function AuthContainer({
       clearInterval(interval);
     };
   }, [view, email]);
+
+  useEffect(() => {
+    if (view !== "restricted" || !email || appealStatus !== "pending") return;
+    let cancelled = false;
+    const checkAppeal = async () => {
+      try {
+        const response = await fetch(`/api/admin/access-appeal?email=${encodeURIComponent(email)}&token=${encodeURIComponent(appealToken)}`, { cache: "no-store" });
+        const data = await response.json();
+        if (cancelled || !data.success) return;
+        if (data.status === "approved") {
+          toast.success("Your account access has been restored. You can sign in now.");
+          setAppealStatus(null);
+          setView("login");
+        } else {
+          setAppealStatus(data.appealStatus);
+        }
+      } catch {}
+    };
+    checkAppeal();
+    const interval = setInterval(checkAppeal, 5000);
+    return () => { cancelled = true; clearInterval(interval); };
+  }, [appealStatus, appealToken, email, view]);
 
   const changeView = (nextView) => {
     setError("");
@@ -199,6 +225,12 @@ export default function AuthContainer({
       const data = await response.json();
       if (!data.success) {
         if (data.code === "NOT_FOUND") setView("reverify");
+        if (data.code === "ACCESS_RESTRICTED") {
+          setRestrictionReason(data.restrictionReason || "Your administrative access is currently disabled.");
+          setAppealStatus(data.appealStatus || null);
+          setAppealToken(data.appealToken || "");
+          setView("restricted");
+        }
         return setError(data.message || "The email or passkey is incorrect.");
       }
       if (data.token) {
@@ -212,6 +244,23 @@ export default function AuthContainer({
       window.location.replace(callbackUrl);
     } catch {
       setError("Sign-in failed. Please check your connection and try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const submitAppeal = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+    setError("");
+    try {
+      const response = await fetch("/api/admin/access-appeal", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, message: appeal, token: appealToken }) });
+      const data = await response.json();
+      if (!response.ok || !data.success) return setError(data.message || "Could not submit your appeal.");
+      setAppealStatus("pending");
+      toast.success("Your appeal has been sent to the root administrator.");
+    } catch {
+      setError("Could not submit your appeal. Please check your connection.");
     } finally {
       setLoading(false);
     }
@@ -381,6 +430,18 @@ export default function AuthContainer({
                   </div>
                   <p className="mt-5 flex items-center justify-center gap-2 text-xs text-muted-foreground"><Loader2 className="h-3.5 w-3.5 animate-spin" /> Checking approval status automatically</p>
                   <button onClick={() => changeView("login")} className={`${quietButton} mt-8`}>Return to sign in</button>
+                </motion.div>
+              )}
+
+              {view === "restricted" && (
+                <motion.div key="restricted" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+                  <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-red-500/20 bg-red-500/10 text-red-500"><ShieldAlert className="h-6 w-6" /></div>
+                  <p className="mb-3 text-sm font-semibold text-red-500">Account access restricted</p>
+                  <h2 className="text-3xl font-semibold tracking-[-0.035em]">Your workspace access is paused</h2>
+                  <p className="mt-3 text-sm leading-6 text-muted-foreground">The root administrator has temporarily restricted this account. Your credentials and account data remain secure.</p>
+                  <div className="mt-5 rounded-xl border border-red-500/15 bg-red-500/[0.055] p-4"><p className="text-xs font-semibold uppercase tracking-wider text-red-500">Administrative notice</p><p className="mt-2 text-sm leading-6 text-muted-foreground">{restrictionReason}</p></div>
+                  {appealStatus === "pending" ? <div className="mt-6 rounded-2xl border border-amber-500/20 bg-amber-500/[0.06] p-5 text-center"><Clock3 className="mx-auto h-6 w-6 text-amber-500" /><h3 className="mt-3 text-sm font-bold text-foreground">Appeal under review</h3><p className="mt-1 text-xs leading-5 text-muted-foreground">Your request has reached the root administrator. This page will update automatically when access is restored.</p><p className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground"><Loader2 className="h-3.5 w-3.5 animate-spin" /> Checking account status</p></div> : <form onSubmit={submitAppeal} className="mt-6 space-y-4"><div><label className="text-sm font-semibold text-foreground">Request access restoration</label><p className="mt-1 text-xs text-muted-foreground">Briefly explain why your access should be restored.</p><textarea value={appeal} onChange={(event) => setAppeal(event.target.value)} minLength={20} maxLength={1500} rows={5} required placeholder="Provide relevant context for the root administrator…" className="mt-3 w-full resize-none rounded-xl border border-border bg-background px-4 py-3 text-sm leading-6 text-foreground outline-none transition placeholder:text-muted-foreground focus:border-accent focus:ring-4 focus:ring-accent/10" /><div className="mt-1 text-right text-[11px] text-muted-foreground">{appeal.length}/1500</div></div><ErrorNotice message={error} /><button className={primaryButton} disabled={loading || appeal.trim().length < 20}>{loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <>Submit appeal <ArrowRight className="h-4 w-4" /></>}</button></form>}
+                  <button onClick={() => changeView("login")} className={`${quietButton} mt-6 w-full text-center`}>Return to sign in</button>
                 </motion.div>
               )}
 

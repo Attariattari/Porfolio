@@ -15,7 +15,7 @@ export async function POST(request) {
     }
 
     const result = await sendVerificationCode(email, type);
-    return NextResponse.json(result);
+    return NextResponse.json(result, { status: result.success ? 200 : 502 });
   } catch (err) {
     return NextResponse.json({ success: false, message: "Gateway failure." }, { status: 500 });
   }

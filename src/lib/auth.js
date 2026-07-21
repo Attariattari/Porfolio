@@ -1,6 +1,5 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
-import nodemailer from "nodemailer";
 import dbConnect from "@/lib/dbConnect";
 import User, { Notification, PendingCode } from "@/models/AdminModels";
 import eventBus, { ADMIN_EVENTS } from "@/lib/eventBus";
@@ -8,6 +7,7 @@ import { generateEmailTemplate } from "@/lib/emailTemplates";
 import { SITE_URL } from "@/lib/config";
 import { verifyPasskey, hashPasskey } from "@/lib/passwordReset";
 import { getAuthSecretKey } from "@/lib/authSecret";
+import { sendEmail } from "@/lib/mailer";
 
 const SECRET = getAuthSecretKey();
 
@@ -142,14 +142,6 @@ export const formatName = (name) => {
         .replace(/\b\w/g, (char) => char.toUpperCase());
 };
 
-// NodeMailer Transporter
-const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST || "smtp.gmail.com",
-    port: parseInt(process.env.SMTP_PORT || "587"),
-    secure: false,
-    auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
-});
-
 export async function addNotification(payload) {
     await dbConnect();
     const newNotif = await Notification.create({
@@ -176,14 +168,10 @@ export async function sendVerificationCode(email, type = "setup") {
         "Admin Identity Verification" :
         "Passkey Reset Verification";
     try {
-        if (!process.env.SMTP_USER) {
-            console.warn(`DEV MODE - Email: ${normalizedEmail}, Code: ${code}`);
-            return { success: true, mocked: true, code };
-        }
-        await transporter.sendMail({
-            from: `"Muhyo Tech Security" <${process.env.SMTP_USER}>`,
+        const mailResult = await sendEmail({
             to: normalizedEmail,
             subject: `[Muhyo] ${subject}`,
+            fromName: "Muhyo Tech Security",
             html: generateEmailTemplate({
                 userName: formatName(normalizedEmail.split("@")[0]),
                 type: "VERIFICATION",
@@ -191,9 +179,10 @@ export async function sendVerificationCode(email, type = "setup") {
                 ctaUrl: `${SITE_URL}/admin/login`,
             }),
         });
+        if (!mailResult.success) return { success: false, message: mailResult.error || "Verification email could not be sent." };
         return { success: true };
     } catch (error) {
-        return { success: false, error: error.message };
+        return { success: false, message: error.message || "Verification email could not be sent." };
     }
 }
 
@@ -314,12 +303,29 @@ export async function login(email, passkey) {
     const { valid: isPasskeyValid, method: verificationMethod } =
     await verifyPasskey(passkey, user.passkey);
 
-    if (!isPasskeyValid || user.status !== "approved") {
+    if (!isPasskeyValid) {
         return {
             success: false,
             code: "INVALID",
-            message: "Authority credentials mismatch or pending authorization.",
+            message: "Authority credentials mismatch.",
         };
+    }
+
+    if (user.status === "restricted") {
+        const appealToken = await new SignJWT({ purpose: "access-appeal", email: normalizedEmail, userId: user._id.toString() })
+            .setProtectedHeader({ alg: "HS256" }).setIssuedAt().setExpirationTime("15m").sign(SECRET);
+        return {
+            success: false,
+            code: "ACCESS_RESTRICTED",
+            message: "Your account access has been restricted by the root administrator.",
+            appealStatus: user.accessAppeal?.status || null,
+            restrictionReason: user.accessRestriction?.reason || "Administrative access has been temporarily disabled.",
+            appealToken,
+        };
+    }
+
+    if (user.status !== "approved") {
+        return { success: false, code: "INVALID", message: "This account is awaiting authorization." };
     }
 
     // ⭐ AUTO-MIGRATION: If verified with legacy method, upgrade to bcrypt immediately
@@ -415,13 +421,8 @@ export async function approveUser(email) {
 
     // Send Passkey Email
     try {
-        if (process.env.SMTP_USER) {
-            const isReverify = await Notification.exists({
-                relatedUserId: user._id,
-                type: "REVERIFY_REQUEST",
-            });
-            await transporter.sendMail({
-                from: `"Muhyo Tech Authority" <${process.env.SMTP_USER}>`,
+        const isReverify = await Notification.exists({ relatedUserId: user._id, type: "REVERIFY_REQUEST" });
+        const mailResult = await sendEmail({
                 to: normalizedEmail,
                 subject: isReverify ?
                     "Muhyo Tech — Authority Restored" : "Muhyo Tech — Account Verification Approved",
@@ -431,8 +432,9 @@ export async function approveUser(email) {
                     actionData: { passkey },
                     ctaUrl: `${SITE_URL}/admin/login`,
                 }),
-            });
-        }
+                fromName: "Muhyo Tech Authority",
+        });
+        if (!mailResult.success) console.warn(`[Auth] Approval email failed: ${mailResult.error}`);
     } catch (e) {
         console.warn("Approve email failed.");
     }
@@ -473,9 +475,7 @@ export async function denyUser(email) {
 
         // Send Denial Email
         try {
-            if (process.env.SMTP_USER) {
-                await transporter.sendMail({
-                    from: `"Muhyo Tech Authority" <${process.env.SMTP_USER}>`,
+            const mailResult = await sendEmail({
                     to: normalizedEmail,
                     subject: "Muhyo Tech — Identity Authorization Refused",
                     html: generateEmailTemplate({
@@ -483,8 +483,9 @@ export async function denyUser(email) {
                         type: "DENIED",
                         ctaUrl: `${SITE_URL}/admin/login`,
                     }),
-                });
-            }
+                    fromName: "Muhyo Tech Authority",
+            });
+            if (!mailResult.success) console.warn(`[Auth] Denial email failed: ${mailResult.error}`);
         } catch (e) {
             console.warn("Deny email failed.");
         }
@@ -526,9 +527,7 @@ export async function removeUser(email) {
 
         // Send Removal Email
         try {
-            if (process.env.SMTP_USER) {
-                await transporter.sendMail({
-                    from: `"Muhyo Tech Authority" <${process.env.SMTP_USER}>`,
+            const mailResult = await sendEmail({
                     to: normalizedEmail,
                     subject: "Muhyo Tech — Administrative Access Revoked",
                     html: generateEmailTemplate({
@@ -536,8 +535,9 @@ export async function removeUser(email) {
                         type: "REMOVED",
                         ctaUrl: `${SITE_URL}/admin/login`,
                     }),
-                });
-            }
+                    fromName: "Muhyo Tech Authority",
+            });
+            if (!mailResult.success) console.warn(`[Auth] Removal email failed: ${mailResult.error}`);
         } catch (e) {
             console.warn("Removal email failed.");
         }

@@ -5,8 +5,20 @@ const UserSchema = new mongoose.Schema({
   name: { type: String },
   passkey: { type: String },
   role: { type: String, enum: ['user', 'admin', 'super-admin', 'root-super-admin'], default: 'user' },
-  status: { type: String, enum: ['pending', 'approved', 'denied', 'removed'], default: 'pending' },
+  status: { type: String, enum: ['pending', 'approved', 'denied', 'removed', 'restricted'], default: 'pending' },
   permissions: { type: Object, default: {} },
+  accessRestriction: {
+    reason: { type: String },
+    restrictedAt: { type: Date },
+    restrictedBy: { type: String, lowercase: true },
+  },
+  accessAppeal: {
+    message: { type: String, maxlength: 1500 },
+    status: { type: String, enum: ['pending', 'approved', 'rejected'] },
+    submittedAt: { type: Date },
+    reviewedAt: { type: Date },
+    reviewedBy: { type: String, lowercase: true },
+  },
   authProviders: [{
     provider: { type: String, enum: ['credentials', 'google'], required: true },
     providerId: { type: String },

@@ -20,13 +20,17 @@ function withTimeout(promise, timeoutMs) {
 const getTransporter = () => {
   if (transporter) return transporter;
 
+  // Gmail displays app passwords in four groups. Environment files often
+  // preserve those spaces, while SMTP authentication requires the raw value.
+  const smtpPassword = process.env.SMTP_PASS?.replace(/\s+/g, "");
+
   const config = {
     host: process.env.SMTP_HOST || "smtp.gmail.com",
     port: parseInt(process.env.SMTP_PORT || "587"),
     secure: process.env.SMTP_PORT === "465",
     auth: {
       user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
+      pass: smtpPassword,
     },
     connectionTimeout: Number(process.env.SMTP_CONNECTION_TIMEOUT_MS || 5000),
     greetingTimeout: Number(process.env.SMTP_GREETING_TIMEOUT_MS || 5000),
@@ -45,7 +49,7 @@ const getTransporter = () => {
  */
 export const sendEmail = async ({ to, subject, html, text, fromName = "Muhyo Tech" }) => {
   try {
-    if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+    if (!process.env.SMTP_USER || !process.env.SMTP_PASS?.replace(/\s+/g, "")) {
       console.error("[Mailer] Missing SMTP credentials. Check .env.local");
       return { success: false, error: "Missing SMTP credentials" };
     }
@@ -87,4 +91,5 @@ export const sendEmail = async ({ to, subject, html, text, fromName = "Muhyo Tec
 };
 
 // Legacy support for default export if needed
-export default { sendEmail };
+const mailer = { sendEmail };
+export default mailer;
