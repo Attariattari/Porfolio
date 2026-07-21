@@ -58,6 +58,7 @@ export async function GET(req) {
 
         // 2. Service Distribution
         const serviceDistribution = await Booking.aggregate([
+            { $match: { service: { $type: "string", $ne: "" } } },
             {
                 $group: {
                     _id: "$service",
@@ -68,8 +69,11 @@ export async function GET(req) {
         ]);
 
         // 3. Activity Stats (Content Creation Trend - Last 6 months)
-        const sixMonthsAgo = new Date();
-        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+        const sixMonthsAgo = new Date(Date.UTC(
+            today.getUTCFullYear(),
+            today.getUTCMonth() - 5,
+            1
+        ));
 
         const getMonthlyStats = async (Model) => {
             return await Model.aggregate([
@@ -90,15 +94,29 @@ export async function GET(req) {
             getMonthlyStats(Project)
         ]);
 
+        const fillMonthlyStats = (stats) => {
+            const countsByMonth = new Map(stats.map(({ _id, count }) => [_id, count]));
+
+            return Array.from({ length: 6 }, (_, index) => {
+                const date = new Date(Date.UTC(
+                    sixMonthsAgo.getUTCFullYear(),
+                    sixMonthsAgo.getUTCMonth() + index,
+                    1
+                ));
+                const monthKey = date.toISOString().slice(0, 7);
+                return { _id: monthKey, count: countsByMonth.get(monthKey) || 0 };
+            });
+        };
+
         return NextResponse.json({
             success: true,
             data: {
                 bookingTrend: completeBookingTrend,
                 serviceDistribution,
                 activityStats: {
-                    blogs: blogStats,
-                    services: serviceStats,
-                    projects: projectStats
+                    blogs: fillMonthlyStats(blogStats),
+                    services: fillMonthlyStats(serviceStats),
+                    projects: fillMonthlyStats(projectStats)
                 }
             }
         });

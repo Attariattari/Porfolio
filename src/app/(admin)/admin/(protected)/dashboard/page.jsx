@@ -143,35 +143,49 @@ export default function DashboardPage() {
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [selectedSubscriber, setSelectedSubscriber] = useState(null);
 
+  const fetchDashboardData = async (url) => {
+    const response = await fetch(url, { cache: "no-store" });
+    const payload = await response.json();
+    if (!response.ok || !payload.success) {
+      throw new Error(payload.message || payload.error || "Dashboard data request failed");
+    }
+    return payload.data;
+  };
+
   // Queries - Real-time Polling Engine (Every 5 seconds)
   const { data: statsData, isLoading: statsLoading } = useQuery({
     queryKey: ["dashboard-stats"],
-    queryFn: () => fetch("/api/admin/dashboard/stats").then(res => res.json().then(d => d.data)),
-    refetchInterval: 5000
+    queryFn: () => fetchDashboardData("/api/admin/dashboard/stats"),
+    refetchInterval: 5000,
+    refetchIntervalInBackground: true
   });
 
   const { data: chartData, isLoading: chartsLoading } = useQuery({
     queryKey: ["dashboard-charts"],
-    queryFn: () => fetch("/api/admin/dashboard/charts").then(res => res.json().then(d => d.data)),
-    refetchInterval: 5000
+    queryFn: () => fetchDashboardData("/api/admin/dashboard/charts"),
+    refetchInterval: 5000,
+    refetchIntervalInBackground: true
   });
 
   const { data: analyticsData, isLoading: analyticsLoading } = useQuery({
     queryKey: ["dashboard-analytics"],
-    queryFn: () => fetch("/api/admin/analytics").then(res => res.json().then(d => d.data)),
-    refetchInterval: 5000
+    queryFn: () => fetchDashboardData("/api/admin/analytics"),
+    refetchInterval: 5000,
+    refetchIntervalInBackground: true
   });
 
   const { data: recentData, isLoading: recentLoading } = useQuery({
     queryKey: ["dashboard-recent"],
-    queryFn: () => fetch("/api/admin/dashboard/recent").then(res => res.json().then(d => d.data)),
-    refetchInterval: 5000
+    queryFn: () => fetchDashboardData("/api/admin/dashboard/recent"),
+    refetchInterval: 5000,
+    refetchIntervalInBackground: true
   });
 
   const { data: activities = [], isLoading: activityLoading } = useQuery({
     queryKey: ["activities"],
-    queryFn: () => fetch("/api/admin/activity").then(res => res.json().then(d => d.data)),
-    refetchInterval: 5000
+    queryFn: () => fetchDashboardData("/api/admin/activity"),
+    refetchInterval: 5000,
+    refetchIntervalInBackground: true
   });
 
   // Socket Integration
@@ -208,11 +222,19 @@ export default function DashboardPage() {
     socket.on(SOCKET_EVENTS.NEW_MESSAGE, invalidateAll);
     socket.on(SOCKET_EVENTS.NEW_BOOKING, invalidateAll);
     socket.on(SOCKET_EVENTS.BOOKING_UPDATED, invalidateAll);
+    socket.on(SOCKET_EVENTS.BOOKING_DELETED, invalidateAll);
+    socket.on(SOCKET_EVENTS.BOOKING_STATS_UPDATED, invalidateAll);
     socket.on(SOCKET_EVENTS.STATS_UPDATED, invalidateAll);
     socket.on(SOCKET_EVENTS.NEW_SUBSCRIBER, invalidateAll);
     socket.on(SOCKET_EVENTS.NEW_BLOG, invalidateAll);
+    socket.on(SOCKET_EVENTS.BLOG_UPDATED, invalidateAll);
     socket.on(SOCKET_EVENTS.NEW_SERVICE, invalidateAll);
+    socket.on(SOCKET_EVENTS.SERVICE_CREATED, invalidateAll);
+    socket.on(SOCKET_EVENTS.SERVICE_UPDATED, invalidateAll);
+    socket.on(SOCKET_EVENTS.SERVICES_IMPORTED, invalidateAll);
     socket.on(SOCKET_EVENTS.NEW_PROJECT, invalidateAll);
+    socket.on(SOCKET_EVENTS.PUBLIC_DATA_UPDATED, invalidateAll);
+    socket.on(SOCKET_EVENTS.CACHE_INVALIDATED, invalidateAll);
 
     // Fetch session
     fetch("/api/admin/me").then(res => res.json()).then(data => setSession(data));

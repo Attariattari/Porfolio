@@ -47,6 +47,12 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
+const EmptyChart = ({ message = "No activity recorded yet" }) => (
+  <div className="h-[300px] w-full flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-muted-foreground/50">
+    {message}
+  </div>
+);
+
 export const BookingTrendChart = ({ data }) => {
   const chartData = Array.isArray(data) ? data : [];
 
@@ -91,12 +97,15 @@ export const BookingTrendChart = ({ data }) => {
 };
 
 export const ServiceDistributionChart = ({ data }) => {
+  const chartData = Array.isArray(data) ? data : [];
+  if (!chartData.some((item) => item.count > 0)) return <EmptyChart message="No booking services recorded yet" />;
+
   return (
     <div className="h-[300px] w-full">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
-            data={data}
+            data={chartData}
             cx="50%"
             cy="50%"
             innerRadius={60}
@@ -109,7 +118,7 @@ export const ServiceDistributionChart = ({ data }) => {
             animationDuration={800}
             animationEasing="ease-out"
           >
-            {data.map((entry, index) => (
+            {chartData.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={BRAND_COLORS[index % BRAND_COLORS.length]} stroke="none" />
             ))}
           </Pie>
@@ -128,18 +137,23 @@ export const ServiceDistributionChart = ({ data }) => {
 };
 
 export const ContentActivityChart = ({ data }) => {
+  const safeData = {
+    blogs: Array.isArray(data?.blogs) ? data.blogs : [],
+    services: Array.isArray(data?.services) ? data.services : [],
+    projects: Array.isArray(data?.projects) ? data.projects : [],
+  };
   // Merge multiple data sources into one for the bar chart
   const months = [...new Set([
-    ...data.blogs.map(d => d._id),
-    ...data.services.map(d => d._id),
-    ...data.projects.map(d => d._id)
+    ...safeData.blogs.map(d => d._id),
+    ...safeData.services.map(d => d._id),
+    ...safeData.projects.map(d => d._id)
   ])].sort();
 
   const chartData = months.map(month => ({
     name: month,
-    Blogs: data.blogs.find(d => d._id === month)?.count || 0,
-    Services: data.services.find(d => d._id === month)?.count || 0,
-    Projects: data.projects.find(d => d._id === month)?.count || 0,
+    Blogs: safeData.blogs.find(d => d._id === month)?.count || 0,
+    Services: safeData.services.find(d => d._id === month)?.count || 0,
+    Projects: safeData.projects.find(d => d._id === month)?.count || 0,
   }));
 
   return (
@@ -171,10 +185,12 @@ export const ContentActivityChart = ({ data }) => {
 };
 
 export const VisitorGrowthChart = ({ data }) => {
+  const chartData = Array.isArray(data) ? data : [];
+
   return (
     <div className="h-[300px] w-full">
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={data}>
+        <AreaChart data={chartData}>
           <defs>
             <linearGradient id="colorVisitorGrowth" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="var(--chart-3)" stopOpacity={0.3}/>
@@ -190,7 +206,8 @@ export const VisitorGrowthChart = ({ data }) => {
             axisLine={false}
             tickFormatter={(str) => {
               if(!str) return '';
-              const date = new Date(str);
+              const [year, month, day] = str.split('-').map(Number);
+              const date = new Date(year, month - 1, day);
               return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
             }}
           />
@@ -212,12 +229,15 @@ export const VisitorGrowthChart = ({ data }) => {
 };
 
 export const PageViewsChart = ({ data }) => {
+  const chartData = Array.isArray(data) ? data : [];
+  if (!chartData.some((item) => item.count > 0)) return <EmptyChart message="No page views recorded yet" />;
+
   return (
     <div className="h-[300px] w-full">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
-            data={data}
+            data={chartData}
             cx="50%"
             cy="50%"
             innerRadius={60}
@@ -230,7 +250,7 @@ export const PageViewsChart = ({ data }) => {
             animationDuration={800}
             animationEasing="ease-out"
           >
-            {data?.map((entry, index) => (
+            {chartData.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={BRAND_COLORS[index % BRAND_COLORS.length]} stroke="none" />
             ))}
           </Pie>

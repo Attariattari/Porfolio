@@ -20,6 +20,27 @@ const uniqueVisitorsPipeline = (match = null) => [
   { $count: "count" },
 ];
 
+const getCalendarDateKeys = (date, days, timezone) => {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: timezone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+  const values = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+  const calendarToday = new Date(Date.UTC(
+    Number(values.year),
+    Number(values.month) - 1,
+    Number(values.day),
+  ));
+
+  return Array.from({ length: days }, (_, index) => {
+    const day = new Date(calendarToday);
+    day.setUTCDate(day.getUTCDate() - (days - 1 - index));
+    return day.toISOString().slice(0, 10);
+  });
+};
+
 export async function GET() {
   try {
     const session = await getAuthSession();
@@ -103,6 +124,13 @@ export async function GET() {
     const growthRate = hasCompleteGrowthBaseline
       ? calculateGrowthRate(currentPeriodVisitors, previousPeriodVisitors)
       : null;
+    const trendByDate = new Map(monthlyTrendData.map((item) => [item._id, item]));
+    const completeMonthlyTrend = getCalendarDateKeys(now, 30, ANALYTICS_TIMEZONE)
+      .map((dateKey) => ({
+        _id: dateKey,
+        count: trendByDate.get(dateKey)?.count || 0,
+        pageViews: trendByDate.get(dateKey)?.pageViews || 0,
+      }));
 
     return NextResponse.json({
       success: true,
@@ -120,7 +148,7 @@ export async function GET() {
         growthStatus: growthRate === null ? "Collecting verified baseline" : "Verified",
         growthPeriodDays: 30,
         pageViews: pageViewsData,
-        monthlyTrend: monthlyTrendData,
+        monthlyTrend: completeMonthlyTrend,
         timezone: ANALYTICS_TIMEZONE,
       },
     });
