@@ -193,7 +193,8 @@ export default function Hero({ initialData = null }) {
                     alt={getHeroMediaAlt(data)}
                     fill
                     className="object-cover"
-                    loading="lazy"
+                    priority
+                    fetchPriority="high"
                     sizes="500px"
                   />
                   {/* Subtle Glow to match the theme */}

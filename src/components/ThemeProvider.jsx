@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 const VALID_THEMES = ["light", "dark", "black"];
 const THEME_CACHE_KEY = "muhyo_global_theme";
@@ -54,6 +54,7 @@ const ThemeContext = createContext({
 });
 
 export const ThemeProvider = ({ children }) => {
+  const refreshPromiseRef = useRef(null);
   const [theme, setThemeState] = useState("black");
 
   const commitTheme = useCallback((value) => {
@@ -81,20 +82,24 @@ export const ThemeProvider = ({ children }) => {
       return;
     }
 
-    try {
-      const response = await fetch("/api/settings?themeOnly=1", {
-        cache: "no-store",
-        credentials: "same-origin",
-        headers: { "Cache-Control": "no-cache" },
-      });
-      if (!response.ok) return;
-      const result = await response.json();
-      if (String(result?.message || "").toLowerCase().includes("fallback")) return;
-      const serverTheme = normalizeTheme(result?.data?.siteTheme);
-      commitTheme(serverTheme);
-    } catch {
-      // Retain the last confirmed global theme while temporarily offline.
-    }
+    if (refreshPromiseRef.current) return refreshPromiseRef.current;
+    refreshPromiseRef.current = (async () => {
+      try {
+        const response = await fetch("/api/settings?themeOnly=1", {
+          credentials: "same-origin",
+        });
+        if (!response.ok) return;
+        const result = await response.json();
+        if (String(result?.message || "").toLowerCase().includes("fallback")) return;
+        const serverTheme = normalizeTheme(result?.data?.siteTheme);
+        commitTheme(serverTheme);
+      } catch {
+        // Retain the last confirmed global theme while temporarily offline.
+      } finally {
+        refreshPromiseRef.current = null;
+      }
+    })();
+    return refreshPromiseRef.current;
   }, [commitTheme]);
 
   useEffect(() => {

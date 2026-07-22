@@ -265,13 +265,29 @@ export function getRelatedBlogs(currentBlog = {}, blogs = [], limit = 3) {
     .map(({ blog }) => blog);
 }
 
-export function findNearDuplicateBlog(candidate = {}, blogs = [], threshold = 0.62) {
+export function findNearDuplicateBlog(candidate = {}, blogs = [], threshold = 0.48) {
   const candidateText = searchableBlogText(candidate);
+  const candidateTitle = stripBlogHtml(candidate.title || "").toLowerCase().trim();
+  const candidateSummary = stripBlogHtml(candidate.summary || "").toLowerCase().trim();
+  const candidateFocusKeyword = stripBlogHtml(candidate.focusKeyword || "").toLowerCase().trim();
   return blogs.find((blog) => {
     if (!blog || blog.slug === candidate.slug) return false;
+    const blogTitle = stripBlogHtml(blog.title || "").toLowerCase().trim();
+    const blogSummary = stripBlogHtml(blog.summary || "").toLowerCase().trim();
+    const blogFocusKeyword = stripBlogHtml(blog.focusKeyword || "").toLowerCase().trim();
     const similarity = tokenSimilarity(candidateText, searchableBlogText(blog));
-    const sameFocusKeyword = candidate.focusKeyword && blog.focusKeyword &&
-      String(candidate.focusKeyword).toLowerCase() === String(blog.focusKeyword).toLowerCase();
-    return sameFocusKeyword || similarity >= threshold;
+    const titleSimilarity = tokenSimilarity(candidateTitle, blogTitle);
+    const summarySimilarity = tokenSimilarity(candidateSummary, blogSummary);
+    const sameTitle = Boolean(candidateTitle && blogTitle && candidateTitle === blogTitle);
+    const sameFocusKeyword = Boolean(
+      candidateFocusKeyword && blogFocusKeyword && candidateFocusKeyword === blogFocusKeyword,
+    );
+    return (
+      sameTitle ||
+      sameFocusKeyword ||
+      titleSimilarity >= 0.55 ||
+      summarySimilarity >= 0.58 ||
+      similarity >= threshold
+    );
   });
 }

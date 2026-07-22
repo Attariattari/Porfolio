@@ -20,6 +20,17 @@ import { getBlogImageAlt } from "@/lib/blogImageAlt";
 import { ensureMuhyoTechAlt } from "@/lib/mediaAlt";
 import { SITE_URL } from "@/lib/config";
 
+function sanitizeBlogContentClasses(content = "") {
+  return String(content).replace(/\sclass=(["'])(.*?)\1/gi, (attribute, quote, classNames) => {
+    const safeClasses = classNames
+      .split(/\s+/)
+      .filter((className) => className && className !== "bg-background")
+      .join(" ");
+
+    return safeClasses ? ` class=${quote}${safeClasses}${quote}` : "";
+  });
+}
+
 export default function BlogPostDetail({
   blog,
   shareUrl,
@@ -73,7 +84,7 @@ export default function BlogPostDetail({
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20 text-foreground transition-colors">
+    <div className="min-h-screen pb-20 text-foreground transition-colors">
       {/* Article Header */}
       <header className="relative overflow-hidden border-b border-border/70">
         <div className="absolute inset-0 " />
@@ -131,10 +142,10 @@ export default function BlogPostDetail({
                       "/logo.png",
                     )}
                     alt={ensureMuhyoTechAlt("", `portrait of ${blog.author || "the author"}`)}
-                  width={48}
-                  height={48}
-                  sizes="48px"
-                  className="object-cover"
+                    width={48}
+                    height={48}
+                    sizes="48px"
+                    className="object-cover"
                   />
                 </div>
                 <div>
@@ -202,7 +213,7 @@ export default function BlogPostDetail({
                 [&_a]:font-semibold [&_a]:text-accent [&_a]:underline [&_a]:underline-offset-4
                 [&_code]:rounded-md [&_code]:bg-muted [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:text-foreground
                 [&_pre]:overflow-x-auto [&_pre]:rounded-2xl [&_pre]:border [&_pre]:border-border [&_pre]:bg-muted [&_pre]:p-5 [&_pre]:text-foreground"
-              dangerouslySetInnerHTML={{ __html: blog.content }}
+              dangerouslySetInnerHTML={{ __html: sanitizeBlogContentClasses(blog.content) }}
             />
 
             {/* Tags */}
@@ -274,118 +285,118 @@ export default function BlogPostDetail({
           {/* Sidebar */}
           <aside className="lg:sticky lg:top-6 lg:col-span-4 lg:h-fit lg:self-start">
             <div className="space-y-5">
-            {/* Share Box - Premium Card */}
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3 }}
-              className="group relative overflow-hidden rounded-[2rem] border border-border/70 bg-card/70 p-6 shadow-xl shadow-overlay/10 backdrop-blur-2xl lg:p-5"
-            >
-              {/* Decorative Gradient Orb */}
-              <div className="absolute -top-24 -right-24 w-48 h-48 bg-accent/10 blur-[80px] rounded-full group-hover:bg-accent/20 transition-colors duration-700" />
-              
-              <h4 className="relative mb-5 flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.25em] text-accent">
-                <div className="w-8 h-[1px] bg-accent/30" />
-                Share Insights
-              </h4>
-
-              <div className="relative space-y-2.5">
-                {shareOptions.map((option) => (
-                  <a
-                    key={option.name}
-                    href={option.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`${option.name}: ${blog.title}`}
-                    className={`group/item flex items-center justify-between rounded-2xl border border-border bg-muted/45 p-4 text-foreground transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-overlay/10 lg:px-4 lg:py-3 ${option.hoverClass}`}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted transition-colors group-hover/item:bg-current/10 lg:h-9 lg:w-9">
-                        {option.icon}
-                      </div>
-                      <div>
-                        <span className="block text-xs font-bold tracking-tight">
-                          {option.label}
-                        </span>
-                        <span className="mt-1 block text-[10px] font-medium text-current/55">
-                          Post blog link
-                        </span>
-                      </div>
-                    </div>
-                    <ArrowUpRight className="w-4 h-4 opacity-60 transition-all group-hover/item:translate-x-0.5 group-hover/item:-translate-y-0.5 group-hover/item:opacity-100" />
-                  </a>
-                ))}
-
-                <button
-                  type="button"
-                  onClick={copyShareUrl}
-                  className="group/copy flex w-full cursor-pointer items-center justify-between rounded-2xl border border-accent/25 bg-accent/10 p-4 text-accent transition-all duration-300 hover:-translate-y-0.5 hover:bg-accent hover:text-accent-foreground hover:shadow-xl hover:shadow-accent/10 lg:px-4 lg:py-3"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent/10 transition-colors group-hover/copy:bg-white/20 lg:h-9 lg:w-9">
-                      <Share2 className="w-4 h-4" />
-                    </div>
-                    <div className="text-left">
-                      <span className="block text-xs font-bold tracking-tight">
-                        Copy Link
-                      </span>
-                      <span className="mt-1 block text-[10px] font-medium text-current/65">
-                        Direct blog URL
-                      </span>
-                    </div>
-                  </div>
-                  <ArrowUpRight className="w-4 h-4 opacity-70 transition-all group-hover/copy:translate-x-0.5 group-hover/copy:-translate-y-0.5 group-hover/copy:opacity-100" />
-                </button>
-              </div>
-            </motion.div>
-
-            {relatedBlogs.length > 0 && (
+              {/* Share Box - Premium Card */}
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 }}
-                className="relative overflow-hidden rounded-[2rem] border border-border/60 bg-card/45 p-6 backdrop-blur-xl lg:p-5"
+                transition={{ delay: 0.3 }}
+                className="group relative overflow-hidden rounded-[2rem] border border-border/70 bg-card/70 p-6 shadow-xl shadow-overlay/10 backdrop-blur-2xl lg:p-5"
               >
-                <div className="mb-5 flex items-center justify-between gap-3">
-                  <h4 className="mb-0 flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70">
-                    <span className="h-px w-8 bg-border" />
-                    Related Reading
-                  </h4>
-                  <span className="rounded-full border border-accent/20 bg-accent/10 px-2 py-1 text-[8px] font-bold uppercase tracking-wider text-accent">
-                    Topic match
-                  </span>
-                </div>
-                <div className="space-y-5">
-                  {relatedBlogs.map((relatedBlog, index) => (
-                    <Link
-                      key={relatedBlog.slug || relatedBlog._id || index}
-                      href={`/blog/${relatedBlog.slug}`}
-                      className="group relative flex gap-4"
-                    >
-                      <span className="text-2xl font-black text-foreground/10 transition-colors duration-500 group-hover:text-accent/30 tabular-nums">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
-                      <span className="min-w-0 space-y-2">
-                        <span className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-accent/70">
-                          <span className="h-1.5 w-1.5 rounded-full bg-accent shadow-[0_0_10px_rgba(var(--accent-rgb),0.6)]" />
-                          {relatedBlog.category || "Insights"}
-                        </span>
-                        <span className="block text-sm font-bold leading-snug text-foreground transition-colors duration-300 line-clamp-2 group-hover:text-accent">
-                          {relatedBlog.title}
-                        </span>
-                      </span>
-                    </Link>
-                  ))}
-                </div>
+                {/* Decorative Gradient Orb */}
+                <div className="absolute -top-24 -right-24 w-48 h-48 bg-accent/10 blur-[80px] rounded-full group-hover:bg-accent/20 transition-colors duration-700" />
 
-                <div className="mt-6 border-t border-border/60 pt-5">
-                  <Link href="/blog" className="group flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 transition-colors hover:text-accent">
-                    Discover more insights
-                    <ArrowRight className="w-4 h-4 -translate-x-2 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100" />
-                  </Link>
+                <h4 className="relative mb-5 flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.25em] text-accent">
+                  <div className="w-8 h-[1px] bg-accent/30" />
+                  Share Insights
+                </h4>
+
+                <div className="relative space-y-2.5">
+                  {shareOptions.map((option) => (
+                    <a
+                      key={option.name}
+                      href={option.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${option.name}: ${blog.title}`}
+                      className={`group/item flex items-center justify-between rounded-2xl border border-border bg-muted/45 p-4 text-foreground transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-overlay/10 lg:px-4 lg:py-3 ${option.hoverClass}`}
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted transition-colors group-hover/item:bg-current/10 lg:h-9 lg:w-9">
+                          {option.icon}
+                        </div>
+                        <div>
+                          <span className="block text-xs font-bold tracking-tight">
+                            {option.label}
+                          </span>
+                          <span className="mt-1 block text-[10px] font-medium text-current/55">
+                            Post blog link
+                          </span>
+                        </div>
+                      </div>
+                      <ArrowUpRight className="w-4 h-4 opacity-60 transition-all group-hover/item:translate-x-0.5 group-hover/item:-translate-y-0.5 group-hover/item:opacity-100" />
+                    </a>
+                  ))}
+
+                  <button
+                    type="button"
+                    onClick={copyShareUrl}
+                    className="group/copy flex w-full cursor-pointer items-center justify-between rounded-2xl border border-accent/25 bg-accent/10 p-4 text-accent transition-all duration-300 hover:-translate-y-0.5 hover:bg-accent hover:text-accent-foreground hover:shadow-xl hover:shadow-accent/10 lg:px-4 lg:py-3"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent/10 transition-colors group-hover/copy:bg-white/20 lg:h-9 lg:w-9">
+                        <Share2 className="w-4 h-4" />
+                      </div>
+                      <div className="text-left">
+                        <span className="block text-xs font-bold tracking-tight">
+                          Copy Link
+                        </span>
+                        <span className="mt-1 block text-[10px] font-medium text-current/65">
+                          Direct blog URL
+                        </span>
+                      </div>
+                    </div>
+                    <ArrowUpRight className="w-4 h-4 opacity-70 transition-all group-hover/copy:translate-x-0.5 group-hover/copy:-translate-y-0.5 group-hover/copy:opacity-100" />
+                  </button>
                 </div>
               </motion.div>
-            )}
+
+              {relatedBlogs.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="relative overflow-hidden rounded-[2rem] border border-border/60 bg-card/45 p-6 backdrop-blur-xl lg:p-5"
+                >
+                  <div className="mb-5 flex items-center justify-between gap-3">
+                    <h4 className="mb-0 flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70">
+                      <span className="h-px w-8 bg-border" />
+                      Related Reading
+                    </h4>
+                    <span className="rounded-full border border-accent/20 bg-accent/10 px-2 py-1 text-[8px] font-bold uppercase tracking-wider text-accent">
+                      Topic match
+                    </span>
+                  </div>
+                  <div className="space-y-5">
+                    {relatedBlogs.map((relatedBlog, index) => (
+                      <Link
+                        key={relatedBlog.slug || relatedBlog._id || index}
+                        href={`/blog/${relatedBlog.slug}`}
+                        className="group relative flex gap-4"
+                      >
+                        <span className="text-2xl font-black text-foreground/10 transition-colors duration-500 group-hover:text-accent/30 tabular-nums">
+                          {String(index + 1).padStart(2, "0")}
+                        </span>
+                        <span className="min-w-0 space-y-2">
+                          <span className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-accent/70">
+                            <span className="h-1.5 w-1.5 rounded-full bg-accent shadow-[0_0_10px_rgba(var(--accent-rgb),0.6)]" />
+                            {relatedBlog.category || "Insights"}
+                          </span>
+                          <span className="block text-sm font-bold leading-snug text-foreground transition-colors duration-300 line-clamp-2 group-hover:text-accent">
+                            {relatedBlog.title}
+                          </span>
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+
+                  <div className="mt-6 border-t border-border/60 pt-5">
+                    <Link href="/blog" className="group flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 transition-colors hover:text-accent">
+                      Discover more insights
+                      <ArrowRight className="w-4 h-4 -translate-x-2 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100" />
+                    </Link>
+                  </div>
+                </motion.div>
+              )}
             </div>
           </aside>
         </div>

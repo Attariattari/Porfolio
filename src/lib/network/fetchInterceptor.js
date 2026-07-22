@@ -18,19 +18,30 @@ export const setupFetchInterceptor = () => {
   window.fetch = async (...args) => {
     const [url, options] = args;
     const store = useNetworkStore.getState();
+    const requestUrl = url?.url || url?.toString?.() || "";
+    const method = String(options?.method || url?.method || "GET").toUpperCase();
+    const isSafeToRetry = method === "GET" || method === "HEAD";
+    const isSameOriginApi = (() => {
+      try {
+        const resolved = new URL(requestUrl, window.location.origin);
+        return resolved.origin === window.location.origin && resolved.pathname.startsWith("/api/");
+      } catch {
+        return false;
+      }
+    })();
+
+    const apiUnavailableResponse = (message) => new Response(
+      JSON.stringify({ success: false, error: message }),
+      { status: 503, headers: { "Content-Type": "application/json", "X-Network-Error": "true" } },
+    );
 
     // 1. Block unnecessary calls if offline (unless it's a critical local check)
-    if (store.status === "offline" && !url.includes("localhost") && !url.includes("127.0.0.1")) {
-      console.warn(`[Network] Blocking fetch to ${url} while offline`);
-      return new Promise((resolve, reject) => {
-        const error = new Error("No Internet Connection");
-        error.name = "OfflineError";
-        
-        // Add to failed requests for manual/auto retry later
-        store.addFailedRequest({ args, timestamp: Date.now(), id: Math.random().toString(36).substr(2, 9) });
-        
-        reject(error);
-      });
+    if (store.status === "offline" && !isSameOriginApi && !requestUrl.includes("localhost") && !requestUrl.includes("127.0.0.1")) {
+      console.warn(`[Network] Blocking fetch to ${requestUrl} while offline`);
+      const error = new Error("No Internet Connection");
+      error.name = "OfflineError";
+      store.addFailedRequest({ args, timestamp: Date.now(), id: Math.random().toString(36).slice(2, 11) });
+      throw error;
     }
 
     const executeWithRetry = async (attempt = 1) => {
@@ -39,7 +50,6 @@ export const setupFetchInterceptor = () => {
         
         // Only the dedicated session endpoint may decide that authentication
         // expired. Route-specific 401s must not cause a login redirect loop.
-        const requestUrl = url?.toString() || "";
         const isSessionCheck = requestUrl.includes("/api/admin/me");
         if (response.status === 401 &&
             isSessionCheck &&
@@ -63,7 +73,7 @@ export const setupFetchInterceptor = () => {
         const isNetworkError = error.name === "TypeError" || error.name === "OfflineError" || error.message.includes("fetch");
         const isRetryable = isNetworkError || error.message.includes("Server Error");
 
-        if (isRetryable && attempt <= MAX_RETRIES) {
+        if (isRetryable && isSafeToRetry && attempt < MAX_RETRIES) {
           const delay = attempt === 1 ? 0 : RETRY_DELAY * (attempt - 1);
           
           console.log(`[Network] Retrying ${url} (Attempt ${attempt}/${MAX_RETRIES}) after ${delay}ms`);
@@ -76,11 +86,11 @@ export const setupFetchInterceptor = () => {
         }
 
         // Final failure
-        if (attempt > MAX_RETRIES) {
+        if (!isSafeToRetry || attempt >= MAX_RETRIES) {
           store.addFailedRequest({ 
             args, 
             timestamp: Date.now(), 
-            id: Math.random().toString(36).substr(2, 9),
+            id: Math.random().toString(36).slice(2, 11),
             error: error.message 
           });
           
@@ -94,6 +104,14 @@ export const setupFetchInterceptor = () => {
               onClick: () => window.fetch(...args)
             },
           });
+        }
+
+        if (isSameOriginApi) {
+          return apiUnavailableResponse(
+            isSafeToRetry
+              ? "The application server is currently unreachable. Please try again."
+              : "The request connection was interrupted. It was not automatically repeated to prevent duplicate data.",
+          );
         }
 
         throw error;

@@ -2,28 +2,29 @@
 
 import {
   LayoutDashboard,
-  FileText,
-  Briefcase,
   MessageSquare,
   LogOut,
   ChevronLeft,
   ChevronRight,
-  Settings,
-  Cpu,
-  Code2,
-  Users,
   User,
-  Bell,
-  Activity,
   Zap,
   Menu,
   X,
-  Calendar,
-  Layers,
-  Phone,
-  Mail,
+  BellRing,
+  Braces,
+  CalendarCheck,
+  Crosshair,
+  FolderKanban,
+  IdCard,
+  ListChecks,
+  MailCheck,
   Newspaper,
-  Target,
+  Share2,
+  SlidersHorizontal,
+  Sparkles,
+  UserRound,
+  UsersRound,
+  Wrench,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -46,23 +47,22 @@ import { formatName } from "@/lib/utils";
 
 const ICON_MAP = {
   LayoutDashboard,
-  Briefcase,
-  Cpu,
-  FileText,
-  Code2,
   MessageSquare,
-  Settings,
-  Users,
-  User,
-  Bell,
-  Activity,
-  Calendar,
-  Zap,
-  Layers,
-  Phone,
-  Mail,
+  CalendarCheck,
+  Sparkles,
+  UserRound,
+  Wrench,
+  FolderKanban,
+  Braces,
+  Crosshair,
   Newspaper,
-  Target,
+  ListChecks,
+  IdCard,
+  MailCheck,
+  Share2,
+  BellRing,
+  UsersRound,
+  SlidersHorizontal,
 };
 
 export default function AdminSidebar() {
@@ -176,6 +176,7 @@ export default function AdminSidebar() {
           "Projects",
           "Services",
           "Blog",
+          "Editorial Planner",
           "Skills",
           "Resume",
           "Goals",
@@ -277,7 +278,8 @@ export default function AdminSidebar() {
                 <div className="space-y-1">
                   {section.links.map((link) => {
                     const IconComponent = ICON_MAP[link.icon] || FileText;
-                    const isActive = pathname === link.href;
+                    const isActive =
+                      pathname === link.href || pathname.startsWith(`${link.href}/`);
 
                     return (
                       <SidebarItem

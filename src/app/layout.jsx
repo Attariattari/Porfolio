@@ -9,6 +9,7 @@ import DeferredToaster from "@/components/DeferredToaster";
 import { OrganizationSchema } from "@/components/schema/OrganizationSchema";
 import { SITE_URL } from "@/lib/config";
 import { getSeoImage } from "@/lib/seo";
+import Script from "next/script";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -72,11 +73,14 @@ export default function RootLayout({ children }) {
               href="https://www.googletagmanager.com"
               crossOrigin="anonymous"
             />
-            <script
+            <Script
+              strategy="afterInteractive"
               async
               src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}
             />
-            <script
+            <Script
+              id="google-analytics-config"
+              strategy="afterInteractive"
               dangerouslySetInnerHTML={{
                 __html: `
                   window.dataLayer = window.dataLayer || [];

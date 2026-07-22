@@ -9,8 +9,15 @@ import { ensureBlogImage } from "./ai/blog/ensureBlogImage.js";
 import { revalidatePath } from "next/cache";
 import {
   findNearDuplicateBlog,
+  getBlogSeoDescription,
   getBlogWordCount,
 } from "./blogSeo.js";
+import {
+  acquireNextTopicPlan,
+  formatTopicPlanForWriter,
+  markTopicPlanUsed,
+  releaseTopicPlan,
+} from "./ai/blog/topicQueue.js";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -132,6 +139,47 @@ function getUtcMonthContext(now = new Date()) {
   };
 }
 
+function repairUnescapedJsonQuotes(value = "") {
+  let repaired = "";
+  let insideString = false;
+  let escaped = false;
+
+  for (let index = 0; index < value.length; index += 1) {
+    const character = value[index];
+    if (!insideString) {
+      repaired += character;
+      if (character === '"') insideString = true;
+      continue;
+    }
+    if (escaped) {
+      repaired += character;
+      escaped = false;
+      continue;
+    }
+    if (character === "\\") {
+      repaired += character;
+      escaped = true;
+      continue;
+    }
+    if (character !== '"') {
+      repaired += character;
+      continue;
+    }
+
+    let nextIndex = index + 1;
+    while (/\s/.test(value[nextIndex] || "")) nextIndex += 1;
+    const nextCharacter = value[nextIndex];
+    if ([":", ",", "}", "]"].includes(nextCharacter)) {
+      repaired += character;
+      insideString = false;
+    } else {
+      repaired += '\\"';
+    }
+  }
+
+  return repaired;
+}
+
 function buildMonthlyMuhyoTechTopic(monthLabel) {
   return `Muhyo Tech monthly brand spotlight for ${monthLabel}: explain who Muhyo Tech is, what we build, the website and web-app services we provide, how we solve real client problems, and the practical value clients receive. Choose a fresh, human, non-salesy editorial angle and an original title for this month.`;
 }
@@ -180,7 +228,7 @@ function pickFallbackTopic(recentBlogMeta = []) {
 
   return availableTopics.length > 0
     ? availableTopics[Math.floor(Math.random() * availableTopics.length)]
-    : TOPIC_POOL[Math.floor(Math.random() * TOPIC_POOL.length)];
+    : null;
 }
 
 async function generateStrategicTopic(recentBlogMeta = [], attempt = 0) {
@@ -407,7 +455,7 @@ async function generateEditorialContent(
     
     CRITIC ALIGNMENT (Follow these to pass first attempt):
     - Tone must be Senior Engineering/Founder level.
-    - Content must be a complete article, not a teaser. Target 900-1400 words.
+    - Content must be a complete article, not a teaser. Target 900-1200 words.
     - Include at least 5 meaningful <h2> sections and multiple <p> blocks.
     - Paragraphs MUST be 2-3 sentences max. No exceptions.
     - Voice should be Muhyo Tech centric (using "we", "our team").
@@ -437,7 +485,7 @@ async function generateEditorialContent(
       "relatedServiceSlugs": ["1 to 3 relevant slugs chosen only from: custom-website-development, mern-stack-web-development, nextjs-website-development, full-stack-web-app-development, admin-dashboard-development, e-commerce-website-development, portfolio-website-development, landing-page-design, website-redesign, api-integration, database-integration, seo-friendly-website-setup, website-speed-optimization, maintenance-support"],
       "category": "Engineering | Design | Backend | SEO | Technology | Architecture | Culture | Security | Infrastructure",
       "tags": ["tag1", "tag2", "tag3"],
-      "content": "Full HTML article body with <p>, <h2>, <ul>/<li> where useful. 900-1400 words. 2-3 sentences per paragraph ONLY.",
+      "content": "Full HTML article body with <p>, <h2>, <ul>/<li> where useful. 900-1200 words. 2-3 sentences per paragraph ONLY. Keep HTML simple and do not use attributes with double quotes.",
       "author": "Pir Ghulam Muhyo Din",
       "authorRole": "Founder",
       "readTime": "e.g. 7 min read",
@@ -449,18 +497,38 @@ async function generateEditorialContent(
     systemInstruction: EDITORIAL_GUIDELINES,
     temperature: 0.9, // High for natural sentence variation
     responseMimeType: "application/json",
-    maxOutputTokens: 4096,
+    maxOutputTokens: 8192,
     thinkingBudget: 0,
-    timeoutMs: Number(process.env.AI_DRAFT_TIMEOUT_MS || 30000),
+    timeoutMs: Number(process.env.AI_DRAFT_TIMEOUT_MS || 35000),
   });
 
   try {
-    const cleaned = response
+    const cleanedResponse = response
       .replace(/```json/gi, "")
       .replace(/```/g, "")
       .trim();
-    const parsed = JSON.parse(cleaned);
+    const jsonStart = cleanedResponse.indexOf("{");
+    const jsonEnd = cleanedResponse.lastIndexOf("}");
+    if (jsonStart < 0 || jsonEnd <= jsonStart) {
+      throw new SyntaxError("Gemini returned truncated JSON without a complete object.");
+    }
+    const cleaned = cleanedResponse.slice(jsonStart, jsonEnd + 1);
+    let parsed;
+    try {
+      parsed = JSON.parse(cleaned);
+    } catch (parseError) {
+      try {
+        parsed = JSON.parse(repairUnescapedJsonQuotes(cleaned));
+        console.warn("[Creator] Repaired malformed JSON quotes without requesting another AI draft.");
+      } catch {
+        throw parseError;
+      }
+    }
     const content = typeof parsed.content === "string" ? parsed.content.trim() : "";
+    parsed.seoDescription = getBlogSeoDescription({
+      ...parsed,
+      content,
+    });
     const hasHtmlBlocks = /<(p|h2|h3|ul|ol|blockquote)\b/i.test(content);
     const sectionCount = (content.match(/<h2\b/gi) || []).length;
     const wordCount = getBlogWordCount({ content });
@@ -473,30 +541,31 @@ async function generateEditorialContent(
       "navigational",
     ].includes(parsed.searchIntent);
 
-    if (
-      content.length < 2500 ||
-      wordCount < 700 ||
-      !hasHtmlBlocks ||
-      sectionCount < 5 ||
-      !parsed.title ||
-      !parsed.slug ||
-      summaryLength < 100 ||
-      !parsed.focusKeyword ||
-      !parsed.seoTitle ||
-      seoDescriptionLength < 120 ||
-      seoDescriptionLength > 155 ||
-      !validSearchIntent
-    ) {
+    const validationIssues = [
+      wordCount < 700 && `article has only ${wordCount} words (minimum 700)`,
+      !hasHtmlBlocks && "article body is missing valid HTML blocks",
+      sectionCount < 5 && `article has only ${sectionCount} H2 sections (minimum 5)`,
+      !parsed.title && "title is missing",
+      !parsed.slug && "slug is missing",
+      summaryLength < 100 && `summary has only ${summaryLength} characters`,
+      !parsed.focusKeyword && "focus keyword is missing",
+      !parsed.seoTitle && "SEO title is missing",
+      seoDescriptionLength < 120 && `SEO description has only ${seoDescriptionLength} characters`,
+      seoDescriptionLength > 155 && `SEO description has ${seoDescriptionLength} characters (maximum 155)`,
+      !validSearchIntent && "search intent is invalid",
+    ].filter(Boolean);
+
+    if (validationIssues.length) {
       if (retryCount < 2) {
         return generateEditorialContent(
           topic,
-          "Regenerate a complete 900-1400 word article with at least five useful H2 sections, one clear focus keyword, a valid search intent, a unique SEO title, and a 120-155 character SEO description.",
+          `Correct these exact validation problems: ${validationIssues.join("; ")}. Return a complete 900-1200 word article with at least five useful H2 sections.`,
           retryCount + 1,
           null,
           recentTopics,
         );
       }
-      throw new Error("Generated blog content was incomplete or not valid HTML.");
+      throw new Error(`Generated blog failed validation: ${validationIssues.join("; ")}.`);
     }
 
     parsed.slug = String(parsed.slug || parsed.title || "")
@@ -518,12 +587,15 @@ async function generateEditorialContent(
 
     return parsed;
   } catch (e) {
-    console.error("[Creator] JSON Parse Failed. Retrying...");
+    if (!(e instanceof SyntaxError)) throw e;
+    console.error(`[Creator] JSON response was invalid: ${e.message}`);
     if (retryCount < 2)
       return generateEditorialContent(
         topic,
-        "Invalid JSON format",
+        "The previous response was truncated or invalid JSON. Return one complete JSON object only, with the full HTML safely escaped inside the content string.",
         retryCount + 1,
+        null,
+        recentTopics,
       );
     throw e;
   }
@@ -856,6 +928,10 @@ export async function runBlogAutomationPipeline(
   };
 
   if (retryCount >= 4) {
+    await releaseTopicPlan(
+      automationContext?.topicPlanId,
+      "Quality threshold was not met after four attempts.",
+    ).catch(() => {});
     report("FAILED", {
       message:
         "Maximum quality retries reached. Stopping to avoid degradation.",
@@ -897,6 +973,26 @@ export async function runBlogAutomationPipeline(
     }
 
     if (!selectedTopic) {
+      try {
+        const topicPlan = await acquireNextTopicPlan();
+        if (topicPlan) {
+          selectedTopic = formatTopicPlanForWriter(topicPlan);
+          automationContext = {
+            ...(automationContext || {}),
+            topicPlanId: topicPlan._id.toString(),
+          };
+          report("PLANNED_TOPIC_SELECTED", {
+            message: `Using editorial queue topic: ${topicPlan.title}`,
+          });
+        }
+      } catch (error) {
+        report("TOPIC_QUEUE_FALLBACK", {
+          message: `Editorial queue unavailable; continuing with the existing strategist. ${error.message}`,
+        });
+      }
+    }
+
+    if (!selectedTopic) {
       report("SELECTING_TOPIC", {
         message: "AI strategist is selecting a fresh Muhyo Tech topic...",
       });
@@ -919,6 +1015,10 @@ export async function runBlogAutomationPipeline(
       );
 
       selectedTopic = aiTopic || pickFallbackTopic(recentBlogMeta);
+
+      if (!selectedTopic) {
+        throw new Error("No sufficiently unique blog topic is currently available. Generation stopped to prevent duplication.");
+      }
 
       if (!aiTopic) {
         report("TOPIC_FALLBACK", {
@@ -973,19 +1073,24 @@ export async function runBlogAutomationPipeline(
     // 4. CHECK UNIQUENESS (Only if not a refinement of a known slug)
     const existing = await Blog.findOne({ slug: blogData.slug });
     if (existing && !previousDraft) {
+      await releaseTopicPlan(
+        automationContext?.topicPlanId,
+        `Generated slug duplicates existing blog: ${existing.title}`,
+        { reject: true },
+      );
       return runBlogAutomationPipeline(
         retryCount + 1,
         onProgress,
         null,
         null,
-        automationContext,
+        { ...(automationContext || {}), topicPlanId: null },
       );
     }
 
     if (!previousDraft) {
       const recentCandidates = await Blog.find()
         .sort({ createdAt: -1 })
-        .limit(50)
+        .limit(500)
         .select("title slug summary category tags focusKeyword")
         .lean();
       const nearDuplicate = findNearDuplicateBlog(blogData, recentCandidates);
@@ -994,12 +1099,17 @@ export async function runBlogAutomationPipeline(
         report("DUPLICATE_TOPIC_REJECTED", {
           message: `Topic overlaps too closely with: ${nearDuplicate.title}`,
         });
+        await releaseTopicPlan(
+          automationContext?.topicPlanId,
+          `Generated draft overlaps existing blog: ${nearDuplicate.title}`,
+          { reject: true },
+        );
         return runBlogAutomationPipeline(
           retryCount + 1,
           onProgress,
           null,
           null,
-          automationContext,
+          { ...(automationContext || {}), topicPlanId: null },
         );
       }
     }
@@ -1049,6 +1159,9 @@ export async function runBlogAutomationPipeline(
       throw error;
     }
     await cacheManager.invalidateByTag("blogs");
+    await markTopicPlanUsed(automationContext?.topicPlanId, newBlog._id).catch(
+      (error) => console.warn("[TopicQueue] Blog saved, but topic completion will be recovered later.", error.message),
+    );
 
     report("CONTENT_SAVED", {
       message: "Editorial-quality blog saved.",
@@ -1056,6 +1169,7 @@ export async function runBlogAutomationPipeline(
     });
     return { success: true, blogId: newBlog._id, step: 1 };
   } catch (error) {
+    await releaseTopicPlan(automationContext?.topicPlanId, error.message).catch(() => {});
     report("ERROR", { message: error.message });
     return { success: false, error: error.message };
   }

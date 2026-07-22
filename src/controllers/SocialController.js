@@ -6,6 +6,7 @@ import { SocialLinks } from "@/models/Portfolio";
 import dbConnect from "@/lib/dbConnect";
 import { SOCIAL_LINKS } from "@/lib/data";
 import { normalizeSocialProfileUrl } from "@/lib/socialProfileUrl";
+import { cacheManager, withCache } from "@/lib/cache";
 
 const ALLOWED_PLATFORMS = [
     "whatsapp",
@@ -20,15 +21,16 @@ export const SocialController = {
     // ===== GET SOCIAL LINKS =====
     async get() {
         try {
-            await dbConnect();
+            return await withCache("social-links:public", async () => {
+                await dbConnect();
 
-            // Get social links from DB
-            const doc = await SocialLinks.findOne({}).lean();
+                // Get social links from DB
+                const doc = await SocialLinks.findOne({}).lean();
 
-            // IF DB has data -> use DB
-            if (doc && doc.links && Array.isArray(doc.links) && doc.links.length > 0) {
-                return doc.links;
-            }
+                // IF DB has data -> use DB
+                if (doc && doc.links && Array.isArray(doc.links) && doc.links.length > 0) {
+                    return doc.links;
+                }
 
             // IF DB is empty -> fallback to data.js
             // Transform data.js structure to the simplified schema
@@ -44,14 +46,15 @@ export const SocialController = {
                 };
             }).filter(item => item.url !== "");
 
-            if (fallbackData.length === 0) return [];
+                if (fallbackData.length === 0) return [];
 
-            const initialized = await SocialLinks.findOneAndUpdate(
-                {},
-                { $set: { links: fallbackData, updatedAt: new Date() } },
-                { returnDocument: "after", upsert: true, setDefaultsOnInsert: true },
-            ).lean();
-            return initialized.links || [];
+                const initialized = await SocialLinks.findOneAndUpdate(
+                    {},
+                    { $set: { links: fallbackData, updatedAt: new Date() } },
+                    { returnDocument: "after", upsert: true, setDefaultsOnInsert: true },
+                ).lean();
+                return initialized.links || [];
+            }, 3600, ["social-links"]);
         } catch (error) {
             console.error("SocialController.get() error:", error);
             return [];
@@ -83,6 +86,7 @@ export const SocialController = {
                 { returnDocument: "after", upsert: true, runValidators: true, setDefaultsOnInsert: true },
             );
 
+            await cacheManager.invalidateByTag("social-links");
             return doc.links;
         } catch (error) {
             console.error("SocialController.update() error:", error);
