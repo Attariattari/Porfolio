@@ -9,17 +9,15 @@ import { Globe, Monitor, MapPin, FileText, Users, TrendingDown, TrendingUp, Exte
  */
 export const AnalyticsTable = ({ title, data, columns, icon: Icon, isLoading }) => {
   return (
-    <div className="border border-border/70 bg-card/40 rounded-[2rem] overflow-hidden">
-      <div className="p-8 border-b border-border/70">
-        <h3 className="text-xl font-black italic uppercase tracking-tighter flex items-center gap-3">
-          <Icon className="w-6 h-6 text-accent" />
-          {title}
-        </h3>
+    <div className="overflow-hidden rounded-[1.75rem] border border-border/70 bg-card shadow-sm">
+      <div className="flex items-center gap-3 border-b border-border/70 bg-muted/15 p-5 md:p-6">
+        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10 text-accent"><Icon className="h-4.5 w-4.5" /></span>
+        <div><p className="text-[9px] font-black uppercase tracking-[.2em] text-accent">Detailed performance</p><h3 className="mt-1 text-lg font-bold tracking-tight text-foreground">{title}</h3></div>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="max-h-[620px] overflow-auto custom-scrollbar">
         <table className="w-full">
-          <thead className="bg-muted/50 border-b border-border/70">
+          <thead className="sticky top-0 z-10 border-b border-border/70 bg-card/95 backdrop-blur-xl">
             <tr>
               {columns.map((col, i) => (
                 <th
@@ -70,7 +68,7 @@ export const AnalyticsTable = ({ title, data, columns, icon: Icon, isLoading }) 
                     }
 
                     return (
-                      <td key={j} className="px-6 py-4 text-sm text-foreground">
+                      <td key={j} className={`px-6 py-4 text-sm text-foreground ${j === 0 ? "max-w-[320px] truncate" : "whitespace-nowrap"}`} title={j === 0 ? String(displayValue) : undefined}>
                         {key.toLowerCase().includes('rate') ? (
                           <div className="flex items-center gap-2">
                             <div className={`w-1.5 h-1.5 rounded-full ${
@@ -116,7 +114,7 @@ export const DeviceStatsGrid = ({ devices, isLoading }) => {
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
       {isLoading ? (
         Array(4).fill(0).map((_, i) => (
           <div key={i} className="h-24 bg-muted/50 border border-border/70 rounded-xl animate-pulse" />
@@ -130,7 +128,7 @@ export const DeviceStatsGrid = ({ devices, isLoading }) => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
-              className="p-6 border border-border/70 bg-card/50 rounded-2xl hover:border-border transition-all group"
+              className="group rounded-2xl border border-border/70 bg-background/30 p-5 transition-all hover:-translate-y-0.5 hover:border-accent/25 hover:shadow-md"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="p-3 rounded-lg bg-accent/10 border border-accent/20 group-hover:bg-accent/20 transition-all">
@@ -166,7 +164,7 @@ export const LocationCard = ({ location, type = 'country', maxVisitors = 0 }) =>
     <motion.div
       initial={{ opacity: 0, x: -10 }}
       animate={{ opacity: 1, x: 0 }}
-      className="p-4 border border-border/70 bg-card/50 rounded-xl hover:border-border transition-all group"
+      className="group rounded-xl border border-border/70 bg-card p-3.5 transition-all hover:border-accent/25 hover:bg-muted/30"
     >
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3 flex-1">
@@ -204,17 +202,12 @@ export const LocationCard = ({ location, type = 'country', maxVisitors = 0 }) =>
  */
 export const RealTimeActivityFeed = ({ activities, isLoading }) => {
   return (
-    <div className="border border-border/70 bg-card/40 rounded-[2rem] p-8 relative overflow-hidden group">
+    <div className="group relative overflow-hidden rounded-[1.75rem] border border-border/70 bg-card shadow-sm">
       <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 blur-[80px] -mr-16 -mt-16 group-hover:bg-accent/10 transition-all" />
 
-      <div className="flex items-center gap-3 mb-8">
-        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping shadow-sm" />
-        <h3 className="text-lg font-black italic uppercase tracking-tighter">
-          Real-time Activity
-        </h3>
-      </div>
+      <div className="flex items-center justify-between border-b border-border/70 bg-muted/15 p-5 md:p-6"><div className="flex items-center gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10 text-accent"><Users className="h-4.5 w-4.5" /></span><div><p className="text-[9px] font-black uppercase tracking-[.2em] text-accent">Live audience</p><h3 className="mt-1 text-lg font-bold tracking-tight text-foreground">Recent visitors</h3></div></div><span className="flex items-center gap-1.5 text-[10px] font-semibold text-status-success"><span className="h-1.5 w-1.5 rounded-full bg-status-success" /> Live</span></div>
 
-      <div className="space-y-4 max-h-[500px] overflow-y-auto custom-scrollbar">
+      <div className="grid max-h-[430px] gap-2 overflow-y-auto p-4 custom-scrollbar sm:grid-cols-2 xl:grid-cols-3">
         {isLoading ? (
           <div className="text-center py-8">
             <div className="inline-flex items-center gap-2">
@@ -229,7 +222,7 @@ export const RealTimeActivityFeed = ({ activities, isLoading }) => {
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.05 }}
-              className="p-4 border border-border/70 bg-card/50 rounded-xl hover:border-border transition-all border-l-2 border-l-transparent hover:border-l-accent"
+              className="rounded-xl border border-transparent bg-background/20 p-3.5 transition-all hover:border-border hover:bg-muted/40"
             >
               <div className="flex items-start gap-3">
                 <div className="p-2 rounded-lg bg-accent/10 border border-accent/20 mt-1">

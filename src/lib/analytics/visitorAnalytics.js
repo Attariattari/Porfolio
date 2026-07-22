@@ -139,10 +139,9 @@ export function calculateGrowthRate(currentValue, previousValue) {
     return Number((((currentValue - previousValue) / previousValue) * 100).toFixed(1));
   }
 
-  // A zero baseline cannot be divided mathematically. For reporting purposes,
-  // treat the first month with traffic as full positive growth and an empty
-  // month following another empty month as neutral growth.
-  return currentValue > 0 ? 100 : 0;
+  // Growth is mathematically undefined when there is no previous baseline.
+  // Return null instead of inventing a percentage; the UI can label it "New".
+  return currentValue > 0 ? null : 0;
 }
 
 export function getUniqueCount(result = []) {

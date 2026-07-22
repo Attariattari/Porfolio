@@ -24,6 +24,7 @@ const sessionBasePipeline = (startDate, endDate) => [
       device: { $first: "$device.type" },
       os: { $first: "$device.os" },
       browser: { $first: "$device.browser" },
+      userAgent: { $first: "$userAgent" },
       startedAt: { $first: "$createdAt" },
     },
   },
@@ -44,12 +45,12 @@ export async function GET(req) {
     }
     const { startDate, endDate } = getCalendarDayRange(periodDays, new Date(), ANALYTICS_TIMEZONE);
     const base = sessionBasePipeline(startDate, endDate);
-    const knownValue = { $nin: [null, "", "Unknown", "unknown", "Not Detected"] };
+    const knownValue = { $type: "string", $nin: ["", "Unknown", "unknown", "Not Detected"] };
 
     const [deviceDistribution, osDistribution, browserDistribution, deviceTrend] = await Promise.all([
       VisitorLog.aggregate([
         ...base,
-        { $match: { device: knownValue } },
+        { $match: { device: knownValue, userAgent: knownValue } },
         {
           $group: {
             _id: "$device",
@@ -69,21 +70,21 @@ export async function GET(req) {
       ]),
       VisitorLog.aggregate([
         ...base,
-        { $match: { os: knownValue } },
+        { $match: { os: knownValue, userAgent: knownValue } },
         { $group: { _id: "$os", count: { $sum: 1 } } },
         { $sort: { count: -1 } },
         { $limit: 15 },
       ]),
       VisitorLog.aggregate([
         ...base,
-        { $match: { browser: knownValue } },
+        { $match: { browser: knownValue, userAgent: knownValue } },
         { $group: { _id: "$browser", count: { $sum: 1 } } },
         { $sort: { count: -1 } },
         { $limit: 15 },
       ]),
       VisitorLog.aggregate([
         ...base,
-        { $match: { device: knownValue } },
+        { $match: { device: knownValue, userAgent: knownValue } },
         {
           $group: {
             _id: {

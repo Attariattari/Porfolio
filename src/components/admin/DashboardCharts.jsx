@@ -14,7 +14,6 @@ import {
   PieChart,
   Pie,
   Cell,
-  Legend,
   AreaChart,
   Area
 } from 'recharts';
@@ -100,12 +99,17 @@ export const ServiceDistributionChart = ({ data }) => {
   const chartData = Array.isArray(data) ? data : [];
   if (!chartData.some((item) => item.count > 0)) return <EmptyChart message="No booking services recorded yet" />;
 
+  const visibleData = chartData.slice(0, 5).map((item) => ({ ...item, _id: String(item._id || "Other") }));
+  const extraCount = chartData.slice(5).reduce((sum, item) => sum + (item.count || 0), 0);
+  if (extraCount) visibleData.push({ _id: "Other services", count: extraCount });
+
   return (
-    <div className="h-[300px] w-full">
+    <div className="flex h-[300px] w-full flex-col">
+      <div className="min-h-0 flex-1">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
-            data={chartData}
+            data={visibleData}
             cx="50%"
             cy="50%"
             innerRadius={60}
@@ -118,20 +122,17 @@ export const ServiceDistributionChart = ({ data }) => {
             animationDuration={800}
             animationEasing="ease-out"
           >
-            {chartData.map((entry, index) => (
+            {visibleData.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={BRAND_COLORS[index % BRAND_COLORS.length]} stroke="none" />
             ))}
           </Pie>
           <Tooltip content={<CustomTooltip />} />
-          <Legend
-            verticalAlign="bottom"
-            height={80}
-            wrapperStyle={{ paddingTop: "10px", paddingBottom: "10px" }}
-            iconType="circle"
-            formatter={(value) => <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1 mr-2 inline-block mb-2">{value}</span>}
-          />
         </PieChart>
       </ResponsiveContainer>
+      </div>
+      <div className="grid grid-cols-2 gap-x-3 gap-y-2 pt-3">
+        {visibleData.map((item, index) => <div key={item._id} className="flex min-w-0 items-center gap-2 text-[9px] font-semibold text-muted-foreground"><span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: BRAND_COLORS[index % BRAND_COLORS.length] }} /><span className="truncate" title={item._id}>{item._id}</span><span className="ml-auto text-foreground">{item.count}</span></div>)}
+      </div>
     </div>
   );
 };
@@ -232,12 +233,27 @@ export const PageViewsChart = ({ data }) => {
   const chartData = Array.isArray(data) ? data : [];
   if (!chartData.some((item) => item.count > 0)) return <EmptyChart message="No page views recorded yet" />;
 
+  const simplifyPath = (value = "") => {
+    if (value === "/") return "Home";
+    const clean = value.split("?")[0].split("#")[0];
+    const firstPart = clean.split("/").filter(Boolean)[0];
+    if (!firstPart) return "Other";
+    return firstPart.charAt(0).toUpperCase() + firstPart.slice(1).replaceAll("-", " ");
+  };
+  const grouped = chartData.reduce((items, item) => {
+    const name = simplifyPath(item._id);
+    items[name] = (items[name] || 0) + (item.count || 0);
+    return items;
+  }, {});
+  const visibleData = Object.entries(grouped).map(([_id, count]) => ({ _id, count })).sort((a, b) => b.count - a.count).slice(0, 6);
+
   return (
-    <div className="h-[300px] w-full">
+    <div className="flex h-[300px] w-full flex-col">
+      <div className="min-h-0 flex-1">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
-            data={chartData}
+            data={visibleData}
             cx="50%"
             cy="50%"
             innerRadius={60}
@@ -250,30 +266,17 @@ export const PageViewsChart = ({ data }) => {
             animationDuration={800}
             animationEasing="ease-out"
           >
-            {chartData.map((entry, index) => (
+            {visibleData.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={BRAND_COLORS[index % BRAND_COLORS.length]} stroke="none" />
             ))}
           </Pie>
           <Tooltip content={<CustomTooltip />} />
-          <Legend
-            verticalAlign="bottom"
-            height={80}
-            wrapperStyle={{ paddingTop: "10px", paddingBottom: "10px" }}
-            iconType="circle"
-            formatter={(value) => {
-               // simplify path names
-               let name = value || "Other";
-               if (name === "/") name = "Home";
-               else if (name.startsWith("/services")) name = "Services";
-               else if (name.startsWith("/projects")) name = "Projects";
-               else if (name.startsWith("/blogs")) name = "Blogs";
-               else if (name.startsWith("/contact")) name = "Contact";
-               else if (name.startsWith("/about")) name = "About";
-               return <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1 mr-2 inline-block mb-2">{name}</span>
-            }}
-          />
         </PieChart>
       </ResponsiveContainer>
+      </div>
+      <div className="grid grid-cols-2 gap-x-3 gap-y-2 pt-3">
+        {visibleData.map((item, index) => <div key={item._id} className="flex min-w-0 items-center gap-2 text-[9px] font-semibold text-muted-foreground"><span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: BRAND_COLORS[index % BRAND_COLORS.length] }} /><span className="truncate">{item._id}</span><span className="ml-auto text-foreground">{item.count}</span></div>)}
+      </div>
     </div>
   );
 };

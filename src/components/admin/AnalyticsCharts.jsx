@@ -124,6 +124,7 @@ export const MonthlyGrowthComparisonChart = ({ data, currentLabel, previousLabel
             tickLine={false}
             axisLine={false}
             tickFormatter={(day) => `Day ${day}`}
+            interval={4}
           />
           <YAxis allowDecimals={false} stroke="var(--chart-axis)" fontSize={10} tickLine={false} axisLine={false} />
           <Tooltip content={<CustomTooltip />} />
@@ -245,20 +246,30 @@ export const TopPagesChart = ({ data }) => {
     );
   }
 
+  const simplifyPage = (value = "") => {
+    if (value === "/") return "Home";
+    const path = String(value).split("?")[0].split("#")[0];
+    const parts = path.split("/").filter(Boolean);
+    if (!parts.length) return "Other";
+    const section = parts[0].replaceAll("-", " ");
+    return parts.length > 1 ? `${section} / ${parts[1].replaceAll("-", " ").slice(0, 18)}` : section;
+  };
+  const chartData = data.slice(0, 8).map((item) => ({ ...item, displayPage: simplifyPage(item.page) }));
+
   return (
     <div className="h-[350px] w-full">
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} layout="vertical" margin={{ left: 200 }}>
+        <BarChart data={chartData} layout="vertical" margin={{ left: 105, right: 12 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
           <XAxis type="number" stroke="var(--chart-axis)" fontSize={10} tickLine={false} axisLine={false} />
           <YAxis
-            dataKey="page"
+            dataKey="displayPage"
             type="category"
             stroke="var(--chart-axis)"
             fontSize={9}
             tickLine={false}
             axisLine={false}
-            width={190}
+            width={100}
           />
           <Tooltip content={<CustomTooltip />} />
           <Bar dataKey="visits" fill="var(--chart-3)" radius={[0, 4, 4, 0]} />
@@ -274,26 +285,26 @@ export const TopPagesChart = ({ data }) => {
 export const GeoDistributionChart = ({ data }) => {
   if (!data || data.length === 0) {
     return (
-      <div className="h-[350px] w-full flex items-center justify-center">
+      <div className="flex h-[190px] w-full items-center justify-center">
         <span className="text-sm text-muted-foreground">No geographic data available</span>
       </div>
     );
   }
 
+  const chartData = data.slice(0, 8).map((item) => ({ ...item, displayCountry: String(item.country || "Unknown").slice(0, 12) }));
   return (
-    <div className="h-[350px] w-full">
+    <div className="h-[190px] w-full">
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data}>
+        <BarChart data={chartData} margin={{ left: -12, right: 8 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
           <XAxis
-            dataKey="country"
+            dataKey="displayCountry"
             stroke="var(--chart-axis)"
             fontSize={10}
             tickLine={false}
             axisLine={false}
-            angle={-45}
-            textAnchor="end"
-            height={100}
+            interval={0}
+            height={45}
           />
           <YAxis stroke="var(--chart-axis)" fontSize={10} tickLine={false} axisLine={false} />
           <Tooltip content={<CustomTooltip />} />

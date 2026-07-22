@@ -1,601 +1,95 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { motion, AnimatePresence } from 'framer-motion';
-import { disposeSocket, initializeSocket } from '@/lib/socket';
-import Link from 'next/link';
-import {
-  ArrowLeft,
-  Users,
-  TrendingUp,
-  TrendingDown,
-  Activity,
-  Zap,
-  Globe,
-  Monitor,
-  FileText,
-  Calendar,
-  Filter,
-  Download,
-  MapPin,
-} from 'lucide-react';
-import { toast } from 'sonner';
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { motion } from "framer-motion";
+import { toast } from "sonner";
+import { Activity, ArrowLeft, BarChart3, CalendarDays, CheckCircle2, Download, Eye, FileText, Globe2, Loader2, MapPin, Monitor, Radio, Sparkles, TrendingDown, TrendingUp, Users, Zap } from "lucide-react";
+import { disposeSocket, initializeSocket } from "@/lib/socket";
+import { EnhancedVisitorChart, MonthlyGrowthComparisonChart, HourlyBreakdownChart, DeviceDistributionChart, TopPagesChart, GeoDistributionChart } from "@/components/admin/AnalyticsCharts";
+import { DeviceStatsGrid, LocationCard, RealTimeActivityFeed, AnalyticsTable } from "@/components/admin/AnalyticsComponents";
 
 async function fetchAnalyticsData(url) {
-  const response = await fetch(url, { cache: 'no-store' });
+  const response = await fetch(url, { cache: "no-store" });
   const payload = await response.json();
-  if (!response.ok || !payload.success) {
-    throw new Error(payload.error || payload.message || 'Analytics request failed');
-  }
+  if (!response.ok || !payload.success) throw new Error(payload.error || payload.message || "Analytics request failed");
   return payload.data;
 }
 
-import {
-  EnhancedVisitorChart,
-  MonthlyGrowthComparisonChart,
-  HourlyBreakdownChart,
-  DeviceDistributionChart,
-  TopPagesChart,
-  GeoDistributionChart,
-} from '@/components/admin/AnalyticsCharts';
+function Loader({ height = "h-[320px]" }) { return <div className={`flex ${height} items-center justify-center`}><Loader2 className="h-6 w-6 animate-spin text-accent" /></div>; }
 
-import {
-  MetricCard,
-  DeviceStatsGrid,
-  LocationCard,
-  RealTimeActivityFeed,
-  AnalyticsTable,
-} from '@/components/admin/AnalyticsComponents';
+function Panel({ eyebrow, title, description, icon: Icon, action, children, className = "" }) {
+  return <section className={`relative overflow-hidden rounded-[1.75rem] border border-border/70 bg-card shadow-sm ${className}`}><span className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/55 to-transparent" /><header className="flex flex-col justify-between gap-4 border-b border-border/70 bg-muted/15 p-5 sm:flex-row sm:items-start md:p-6"><div className="flex gap-3.5"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-accent/15 bg-accent/10 text-accent"><Icon className="h-4.5 w-4.5" /></span><div><p className="text-[9px] font-black uppercase tracking-[.2em] text-accent">{eyebrow}</p><h2 className="mt-1 text-lg font-bold tracking-tight text-foreground">{title}</h2>{description && <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">{description}</p>}</div></div>{action}</header>{children}</section>;
+}
+
+function Kpi({ label, value, note, icon: Icon, tone = "accent", loading, delay }) {
+  const tones = { accent: "bg-accent/10 text-accent", success: "bg-status-success/10 text-status-success", warning: "bg-status-warning/10 text-status-warning", danger: "bg-status-danger/10 text-status-danger" };
+  return <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay }} className="group relative overflow-hidden rounded-[1.4rem] border border-border/70 bg-card p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-accent/25 hover:shadow-lg"><span className={`absolute -right-8 -top-10 h-28 w-28 rounded-full blur-3xl ${tones[tone]}`} /><div className="relative flex items-start justify-between"><div><p className="text-[9px] font-black uppercase tracking-[.17em] text-muted-foreground">{label}</p>{loading ? <span className="mt-3 block h-9 w-20 animate-pulse rounded-lg bg-muted" /> : <p className="mt-2 text-4xl font-black tracking-[-.06em] text-foreground tabular-nums">{value}</p>}</div><span className={`flex h-10 w-10 items-center justify-center rounded-xl ${tones[tone]}`}><Icon className="h-4.5 w-4.5" /></span></div><p className="relative mt-5 border-t border-border/60 pt-3 text-[10px] text-muted-foreground">{note}</p></motion.div>;
+}
+
+function CompactList({ title, icon: Icon, data = [], loading }) {
+  return <div className="rounded-2xl border border-border/70 bg-background/25 p-4"><div className="mb-4 flex items-center gap-2"><Icon className="h-4 w-4 text-accent" /><h3 className="text-sm font-bold text-foreground">{title}</h3></div>{loading ? <Loader height="h-40" /> : <div className="space-y-2">{data.slice(0, 6).map((item, index) => <div key={item._id || index} className="flex items-center gap-3 rounded-xl p-2.5 transition hover:bg-muted/50"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10 text-[10px] font-bold text-accent">{index + 1}</span><span className="min-w-0 flex-1 truncate text-xs font-semibold text-foreground">{item._id || "Unknown"}</span><span className="text-xs font-bold text-accent tabular-nums">{item.count?.toLocaleString?.() || 0}</span></div>)}{!data.length && <p className="py-8 text-center text-xs text-muted-foreground">No data available</p>}</div>}</div>;
+}
 
 export default function VisitorAnalyticsPage() {
   const [period, setPeriod] = useState(30);
-  const [view, setView] = useState('daily');
+  const [view, setView] = useState("daily");
   const [selectedMonth, setSelectedMonth] = useState(() => new Date().toISOString().slice(0, 7));
   const queryClient = useQueryClient();
+  const polling = { refetchInterval: 10000 };
+  const { data: visitors, isLoading: visitorsLoading, isFetching } = useQuery({ queryKey: ["analytics-visitors", period, view], queryFn: () => fetchAnalyticsData(`/api/admin/analytics/visitors?period=${period}&view=${view}`), refetchInterval: 5000 });
+  const { data: devices, isLoading: devicesLoading } = useQuery({ queryKey: ["analytics-devices", period], queryFn: () => fetchAnalyticsData(`/api/admin/analytics/devices?period=${period}`), ...polling });
+  const { data: pages, isLoading: pagesLoading } = useQuery({ queryKey: ["analytics-pages", period], queryFn: () => fetchAnalyticsData(`/api/admin/analytics/pages?period=${period}`), ...polling });
+  const { data: geography, isLoading: geoLoading } = useQuery({ queryKey: ["analytics-geo", period], queryFn: () => fetchAnalyticsData(`/api/admin/analytics/geo?period=${period}`), ...polling });
+  const { data: active, isLoading: activeLoading } = useQuery({ queryKey: ["analytics-active"], queryFn: () => fetchAnalyticsData("/api/admin/analytics/active"), refetchInterval: 5000 });
+  const { data: monthly, isLoading: monthlyLoading } = useQuery({ queryKey: ["analytics-monthly-growth", selectedMonth], queryFn: () => fetchAnalyticsData(`/api/admin/analytics/monthly-growth?month=${selectedMonth}`), refetchInterval: 5000, refetchIntervalInBackground: true });
 
-  // Socket initialization for real-time updates
   useEffect(() => {
-    const socket = initializeSocket();
-    if (socket) {
-      socket.on('STATS_UPDATED', (data) => {
-        console.log('[Real-time] Stats updated:', data);
-        queryClient.invalidateQueries({ queryKey: ['analytics-visitors'] });
-        queryClient.invalidateQueries({ queryKey: ['analytics-devices'] });
-        queryClient.invalidateQueries({ queryKey: ['analytics-pages'] });
-        queryClient.invalidateQueries({ queryKey: ['analytics-geo'] });
-        queryClient.invalidateQueries({ queryKey: ['analytics-active'] });
-        queryClient.invalidateQueries({ queryKey: ['analytics-monthly-growth'] });
-      });
-
-      socket.on('new_visitor', (data) => {
-        queryClient.invalidateQueries({ queryKey: ['analytics-visitors'] });
-        queryClient.invalidateQueries({ queryKey: ['analytics-monthly-growth'] });
-        const visitType = data.isFirstVisit ? 'New visitor' : 'Returning visitor';
-        toast.info(`${visitType} from ${data.country} on ${data.page}`, {
-          icon: <Activity className="w-4 h-4 text-emerald-400" />,
-          duration: 3000,
-        });
-      });
-    }
-
-    return () => {
-      disposeSocket(socket);
-    };
+    const socket = initializeSocket(); if (!socket) return;
+    const refresh = () => ["analytics-visitors", "analytics-devices", "analytics-pages", "analytics-geo", "analytics-active", "analytics-monthly-growth"].forEach((key) => queryClient.invalidateQueries({ queryKey: [key] }));
+    const visitor = (data) => { refresh(); toast.info(`${data.isFirstVisit ? "New" : "Returning"} visitor from ${data.country || "Unknown"} on ${data.page || "/"}`, { icon: <Activity className="h-4 w-4 text-status-success" />, duration: 3000 }); };
+    socket.on("STATS_UPDATED", refresh); socket.on("new_visitor", visitor);
+    return () => { socket.off("STATS_UPDATED", refresh); socket.off("new_visitor", visitor); disposeSocket(socket); };
   }, [queryClient]);
 
-  // Queries with shorter polling intervals for "0 delay" feel
-  const { data: visitorsData, isLoading: visitorsLoading, isFetching: visitorsFetching } = useQuery({
-    queryKey: ['analytics-visitors', period, view],
-    queryFn: () => fetchAnalyticsData(`/api/admin/analytics/visitors?period=${period}&view=${view}`),
-    refetchInterval: 5000,
-  });
+  const months = useMemo(() => Array.from({ length: 24 }, (_, index) => { const date = new Date(); date.setDate(1); date.setMonth(date.getMonth() - index); return { value: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`, label: date.toLocaleDateString(undefined, { month: "long", year: "numeric" }) }; }), []);
+  const duration = (seconds) => seconds == null ? "—" : seconds < 60 ? `${seconds}s` : `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
+  const growth = visitors?.stats?.growthRate;
+  const growthDown = typeof growth === "number" && growth < 0;
+  const kpis = [
+    { label: "Page views", value: visitors?.stats?.totalPageViews ?? "—", note: `Recorded in the last ${period} days`, icon: FileText, tone: "accent" },
+    { label: "Unique visitors", value: visitors?.stats?.uniqueVisitors ?? "—", note: typeof growth === "number" ? `${growth > 0 ? "+" : ""}${growth}% versus previous period` : (visitors?.stats?.growthStatus || "Building comparison baseline"), icon: Users, tone: growthDown ? "danger" : "success" },
+    { label: "Bounce rate", value: visitors?.stats?.bounceRate == null ? "—" : `${visitors.stats.bounceRate}%`, note: visitors?.stats?.measuredSessions ? `${visitors.stats.measuredSessions} measured sessions` : "Awaiting verified sessions", icon: Activity, tone: "warning" },
+    { label: "Average session", value: duration(visitors?.stats?.avgSessionDuration), note: "Time visitors actively engaged", icon: Zap, tone: "accent" },
+  ];
 
-  const { data: devicesData, isLoading: devicesLoading } = useQuery({
-    queryKey: ['analytics-devices', period],
-    queryFn: () => fetchAnalyticsData(`/api/admin/analytics/devices?period=${period}`),
-    refetchInterval: 10000,
-  });
-
-  const { data: pagesData, isLoading: pagesLoading } = useQuery({
-    queryKey: ['analytics-pages', period],
-    queryFn: () => fetchAnalyticsData(`/api/admin/analytics/pages?period=${period}`),
-    refetchInterval: 10000,
-  });
-
-  const { data: geoData, isLoading: geoLoading } = useQuery({
-    queryKey: ['analytics-geo', period],
-    queryFn: () => fetchAnalyticsData(`/api/admin/analytics/geo?period=${period}`),
-    refetchInterval: 10000,
-  });
-
-  const { data: activeData, isLoading: activeLoading } = useQuery({
-    queryKey: ['analytics-active'],
-    queryFn: () => fetchAnalyticsData('/api/admin/analytics/active'),
-    refetchInterval: 5000,
-  });
-
-  const { data: monthlyGrowth, isLoading: monthlyGrowthLoading } = useQuery({
-    queryKey: ['analytics-monthly-growth', selectedMonth],
-    queryFn: () => fetchAnalyticsData(`/api/admin/analytics/monthly-growth?month=${selectedMonth}`),
-    refetchInterval: 5000,
-    refetchIntervalInBackground: true,
-  });
-
-  const monthOptions = useMemo(() => Array.from({ length: 24 }, (_, index) => {
-    const date = new Date();
-    date.setDate(1);
-    date.setMonth(date.getMonth() - index);
-    return {
-      value: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`,
-      label: date.toLocaleDateString(undefined, { month: 'long', year: 'numeric' }),
-    };
-  }), []);
-
-  // Memoized stats
-  const formatDuration = (seconds) => {
-    if (seconds === null || seconds === undefined) return '—';
-    if (seconds === 0) return '0s';
-    if (seconds < 60) return `${seconds}s`;
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return secs > 0 ? `${mins}m ${secs}s` : `${mins}m`;
+  const exportReport = () => {
+    try { const rows = [["Visitor Analytics Report", `Period: Last ${period} days`], [], ["Metric", "Value"], ["Page Views", visitors?.stats?.totalPageViews ?? ""], ["Unique Visitors", visitors?.stats?.uniqueVisitors ?? ""], ["Growth", visitors?.stats?.growthRate ?? ""], ["Bounce Rate", visitors?.stats?.bounceRate ?? ""], ["Avg Session Duration", visitors?.stats?.avgSessionDuration ?? ""]]; const blob = new Blob([rows.map((row) => row.join(",")).join("\n")], { type: "text/csv" }); const url = URL.createObjectURL(blob); const anchor = document.createElement("a"); anchor.href = url; anchor.download = `visitor-analytics-${new Date().toISOString().split("T")[0]}.csv`; anchor.click(); URL.revokeObjectURL(url); toast.success("Analytics report exported."); } catch { toast.error("Report could not be exported."); }
   };
 
-  const stats = useMemo(() => {
-    const growthRate = visitorsData?.stats?.growthRate;
-    const hasGrowth = typeof growthRate === 'number';
-    const measuredSessions = visitorsData?.stats?.measuredSessions;
+  const growthTone = monthly?.growthRate < 0 ? "danger" : "success";
+  return <main className="mx-auto max-w-[1500px] space-y-6 pb-12">
+    <section className="relative overflow-hidden rounded-[2.1rem] border border-border/70 bg-card shadow-xl shadow-overlay/5"><div className="pointer-events-none absolute -right-20 -top-24 h-80 w-80 rounded-full bg-accent/15 blur-3xl" /><div className="relative grid xl:grid-cols-[1.2fr_.8fr]"><div className="p-6 md:p-9 lg:p-11"><Link href="/admin/dashboard" className="mb-7 inline-flex items-center gap-2 text-xs font-semibold text-muted-foreground transition hover:text-accent"><ArrowLeft className="h-4 w-4" /> Dashboard</Link><div className="flex items-start gap-4"><span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent text-accent-foreground shadow-lg shadow-accent/20"><BarChart3 className="h-6 w-6" /></span><div><div className="mb-1 flex items-center gap-2 text-[10px] font-black uppercase tracking-[.2em] text-accent"><Sparkles className="h-3.5 w-3.5" /> Audience intelligence</div><h1 className="text-3xl font-black tracking-[-.045em] text-foreground md:text-5xl">Visitor analytics</h1><p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">Understand who visits your portfolio, what attracts attention and how your audience grows.</p></div></div></div><aside className="border-t border-border/70 bg-muted/20 p-6 md:p-8 xl:border-l xl:border-t-0"><div className="flex items-center justify-between"><div><p className="text-[9px] font-black uppercase tracking-[.2em] text-muted-foreground">Live tracking</p><p className="mt-1 text-sm font-bold text-foreground">Analysis window</p></div><span className="relative flex h-2.5 w-2.5"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-status-success opacity-60" /><span className="relative h-2.5 w-2.5 rounded-full bg-status-success" /></span></div><div className="mt-6 grid grid-cols-4 gap-2 rounded-xl border border-border bg-card/60 p-1.5">{[7, 14, 30, 90].map((days) => <button key={days} onClick={() => setPeriod(days)} className={`rounded-lg py-2.5 text-[10px] font-bold transition ${period === days ? "bg-accent text-accent-foreground shadow-sm" : "text-muted-foreground hover:bg-muted hover:text-foreground"}`}>{days}d</button>)}</div><div className="mt-4 flex items-center justify-between gap-3"><span className="text-[10px] text-muted-foreground">{isFetching && !visitorsLoading ? "Refreshing live data…" : `Last ${period} days selected`}</span><button onClick={exportReport} className="inline-flex h-10 items-center gap-2 rounded-xl border border-border bg-card px-4 text-xs font-bold text-foreground transition hover:border-accent/30 hover:text-accent"><Download className="h-4 w-4" /> Export CSV</button></div></aside></div></section>
 
-    return [
-      {
-        label: 'Page Views',
-        value: visitorsData?.stats?.totalPageViews ?? '—',
-        trend: `Last ${period}d`,
-        trendLabel: 'Period',
-        icon: FileText,
-        color: 'blue',
-      },
-      {
-        label: 'Unique Visitors',
-        value: visitorsData?.stats?.uniqueVisitors ?? '—',
-        trend: hasGrowth
-          ? `${growthRate > 0 ? '+' : ''}${growthRate}%`
-          : (visitorsData?.stats?.growthStatus || 'Collecting verified baseline'),
-        trendLabel: `vs prior ${period}d`,
-        trendDirection: growthRate > 0 ? 'up' : growthRate < 0 ? 'down' : 'neutral',
-        icon: Users,
-        color: 'emerald',
-      },
-      {
-        label: 'Bounce Rate',
-        value: visitorsData?.stats?.bounceRate === null || visitorsData?.stats?.bounceRate === undefined
-          ? '—'
-          : `${visitorsData.stats.bounceRate}%`,
-        trend: measuredSessions ? `${measuredSessions} measured` : 'Awaiting verified sessions',
-        trendLabel: 'Data quality',
-        icon: Activity,
-        color: 'amber',
-      },
-      {
-        label: 'Avg Session',
-        value: formatDuration(visitorsData?.stats?.avgSessionDuration),
-        trend: measuredSessions ? 'Verified sessions' : 'No verified sessions yet',
-        trendLabel: 'Scope',
-        icon: Zap,
-        color: 'violet',
-      },
-    ];
-  }, [visitorsData, period]);
+    <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">{kpis.map((item, index) => <Kpi key={item.label} {...item} loading={visitorsLoading} delay={index * .04} />)}</section>
 
-  const handleExport = async () => {
-    try {
-      // Prepare CSV data
-      const csvContent = [
-        ['Visitor Analytics Report', `Period: Last ${period} days`],
-        [],
-        ['Metric', 'Value'],
-        ['Page Views', visitorsData?.stats?.totalPageViews ?? ''],
-        ['Unique Visitors', visitorsData?.stats?.uniqueVisitors ?? ''],
-        ['Growth vs previous period', visitorsData?.stats?.growthRate ?? ''],
-        ['Bounce Rate', visitorsData?.stats?.bounceRate ?? ''],
-        ['Avg Session Duration', visitorsData?.stats?.avgSessionDuration ?? ''],
-      ]
-        .map(row => row.join(','))
-        .join('\n');
+    <Panel eyebrow="Growth intelligence" title="Month-over-month performance" description="Compare unique visitors with the previous calendar month." icon={monthly?.growthRate < 0 ? TrendingDown : TrendingUp} action={<label className="flex items-center gap-2"><CalendarDays className="h-4 w-4 text-muted-foreground" /><select value={selectedMonth} onChange={(event) => setSelectedMonth(event.target.value)} className="h-10 min-w-48 rounded-xl border border-border bg-background px-3 text-xs font-semibold text-foreground outline-none focus:border-accent">{months.map((month) => <option key={month.value} value={month.value}>{month.label}</option>)}</select></label>}><div className="grid xl:grid-cols-[340px_1fr]"><div className="border-b border-border/70 p-5 xl:border-b-0 xl:border-r md:p-6">{monthlyLoading ? <Loader /> : <><div className="grid grid-cols-2 gap-3">{[{ label: monthly?.monthLabel || "Current", value: monthly?.currentVisitors || 0 }, { label: monthly?.previousMonthLabel || "Previous", value: monthly?.previousVisitors || 0 }].map((item) => <div key={item.label} className="rounded-xl border border-border/70 bg-background/30 p-4"><p className="truncate text-[9px] font-bold uppercase tracking-wider text-muted-foreground">{item.label}</p><p className="mt-2 text-2xl font-black text-foreground tabular-nums">{item.value.toLocaleString()}</p></div>)}</div><div className={`mt-3 rounded-2xl p-5 ${growthTone === "danger" ? "bg-status-danger/10" : "bg-status-success/10"}`}><p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Growth rate</p><div className="mt-2 flex items-end justify-between"><p className={`text-4xl font-black tracking-tight ${growthTone === "danger" ? "text-status-danger" : "text-status-success"}`}>{typeof monthly?.growthRate === "number" ? `${monthly.growthRate > 0 ? "+" : ""}${monthly.growthRate}%` : monthly?.currentVisitors > 0 ? "New" : "0%"}</p><span className="text-xs font-bold text-muted-foreground">{monthly?.difference > 0 ? "+" : ""}{monthly?.difference || 0} visitors</span></div></div></>}</div><div className="p-5 md:p-6">{monthlyLoading ? <Loader height="h-[360px]" /> : <MonthlyGrowthComparisonChart data={monthly?.daily} currentLabel={monthly?.monthLabel} previousLabel={monthly?.previousMonthLabel} />}</div></div></Panel>
 
-      const blob = new Blob([csvContent], { type: 'text/csv' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `visitor-analytics-${new Date().toISOString().split('T')[0]}.csv`;
-      a.click();
+    <div className="grid gap-6 xl:grid-cols-[1.45fr_.55fr]"><Panel eyebrow="Traffic behavior" title="Visitor trend" description={view === "daily" ? "Daily unique visitors across the selected window." : `Visitor activity by hour across the last ${period} days.`} icon={TrendingUp} action={<div className="flex rounded-xl border border-border bg-background p-1">{["daily", "hourly"].map((item) => <button key={item} onClick={() => setView(item)} className={`rounded-lg px-4 py-2 text-[10px] font-bold capitalize ${view === item ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"}`}>{item}</button>)}</div>}><div className="p-5 md:p-6">{visitorsLoading ? <Loader height="h-[400px]" /> : <EnhancedVisitorChart data={view === "daily" ? visitors?.trend : visitors?.hourly} view={view} />}</div></Panel><Panel eyebrow="Peak timing" title="Hourly breakdown" description={`Engagement distribution across the last ${period} days.`} icon={CalendarDays}><div className="p-5 md:p-6">{visitorsLoading ? <Loader /> : <HourlyBreakdownChart data={visitors?.hourly} />}</div></Panel></div>
 
-      toast.success('Report exported successfully');
-    } catch (error) {
-      toast.error('Failed to export report');
-    }
-  };
+    <div className="grid gap-6 lg:grid-cols-2"><Panel eyebrow="Audience technology" title="Device breakdown" description="How visitors access your portfolio." icon={Monitor}><div className="p-5 md:p-6">{devicesLoading ? <Loader /> : <DeviceDistributionChart data={devices?.devices} />}</div></Panel><Panel eyebrow="Content discovery" title="Top pages" description="Pages receiving the strongest attention." icon={FileText}><div className="p-5 md:p-6">{pagesLoading ? <Loader /> : <TopPagesChart data={pages?.topPages} />}</div></Panel></div>
 
-  return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div className="flex items-center gap-4">
-          <Link
-            href="/admin/dashboard"
-            className="p-2.5 rounded-xl border border-border hover:border-border hover:bg-muted/50 transition-all"
-          >
-            <ArrowLeft className="w-5 h-5 text-muted-foreground" />
-          </Link>
-          <div>
-            <h1 className="text-3xl md:text-4xl font-black italic tracking-tighter">
-              Visitor Analytics
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1 font-medium">
-              Deep dive into traffic patterns and user behavior
-            </p>
-          </div>
-        </div>
+    <Panel eyebrow="Device detail" title="Technology snapshot" description="Visit share and unique audience by device category." icon={Monitor}><div className="p-4 md:p-6"><DeviceStatsGrid devices={devices?.devices} isLoading={devicesLoading} /></div></Panel>
 
-        <div className="flex items-center gap-3 flex-wrap">
-          {/* Period Selector */}
-          <div className="flex items-center gap-2 bg-muted/50 border border-border rounded-xl p-1">
-            {[7, 14, 30, 90].map(p => (
-              <button
-                key={p}
-                onClick={() => setPeriod(p)}
-                className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
-                  period === p
-                    ? 'bg-accent text-background'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                {p}d
-              </button>
-            ))}
-          </div>
+    <Panel eyebrow="Geographic reach" title="Traffic by country" description="Where your audience is connecting from." icon={Globe2}><div className="px-4 py-2 md:px-5 md:py-3"><div className="mx-auto w-full max-w-4xl">{geoLoading ? <Loader height="h-[190px]" /> : <GeoDistributionChart data={geography?.countries} />}</div></div></Panel>
 
-          {/* Export Button */}
-          <button
-            onClick={handleExport}
-            className="flex items-center gap-2 px-4 py-2 bg-accent/10 border border-accent/20 text-accent rounded-xl hover:bg-accent/20 transition-all text-[10px] font-black uppercase tracking-widest"
-          >
-            <Download className="w-4 h-4" />
-            Export
-          </button>
-        </div>
-      </div>
+    <RealTimeActivityFeed activities={active?.recentActivity} isLoading={activeLoading} />
 
-      {/* Overview Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, i) => (
-          <MetricCard key={stat.label} {...stat} />
-        ))}
-      </div>
+    <Panel eyebrow="Location intelligence" title="Top visitor locations" description="Leading countries and cities during the selected period." icon={MapPin}><div className="grid gap-4 p-4 lg:grid-cols-2"><div className="rounded-2xl border border-border/70 bg-background/25 p-4"><h3 className="mb-4 text-sm font-bold text-foreground">Countries</h3><div className="max-h-96 space-y-2 overflow-y-auto custom-scrollbar">{geoLoading ? <Loader height="h-40" /> : geography?.countries?.length ? geography.countries.map((item, index) => <LocationCard key={`${item.country}-${index}`} location={item} type="country" maxVisitors={geography.countries[0]?.visitors} />) : <p className="py-8 text-center text-xs text-muted-foreground">No country data</p>}</div></div><div className="rounded-2xl border border-border/70 bg-background/25 p-4"><h3 className="mb-4 text-sm font-bold text-foreground">Cities</h3><div className="max-h-96 space-y-2 overflow-y-auto custom-scrollbar">{geoLoading ? <Loader height="h-40" /> : geography?.cities?.length ? geography.cities.map((item, index) => <LocationCard key={`${item.city}-${index}`} location={item} type="city" maxVisitors={geography.cities[0]?.visitors} />) : <p className="py-8 text-center text-xs text-muted-foreground">No city data</p>}</div></div></div></Panel>
 
-      {/* Calendar Month Growth Comparison */}
-      <div className="border border-border/70 bg-card/40 rounded-[2.5rem] p-8 md:p-10 overflow-hidden relative">
-        <div className={`absolute inset-x-0 top-0 h-1 ${monthlyGrowth?.growthRate < 0 ? 'bg-red-500' : 'bg-emerald-500'}`} />
-        <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6 mb-8">
-          <div>
-            <h2 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-3">
-              {monthlyGrowth?.growthRate < 0
-                ? <TrendingDown className="w-7 h-7 text-red-400" />
-                : <TrendingUp className="w-7 h-7 text-emerald-400" />}
-              Monthly Growth Comparison
-            </h2>
-            <p className="text-xs text-muted-foreground mt-2 uppercase tracking-[0.1em]">
-              Unique visitors compared with the previous calendar month
-            </p>
-          </div>
-          {visitorsFetching && !visitorsLoading && (
-            <span className="text-[9px] font-black uppercase tracking-widest text-accent animate-pulse">
-              Updating {period} days
-            </span>
-          )}
-          <label className="flex flex-col gap-2">
-            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Select month</span>
-            <select
-              value={selectedMonth}
-              onChange={(event) => setSelectedMonth(event.target.value)}
-              className="min-w-52 bg-muted/60 border border-border rounded-xl px-4 py-3 text-xs font-bold text-foreground outline-none focus:border-accent"
-            >
-              {monthOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-            </select>
-          </label>
-        </div>
+    <AnalyticsTable title="Page engagement" data={pages?.pageEngagement} columns={["Page", "Visits", "AvgSessionDuration", "BounceRate", "UniqueVisitors"]} icon={FileText} isLoading={pagesLoading} />
 
-        {monthlyGrowthLoading ? (
-          <div className="h-[480px] flex items-center justify-center"><Zap className="w-8 h-8 text-accent animate-pulse" /></div>
-        ) : (
-          <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
-              <div className="p-5 rounded-2xl bg-muted/40 border border-border/70">
-                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{monthlyGrowth?.monthLabel}</p>
-                <p className="text-3xl font-black mt-2 tabular-nums">{monthlyGrowth?.currentVisitors?.toLocaleString() || 0}</p>
-                <p className="text-[10px] text-muted-foreground mt-1">Unique visitors</p>
-              </div>
-              <div className="p-5 rounded-2xl bg-muted/40 border border-border/70">
-                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{monthlyGrowth?.previousMonthLabel}</p>
-                <p className="text-3xl font-black mt-2 tabular-nums">{monthlyGrowth?.previousVisitors?.toLocaleString() || 0}</p>
-                <p className="text-[10px] text-muted-foreground mt-1">Unique visitors</p>
-              </div>
-              <div className={`p-5 rounded-2xl border ${monthlyGrowth?.difference < 0 ? 'bg-red-500/10 border-red-500/20' : 'bg-emerald-500/10 border-emerald-500/20'}`}>
-                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Net change</p>
-                <p className={`text-3xl font-black mt-2 tabular-nums ${monthlyGrowth?.difference < 0 ? 'text-red-400' : 'text-emerald-400'}`}>
-                  {monthlyGrowth?.difference > 0 ? '+' : ''}{monthlyGrowth?.difference || 0}
-                </p>
-                <p className="text-[10px] text-muted-foreground mt-1">Visitors vs previous month</p>
-              </div>
-              <div className={`p-5 rounded-2xl border ${monthlyGrowth?.growthRate < 0 ? 'bg-red-500/10 border-red-500/20' : 'bg-emerald-500/10 border-emerald-500/20'}`}>
-                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Growth rate</p>
-                <p className={`text-3xl font-black mt-2 tabular-nums ${monthlyGrowth?.growthRate < 0 ? 'text-red-400' : 'text-emerald-400'}`}>
-                  {typeof monthlyGrowth?.growthRate === 'number'
-                    ? `${monthlyGrowth.growthRate > 0 ? '+' : ''}${monthlyGrowth.growthRate}%`
-                    : monthlyGrowth?.currentVisitors > 0 ? 'New' : '0%'}
-                </p>
-                <p className="text-[10px] text-muted-foreground mt-1">Calendar-month comparison</p>
-              </div>
-            </div>
-            <MonthlyGrowthComparisonChart
-              data={monthlyGrowth?.daily}
-              currentLabel={monthlyGrowth?.monthLabel}
-              previousLabel={monthlyGrowth?.previousMonthLabel}
-            />
-          </>
-        )}
-      </div>
-
-      {/* Main Chart Section */}
-      <div className="border border-border/70 bg-card/40 rounded-[2.5rem] p-8 md:p-10">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h2 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-3">
-              <TrendingUp className="w-7 h-7 text-accent" />
-              Visitor Trend
-            </h2>
-            <p className="text-xs text-muted-foreground mt-2 uppercase tracking-[0.1em]">
-              {view === 'daily' ? 'Daily unique visitors' : `Unique visitors by hour, last ${period} days`}
-              {visitorsData?.range && (
-                <span className="ml-2 text-accent">
-                  {visitorsData.range.from} → {visitorsData.range.to}
-                </span>
-              )}
-            </p>
-          </div>
-
-          {/* View Toggle */}
-          <div className="flex items-center gap-2 bg-muted/50 border border-border rounded-xl p-1">
-            <button
-              onClick={() => setView('daily')}
-              className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
-                view === 'daily'
-                  ? 'bg-accent text-background'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              Daily
-            </button>
-            <button
-              onClick={() => setView('hourly')}
-              className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
-                view === 'hourly'
-                  ? 'bg-accent text-background'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              Hourly
-            </button>
-          </div>
-        </div>
-
-        <div className="mt-8">
-          {visitorsLoading ? (
-            <div className="h-[400px] flex items-center justify-center">
-              <Zap className="w-8 h-8 text-accent animate-pulse" />
-            </div>
-          ) : (
-            <EnhancedVisitorChart
-              data={view === 'daily' ? visitorsData?.trend : visitorsData?.hourly}
-              view={view}
-            />
-          )}
-        </div>
-      </div>
-
-      {/* Hourly Breakdown */}
-      <div className="border border-border/70 bg-card/40 rounded-[2.5rem] p-8 md:p-10">
-        <h2 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-3 mb-8">
-          <Calendar className="w-7 h-7 text-indigo-400" />
-          Hourly Breakdown · Last {period} Days
-        </h2>
-        {visitorsLoading ? (
-          <div className="h-[350px] flex items-center justify-center">
-            <Zap className="w-8 h-8 text-accent animate-pulse" />
-          </div>
-        ) : (
-          <HourlyBreakdownChart data={visitorsData?.hourly} />
-        )}
-      </div>
-
-      {/* Device & Pages Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Devices */}
-        <div className="border border-border/70 bg-card/40 rounded-[2.5rem] p-8 md:p-10">
-          <h2 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-3 mb-8">
-            <Monitor className="w-7 h-7 text-amber-400" />
-            Device Breakdown
-          </h2>
-          {devicesLoading ? (
-            <div className="h-[350px] flex items-center justify-center">
-              <Zap className="w-8 h-8 text-accent animate-pulse" />
-            </div>
-          ) : (
-            <DeviceDistributionChart data={devicesData?.devices} />
-          )}
-        </div>
-
-        {/* Top Pages */}
-        <div className="border border-border/70 bg-card/40 rounded-[2.5rem] p-8 md:p-10">
-          <h2 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-3 mb-8">
-            <FileText className="w-7 h-7 text-emerald-400" />
-            Top Pages
-          </h2>
-          {pagesLoading ? (
-            <div className="h-[350px] flex items-center justify-center">
-              <Zap className="w-8 h-8 text-accent animate-pulse" />
-            </div>
-          ) : (
-            <TopPagesChart data={pagesData?.topPages} />
-          )}
-        </div>
-      </div>
-
-      {/* Device Stats Grid */}
-      <div className="border border-border/70 bg-card/40 rounded-[2.5rem] p-8 md:p-10">
-        <h2 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-3 mb-8">
-          <Activity className="w-7 h-7 text-violet-400" />
-          Device Statistics
-        </h2>
-        <DeviceStatsGrid devices={devicesData?.devices} isLoading={devicesLoading} />
-      </div>
-
-      {/* Geographic Data */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Geography Chart */}
-        <div className="lg:col-span-2 border border-border/70 bg-card/40 rounded-[2.5rem] p-8 md:p-10">
-          <h2 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-3 mb-8">
-            <Globe className="w-7 h-7 text-accent" />
-            Traffic by Country
-          </h2>
-          {geoLoading ? (
-            <div className="h-[350px] flex items-center justify-center">
-              <Zap className="w-8 h-8 text-accent animate-pulse" />
-            </div>
-          ) : (
-            <GeoDistributionChart data={geoData?.countries} />
-          )}
-        </div>
-
-        {/* Real-time Activity */}
-        <RealTimeActivityFeed activities={activeData?.recentActivity} isLoading={activeLoading} />
-      </div>
-
-      {/* Locations Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Countries */}
-        <div className="border border-border/70 bg-card/40 rounded-[2.5rem] p-8 md:p-10">
-          <h2 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-3 mb-8">
-            <Globe className="w-7 h-7 text-accent" />
-            Top Countries
-          </h2>
-          <div className="space-y-3 max-h-[400px] overflow-y-auto custom-scrollbar">
-            {geoLoading ? (
-              <div className="text-center py-8">
-                <Zap className="w-8 h-8 text-accent animate-pulse mx-auto" />
-              </div>
-            ) : geoData?.countries?.length > 0 ? (
-                geoData.countries.map((country, i) => (
-                <LocationCard key={i} location={country} type="country" maxVisitors={geoData.countries[0]?.visitors} />
-              ))
-            ) : (
-              <p className="text-center text-sm text-muted-foreground">No data available</p>
-            )}
-          </div>
-        </div>
-
-        {/* Cities */}
-        <div className="border border-border/70 bg-card/40 rounded-[2.5rem] p-8 md:p-10">
-          <h2 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-3 mb-8">
-            <MapPin className="w-7 h-7 text-accent" />
-            Top Cities
-          </h2>
-          <div className="space-y-3 max-h-[400px] overflow-y-auto custom-scrollbar">
-            {geoLoading ? (
-              <div className="text-center py-8">
-                <Zap className="w-8 h-8 text-accent animate-pulse mx-auto" />
-              </div>
-            ) : geoData?.cities?.length > 0 ? (
-                geoData.cities.map((city, i) => (
-                <LocationCard key={i} location={city} type="city" maxVisitors={geoData.cities[0]?.visitors} />
-              ))
-            ) : (
-              <p className="text-center text-sm text-muted-foreground">No data available</p>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Page Engagement Table */}
-      <div>
-        <AnalyticsTable
-          title="Page Engagement Metrics"
-          data={pagesData?.pageEngagement}
-          columns={['Page', 'Visits', 'AvgSessionDuration', 'BounceRate', 'UniqueVisitors']}
-          icon={FileText}
-          isLoading={pagesLoading}
-        />
-      </div>
-
-      {/* Browser & OS Stats */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Browsers */}
-        <div className="border border-border/70 bg-card/40 rounded-[2.5rem] p-8 md:p-10">
-          <h2 className="text-2xl font-black italic uppercase tracking-tighter mb-8">
-            Top Browsers
-          </h2>
-          <div className="space-y-2">
-            {devicesLoading ? (
-              <div className="text-center py-8">
-                <Zap className="w-8 h-8 text-accent animate-pulse mx-auto" />
-              </div>
-            ) : devicesData?.browsers?.length > 0 ? (
-              devicesData.browsers.map((browser, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between p-4 rounded-lg bg-muted/50 border border-border/70 hover:border-border transition-all"
-                >
-                  <span className="text-sm font-bold text-foreground">{browser._id}</span>
-                  <span className="text-xs font-black text-accent">
-                    {browser.count.toLocaleString()}
-                  </span>
-                </div>
-              ))
-            ) : (
-              <p className="text-center text-sm text-muted-foreground">No data available</p>
-            )}
-          </div>
-        </div>
-
-        {/* OS */}
-        <div className="border border-border/70 bg-card/40 rounded-[2.5rem] p-8 md:p-10">
-          <h2 className="text-2xl font-black italic uppercase tracking-tighter mb-8">
-            Operating Systems
-          </h2>
-          <div className="space-y-2">
-            {devicesLoading ? (
-              <div className="text-center py-8">
-                <Zap className="w-8 h-8 text-accent animate-pulse mx-auto" />
-              </div>
-            ) : devicesData?.operatingSystems?.length > 0 ? (
-              devicesData.operatingSystems.map((os, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between p-4 rounded-lg bg-muted/50 border border-border/70 hover:border-border transition-all"
-                >
-                  <span className="text-sm font-bold text-foreground">{os._id}</span>
-                  <span className="text-xs font-black text-accent">
-                    {os.count.toLocaleString()}
-                  </span>
-                </div>
-              ))
-            ) : (
-              <p className="text-center text-sm text-muted-foreground">No data available</p>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+    <Panel eyebrow="Browser environment" title="Platforms & software" description="Browsers and operating systems used by your visitors." icon={Monitor}><div className="grid gap-4 p-4 lg:grid-cols-2"><CompactList title="Top browsers" icon={Globe2} data={devices?.browsers} loading={devicesLoading} /><CompactList title="Operating systems" icon={Monitor} data={devices?.operatingSystems} loading={devicesLoading} /></div></Panel>
+  </main>;
 }

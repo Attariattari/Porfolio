@@ -206,7 +206,7 @@ export async function GET(req) {
           verifiedVisitors: currentVerifiedCount,
           previousVerifiedVisitors: previousVerifiedCount,
           growthRate,
-          growthAvailable: true,
+          growthAvailable: previousVerifiedCount > 0,
           growthStatus: previousVerifiedCount === 0 && currentVerifiedCount > 0
             ? "First active period"
             : "Live comparison",

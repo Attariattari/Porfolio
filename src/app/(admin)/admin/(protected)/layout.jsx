@@ -9,8 +9,10 @@ export default function ProtectedAdminLayout({ children }) {
   const { sidebarCollapsed } = useAdminStore();
 
   return (
-    <div className="admin-theme-scope flex min-h-screen overflow-x-hidden bg-background text-foreground selection:bg-accent selection:text-accent-foreground">
+    <div className="admin-theme-scope admin-app-shell flex min-h-screen overflow-x-hidden bg-background text-foreground selection:bg-accent selection:text-accent-foreground">
       <SocketRefresh />
+      <div className="admin-app-grid" aria-hidden="true" />
+      <div className="admin-app-glow" aria-hidden="true" />
       <AdminSidebar />
       <div
         className={`flex-grow flex flex-col transition-[padding] duration-300 min-w-0
@@ -20,8 +22,8 @@ export default function ProtectedAdminLayout({ children }) {
         `}
       >
         <Topbar />
-        <main className="p-4 md:p-10 flex-grow overflow-y-auto scroll-smooth">
-          {children}
+        <main className="relative z-10 flex-grow overflow-y-auto scroll-smooth px-4 py-6 sm:px-6 md:px-8 md:py-8 xl:px-10">
+          <div className="mx-auto w-full max-w-[1600px]">{children}</div>
         </main>
       </div>
     </div>

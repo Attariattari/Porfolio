@@ -43,17 +43,17 @@ export async function POST(req) {
             userAgent: userAgent || 'Unknown',
             sessionId,
             device: {
-                type: deviceInfo?.type || 'desktop',
+                type: deviceInfo?.type || 'unknown',
                 browser: deviceInfo?.browser || 'Unknown',
                 os: deviceInfo?.os || 'Unknown',
             },
             geo: {
                 ip: clientIP,
                 country: geoInfo?.country || 'Unknown',
-                countryCode: geoInfo?.countryCode || 'PK',
-                city: geoInfo?.city || 'Unknown City',
-                latitude: geoInfo?.latitude || 0,
-                longitude: geoInfo?.longitude || 0,
+                countryCode: geoInfo?.countryCode || '',
+                city: geoInfo?.city || 'Unknown',
+                latitude: geoInfo?.latitude ?? null,
+                longitude: geoInfo?.longitude ?? null,
             },
             sessionDuration: parseInt(sessionDuration) || 0,
             interactionCount: parseInt(interactionCount) || 0,
@@ -66,7 +66,7 @@ export async function POST(req) {
             page, 
             timestamp: log.createdAt,
             country: log?.geo?.country || 'Unknown',
-            device: log?.device?.type || 'desktop'
+            device: log?.device?.type || 'unknown'
         });
         emitSocketEvent('STATS_UPDATED', { type: 'visitor', page });
 

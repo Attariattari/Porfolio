@@ -46,12 +46,12 @@ export async function GET(req) {
 
     const { startDate, endDate } = getCalendarDayRange(periodDays, new Date(), ANALYTICS_TIMEZONE);
     const base = sessionLocationPipeline(startDate, endDate);
-    const knownLocation = { $nin: [null, "", "Unknown", "Not Detected"] };
+    const knownLocation = { $type: "string", $nin: ["", "Unknown", "Unknown City", "Local Machine", "Not Detected"] };
 
     const [countries, cities, locationTrend] = await Promise.all([
       VisitorLog.aggregate([
         ...base,
-        { $match: { country: knownLocation } },
+        { $match: { country: knownLocation, city: knownLocation } },
         {
           $group: {
             _id: { country: "$country", countryCode: "$countryCode" },
@@ -97,7 +97,7 @@ export async function GET(req) {
       ]),
       VisitorLog.aggregate([
         ...base,
-        { $match: { country: knownLocation } },
+        { $match: { country: knownLocation, city: knownLocation } },
         {
           $group: {
             _id: {

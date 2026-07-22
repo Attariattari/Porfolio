@@ -987,6 +987,100 @@ body.modal-open nav.md\:hidden {
     transition: all 0.3s ease-in-out;
 }
 
+/* Premium admin workspace -------------------------------------------------- */
+.admin-app-shell {
+    position: relative;
+    isolation: isolate;
+    background:
+        radial-gradient(circle at 82% -10%, rgba(var(--accent-rgb), 0.11), transparent 32rem),
+        linear-gradient(180deg, color-mix(in srgb, var(--background) 96%, var(--accent) 4%), var(--background) 28rem);
+}
+
+.admin-app-grid {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: .22;
+    background-image: linear-gradient(rgba(var(--accent-rgb), .045) 1px, transparent 1px), linear-gradient(90deg, rgba(var(--accent-rgb), .045) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: linear-gradient(to bottom, black, transparent 55%);
+}
+
+.admin-app-glow {
+    position: fixed;
+    z-index: 0;
+    top: -14rem;
+    right: -12rem;
+    width: 34rem;
+    height: 34rem;
+    border-radius: 999px;
+    background: rgba(var(--accent-rgb), .12);
+    filter: blur(100px);
+    pointer-events: none;
+}
+
+.admin-sidebar-shell {
+    background: color-mix(in srgb, var(--background) 92%, transparent) !important;
+    border-color: color-mix(in srgb, var(--border) 84%, transparent) !important;
+    box-shadow: 18px 0 60px -44px rgba(0,0,0,.55) !important;
+    backdrop-filter: blur(24px);
+}
+
+.admin-sidebar-brand { height: 5.5rem !important; }
+
+.admin-topbar-shell {
+    height: 5.5rem !important;
+    background: color-mix(in srgb, var(--background) 82%, transparent) !important;
+    border-color: color-mix(in srgb, var(--border) 80%, transparent) !important;
+    box-shadow: 0 12px 38px -34px rgba(0,0,0,.5);
+}
+
+.admin-dashboard-hero {
+    position: relative;
+    background:
+        linear-gradient(105deg, color-mix(in srgb, var(--card) 96%, transparent), color-mix(in srgb, var(--card) 82%, transparent)),
+        radial-gradient(circle at 90% 10%, rgba(var(--accent-rgb), .2), transparent 34%);
+    box-shadow: 0 24px 70px -54px rgba(0,0,0,.7), inset 0 1px rgba(255,255,255,.05);
+}
+
+.admin-dashboard-hero::after {
+    content: "";
+    position: absolute;
+    right: -3rem;
+    bottom: -5rem;
+    width: 16rem;
+    height: 16rem;
+    border: 1px solid rgba(var(--accent-rgb), .16);
+    border-radius: 999px;
+    box-shadow: 0 0 0 2rem rgba(var(--accent-rgb), .035), 0 0 0 4rem rgba(var(--accent-rgb), .025);
+    pointer-events: none;
+}
+
+.admin-stat-card,
+.admin-panel,
+.admin-dashboard > div[class*="grid"] > :is(div, a)[class*="bg-card"] {
+    backdrop-filter: blur(18px);
+    box-shadow: 0 22px 60px -52px rgba(0,0,0,.75), inset 0 1px rgba(255,255,255,.035);
+}
+
+.admin-stat-card:hover,
+.admin-panel:hover {
+    transform: translateY(-3px);
+    border-color: rgba(var(--accent-rgb), .3);
+    box-shadow: 0 28px 65px -48px rgba(var(--accent-rgb), .35);
+}
+
+.admin-dashboard :is(h2, h3) { font-style: normal !important; }
+.admin-dashboard :is(h2) { letter-spacing: -.025em; text-transform: none; }
+
+@media (max-width: 767px) {
+    .admin-app-grid { background-size: 40px 40px; }
+    .admin-dashboard > div[class*="grid"] { gap: 1rem; }
+    .admin-dashboard > div[class*="grid"] > :is(div, a)[class*="p-8"],
+    .admin-dashboard > div[class*="grid"] > :is(div, a)[class*="p-10"] { padding: 1.25rem; border-radius: 1.5rem; }
+}
+
 body.lightbox-open {
     overflow: hidden;
 }

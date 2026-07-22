@@ -77,10 +77,11 @@ export async function GET(req) {
                 page: log.page || '/',
                 device: log.device?.type || 'Unknown',
                 browser: log.device?.browser || 'Unknown',
-                country: log.geo?.country && !['Unknown', 'Not Detected'].includes(log.geo.country) 
+                country: log.geo?.country && !['Unknown', 'Not Detected'].includes(log.geo.country)
+                    && !['Unknown', 'Unknown City', 'Local Machine', 'Not Detected'].includes(log.geo?.city)
                     ? log.geo.country 
                     : 'Unknown',
-                city: log.geo?.city && !['Unknown', 'Not Detected'].includes(log.geo.city)
+                city: log.geo?.city && !['Unknown', 'Unknown City', 'Local Machine', 'Not Detected'].includes(log.geo.city)
                     ? log.geo.city
                     : null,
                 timeAgo: getTimeAgo(log.lastSeen)

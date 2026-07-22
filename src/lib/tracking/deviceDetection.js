@@ -6,7 +6,7 @@
 export function parseUserAgent(userAgent) {
   if (!userAgent || userAgent === 'unknown') {
     return {
-      type: 'desktop',
+      type: 'unknown',
       browser: 'Unknown',
       os: 'Unknown',
     };
@@ -91,11 +91,11 @@ export async function getGeoFromIP(ip) {
         ip.startsWith('10.') || ip.startsWith('172.') || ip === '::ffff:127.0.0.1') {
       return {
         ip,
-        country: 'Pakistan', // Keep Pakistan as requested
-        countryCode: 'PK',
-        city: 'Local Machine',
-        latitude: 0,
-        longitude: 0,
+        country: 'Unknown',
+        countryCode: '',
+        city: 'Unknown',
+        latitude: null,
+        longitude: null,
       };
     }
 
@@ -114,9 +114,9 @@ export async function getGeoFromIP(ip) {
             ip: cleanIP,
             country: data.country_name,
             countryCode: data.country_code,
-            city: data.city || data.region || 'Unknown City',
-            latitude: data.latitude || 0,
-            longitude: data.longitude || 0,
+            city: data.city || data.region || 'Unknown',
+            latitude: data.latitude ?? null,
+            longitude: data.longitude ?? null,
           };
           geoCache.set(ip, { data: result, timestamp: Date.now() });
           console.log('[Geolocation] ipapi.co:', result.country, '-', result.city);
@@ -135,9 +135,9 @@ export async function getGeoFromIP(ip) {
             ip: cleanIP,
             country: data.countryName,
             countryCode: data.countryCode,
-            city: data.cityName || 'Unknown City',
-            latitude: data.latitude || 0,
-            longitude: data.longitude || 0,
+            city: data.cityName || 'Unknown',
+            latitude: data.latitude ?? null,
+            longitude: data.longitude ?? null,
           };
           geoCache.set(ip, { data: result, timestamp: Date.now() });
           console.log('[Geolocation] freeipapi.com:', result.country, '-', result.city);
@@ -156,9 +156,9 @@ export async function getGeoFromIP(ip) {
             ip: cleanIP,
             country: data.country,
             countryCode: data.countryCode,
-            city: data.city || 'Unknown City',
-            latitude: data.lat || 0,
-            longitude: data.lon || 0,
+            city: data.city || 'Unknown',
+            latitude: data.lat ?? null,
+            longitude: data.lon ?? null,
           };
           geoCache.set(ip, { data: result, timestamp: Date.now() });
           console.log('[Geolocation] ip-api.com:', result.country, '-', result.city);
@@ -172,11 +172,11 @@ export async function getGeoFromIP(ip) {
     console.error('[Geolocation] Final Error:', error.message);
     return {
       ip: ip || 'unknown',
-      country: 'Pakistan',
-      countryCode: 'PK',
-      city: 'Unknown City',
-      latitude: 0,
-      longitude: 0,
+      country: 'Unknown',
+      countryCode: '',
+      city: 'Unknown',
+      latitude: null,
+      longitude: null,
     };
   }
 }
