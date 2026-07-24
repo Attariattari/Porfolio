@@ -4,7 +4,7 @@ import { findNearDuplicateBlog } from "@/lib/blogSeo";
 import { Blog } from "@/models/Portfolio";
 import { BlogTopicPlan } from "@/models/BlogTopicPlan";
 
-const PILLARS = ["Next.js & React", "Backend & APIs", "Databases", "Performance", "Technical SEO", "DevOps & Deployment", "AI Workflows & Automation", "Security", "UI/UX Engineering", "SaaS & Business Systems", "E-commerce", "Website Reliability"];
+const PILLARS = ["Next.js & React", "Backend & APIs", "Databases", "Performance", "Technical SEO", "DevOps & Deployment", "AI Workflows & Automation", "Security", "UI/UX Engineering", "SaaS & Business Systems", "E-commerce", "Website Reliability", "Next.js Development Services", "MERN Development Services", "Website Development Pakistan", "Admin Dashboard Solutions"];
 const FALLBACK_BLUEPRINTS = [
   { pillar: "Next.js & React", value: "faster, more reliable frontend releases", items: [["cache revalidation", "stale production content", "designing explicit revalidation and invalidation boundaries", "Next.js cache revalidation"], ["server component boundaries", "unnecessary client-side JavaScript", "separating server data work from interactive client islands", "React server component architecture"], ["hydration stability", "interfaces that break after deployment", "eliminating browser/server rendering mismatches", "Next.js hydration errors"], ["route-level loading", "slow pages with poor feedback", "using streaming, loading boundaries and progressive rendering", "Next.js loading states"]] },
   { pillar: "Backend & APIs", value: "safer integrations and easier system growth", items: [["webhook reliability", "lost or duplicated business events", "adding signatures, idempotency and retry-safe processing", "reliable webhook processing"], ["API error contracts", "frontends that cannot recover from backend failures", "standardizing errors, validation and recovery metadata", "API error handling"], ["rate limiting", "public endpoints exposed to abuse", "designing identity-aware limits and useful retry behavior", "API rate limiting"], ["background jobs", "slow requests blocked by heavy work", "moving durable work into observable asynchronous queues", "Node.js background jobs"]] },
@@ -20,6 +20,28 @@ const FALLBACK_BLUEPRINTS = [
   { pillar: "Website Reliability", value: "fewer silent failures and more dependable customer journeys", items: [["form delivery", "customer inquiries disappearing silently", "adding server validation, delivery logs and recovery paths", "reliable website forms"], ["error monitoring", "production failures discovered by customers first", "capturing actionable errors with release context", "website error monitoring"], ["health checks", "teams learning about outages too late", "monitoring real dependencies and useful service signals", "application health checks"], ["maintenance planning", "small neglected issues becoming expensive failures", "using scheduled reviews, dependency updates and backups", "website maintenance plan"]] },
 ];
 const ALLOWED_SERVICES = new Set(["custom-website-development", "mern-stack-web-development", "nextjs-website-development", "full-stack-web-app-development", "admin-dashboard-development", "e-commerce-website-development", "portfolio-website-development", "landing-page-design", "website-redesign", "api-integration", "database-integration", "seo-friendly-website-setup", "website-speed-optimization", "maintenance-support"]);
+
+const COMMERCIAL_CLUSTER_PLANS = [
+  { title: "How to Hire a Next.js Developer in Pakistan: A Practical Buyer Guide", pillar: "Next.js Development Services", subtopic: "hiring a Next.js developer", problem: "businesses struggle to evaluate Next.js developers beyond portfolios and hourly rates", solutionAngle: "compare technical discovery, architecture judgment, SEO knowledge, communication, testing and delivery ownership", businessValue: "choose a reliable Next.js partner and reduce expensive delivery risk", audience: "Founders, agencies and business owners", focusKeyword: "hire Next.js developer Pakistan", searchIntent: "commercial", format: "Buyer guide", relatedServiceSlugs: ["nextjs-website-development", "full-stack-web-app-development"], priority: 96 },
+  { title: "Next.js Development Cost in Pakistan: Scope, Features and Real Pricing Factors", pillar: "Next.js Development Services", subtopic: "Next.js project cost", problem: "buyers receive incomparable estimates because project scope and engineering requirements are unclear", solutionAngle: "break pricing into page architecture, backend work, integrations, content, SEO, testing and maintenance", businessValue: "build a realistic budget and compare proposals fairly", audience: "Founders and business decision-makers", focusKeyword: "Next.js development cost Pakistan", searchIntent: "commercial", format: "Cost guide", relatedServiceSlugs: ["nextjs-website-development", "custom-website-development"], priority: 94 },
+  { title: "Next.js Agency or Freelance Developer: Which Is Right for Your Project?", pillar: "Next.js Development Services", subtopic: "Next.js delivery partner comparison", problem: "buyers choose a delivery model without matching it to project complexity, ownership and support needs", solutionAngle: "compare accountability, speed, specialist coverage, communication, continuity and total cost", businessValue: "select the delivery model that fits business risk and scope", audience: "Startups, agencies and established businesses", focusKeyword: "Next.js agency vs freelancer", searchIntent: "commercial", format: "Comparison guide", relatedServiceSlugs: ["nextjs-website-development", "maintenance-support"], priority: 88 },
+  { title: "What to Include in a Next.js Website Development Brief", pillar: "Next.js Development Services", subtopic: "Next.js project brief", problem: "unclear requirements create inaccurate proposals, missed integrations and avoidable revisions", solutionAngle: "provide a reusable brief structure covering goals, users, pages, workflows, integrations, content, SEO and acceptance criteria", businessValue: "receive clearer estimates and start development with less ambiguity", audience: "Business owners and project managers", focusKeyword: "Next.js website development brief", searchIntent: "informational", format: "Practical checklist", relatedServiceSlugs: ["nextjs-website-development", "custom-website-development"], priority: 84 },
+
+  { title: "How to Hire a MERN Stack Developer in Pakistan", pillar: "MERN Development Services", subtopic: "hiring a MERN developer", problem: "businesses cannot easily verify whether a developer can own frontend, backend, database and deployment decisions", solutionAngle: "evaluate production architecture, API design, MongoDB modeling, security, testing and operational support", businessValue: "hire for complete application delivery instead of isolated coding tasks", audience: "Founders, product teams and agencies", focusKeyword: "hire MERN stack developer Pakistan", searchIntent: "commercial", format: "Buyer guide", relatedServiceSlugs: ["mern-stack-web-development", "full-stack-web-app-development"], priority: 95 },
+  { title: "MERN Stack Development Cost in Pakistan for Business Applications", pillar: "MERN Development Services", subtopic: "MERN application pricing", problem: "application estimates vary widely without explaining modules, roles, integrations and infrastructure", solutionAngle: "map cost drivers across UI, APIs, database design, authentication, dashboards, integrations and deployment", businessValue: "plan an achievable application budget and phased roadmap", audience: "Startup founders and business owners", focusKeyword: "MERN stack development cost Pakistan", searchIntent: "commercial", format: "Cost guide", relatedServiceSlugs: ["mern-stack-web-development", "database-integration", "api-integration"], priority: 93 },
+  { title: "MERN Stack vs WordPress: Choosing the Right Platform for Business Growth", pillar: "MERN Development Services", subtopic: "MERN versus WordPress", problem: "businesses overbuild simple sites or constrain complex workflows with the wrong platform", solutionAngle: "compare content needs, custom workflows, integrations, ownership, scalability, maintenance and budget", businessValue: "choose a platform aligned with actual business requirements", audience: "Business owners and startup teams", focusKeyword: "MERN stack vs WordPress", searchIntent: "commercial", format: "Decision guide", relatedServiceSlugs: ["mern-stack-web-development", "custom-website-development"], priority: 86 },
+  { title: "MERN Application Planning Checklist Before Development Starts", pillar: "MERN Development Services", subtopic: "MERN project planning", problem: "teams begin development before defining users, permissions, data ownership and operational workflows", solutionAngle: "plan roles, modules, data models, APIs, integrations, security and release stages", businessValue: "reduce rework and make application delivery more predictable", audience: "Founders, product managers and technical leads", focusKeyword: "MERN application development checklist", searchIntent: "informational", format: "Planning checklist", relatedServiceSlugs: ["mern-stack-web-development", "full-stack-web-app-development"], priority: 82 },
+
+  { title: "Website Development Cost in Pakistan: A Transparent 2026 Guide", pillar: "Website Development Pakistan", subtopic: "website pricing in Pakistan", problem: "businesses see price quotes without understanding differences in scope, quality, SEO and support", solutionAngle: "explain cost ranges through page count, design depth, CMS needs, integrations, copy, SEO, performance and maintenance", businessValue: "set a realistic budget and avoid misleading quote comparisons", audience: "Pakistani businesses, founders and professionals", focusKeyword: "website development cost Pakistan", searchIntent: "commercial", format: "Cost guide", relatedServiceSlugs: ["custom-website-development", "portfolio-website-development", "landing-page-design"], priority: 97 },
+  { title: "How to Choose a Website Developer in Lahore", pillar: "Website Development Pakistan", subtopic: "choosing a local website developer", problem: "local businesses struggle to distinguish professional delivery from attractive demos", solutionAngle: "evaluate discovery, mobile quality, SEO foundations, performance, ownership, communication and after-launch support", businessValue: "select a dependable developer for a business-critical website", audience: "Businesses and professionals in Lahore", focusKeyword: "website developer Lahore", searchIntent: "commercial", format: "Local buyer guide", relatedServiceSlugs: ["custom-website-development", "seo-friendly-website-setup"], priority: 95 },
+  { title: "Custom Website vs Template Website: What Should a Growing Business Choose?", pillar: "Website Development Pakistan", subtopic: "custom versus template websites", problem: "businesses choose based on initial price without considering differentiation, workflows and long-term maintenance", solutionAngle: "compare launch speed, brand control, SEO, performance, integrations, scalability and total ownership", businessValue: "invest at the right level for current goals and future growth", audience: "Small businesses, startups and service providers", focusKeyword: "custom website vs template website", searchIntent: "commercial", format: "Comparison guide", relatedServiceSlugs: ["custom-website-development", "website-redesign"], priority: 89 },
+  { title: "Website Redesign Checklist for Pakistani Businesses", pillar: "Website Development Pakistan", subtopic: "business website redesign", problem: "redesign projects focus on appearance while preserving weak messaging, SEO and conversion paths", solutionAngle: "audit content, analytics, redirects, mobile UX, speed, forms, trust signals and launch validation", businessValue: "protect existing visibility while improving credibility and conversions", audience: "Business owners and marketing teams", focusKeyword: "website redesign Pakistan", searchIntent: "commercial", format: "Redesign checklist", relatedServiceSlugs: ["website-redesign", "website-speed-optimization", "seo-friendly-website-setup"], priority: 87 },
+
+  { title: "Admin Dashboard Development Cost: Features That Shape the Budget", pillar: "Admin Dashboard Solutions", subtopic: "admin dashboard pricing", problem: "businesses request a dashboard without defining users, workflows, permissions, reports or integrations", solutionAngle: "explain cost drivers through modules, role access, data complexity, automation, analytics and audit requirements", businessValue: "scope a useful dashboard and budget it accurately", audience: "Founders, operations teams and product owners", focusKeyword: "admin dashboard development cost", searchIntent: "commercial", format: "Cost and scope guide", relatedServiceSlugs: ["admin-dashboard-development", "database-integration", "api-integration"], priority: 94 },
+  { title: "When Does Your Business Need a Custom Admin Dashboard?", pillar: "Admin Dashboard Solutions", subtopic: "admin dashboard business case", problem: "teams manage critical work across spreadsheets, inboxes and disconnected tools", solutionAngle: "identify workflow, visibility, ownership, approval and reporting signals that justify a central dashboard", businessValue: "reduce manual coordination and improve operational control", audience: "Business owners and operations managers", focusKeyword: "custom admin dashboard for business", searchIntent: "commercial", format: "Decision guide", relatedServiceSlugs: ["admin-dashboard-development", "full-stack-web-app-development"], priority: 91 },
+  { title: "Admin Dashboard Requirements Checklist for a Successful Build", pillar: "Admin Dashboard Solutions", subtopic: "dashboard requirements planning", problem: "dashboard projects fail when screens are defined before users, decisions and workflows", solutionAngle: "document roles, actions, states, data sources, permissions, alerts, reports and acceptance criteria", businessValue: "create a dashboard that supports real daily operations", audience: "Project managers, founders and operations teams", focusKeyword: "admin dashboard requirements checklist", searchIntent: "informational", format: "Requirements checklist", relatedServiceSlugs: ["admin-dashboard-development", "database-integration"], priority: 85 },
+  { title: "Custom Admin Dashboard vs Off-the-Shelf Software", pillar: "Admin Dashboard Solutions", subtopic: "custom versus packaged operations software", problem: "businesses either force unique workflows into generic tools or overinvest in custom software", solutionAngle: "compare workflow fit, integrations, reporting, ownership, implementation time, maintenance and total cost", businessValue: "choose the most economical operational system for the real workflow", audience: "Growing businesses and operations leaders", focusKeyword: "custom dashboard vs off the shelf software", searchIntent: "commercial", format: "Comparison guide", relatedServiceSlugs: ["admin-dashboard-development", "full-stack-web-app-development"], priority: 86 },
+];
 
 const normalize = (value = "") => String(value).toLowerCase().replace(/[^a-z0-9+#.\s-]/g, " ").replace(/\s+/g, " ").trim();
 export const buildTopicFingerprint = (plan = {}) => [plan.pillar, plan.subtopic, plan.problem, plan.solutionAngle, plan.focusKeyword].map(normalize).filter(Boolean).join("::");
@@ -42,8 +64,36 @@ function buildFallbackPlans() {
   })));
 }
 
+async function ensureCommercialClusterTopics() {
+  const existingBlogs = await Blog.find()
+    .sort({ createdAt: -1 })
+    .limit(500)
+    .select("title summary category tags focusKeyword slug")
+    .lean();
+  let seeded = 0;
+
+  for (const clusterPlan of COMMERCIAL_CLUSTER_PLANS) {
+    const plan = cleanPlan({
+      ...clusterPlan,
+      notes: "Strategic topical-authority cluster linked to a relevant commercial service.",
+    }, "ai");
+
+    if (findNearDuplicateBlog(planAsBlog(plan), existingBlogs)) continue;
+
+    const result = await BlogTopicPlan.updateOne(
+      { fingerprint: plan.fingerprint },
+      { $setOnInsert: plan },
+      { upsert: true },
+    );
+    if (result.upsertedCount) seeded += 1;
+  }
+
+  return seeded;
+}
+
 export async function reconcileFallbackTopics() {
   await dbConnect();
+  const commercialSeeded = await ensureCommercialClusterTopics();
   const fallbackFingerprints = buildFallbackPlans().map((plan) => buildTopicFingerprint(cleanPlan(plan, "fallback")));
   await BlogTopicPlan.updateMany(
     { fingerprint: { $in: fallbackFingerprints }, source: { $ne: "fallback" } },
@@ -56,7 +106,7 @@ export async function reconcileFallbackTopics() {
       { source: "fallback", status: "ready" },
       { $set: { status: "reserve" }, $unset: { scheduledFor: 1 } },
     );
-    return { primaryReady, fallbackReady: 0 };
+    return { primaryReady, fallbackReady: 0, commercialSeeded };
   }
 
   const activeFallbacks = await BlogTopicPlan.find({ source: "fallback", status: "ready" })
@@ -70,7 +120,7 @@ export async function reconcileFallbackTopics() {
       { $set: { status: "reserve" }, $unset: { scheduledFor: 1 } },
     );
   }
-  return { primaryReady: 0, fallbackReady: Math.min(activeFallbacks.length, 30) };
+  return { primaryReady: 0, fallbackReady: Math.min(activeFallbacks.length, 30), commercialSeeded };
 }
 
 export async function createTopicPlan(input, source = "manual") {
@@ -100,7 +150,7 @@ export async function refillTopicQueue({ target = 45, threshold = 15, force = fa
     BlogTopicPlan.find().sort({ createdAt: -1 }).limit(500).select("title pillar subtopic problem solutionAngle businessValue audience focusKeyword format fingerprint").lean(),
   ]);
   const avoid = [...blogs.map((item) => `${item.title} | ${item.focusKeyword || ""}`), ...plans.map((item) => `${item.title} | ${item.focusKeyword}`)].slice(0, 500).join("\n");
-  const prompt = `Create ${requested} diverse, unique editorial topic plans for Muhyo Tech, a professional web/software engineering brand. Rotate across these pillars: ${PILLARS.join(", ")}. Every plan must solve a different practical technical or business problem. Do not repeat the same subtopic, problem, solution, focus keyword, or article angle. Avoid unrelated news, health, entertainment, politics, and generic beginner topics. EXISTING/QUEUED TOPICS TO AVOID:\n${avoid || "None"}\nReturn strict JSON: {"topics":[{"title":"","pillar":"","subtopic":"","problem":"","solutionAngle":"","businessValue":"","audience":"","focusKeyword":"","searchIntent":"informational","format":"","relatedServiceSlugs":[],"priority":50}]}`;
+  const prompt = `Create ${requested} diverse, unique editorial topic plans for Muhyo Tech, a professional web/software engineering brand. Rotate across these pillars: ${PILLARS.join(", ")}. Build connected topical clusters rather than isolated articles. Target an intent mix of approximately 50% informational, 35% commercial and 15% transactional topics. Commercial topics must help a genuine buyer compare approaches, scope a project, understand cost factors, prepare requirements or evaluate a development partner without keyword stuffing or unsupported price claims. Every plan must solve a different practical technical or business problem and link to 1-3 genuinely relevant service slugs. Do not repeat the same subtopic, problem, solution, focus keyword, or article angle. Avoid unrelated news, health, entertainment, politics, generic beginner topics and thin location-page variations. EXISTING/QUEUED TOPICS TO AVOID:\n${avoid || "None"}\nReturn strict JSON: {"topics":[{"title":"","pillar":"","subtopic":"","problem":"","solutionAngle":"","businessValue":"","audience":"","focusKeyword":"","searchIntent":"informational","format":"","relatedServiceSlugs":[],"priority":50}]}`;
   let candidates = [];
   let fallbackUsed = false;
   try {
@@ -164,6 +214,6 @@ export async function acquireNextTopicPlan({ refill = true } = {}) {
   return BlogTopicPlan.findOneAndUpdate({ status: "ready", scheduledFor: null, source: "fallback" }, { $set: { status: "processing", processingStartedAt: now }, $unset: { failureReason: 1 } }, { new: true, sort: { priority: -1, createdAt: 1 } });
 }
 
-export const formatTopicPlanForWriter = (plan) => `Title direction: ${plan.title}. Pillar: ${plan.pillar}. Specific subtopic: ${plan.subtopic}. Problem: ${plan.problem}. Engineering solution angle: ${plan.solutionAngle}. Business value: ${plan.businessValue}. Audience: ${plan.audience}. Primary search query: ${plan.focusKeyword}. Article format: ${plan.format}.`;
+export const formatTopicPlanForWriter = (plan) => `Title direction: ${plan.title}. Pillar: ${plan.pillar}. Specific subtopic: ${plan.subtopic}. Problem: ${plan.problem}. Engineering solution angle: ${plan.solutionAngle}. Business value: ${plan.businessValue}. Audience: ${plan.audience}. Primary search query: ${plan.focusKeyword}. Search intent: ${plan.searchIntent}. Article format: ${plan.format}. Relevant service slugs for contextual internal links: ${(plan.relatedServiceSlugs || []).join(", ") || "none"}.`;
 export async function markTopicPlanUsed(id, blogId) { if (!id) return; await BlogTopicPlan.findByIdAndUpdate(id, { $set: { status: "used", usedAt: new Date(), usedByBlogId: blogId }, $unset: { processingStartedAt: 1, failureReason: 1 } }); }
 export async function releaseTopicPlan(id, reason, { reject = false } = {}) { if (!id) return; const plan = await BlogTopicPlan.findById(id); if (!plan || plan.status !== "processing") return; plan.retryCount += 1; plan.failureReason = String(reason || "Generation failed").slice(0, 300); plan.status = reject ? "rejected" : plan.retryCount >= 3 ? "failed" : "ready"; plan.processingStartedAt = undefined; await plan.save(); }

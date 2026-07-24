@@ -8,15 +8,23 @@ import { SiteConfig } from "@/models/Portfolio";
 import dbConnect from "@/lib/dbConnect";
 import { SITE_URL } from "@/lib/config";
 import { getSeoImage } from "@/lib/seo";
+import { SocialController } from "@/controllers/SocialController";
+import { withTimeoutFallback } from "@/lib/withTimeoutFallback";
 
 export async function OrganizationSchema() {
   let schema;
 
   try {
-    await dbConnect();
+    const [storedConfig, socialLinks] = await Promise.all([
+      withTimeoutFallback(
+        dbConnect().then(() => SiteConfig.findOne().lean()),
+        null,
+        2000,
+      ),
+      withTimeoutFallback(SocialController.get(), [], 2000),
+    ]);
 
-    // Fetch site configuration and social links
-    let config = await SiteConfig.findOne();
+    let config = storedConfig;
 
     // Fallback to defaults if no config exists
     if (!config) {
@@ -31,13 +39,16 @@ export async function OrganizationSchema() {
     }
 
     // Build social profiles array
-    const sameAsProfiles = [
+    const defaultProfiles = [
       "https://www.linkedin.com/in/ghulam-muhyo-din-web-designer/",
       "https://github.com/Attariattari",
       "https://x.com/GhulamMuhyo",
       "https://www.facebook.com/MuhammadMuhyoDinAttari",
-      "https://wa.me/923224458481",
-    ].filter(Boolean);
+    ];
+    const managedProfiles = (Array.isArray(socialLinks) ? socialLinks : [])
+      .map((profile) => profile?.url)
+      .filter((url) => /^https:\/\//i.test(url || ""));
+    const sameAsProfiles = [...new Set([...managedProfiles, ...defaultProfiles])];
 
     const address = {
       "@type": "PostalAddress",
@@ -67,10 +78,7 @@ export async function OrganizationSchema() {
           sameAs: sameAsProfiles,
           address,
           founder: {
-            "@type": "Person",
-            name: config.adminName || "Pir Ghulam Muhyo Din",
-            url: SITE_URL,
-            jobTitle: "Founder & Lead Developer",
+            "@id": `${SITE_URL}/about#person`,
           },
           foundingDate: "2023",
           foundingLocation: config.location || "Lahore, Pakistan",
@@ -83,6 +91,23 @@ export async function OrganizationSchema() {
             "Software Architecture",
             "Digital Solutions",
             "Cloud Infrastructure",
+          ],
+        },
+        {
+          "@type": "Person",
+          "@id": `${SITE_URL}/about#person`,
+          name: config.adminName || "Pir Ghulam Muhyo Din",
+          url: `${SITE_URL}/about`,
+          image: getSeoImage("/about-preview.png"),
+          jobTitle: "Founder & Lead Developer",
+          worksFor: { "@id": `${SITE_URL}/#organization` },
+          sameAs: sameAsProfiles,
+          knowsAbout: [
+            "Next.js Development",
+            "MERN Stack Development",
+            "Full Stack Web Development",
+            "Admin Dashboard Development",
+            "Technical SEO",
           ],
         },
         {
@@ -163,6 +188,13 @@ export async function OrganizationSchema() {
           email: "MuhyoTech@gmail.com",
           logo: getSeoImage("/logo.png"),
           telephone: "+92 322 4458481",
+          sameAs: [
+            "https://www.linkedin.com/in/ghulam-muhyo-din-web-designer/",
+            "https://github.com/Attariattari",
+            "https://x.com/GhulamMuhyo",
+            "https://www.facebook.com/MuhammadMuhyoDinAttari",
+          ],
+          founder: { "@id": `${SITE_URL}/about#person` },
           address: {
             "@type": "PostalAddress",
             streetAddress: "Chota, Mohlanwal Road, Badu Pura Chung",
@@ -171,6 +203,21 @@ export async function OrganizationSchema() {
             postalCode: "53720",
             addressCountry: "PK",
           },
+        },
+        {
+          "@type": "Person",
+          "@id": `${SITE_URL}/about#person`,
+          name: "Pir Ghulam Muhyo Din",
+          url: `${SITE_URL}/about`,
+          image: getSeoImage("/about-preview.png"),
+          jobTitle: "Founder & Lead Developer",
+          worksFor: { "@id": `${SITE_URL}/#organization` },
+          sameAs: [
+            "https://www.linkedin.com/in/ghulam-muhyo-din-web-designer/",
+            "https://github.com/Attariattari",
+            "https://x.com/GhulamMuhyo",
+            "https://www.facebook.com/MuhammadMuhyoDinAttari",
+          ],
         },
         {
           "@type": "WebSite",
