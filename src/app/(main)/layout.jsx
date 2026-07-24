@@ -13,6 +13,7 @@ import { serializeDoc } from "@/lib/mongooseHelper";
 import { SITE_URL } from "@/lib/config";
 import { getSeoImage } from "@/lib/seo";
 import MainDataProvider from "./MainDataProvider";
+import { withTimeoutFallback } from "@/lib/withTimeoutFallback";
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
@@ -77,8 +78,8 @@ export const metadata = {
 export default async function MainLayout({ children }) {
   // Global Hybrid Sync - IMPORTANT: Serialize Mongoose docs to plain objects
   const [dbAbout, dbSocials] = await Promise.all([
-    AboutController.get().catch(() => null),
-    SocialController.get().catch(() => []),
+    withTimeoutFallback(AboutController.get(), null, 3000),
+    withTimeoutFallback(SocialController.get(), [], 3000),
   ]);
   const serializedAbout = dbAbout ? serializeDoc(dbAbout) : null;
   const globalAbout = serializedAbout || portfolioData.about;

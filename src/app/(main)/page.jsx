@@ -24,6 +24,7 @@ import { SiteConfig } from "@/models/Portfolio";
 import { resolveHomeSeo } from "@/lib/homeSeo";
 import { SITE_URL } from "@/lib/config";
 import { getAboutPageData } from "@/lib/content/getAboutPageData";
+import { withTimeoutFallback } from "@/lib/withTimeoutFallback";
 
 const compactHomeService = (service = {}) => ({
   _id: service._id,
@@ -100,11 +101,13 @@ const compactHomeAbout = (about = {}) => ({
 export const revalidate = 3600;
 
 export async function generateMetadata() {
-  let configuredSeo = null;
-  try {
-    await dbConnect();
-    configuredSeo = await SiteConfig.findOne({}).select("seo siteTitle").lean();
-  } catch {}
+  const configuredSeo = await withTimeoutFallback(
+    dbConnect().then(() =>
+      SiteConfig.findOne({}).select("seo siteTitle").lean(),
+    ),
+    null,
+    2000,
+  );
 
   const { title, description } = resolveHomeSeo(configuredSeo?.seo);
 
@@ -140,15 +143,16 @@ export async function generateMetadata() {
 }
 
 export default async function HomePage() {
-  // Fetch real-time data from Mainframe (MongoDB)
+  // Live content is preferred, but no optional data source may prevent the
+  // homepage from returning crawlable HTML within a safe response budget.
   const [dbSkills, dbServices, dbProjects, dbBlogs, dbAbout, dbHero] =
     await Promise.all([
-      SkillController.getAll().catch(() => []),
-      ServiceController.getAll(true).catch(() => []),
-      ProjectController.getAll(true).catch(() => []),
-      BlogController.getAll(true).catch(() => []),
-      AboutController.get().catch(() => null),
-      HeroController.get().catch(() => null),
+      withTimeoutFallback(SkillController.getAll(), [], 3000),
+      withTimeoutFallback(ServiceController.getAll(true), [], 3000),
+      withTimeoutFallback(ProjectController.getAll(true), [], 3000),
+      withTimeoutFallback(BlogController.getAll(true), [], 3000),
+      withTimeoutFallback(AboutController.get(), null, 3000),
+      withTimeoutFallback(HeroController.get(), null, 3000),
     ]);
 
   // IMPORTANT: Serialize Mongoose documents to plain objects for React serialization

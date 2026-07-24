@@ -4,65 +4,73 @@ import { ProjectController } from "@/controllers/ProjectController";
 import { ServiceController } from "@/controllers/ServiceController";
 import { isBlogIndexable } from "@/lib/blogSeo";
 import { getCanonicalServices } from "@/lib/servicesSeo";
+import {
+    discoverPublicPageRoutes,
+    getPageSitemapMetadata,
+    getSafeSitemapSlug,
+    getValidLastModified,
+    isPublishedSitemapItem,
+    uniqueSitemapEntries,
+} from "@/lib/sitemapRoutes";
 
-export const revalidate = 3600;
+// Keep discovery responsive to newly published content while avoiding a
+// database read for every crawler request.
+export const revalidate = 300;
 
 export default async function sitemap() {
     const baseUrl = SITE_URL;
 
     // Fetch dynamic content
     const [blogs, projects, services] = await Promise.all([
-        BlogController.getAll(true, { includeContent: true }).catch(() => []),
+        BlogController.getAll(true).catch(() => []),
         ProjectController.getAll(true).catch(() => []),
         ServiceController.getAll(true).catch(() => []),
     ]);
 
     const withLastModified = (entry, item) => {
-        const lastModified = item?.updatedAt || item?.createdAt;
+        const lastModified = getValidLastModified(item);
         return lastModified ? { ...entry, lastModified } : entry;
     };
 
-    const uniqueByUrl = (entries) => [
-        ...new Map(entries.map((entry) => [entry.url, entry])).values(),
-    ];
+    const publicPageUrls = discoverPublicPageRoutes().map((route) => ({
+        url: `${baseUrl}${route === "/" ? "" : route}`,
+        ...getPageSitemapMetadata(route),
+    }));
 
     const blogUrls = blogs
-        .filter((b) => isBlogIndexable(b))
-        .map((b) => withLastModified({
-            url: `${baseUrl}/blog/${b.slug}`,
+        .filter((blog) => isPublishedSitemapItem(blog) && isBlogIndexable(blog))
+        .map((blog) => ({ item: blog, slug: getSafeSitemapSlug(blog) }))
+        .filter(({ slug }) => slug)
+        .map(({ item, slug }) => withLastModified({
+            url: `${baseUrl}/blog/${slug}`,
             changeFrequency: "weekly",
             priority: 0.7,
-        }, b));
+        }, item));
 
     const projectUrls = projects
-        .filter((p) => p.slug)
-        .map((p) => withLastModified({
-            url: `${baseUrl}/projects/${p.slug}`,
+        .filter(isPublishedSitemapItem)
+        .map((project) => ({ item: project, slug: getSafeSitemapSlug(project) }))
+        .filter(({ slug }) => slug)
+        .map(({ item, slug }) => withLastModified({
+            url: `${baseUrl}/projects/${slug}`,
             changeFrequency: "monthly",
             priority: 0.75,
-        }, p));
+        }, item));
 
     const serviceUrls = getCanonicalServices(services)
-        .map((s) => withLastModified({
-            url: `${baseUrl}/services/${s.slug}`,
+        .filter(isPublishedSitemapItem)
+        .map((service) => ({ item: service, slug: getSafeSitemapSlug(service) }))
+        .filter(({ slug }) => slug)
+        .map(({ item, slug }) => withLastModified({
+            url: `${baseUrl}/services/${slug}`,
             changeFrequency: "monthly",
             priority: 0.85,
-        }, s));
+        }, item));
 
-    const staticUrls = [
-        { url: baseUrl, changeFrequency: "weekly", priority: 1 },
-        { url: `${baseUrl}/services`, changeFrequency: "weekly", priority: 0.95 },
-        { url: `${baseUrl}/projects`, changeFrequency: "weekly", priority: 0.9 },
-        { url: `${baseUrl}/blog`, changeFrequency: "daily", priority: 0.9 },
-        { url: `${baseUrl}/contact`, changeFrequency: "monthly", priority: 0.85 },
-        { url: `${baseUrl}/book-a-call`, changeFrequency: "monthly", priority: 0.85 },
-        { url: `${baseUrl}/about`, changeFrequency: "monthly", priority: 0.8 },
-        { url: `${baseUrl}/skills`, changeFrequency: "monthly", priority: 0.75 },
-        { url: `${baseUrl}/goals`, changeFrequency: "monthly", priority: 0.65 },
-        { url: `${baseUrl}/resume`, changeFrequency: "monthly", priority: 0.6 },
-        { url: `${baseUrl}/privacy`, changeFrequency: "yearly", priority: 0.3 },
-        { url: `${baseUrl}/terms`, changeFrequency: "yearly", priority: 0.3 },
-    ];
-
-    return uniqueByUrl([...staticUrls, ...blogUrls, ...projectUrls, ...serviceUrls]);
+    return uniqueSitemapEntries([
+        ...publicPageUrls,
+        ...blogUrls,
+        ...projectUrls,
+        ...serviceUrls,
+    ]);
 }

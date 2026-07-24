@@ -8,6 +8,10 @@ import { SITE_URL } from "@/lib/config";
 import { verifyPasskey, hashPasskey } from "@/lib/passwordReset";
 import { getAuthSecretKey } from "@/lib/authSecret";
 import { sendEmail } from "@/lib/mailer";
+import {
+    ADMIN_SESSION_COOKIE_OPTIONS,
+    AUTH_SESSION_MAX_AGE,
+} from "@/lib/authSessionConfig";
 
 const SECRET = getAuthSecretKey();
 
@@ -34,12 +38,7 @@ export function getDefaultAuthRedirect(user, callbackUrl = "") {
 }
 
 export function attachAdminSessionCookies(response, token) {
-    const cookieOptions = {
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 60 * 60 * 8,
-        path: "/",
-    };
+    const cookieOptions = ADMIN_SESSION_COOKIE_OPTIONS;
 
     response.cookies.set("admin_auth_token", token, {
         ...cookieOptions,
@@ -66,15 +65,10 @@ export async function createAdminSession(user, source = "credentials") {
         })
         .setProtectedHeader({ alg: "HS256" })
         .setIssuedAt()
-        .setExpirationTime("8h")
+        .setExpirationTime(Math.floor(Date.now() / 1000) + AUTH_SESSION_MAX_AGE)
         .sign(SECRET);
 
-    const cookieOptions = {
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 60 * 60 * 8,
-        path: "/",
-    };
+    const cookieOptions = ADMIN_SESSION_COOKIE_OPTIONS;
 
     (await cookies()).set("admin_auth_token", token, {
         ...cookieOptions,
@@ -353,24 +347,18 @@ export async function login(email, passkey) {
         })
         .setProtectedHeader({ alg: "HS256" })
         .setIssuedAt()
-        .setExpirationTime("8h")
+        .setExpirationTime(Math.floor(Date.now() / 1000) + AUTH_SESSION_MAX_AGE)
         .sign(SECRET);
 
     (await cookies()).set("admin_auth_token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 60 * 60 * 8,
-        path: "/",
+        ...ADMIN_SESSION_COOKIE_OPTIONS,
     });
 
     // Also set a non-httpOnly cookie for client access
     (await cookies()).set("admin_token", token, {
         httpOnly: false,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 60 * 60 * 8,
-        path: "/",
+        ...ADMIN_SESSION_COOKIE_OPTIONS,
     });
 
     return {

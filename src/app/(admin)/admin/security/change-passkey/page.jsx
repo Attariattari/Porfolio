@@ -196,8 +196,6 @@ export default function ChangePasskeyPage() {
       // Store the new token if provided
       if (data.data?.token) {
         localStorage.setItem('admin_token', data.data.token);
-        // Also set cookie for middleware (though server already did)
-        document.cookie = `admin_auth_token=${data.data.token}; path=/; max-age=86400; SameSite=Lax`;
       }
 
       toast.success('Passkey changed! Session established. Entering dashboard...');
