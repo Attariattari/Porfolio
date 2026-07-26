@@ -14,7 +14,7 @@ import ImageUploader from "@/components/admin/ImageUploader";
 import { Controller } from "react-hook-form";
 import { AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
-import { Sparkles, CheckCircle2, Mail, RefreshCcw, Copy, BookOpen, Search, Pencil, Trash2, ExternalLink, Star, Plus } from "lucide-react";
+import { Sparkles, CheckCircle2, Mail, RefreshCcw, Copy, BookOpen, Search, Pencil, Trash2, ExternalLink, Star, Plus, Download } from "lucide-react";
 import AIBlogProgress from "@/components/admin/AIBlogProgress";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -394,6 +394,53 @@ export default function BlogsPage() {
     router.push("/admin/blogs/new");
   };
 
+  const handleExport = () => {
+    if (!blogs.length) {
+      toast.error("There are no blogs to export.");
+      return;
+    }
+
+    const exportedAt = new Date();
+    const exportData = {
+      exportType: "muhyo-tech-blog-content-audit",
+      exportedAt: exportedAt.toISOString(),
+      count: blogs.length,
+      blogs: blogs.map((blog) => ({
+        title: blog.title || "",
+        slug: blog.slug || "",
+        summary: blog.summary || "",
+        content: blog.content || "",
+        seoTitle: blog.seoTitle || "",
+        seoDescription: blog.seoDescription || "",
+        focusKeyword: blog.focusKeyword || "",
+        searchIntent: blog.searchIntent || "",
+        category: blog.category || "",
+        tags: Array.isArray(blog.tags) ? blog.tags : [],
+        relatedServiceSlugs: Array.isArray(blog.relatedServiceSlugs)
+          ? blog.relatedServiceSlugs
+          : [],
+        publishStatus: blog.publishStatus || "draft",
+        featured: Boolean(blog.featured),
+        author: blog.author || "",
+        readTime: blog.readTime || "",
+        createdAt: blog.createdAt || null,
+        updatedAt: blog.updatedAt || null,
+      })),
+    };
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+      type: "application/json;charset=utf-8",
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `muhyo-tech-blogs-${exportedAt.toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    toast.success(`${blogs.length} blogs exported for content audit.`);
+  };
+
   const handleView = (blog) => {
     if (!blog.slug) {
       toast.error("Entry has no identifier for indexing.");
@@ -503,7 +550,7 @@ export default function BlogsPage() {
     <div className="mx-auto max-w-[1500px] space-y-6 pb-20">
       <header className="relative overflow-hidden rounded-[28px] border border-white/[0.08] bg-[#0d1727] p-6 sm:p-8"><div className="pointer-events-none absolute -right-20 -top-24 size-72 rounded-full bg-violet-400/[0.07] blur-3xl" /><div className="relative flex flex-col justify-between gap-6 xl:flex-row xl:items-center"><div className="flex items-start gap-4"><span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-violet-400/10 text-violet-300 ring-1 ring-inset ring-violet-400/15"><BookOpen className="size-5" /></span><div><p className="text-[10px] font-bold uppercase tracking-[.24em] text-violet-300">Editorial workspace</p><h1 className="mt-2 text-2xl font-semibold tracking-[-.035em] text-white sm:text-3xl">Blog management</h1><p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">Create, review and publish articles across your portfolio.</p></div></div>
 
-        <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center"><Link href="/admin/blog-topics" className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-background/40 px-4 text-xs font-bold text-foreground hover:border-accent/30 hover:text-accent"><ListChecks className="size-4" />Editorial planner</Link><button onClick={handleAdd} className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-violet-300 px-4 text-xs font-bold text-slate-950 hover:bg-violet-200"><Plus className="size-4" />New article</button>
+        <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center"><Link href="/admin/blog-topics" className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-background/40 px-4 text-xs font-bold text-foreground hover:border-accent/30 hover:text-accent"><ListChecks className="size-4" />Editorial planner</Link><button onClick={handleExport} className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-background/40 px-4 text-xs font-bold text-foreground hover:border-violet-300/30 hover:text-violet-300"><Download className="size-4" />Export JSON</button><button onClick={handleAdd} className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-violet-300 px-4 text-xs font-bold text-slate-950 hover:bg-violet-200"><Plus className="size-4" />New article</button>
           <label
             className={`flex h-11 cursor-pointer select-none items-center justify-between gap-3 rounded-xl border px-3 text-[10px] font-bold uppercase tracking-wider transition-colors ${
               autoGenerateImages
