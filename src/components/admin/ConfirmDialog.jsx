@@ -1,7 +1,8 @@
 "use client";
 
-import { AlertTriangle, Trash2, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AlertTriangle, Sparkles, Trash2, X } from "lucide-react";
+import { motion } from "framer-motion";
+import useModalScrollLock from "@/hooks/useModalScrollLock";
 
 export default function ConfirmDialog({
   isOpen,
@@ -11,17 +12,22 @@ export default function ConfirmDialog({
   onCancel,
   confirmText = "Delete Permanently",
   cancelText = "Cancel",
-  isDeleting = false
+  isDeleting = false,
+  tone = "danger"
 }) {
+  useModalScrollLock(isOpen);
   if (!isOpen) return null;
 
+  const isAccent = tone === "accent";
+  const Icon = isAccent ? Sparkles : AlertTriangle;
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-6 sm:p-0">
+    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 sm:p-6" role="dialog" aria-modal="true" aria-labelledby="confirmation-title">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="absolute inset-0 bg-overlay/80 backdrop-blur-sm shadow-2xl"
+        className="absolute inset-0 bg-background/75 backdrop-blur-md"
         onClick={onCancel}
       />
 
@@ -29,27 +35,28 @@ export default function ConfirmDialog({
         initial={{ scale: 0.95, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.95, opacity: 0, y: 20 }}
-        className="w-full max-w-md bg-card border border-border rounded-3xl p-8 relative z-10 shadow-3xl"
+        className="relative z-10 w-full max-w-md overflow-hidden rounded-[2rem] border border-border/70 bg-card shadow-2xl"
       >
-        <div className="flex items-center justify-center mb-6">
-          <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 border border-red-500/20">
-            <AlertTriangle className="w-8 h-8" />
+        <div className={`h-1 w-full ${isAccent ? "bg-accent" : "bg-status-danger"}`} />
+        <button type="button" onClick={onCancel} disabled={isDeleting} className="absolute right-4 top-5 grid h-9 w-9 place-items-center rounded-xl text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:opacity-50" aria-label="Close confirmation">
+          <X className="h-4 w-4" />
+        </button>
+        <div className="p-6 sm:p-8">
+          <div className={`mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border ${isAccent ? "border-accent/20 bg-accent/10 text-accent" : "border-status-danger/20 bg-status-danger/10 text-status-danger"}`}>
+            <Icon className="h-6 w-6" />
           </div>
-        </div>
-
-        <div className="text-center mb-8">
-          <h3 className="text-2xl font-black text-foreground italic uppercase tracking-tight">{title}</h3>
-          <p className="text-muted-foreground text-sm mt-3 leading-relaxed font-medium">
+          <p className={`text-[9px] font-black uppercase tracking-[.2em] ${isAccent ? "text-accent" : "text-status-danger"}`}>{isAccent ? "AI editorial action" : "Confirmation required"}</p>
+          <h3 id="confirmation-title" className="mt-2 pr-10 text-xl font-black tracking-tight text-foreground sm:text-2xl">{title}</h3>
+          <p className="mt-3 text-sm font-medium leading-6 text-muted-foreground">
             {message}
           </p>
         </div>
-
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex flex-col-reverse gap-3 border-t border-border/70 bg-muted/20 p-5 sm:flex-row sm:justify-end sm:px-8">
           <button
             type="button"
             onClick={onCancel}
             disabled={isDeleting}
-            className="flex-1 px-6 py-4 rounded-2xl border border-border hover:bg-muted/50 font-black uppercase text-xs tracking-widest text-muted-foreground transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="h-11 rounded-xl border border-border bg-background px-5 text-xs font-bold text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
           >
             {cancelText}
           </button>
@@ -57,7 +64,7 @@ export default function ConfirmDialog({
             type="button"
             onClick={onConfirm}
             disabled={isDeleting}
-            className="flex-1 px-6 py-4 rounded-2xl bg-red-500 text-foreground font-black uppercase text-xs tracking-widest hover:bg-red-600 transition-all shadow-xl shadow-red-500/20 active:scale-95 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+            className={`inline-flex h-11 items-center justify-center gap-2 rounded-xl px-5 text-xs font-bold transition disabled:cursor-not-allowed disabled:opacity-70 ${isAccent ? "bg-accent text-accent-foreground shadow-lg shadow-accent/20 hover:bg-accent/90" : "bg-status-danger text-white shadow-lg shadow-status-danger/20 hover:brightness-110"}`}
           >
             {isDeleting ? (
               <>
@@ -70,7 +77,7 @@ export default function ConfirmDialog({
               </>
             ) : (
               <>
-                <Trash2 className="w-4 h-4" />
+                {isAccent ? <Sparkles className="h-4 w-4" /> : <Trash2 className="h-4 w-4" />}
                 {confirmText}
               </>
             )}

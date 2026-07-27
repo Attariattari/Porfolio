@@ -44,7 +44,7 @@ const COMMERCIAL_CLUSTER_PLANS = [
 ];
 
 const normalize = (value = "") => String(value).toLowerCase().replace(/[^a-z0-9+#.\s-]/g, " ").replace(/\s+/g, " ").trim();
-export const buildTopicFingerprint = (plan = {}) => [plan.pillar, plan.subtopic, plan.problem, plan.solutionAngle, plan.focusKeyword].map(normalize).filter(Boolean).join("::");
+export const buildTopicFingerprint = (plan = {}) => [plan.articleType, plan.clusterKey, plan.pillar, plan.subtopic, plan.problem, plan.solutionAngle, plan.focusKeyword].map(normalize).filter(Boolean).join("::");
 
 function planAsBlog(plan) {
   return { slug: plan.fingerprint || buildTopicFingerprint(plan), title: plan.title, summary: [plan.problem, plan.solutionAngle, plan.businessValue].filter(Boolean).join(" "), category: plan.pillar, focusKeyword: plan.focusKeyword, tags: [plan.subtopic, plan.audience, plan.format].filter(Boolean) };
@@ -52,7 +52,7 @@ function planAsBlog(plan) {
 
 function cleanPlan(plan, source = "ai") {
   const cleaned = {
-    title: String(plan.title || "").trim(), pillar: String(plan.pillar || "Technology").trim(), subtopic: String(plan.subtopic || "").trim(), problem: String(plan.problem || "").trim(), solutionAngle: String(plan.solutionAngle || "").trim(), businessValue: String(plan.businessValue || "").trim(), audience: String(plan.audience || "Founders and developers").trim(), focusKeyword: String(plan.focusKeyword || "").trim(), searchIntent: ["informational", "commercial", "transactional", "navigational"].includes(plan.searchIntent) ? plan.searchIntent : "informational", format: String(plan.format || "Problem-solution guide").trim(), relatedServiceSlugs: Array.isArray(plan.relatedServiceSlugs) ? [...new Set(plan.relatedServiceSlugs)].filter((slug) => ALLOWED_SERVICES.has(slug)).slice(0, 3) : [], priority: Math.min(100, Math.max(0, Number(plan.priority) || 50)), scheduledFor: plan.scheduledFor ? new Date(plan.scheduledFor) : null, notes: String(plan.notes || "").trim(), source,
+    title: String(plan.title || "").trim(), articleType: plan.articleType === "pillar" ? "pillar" : "supporting", clusterKey: String(plan.clusterKey || "").trim(), clusterTitle: String(plan.clusterTitle || "").trim(), clusterOrder: Math.min(2, Math.max(0, Number(plan.clusterOrder) || 0)), parentTopicId: plan.parentTopicId || null, pillar: String(plan.pillar || "Technology").trim(), subtopic: String(plan.subtopic || "").trim(), problem: String(plan.problem || "").trim(), solutionAngle: String(plan.solutionAngle || "").trim(), businessValue: String(plan.businessValue || "").trim(), audience: String(plan.audience || "Founders and developers").trim(), focusKeyword: String(plan.focusKeyword || "").trim(), searchIntent: ["informational", "commercial", "transactional", "navigational"].includes(plan.searchIntent) ? plan.searchIntent : "informational", format: String(plan.format || "Problem-solution guide").trim(), relatedServiceSlugs: Array.isArray(plan.relatedServiceSlugs) ? [...new Set(plan.relatedServiceSlugs)].filter((slug) => ALLOWED_SERVICES.has(slug)).slice(0, 3) : [], priority: Math.min(100, Math.max(0, Number(plan.priority) || 50)), scheduledFor: plan.scheduledFor ? new Date(plan.scheduledFor) : null, notes: String(plan.notes || "").trim(), source, status: plan.status,
   };
   cleaned.fingerprint = buildTopicFingerprint(cleaned);
   return cleaned;
@@ -62,6 +62,134 @@ function buildFallbackPlans() {
   return FALLBACK_BLUEPRINTS.flatMap((group) => group.items.map(([subtopic, problem, solutionAngle, focusKeyword], index) => ({
     title: `Fixing ${problem}: a practical ${subtopic} approach`, pillar: group.pillar, subtopic, problem, solutionAngle, businessValue: group.value, audience: index % 2 === 0 ? "Founders, product teams and developers" : "Engineering teams and technical decision-makers", focusKeyword, searchIntent: "informational", format: ["Problem-solution guide", "Architecture guide", "Practical checklist", "Engineering decision guide"][index], relatedServiceSlugs: [], priority: 45 - index,
   })));
+}
+
+function buildFallbackClusterPacks() {
+  return FALLBACK_BLUEPRINTS.map((group) => {
+    const clusterKey = normalize(group.pillar).replace(/\s+/g, "-");
+    const [first, second] = group.items;
+    return {
+      clusterKey,
+      clusterTitle: group.pillar,
+      pillar: {
+        articleType: "pillar",
+        clusterKey,
+        clusterTitle: group.pillar,
+        clusterOrder: 0,
+        title: `The Complete ${group.pillar} Guide for Production Web Systems`,
+        pillar: group.pillar,
+        subtopic: `complete ${group.pillar.toLowerCase()} strategy`,
+        problem: `teams need one reliable framework for making ${group.pillar.toLowerCase()} decisions without fragmented advice`,
+        solutionAngle: `connect foundations, architecture decisions, tradeoffs, implementation guidance, mistakes, checklists and measurable business outcomes`,
+        businessValue: group.value,
+        audience: "Founders, technical leads and web development teams",
+        focusKeyword: `${group.pillar.toLowerCase()} guide`,
+        searchIntent: "informational",
+        format: "Premium pillar guide",
+        relatedServiceSlugs: [],
+        priority: 40,
+      },
+      supporting: [first, second].map(([subtopic, problem, solutionAngle, focusKeyword], index) => ({
+        articleType: "supporting",
+        clusterKey,
+        clusterTitle: group.pillar,
+        clusterOrder: index + 1,
+        title: `How to Fix ${problem}: ${subtopic} in Practice`,
+        pillar: group.pillar,
+        subtopic,
+        problem,
+        solutionAngle,
+        businessValue: group.value,
+        audience: "Founders, product teams and developers",
+        focusKeyword,
+        searchIntent: "informational",
+        format: "Focused supporting guide",
+        relatedServiceSlugs: [],
+        priority: 35 - index,
+      })),
+    };
+  });
+}
+
+function flattenClusterPack(pack, source, status) {
+  const pillar = cleanPlan({ ...pack.pillar, clusterKey: pack.clusterKey, clusterTitle: pack.clusterTitle, articleType: "pillar", clusterOrder: 0, status }, source);
+  const supportingStatus = source === "ai" && status === "planned"
+    ? "ready"
+    : status;
+  const supporting = (pack.supporting || []).slice(0, 2).map((topic, index) => cleanPlan({ ...topic, clusterKey: pack.clusterKey, clusterTitle: pack.clusterTitle, articleType: "supporting", clusterOrder: index + 1, status: supportingStatus }, source));
+  return { pillar, supporting };
+}
+
+async function insertClusterPacks(packs, source, status, existingBlogs, historicalPlans, maxClusters = Number.POSITIVE_INFINITY) {
+  const acceptedPlans = [...historicalPlans];
+  let clusters = 0;
+  let topics = 0;
+  for (const rawPack of packs) {
+    if (clusters >= maxClusters) break;
+    const pack = flattenClusterPack(rawPack, source, status);
+    const all = [pack.pillar, ...pack.supporting];
+    if (all.length !== 3 || all.some((plan) => !plan.title || !plan.focusKeyword || !plan.problem || !plan.solutionAngle)) continue;
+    const conflicts = all.some((plan, index) =>
+      findNearDuplicateBlog(planAsBlog(plan), existingBlogs) ||
+      findNearDuplicateBlog(planAsBlog(plan), acceptedPlans.map(planAsBlog)) ||
+      findNearDuplicateBlog(planAsBlog(plan), all.slice(0, index).map(planAsBlog)),
+    );
+    if (conflicts) continue;
+    let pillar = null;
+    try {
+      pillar = await BlogTopicPlan.create(pack.pillar);
+      const supporting = pack.supporting.map((plan) => ({ ...plan, parentTopicId: pillar._id }));
+      await BlogTopicPlan.insertMany(supporting, { ordered: true });
+      acceptedPlans.push(pack.pillar, ...supporting);
+      clusters += 1;
+      topics += 3;
+    } catch (error) {
+      if (pillar?._id) await BlogTopicPlan.deleteOne({ _id: pillar._id, status: { $ne: "used" } });
+      if (error?.code !== 11000) throw error;
+    }
+  }
+  return { clusters, topics };
+}
+
+export async function rebuildClusterTopicCatalog({ targetClusters = 10 } = {}) {
+  await dbConnect();
+  const processing = await BlogTopicPlan.countDocuments({ status: "processing" });
+  if (processing) throw new Error("A topic is currently processing. Finish that blog run before rebuilding the catalog.");
+
+  const [blogs, usedPlans, unusedPlans] = await Promise.all([
+    Blog.find().sort({ createdAt: -1 }).limit(500).select("title summary category tags focusKeyword slug").lean(),
+    BlogTopicPlan.find({ status: "used" }).select("title pillar subtopic problem solutionAngle businessValue audience focusKeyword format fingerprint articleType clusterKey").lean(),
+    BlogTopicPlan.find({ status: { $ne: "used" } }).lean(),
+  ]);
+
+  const avoid = [...blogs.map((item) => `${item.title} | ${item.focusKeyword || ""}`), ...usedPlans.map((item) => `${item.title} | ${item.focusKeyword || ""}`)].join("\n");
+  const candidateTarget = Math.min(18, targetClusters + 6);
+  const prompt = `Create ${candidateTarget} unique topical-authority cluster candidates for Muhyo Tech, focused only on professional web development. The system will accept the best ${targetClusters} after duplicate validation. Each pack must contain exactly one comprehensive pillar topic and exactly two narrow supporting topics. Do not repeat or closely overlap any existing blog or used topic. Pillars must support a genuinely complete 2,000-3,500 word authority resource; supporting topics must each answer a distinct 900-1,200 word long-tail problem. Rotate across: ${PILLARS.join(", ")}. EXISTING BLOGS AND USED TOPICS TO AVOID:\n${avoid}\nReturn strict JSON: {"clusters":[{"clusterKey":"","clusterTitle":"","pillar":{"title":"","pillar":"","subtopic":"","problem":"","solutionAngle":"","businessValue":"","audience":"","focusKeyword":"","searchIntent":"informational","format":"Premium pillar guide","relatedServiceSlugs":[],"priority":80},"supporting":[{"title":"","pillar":"","subtopic":"","problem":"","solutionAngle":"","businessValue":"","audience":"","focusKeyword":"","searchIntent":"informational","format":"Focused supporting guide","relatedServiceSlugs":[],"priority":70},{"title":"","pillar":"","subtopic":"","problem":"","solutionAngle":"","businessValue":"","audience":"","focusKeyword":"","searchIntent":"informational","format":"Focused supporting guide","relatedServiceSlugs":[],"priority":69}]}]}`;
+
+  let aiPacks = [];
+  let aiError = null;
+  try {
+    const raw = await generateGeminiResponse(prompt, { temperature: 0.75, responseMimeType: "application/json", maxOutputTokens: 16384, thinkingBudget: 0, timeoutMs: Number(process.env.AI_TOPIC_QUEUE_TIMEOUT_MS || 35000) });
+    const parsed = JSON.parse(raw.replace(/```json/gi, "").replace(/```/g, "").trim());
+    aiPacks = Array.isArray(parsed.clusters) ? parsed.clusters.slice(0, candidateTarget) : [];
+  } catch (error) {
+    aiError = error.message;
+  }
+
+  await BlogTopicPlan.deleteMany({ status: { $ne: "used" } });
+  try {
+    const ai = await insertClusterPacks(aiPacks, "ai", "planned", blogs, usedPlans, targetClusters);
+    const currentPlans = await BlogTopicPlan.find().select("title pillar subtopic problem solutionAngle businessValue audience focusKeyword format fingerprint articleType clusterKey").lean();
+    const fallback = await insertClusterPacks(buildFallbackClusterPacks(), "fallback", "reserve", blogs, [...usedPlans, ...currentPlans]);
+    if (ai.topics + fallback.topics === 0) throw new Error("No duplicate-safe cluster topics could be prepared; the previous catalog will be restored.");
+    return { success: true, removedUnused: unusedPlans.length, ai, fallback, aiError, preservedUsed: usedPlans.length };
+  } catch (error) {
+    await BlogTopicPlan.deleteMany({ status: { $ne: "used" } });
+    if (unusedPlans.length) {
+      await BlogTopicPlan.insertMany(unusedPlans, { ordered: false });
+    }
+    throw error;
+  }
 }
 
 async function ensureCommercialClusterTopics() {
@@ -93,7 +221,13 @@ async function ensureCommercialClusterTopics() {
 
 export async function reconcileFallbackTopics() {
   await dbConnect();
-  const commercialSeeded = await ensureCommercialClusterTopics();
+  const clusterCatalogExists = await BlogTopicPlan.exists({
+    status: "planned",
+    clusterKey: { $ne: "" },
+  });
+  const commercialSeeded = clusterCatalogExists
+    ? 0
+    : await ensureCommercialClusterTopics();
   const fallbackFingerprints = buildFallbackPlans().map((plan) => buildTopicFingerprint(cleanPlan(plan, "fallback")));
   await BlogTopicPlan.updateMany(
     { fingerprint: { $in: fallbackFingerprints }, source: { $ne: "fallback" } },
@@ -227,39 +361,145 @@ export async function reconcileUsedTopicPlans() {
 async function recoverStaleTopics() {
   const cutoff = new Date(Date.now() - 30 * 60 * 1000);
   const { linkedTopicIds } = await reconcileUsedTopicPlans();
+  const staleBase = {
+    status: "processing",
+    processingStartedAt: { $lt: cutoff },
+    retryCount: { $lt: 3 },
+    _id: { $nin: linkedTopicIds },
+  };
+  const recoveryUpdate = (status) => ({
+    $set: {
+      status,
+      failureReason: "Recovered after interrupted generation.",
+    },
+    $inc: { retryCount: 1 },
+    $unset: { processingStartedAt: 1 },
+  });
+  await BlogTopicPlan.updateMany(
+    { ...staleBase, source: "ai", articleType: "pillar", clusterKey: { $ne: "" } },
+    recoveryUpdate("planned"),
+  );
+  await BlogTopicPlan.updateMany(
+    { ...staleBase, source: "fallback", clusterKey: { $ne: "" } },
+    recoveryUpdate("reserve"),
+  );
   await BlogTopicPlan.updateMany(
     {
-      status: "processing",
-      processingStartedAt: { $lt: cutoff },
-      retryCount: { $lt: 3 },
-      _id: { $nin: linkedTopicIds },
+      ...staleBase,
+      $nor: [
+        { source: "ai", articleType: "pillar", clusterKey: { $ne: "" } },
+        { source: "fallback", clusterKey: { $ne: "" } },
+      ],
     },
-    {
-      $set: {
-        status: "ready",
-        failureReason: "Recovered after interrupted generation.",
-      },
-      $inc: { retryCount: 1 },
-      $unset: { processingStartedAt: 1 },
-    },
+    recoveryUpdate("ready"),
   );
 }
 
-export async function acquireNextTopicPlan({ refill = true } = {}) {
-  await dbConnect(); await recoverStaleTopics();
-  if (refill) await refillTopicQueue().catch((error) => console.warn("[TopicQueue] Refill unavailable; checking reserved topics.", error.message));
-  const now = new Date();
-  const primary = await BlogTopicPlan.findOneAndUpdate({ status: "ready", scheduledFor: null, source: "ai" }, { $set: { status: "processing", processingStartedAt: now }, $unset: { failureReason: 1 } }, { new: true, sort: { priority: -1, createdAt: 1 } });
-  if (primary) return primary;
-  const scheduled = await BlogTopicPlan.findOneAndUpdate({ status: "ready", source: "manual", scheduledFor: { $ne: null, $lte: now } }, { $set: { status: "processing", processingStartedAt: now }, $unset: { failureReason: 1 } }, { new: true, sort: { scheduledFor: 1, priority: -1, createdAt: 1 } });
-  if (scheduled) return scheduled;
-  const manual = await BlogTopicPlan.findOneAndUpdate({ status: "ready", source: "manual", scheduledFor: null }, { $set: { status: "processing", processingStartedAt: now }, $unset: { failureReason: 1 } }, { new: true, sort: { priority: -1, createdAt: 1 } });
-  if (manual) return manual;
-  await activateFallbackTopics();
-  return BlogTopicPlan.findOneAndUpdate({ status: "ready", scheduledFor: null, source: "fallback" }, { $set: { status: "processing", processingStartedAt: now }, $unset: { failureReason: 1 } }, { new: true, sort: { priority: -1, createdAt: 1 } });
+async function takeTopic(filter, sort) {
+  return BlogTopicPlan.findOneAndUpdate(
+    filter,
+    {
+      $set: { status: "processing", processingStartedAt: new Date() },
+      $unset: { failureReason: 1 },
+    },
+    { new: true, sort },
+  );
 }
 
-export const formatTopicPlanForWriter = (plan) => `Title direction: ${plan.title}. Pillar: ${plan.pillar}. Specific subtopic: ${plan.subtopic}. Problem: ${plan.problem}. Engineering solution angle: ${plan.solutionAngle}. Business value: ${plan.businessValue}. Audience: ${plan.audience}. Primary search query: ${plan.focusKeyword}. Search intent: ${plan.searchIntent}. Article format: ${plan.format}. Relevant service slugs for contextual internal links: ${(plan.relatedServiceSlugs || []).join(", ") || "none"}.`;
+async function addParentPillarContext(topic) {
+  if (!topic) return null;
+  const result = topic.toObject();
+  if (!topic.parentTopicId) return result;
+  const parentTopic = await BlogTopicPlan.findById(topic.parentTopicId)
+    .select("title usedByBlogId clusterKey")
+    .lean();
+  if (!parentTopic?.usedByBlogId) return result;
+  const parentBlog = await Blog.findById(parentTopic.usedByBlogId)
+    .select("_id title slug")
+    .lean();
+  return {
+    ...result,
+    parentPillarBlog: parentBlog || null,
+  };
+}
+
+async function takeClusterTopic(source, pillarStatus, supportingStatus) {
+  const completedPillars = await BlogTopicPlan.find({
+    source,
+    articleType: "pillar",
+    status: "used",
+    usedByBlogId: { $ne: null },
+  })
+    .sort({ usedAt: 1, createdAt: 1 })
+    .select("_id")
+    .lean();
+
+  for (const pillar of completedPillars) {
+    const supporting = await takeTopic(
+      {
+        source,
+        articleType: "supporting",
+        parentTopicId: pillar._id,
+        status: supportingStatus,
+      },
+      { clusterOrder: 1, priority: -1, createdAt: 1 },
+    );
+    if (supporting) return addParentPillarContext(supporting);
+  }
+
+  const pillar = await takeTopic(
+    { source, articleType: "pillar", status: pillarStatus },
+    { priority: -1, createdAt: 1 },
+  );
+  return addParentPillarContext(pillar);
+}
+
+export async function acquireNextTopicPlan({ refill = true } = {}) {
+  await dbConnect();
+  await recoverStaleTopics();
+
+  const clusterCatalogExists = await BlogTopicPlan.exists({
+    clusterKey: { $ne: "" },
+    articleType: "pillar",
+  });
+
+  if (clusterCatalogExists) {
+    let topic = await takeClusterTopic("ai", "planned", "ready");
+    if (topic) return topic;
+
+    const now = new Date();
+    topic = await takeTopic(
+      {
+        source: "manual",
+        status: "ready",
+        $or: [
+          { scheduledFor: null },
+          { scheduledFor: { $lte: now } },
+        ],
+      },
+      { scheduledFor: 1, priority: -1, createdAt: 1 },
+    );
+    if (topic) return addParentPillarContext(topic);
+
+    topic = await takeClusterTopic("fallback", "reserve", "reserve");
+    if (topic) return topic;
+    return null;
+  }
+
+  if (refill) await refillTopicQueue().catch((error) => console.warn("[TopicQueue] Refill unavailable; checking reserved topics.", error.message));
+  const now = new Date();
+  const primary = await takeTopic({ status: "ready", scheduledFor: null, source: "ai" }, { priority: -1, createdAt: 1 });
+  if (primary) return addParentPillarContext(primary);
+  const scheduled = await takeTopic({ status: "ready", source: "manual", scheduledFor: { $ne: null, $lte: now } }, { scheduledFor: 1, priority: -1, createdAt: 1 });
+  if (scheduled) return addParentPillarContext(scheduled);
+  const manual = await takeTopic({ status: "ready", source: "manual", scheduledFor: null }, { priority: -1, createdAt: 1 });
+  if (manual) return addParentPillarContext(manual);
+  await activateFallbackTopics();
+  const fallback = await takeTopic({ status: "ready", scheduledFor: null, source: "fallback" }, { priority: -1, createdAt: 1 });
+  return addParentPillarContext(fallback);
+}
+
+export const formatTopicPlanForWriter = (plan) => `Article type: ${plan.articleType || "supporting"}. Content cluster: ${plan.clusterTitle || plan.pillar}. Title direction: ${plan.title}. Pillar: ${plan.pillar}. Specific subtopic: ${plan.subtopic}. Problem: ${plan.problem}. Engineering solution angle: ${plan.solutionAngle}. Business value: ${plan.businessValue}. Audience: ${plan.audience}. Primary search query: ${plan.focusKeyword}. Search intent: ${plan.searchIntent}. Article format: ${plan.format}. Relevant service slugs for contextual internal links: ${(plan.relatedServiceSlugs || []).join(", ") || "none"}.${plan.parentPillarBlog ? ` Parent pillar article: ${plan.parentPillarBlog.title} at /blog/${plan.parentPillarBlog.slug}. Link to it naturally.` : ""}`;
 export async function markTopicPlanUsed(id, blogId) {
   if (!id) return null;
   const topic = await BlogTopicPlan.findByIdAndUpdate(
@@ -273,4 +513,27 @@ export async function markTopicPlanUsed(id, blogId) {
   if (!topic) throw new Error(`Topic plan ${id} was not found after blog creation.`);
   return topic;
 }
-export async function releaseTopicPlan(id, reason, { reject = false } = {}) { if (!id) return; const plan = await BlogTopicPlan.findById(id); if (!plan || plan.status !== "processing") return; plan.retryCount += 1; plan.failureReason = String(reason || "Generation failed").slice(0, 300); plan.status = reject ? "rejected" : plan.retryCount >= 3 ? "failed" : "ready"; plan.processingStartedAt = undefined; await plan.save(); }
+export async function releaseTopicPlan(id, reason, { reject = false } = {}) {
+  if (!id) return;
+  const plan = await BlogTopicPlan.findById(id);
+  if (!plan || plan.status !== "processing") return;
+  plan.retryCount += 1;
+  plan.failureReason = String(reason || "Generation failed").slice(0, 300);
+  if (reject || plan.retryCount >= 3) {
+    plan.status = reject ? "rejected" : "failed";
+  } else if (plan.source === "fallback" && plan.clusterKey) {
+    plan.status = "reserve";
+  } else if (plan.source === "ai" && plan.articleType === "pillar" && plan.clusterKey) {
+    plan.status = "planned";
+  } else {
+    plan.status = "ready";
+  }
+  plan.processingStartedAt = undefined;
+  await plan.save();
+  if (reject && plan.articleType === "pillar" && plan.clusterKey) {
+    await BlogTopicPlan.updateMany(
+      { parentTopicId: plan._id, status: { $in: ["planned", "ready", "reserve"] } },
+      { $set: { status: "rejected", failureReason: `Parent pillar rejected: ${plan.failureReason}` } },
+    );
+  }
+}

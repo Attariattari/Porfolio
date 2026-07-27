@@ -2,9 +2,11 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import { getAuthSession, checkPermission } from "@/lib/auth";
 import { BlogTopicPlan } from "@/models/BlogTopicPlan";
-import { activateFallbackTopics, createTopicPlan, reconcileFallbackTopics, reconcileUsedTopicPlans, refillTopicQueue } from "@/lib/ai/blog/topicQueue";
+import { activateFallbackTopics, createTopicPlan, rebuildClusterTopicCatalog, reconcileFallbackTopics, reconcileUsedTopicPlans, refillTopicQueue } from "@/lib/ai/blog/topicQueue";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+export const maxDuration = 60;
 
 async function authorize(action = "edit") {
   const session = await getAuthSession();
@@ -17,16 +19,10 @@ export async function GET(request) {
   await reconcileFallbackTopics();
   await reconcileUsedTopicPlans();
   const status = request.nextUrl.searchParams.get("status");
-  const fallbackActive = await BlogTopicPlan.exists({ source: "fallback", status: "ready" });
-  const primaryReady = await BlogTopicPlan.exists({ source: { $ne: "fallback" }, status: "ready" });
-  const showFallback = Boolean(fallbackActive && !primaryReady);
-  const visibility = showFallback
-    ? {}
-    : { $or: [{ source: { $ne: "fallback" } }, { status: "used" }] };
-  const query = { ...visibility, status: status && status !== "all" ? status : { $ne: "reserve" } };
+  const query = status && status !== "all" ? { status } : {};
   const [topics, statusCounts] = await Promise.all([
     BlogTopicPlan.find(query).sort({ status: 1, scheduledFor: 1, priority: -1, createdAt: 1 }).limit(300).lean(),
-    BlogTopicPlan.aggregate([{ $match: { ...visibility, status: { $ne: "reserve" } } }, { $group: { _id: "$status", count: { $sum: 1 } } }]),
+    BlogTopicPlan.aggregate([{ $group: { _id: "$status", count: { $sum: 1 } } }]),
   ]);
   const counts = Object.fromEntries(statusCounts.map((item) => [item._id, item.count]));
   return NextResponse.json({ success: true, data: { topics, counts, total: Object.values(counts).reduce((sum, count) => sum + count, 0) } });
@@ -36,6 +32,10 @@ export async function POST(request) {
   if (!(await authorize("create"))) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
   try {
     const body = await request.json();
+    if (body.action === "rebuild-clusters") {
+      const result = await rebuildClusterTopicCatalog({ targetClusters: 10 });
+      return NextResponse.json({ success: true, data: result });
+    }
     if (body.action === "refill") {
       const result = await refillTopicQueue({ force: true, target: Number(body.target) || 45, threshold: 0 });
       const activation = result.ready === 0 ? await activateFallbackTopics() : { activated: 0 };
@@ -55,7 +55,7 @@ export async function PATCH(request) {
     await dbConnect();
     const { id, action, ...changes } = await request.json();
     if (!id) return NextResponse.json({ success: false, error: "Topic id is required." }, { status: 400 });
-    const allowed = ["title", "pillar", "subtopic", "problem", "solutionAngle", "businessValue", "audience", "focusKeyword", "searchIntent", "format", "relatedServiceSlugs", "priority", "scheduledFor", "notes"];
+    const allowed = ["title", "articleType", "clusterKey", "clusterTitle", "parentTopicId", "clusterOrder", "pillar", "subtopic", "problem", "solutionAngle", "businessValue", "audience", "focusKeyword", "searchIntent", "format", "relatedServiceSlugs", "priority", "scheduledFor", "notes"];
     const update = Object.fromEntries(Object.entries(changes).filter(([key]) => allowed.includes(key)));
     if (action === "approve") update.status = "ready";
     if (action === "reject") update.status = "rejected";

@@ -978,6 +978,11 @@
 
 /* Modal Open Focus Mode */
 
+body.modal-open {
+    overflow: hidden !important;
+    overscroll-behavior: none;
+}
+
 body.modal-open aside,
 body.modal-open .fixed.md\:flex,
 body.modal-open nav.md\:hidden {

@@ -439,9 +439,16 @@ async function generateEditorialContent(
     retryCount = 0,
     previousDraft = null,
     recentTopics = [],
+    options = {},
 ) {
+    const articleType = options.articleType === "pillar" ? "pillar" : "supporting";
+    const isPillar = articleType === "pillar";
+    const targetWords = isPillar ? "2,000-3,500 words when the topic requires that depth" : "900-1,200 words";
+    const minimumWords = isPillar ? 1800 : 700;
+    const minimumSections = isPillar ? 8 : 5;
     const prompt = `
-    TASK: ${previousDraft ? "REFINE and IMPROVE" : "GENERATE"} a premium, human-written engineering blog post for Muhyo Tech.
+    TASK: ${previousDraft ? "REFINE and IMPROVE" : "GENERATE"} a premium, human-written ${articleType} engineering blog post for Muhyo Tech.
+    ARTICLE TYPE: ${articleType.toUpperCase()}
     TOPIC: ${topic || "Realistic Technical Problem Solving"}
 
     BRAND AND WEBSITE REPRESENTATION:
@@ -455,8 +462,13 @@ async function generateEditorialContent(
     
     CRITIC ALIGNMENT (Follow these to pass first attempt):
     - Tone must be Senior Engineering/Founder level.
-    - Content must be a complete article, not a teaser. Target 900-1200 words.
-    - Include at least 5 meaningful <h2> sections and multiple <p> blocks.
+    - Content must be a complete article, not a teaser. Target ${targetWords}; completeness and reader value matter more than padding.
+    - Include at least ${minimumSections} meaningful <h2> sections and multiple <p> blocks.
+    ${isPillar ? `- Start with a direct answer/quick summary, then move logically from foundations to advanced decisions.
+    - Use useful <h3> subsections, a real comparison <table>, a practical checklist, explicit pros/cons, common mistakes, best practices, FAQs, and actionable final advice.
+    - Cover what the topic is, why it matters, how it works, realistic examples, tradeoffs, business implications, and decision criteria without repeating the same formula under every heading.
+    - Include original founder-level reasoning and honest limitations. Cite official standards or documentation naturally when factual claims require support; never fabricate sources.
+    - Make this an evergreen, backlink-worthy authority resource rather than a stretched supporting post.` : "- Keep the scope focused on the one specific question defined by the supporting topic."}
     - Paragraphs MUST be 2-3 sentences max. No exceptions.
     - Voice should be Muhyo Tech centric (using "we", "our team").
     - If the topic supports it, use a practical problem-solving arc: real pain, root cause, engineering decision, implementation approach, tradeoffs, business result.
@@ -485,7 +497,7 @@ async function generateEditorialContent(
       "relatedServiceSlugs": ["1 to 3 relevant slugs chosen only from: custom-website-development, mern-stack-web-development, nextjs-website-development, full-stack-web-app-development, admin-dashboard-development, e-commerce-website-development, portfolio-website-development, landing-page-design, website-redesign, api-integration, database-integration, seo-friendly-website-setup, website-speed-optimization, maintenance-support"],
       "category": "Engineering | Design | Backend | SEO | Technology | Architecture | Culture | Security | Infrastructure",
       "tags": ["tag1", "tag2", "tag3"],
-      "content": "Full HTML article body with <p>, <h2>, <ul>/<li> where useful. 900-1200 words. 2-3 sentences per paragraph ONLY. Keep HTML simple and do not use attributes with double quotes.",
+      "content": "Full HTML article body with <p>, <h2>, <h3>, <ul>/<ol>/<li>${isPillar ? ", <table>/<thead>/<tbody>/<tr>/<th>/<td>" : ""} where useful. ${targetWords}. 2-3 sentences per paragraph ONLY. Keep HTML simple and do not use attributes with double quotes.",
       "author": "Pir Ghulam Muhyo Din",
       "authorRole": "Founder",
       "readTime": "e.g. 7 min read",
@@ -497,9 +509,9 @@ async function generateEditorialContent(
     systemInstruction: EDITORIAL_GUIDELINES,
     temperature: 0.9, // High for natural sentence variation
     responseMimeType: "application/json",
-    maxOutputTokens: 8192,
+    maxOutputTokens: isPillar ? 16384 : 8192,
     thinkingBudget: 0,
-    timeoutMs: Number(process.env.AI_DRAFT_TIMEOUT_MS || 35000),
+    timeoutMs: Number(isPillar ? process.env.AI_PILLAR_DRAFT_TIMEOUT_MS || 40000 : process.env.AI_DRAFT_TIMEOUT_MS || 35000),
   });
 
   try {
@@ -531,6 +543,10 @@ async function generateEditorialContent(
     });
     const hasHtmlBlocks = /<(p|h2|h3|ul|ol|blockquote)\b/i.test(content);
     const sectionCount = (content.match(/<h2\b/gi) || []).length;
+    const subsectionCount = (content.match(/<h3\b/gi) || []).length;
+    const hasList = /<(ul|ol)\b/i.test(content);
+    const hasTable = /<table\b/i.test(content);
+    const hasFaq = /frequently asked|<h[23][^>]*>\s*faqs?\b/i.test(content);
     const wordCount = getBlogWordCount({ content });
     const seoDescriptionLength = String(parsed.seoDescription || "").trim().length;
     const summaryLength = String(parsed.summary || "").trim().length;
@@ -542,9 +558,13 @@ async function generateEditorialContent(
     ].includes(parsed.searchIntent);
 
     const validationIssues = [
-      wordCount < 700 && `article has only ${wordCount} words (minimum 700)`,
+      wordCount < minimumWords && `article has only ${wordCount} words (minimum ${minimumWords} for ${articleType})`,
       !hasHtmlBlocks && "article body is missing valid HTML blocks",
-      sectionCount < 5 && `article has only ${sectionCount} H2 sections (minimum 5)`,
+      sectionCount < minimumSections && `article has only ${sectionCount} H2 sections (minimum ${minimumSections})`,
+      isPillar && subsectionCount < 3 && `pillar has only ${subsectionCount} H3 subsections (minimum 3)`,
+      isPillar && !hasList && "pillar is missing a practical list or checklist",
+      isPillar && !hasTable && "pillar is missing a useful comparison table",
+      isPillar && !hasFaq && "pillar is missing a clear FAQ section",
       !parsed.title && "title is missing",
       !parsed.slug && "slug is missing",
       summaryLength < 100 && `summary has only ${summaryLength} characters`,
@@ -559,10 +579,11 @@ async function generateEditorialContent(
       if (retryCount < 2) {
         return generateEditorialContent(
           topic,
-          `Correct these exact validation problems: ${validationIssues.join("; ")}. Return a complete 900-1200 word article with at least five useful H2 sections.`,
+          `Correct these exact validation problems: ${validationIssues.join("; ")}. Return a complete ${targetWords} ${articleType} article with at least ${minimumSections} useful H2 sections.`,
           retryCount + 1,
           null,
           recentTopics,
+          options,
         );
       }
       throw new Error(`Generated blog failed validation: ${validationIssues.join("; ")}.`);
@@ -596,6 +617,7 @@ async function generateEditorialContent(
         retryCount + 1,
         null,
         recentTopics,
+        options,
       );
     throw e;
   }
@@ -842,10 +864,12 @@ async function reviewGeneratedImage(imageUrl, blogData, attemptCount = 1) {
 /**
  * Step 2: Internal AI Quality Review (The Critic)
  */
-async function runQualityReview(blogData) {
+async function runQualityReview(blogData, options = {}) {
+  const articleType = options.articleType === "pillar" ? "pillar" : "supporting";
+  const isPillar = articleType === "pillar";
   const reviewPrompt = `
     Act as a Senior Editorial Director at Muhyo Tech. 
-    Review this blog for production-ready quality.
+    Review this ${articleType} blog for production-ready quality.
 
     PASSING CRITERIA:
     - Score >= 8: Generally strong, authentic, and follows basic rules.
@@ -856,6 +880,11 @@ async function runQualityReview(blogData) {
     - Reader Magnet: Offers a practical, specific angle that founders or developers would want to read and share.
     - Problem-Solution Value: When appropriate, connects a real technical/business pain to a practical engineering fix and a clear business outcome.
     - Visuals: Image prompt is realistic/editorial (No neon/cyberpunk).
+    ${isPillar ? `- Pillar completeness: Fully satisfies the primary search intent from direct answer through advanced decisions.
+    - Authority value: Includes practical examples, tradeoffs, mistakes, best practices, comparison table, checklist, FAQs, and actionable advice without filler.
+    - EEAT: Uses honest engineering judgment, never fabricated incidents, metrics, clients, or citations.
+    - Structure: Beginner-to-advanced flow with meaningful H2/H3 hierarchy and no repetitive section formula.
+    - Backlink value: Contains genuinely reusable decision guidance rather than generic explanations.` : "- Supporting focus: Answers one narrow question thoroughly without drifting into a broad pillar rewrite."}
 
     REJECT ONLY IF:
     - Major AI tropes are present.
@@ -869,7 +898,7 @@ async function runQualityReview(blogData) {
     CONTENT:
     Title: ${blogData.title}
     Summary: ${blogData.summary}
-    Content Snippet: ${blogData.content.substring(0, 1500)}
+    Content ${isPillar ? "Full Review Extract" : "Snippet"}: ${blogData.content.substring(0, isPillar ? 14000 : 2500)}
     Image Prompt: ${blogData.image_prompt}
 
     OUTPUT FORMAT (JSON):
@@ -958,6 +987,12 @@ export async function runBlogAutomationPipeline(
           automationContext = {
             ...(automationContext || {}),
             topicPlanId: topicPlan._id.toString(),
+            articleType: topicPlan.articleType || "supporting",
+            clusterKey: topicPlan.clusterKey || "",
+            clusterTitle: topicPlan.clusterTitle || topicPlan.pillar || "",
+            clusterOrder: Number(topicPlan.clusterOrder || 0),
+            parentTopicId: topicPlan.parentTopicId?.toString?.() || null,
+            parentPillarBlog: topicPlan.parentPillarBlog || null,
           };
           report("PLANNED_TOPIC_SELECTED", {
             message: `Using editorial queue topic: ${topicPlan.title}`,
@@ -1037,13 +1072,16 @@ export async function runBlogAutomationPipeline(
       retryCount,
       previousDraft,
       recentTitles,
+      { articleType: automationContext?.articleType || "supporting" },
     );
 
     // 2. REVIEW
     report("REVIEWING", {
       message: "Critic is analyzing editorial quality...",
     });
-    const review = await runQualityReview(blogData);
+    const review = await runQualityReview(blogData, {
+      articleType: automationContext?.articleType || "supporting",
+    });
 
     console.log(`[Review] Score: ${review.score}/10 | Pass: ${review.passed}`);
 
@@ -1122,6 +1160,13 @@ export async function runBlogAutomationPipeline(
       qualityScore: review.score,
       qualityMetrics: review.metrics,
       generatedAt: new Date(),
+      articleType: automationContext?.articleType || "supporting",
+      clusterKey: automationContext?.clusterKey || "",
+      clusterTitle: automationContext?.clusterTitle || "",
+      clusterOrder: Number(automationContext?.clusterOrder || 0),
+      ...(automationContext?.parentPillarBlog?._id
+        ? { parentPillarBlogId: automationContext.parentPillarBlog._id }
+        : {}),
       ...(automationContext?.topicPlanId
         ? { topicPlanId: automationContext.topicPlanId }
         : {}),

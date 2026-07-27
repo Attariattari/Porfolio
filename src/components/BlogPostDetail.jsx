@@ -212,7 +212,10 @@ export default function BlogPostDetail({
                 [&_strong]:font-bold [&_strong]:text-foreground
                 [&_a]:font-semibold [&_a]:text-accent [&_a]:underline [&_a]:underline-offset-4
                 [&_code]:rounded-md [&_code]:bg-muted [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:text-foreground
-                [&_pre]:overflow-x-auto [&_pre]:rounded-2xl [&_pre]:border [&_pre]:border-border [&_pre]:bg-muted [&_pre]:p-5 [&_pre]:text-foreground"
+                [&_pre]:overflow-x-auto [&_pre]:rounded-2xl [&_pre]:border [&_pre]:border-border [&_pre]:bg-muted [&_pre]:p-5 [&_pre]:text-foreground
+                [&_table]:my-10 [&_table]:block [&_table]:w-full [&_table]:overflow-x-auto [&_table]:rounded-xl [&_table]:border [&_table]:border-border [&_table]:text-left
+                [&_thead]:bg-muted [&_th]:whitespace-nowrap [&_th]:border-b [&_th]:border-border [&_th]:px-4 [&_th]:py-3 [&_th]:text-sm [&_th]:font-bold [&_th]:text-foreground
+                [&_td]:min-w-40 [&_td]:border-b [&_td]:border-border/60 [&_td]:px-4 [&_td]:py-3 [&_td]:text-sm [&_td]:leading-6 [&_td]:text-muted-foreground"
               dangerouslySetInnerHTML={{ __html: sanitizeBlogContentClasses(blog.content) }}
             />
 

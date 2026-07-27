@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect } from "react";
+import useModalScrollLock from "@/hooks/useModalScrollLock";
 
 export default function FormModal({
   isOpen,
@@ -15,6 +16,7 @@ export default function FormModal({
   onSubmit,
   fields
 }) {
+  useModalScrollLock(isOpen);
   const {
     register,
     handleSubmit,

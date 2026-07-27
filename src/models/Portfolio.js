@@ -183,6 +183,21 @@ const BlogSchema = new mongoose.Schema({
         index: true,
     },
     automationSource: { type: String },
+    articleType: {
+        type: String,
+        enum: ["pillar", "supporting"],
+        default: "supporting",
+        index: true,
+    },
+    clusterKey: { type: String, index: true },
+    clusterTitle: { type: String },
+    clusterOrder: { type: Number, min: 0, max: 2, default: 0 },
+    parentPillarBlogId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Blog",
+        index: true,
+        sparse: true,
+    },
     topicPlanId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "BlogTopicPlan",
