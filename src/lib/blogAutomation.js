@@ -950,28 +950,6 @@ export async function runBlogAutomationPipeline(
     let recentTitles = [];
     let recentBlogMeta = [];
 
-    // Add one brand-focused article per UTC calendar month. If this month's
-    // spotlight already exists, the original AI topic-selection flow continues
-    // unchanged below.
-    if (!selectedTopic) {
-      const month = getUtcMonthContext();
-      const monthlySpotlightExists = await Blog.exists({
-        editorialCampaign: MONTHLY_MUHYO_TECH_CAMPAIGN,
-        createdAt: { $gte: month.start, $lt: month.end },
-      });
-
-      if (!monthlySpotlightExists) {
-        selectedTopic = buildMonthlyMuhyoTechTopic(month.label);
-        automationContext = {
-          ...(automationContext || {}),
-          editorialCampaign: MONTHLY_MUHYO_TECH_CAMPAIGN,
-        };
-        report("MONTHLY_BRAND_TOPIC", {
-          message: `Using this month's Muhyo Tech spotlight topic for ${month.label}.`,
-        });
-      }
-    }
-
     if (!selectedTopic) {
       try {
         const topicPlan = await acquireNextTopicPlan();
@@ -988,6 +966,27 @@ export async function runBlogAutomationPipeline(
       } catch (error) {
         report("TOPIC_QUEUE_FALLBACK", {
           message: `Editorial queue unavailable; continuing with the existing strategist. ${error.message}`,
+        });
+      }
+    }
+
+    // A saved editorial topic always wins. The monthly spotlight remains a
+    // fallback only when the persisted topic queue has nothing ready to use.
+    if (!selectedTopic) {
+      const month = getUtcMonthContext();
+      const monthlySpotlightExists = await Blog.exists({
+        editorialCampaign: MONTHLY_MUHYO_TECH_CAMPAIGN,
+        createdAt: { $gte: month.start, $lt: month.end },
+      });
+
+      if (!monthlySpotlightExists) {
+        selectedTopic = buildMonthlyMuhyoTechTopic(month.label);
+        automationContext = {
+          ...(automationContext || {}),
+          editorialCampaign: MONTHLY_MUHYO_TECH_CAMPAIGN,
+        };
+        report("MONTHLY_BRAND_TOPIC", {
+          message: `The editorial queue is empty. Using this month's Muhyo Tech spotlight topic for ${month.label}.`,
         });
       }
     }
@@ -1123,6 +1122,9 @@ export async function runBlogAutomationPipeline(
       qualityScore: review.score,
       qualityMetrics: review.metrics,
       generatedAt: new Date(),
+      ...(automationContext?.topicPlanId
+        ? { topicPlanId: automationContext.topicPlanId }
+        : {}),
       date: new Date().toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
@@ -1159,9 +1161,16 @@ export async function runBlogAutomationPipeline(
       throw error;
     }
     await cacheManager.invalidateByTag("blogs");
-    await markTopicPlanUsed(automationContext?.topicPlanId, newBlog._id).catch(
-      (error) => console.warn("[TopicQueue] Blog saved, but topic completion will be recovered later.", error.message),
-    );
+    if (automationContext?.topicPlanId) {
+      try {
+        await markTopicPlanUsed(automationContext.topicPlanId, newBlog._id);
+      } catch (error) {
+        console.warn(
+          "[TopicQueue] Blog saved with its topic link; completion will be reconciled on the next queue read.",
+          error.message,
+        );
+      }
+    }
 
     report("CONTENT_SAVED", {
       message: "Editorial-quality blog saved.",

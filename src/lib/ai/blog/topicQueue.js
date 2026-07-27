@@ -100,7 +100,7 @@ export async function reconcileFallbackTopics() {
     { $set: { source: "fallback" } },
   );
 
-  const primaryReady = await BlogTopicPlan.countDocuments({ status: "ready", source: { $ne: "fallback" } });
+  const primaryReady = await BlogTopicPlan.countDocuments({ status: "ready", source: "ai" });
   if (primaryReady > 0) {
     await BlogTopicPlan.updateMany(
       { source: "fallback", status: "ready" },
@@ -136,7 +136,7 @@ export async function createTopicPlan(input, source = "manual") {
 export async function refillTopicQueue({ target = 45, threshold = 15, force = false } = {}) {
   await dbConnect();
   await reconcileFallbackTopics();
-  const activeCount = await BlogTopicPlan.countDocuments({ status: "ready", source: { $ne: "fallback" } });
+  const activeCount = await BlogTopicPlan.countDocuments({ status: "ready", source: "ai" });
   if (activeCount > 0) {
     await BlogTopicPlan.updateMany(
       { source: "fallback", status: "ready" },
@@ -181,14 +181,14 @@ export async function refillTopicQueue({ target = 45, threshold = 15, force = fa
       { $set: { status: "reserve" }, $unset: { scheduledFor: 1 } },
     );
   }
-  const ready = await BlogTopicPlan.countDocuments({ status: "ready", source: { $ne: "fallback" } });
+  const ready = await BlogTopicPlan.countDocuments({ status: "ready", source: "ai" });
   const reserve = await BlogTopicPlan.countDocuments({ status: "reserve", source: "fallback" });
   return { success: true, generated: fallbackUsed ? 0 : accepted.length, fallbackSeeded: fallbackUsed ? accepted.length : 0, ready, reserve, requested, fallbackUsed };
 }
 
 export async function activateFallbackTopics(limit = 30) {
   await dbConnect();
-  const existingPrimary = await BlogTopicPlan.countDocuments({ status: "ready", source: { $ne: "fallback" } });
+  const existingPrimary = await BlogTopicPlan.countDocuments({ status: "ready", source: "ai" });
   if (existingPrimary > 0) return { activated: 0, reason: "primary_topics_available" };
   const reserves = await BlogTopicPlan.find({ status: "reserve", source: "fallback" }).sort({ priority: -1, createdAt: 1 }).limit(limit).select("_id").lean();
   if (!reserves.length) return { activated: 0, reason: "no_fallback_reserve" };
@@ -197,23 +197,80 @@ export async function activateFallbackTopics(limit = 30) {
   return { activated: ids.length, reason: "ai_queue_unavailable" };
 }
 
+export async function reconcileUsedTopicPlans() {
+  await dbConnect();
+  const linkedBlogs = await Blog.find({ topicPlanId: { $ne: null } })
+    .select("_id topicPlanId createdAt generatedAt")
+    .lean();
+  if (!linkedBlogs.length) return { reconciled: 0, linkedTopicIds: [] };
+
+  const operations = linkedBlogs.map((blog) => ({
+    updateOne: {
+      filter: { _id: blog.topicPlanId },
+      update: {
+        $set: {
+          status: "used",
+          usedAt: blog.generatedAt || blog.createdAt || new Date(),
+          usedByBlogId: blog._id,
+        },
+        $unset: { processingStartedAt: 1, failureReason: 1 },
+      },
+    },
+  }));
+  const result = await BlogTopicPlan.bulkWrite(operations, { ordered: false });
+  return {
+    reconciled: result.modifiedCount || 0,
+    linkedTopicIds: linkedBlogs.map((blog) => blog.topicPlanId),
+  };
+}
+
 async function recoverStaleTopics() {
   const cutoff = new Date(Date.now() - 30 * 60 * 1000);
-  await BlogTopicPlan.updateMany({ status: "processing", processingStartedAt: { $lt: cutoff }, retryCount: { $lt: 3 } }, { $set: { status: "ready", failureReason: "Recovered after interrupted generation." }, $inc: { retryCount: 1 }, $unset: { processingStartedAt: 1 } });
+  const { linkedTopicIds } = await reconcileUsedTopicPlans();
+  await BlogTopicPlan.updateMany(
+    {
+      status: "processing",
+      processingStartedAt: { $lt: cutoff },
+      retryCount: { $lt: 3 },
+      _id: { $nin: linkedTopicIds },
+    },
+    {
+      $set: {
+        status: "ready",
+        failureReason: "Recovered after interrupted generation.",
+      },
+      $inc: { retryCount: 1 },
+      $unset: { processingStartedAt: 1 },
+    },
+  );
 }
 
 export async function acquireNextTopicPlan({ refill = true } = {}) {
   await dbConnect(); await recoverStaleTopics();
   if (refill) await refillTopicQueue().catch((error) => console.warn("[TopicQueue] Refill unavailable; checking reserved topics.", error.message));
   const now = new Date();
+  const primary = await BlogTopicPlan.findOneAndUpdate({ status: "ready", scheduledFor: null, source: "ai" }, { $set: { status: "processing", processingStartedAt: now }, $unset: { failureReason: 1 } }, { new: true, sort: { priority: -1, createdAt: 1 } });
+  if (primary) return primary;
   const scheduled = await BlogTopicPlan.findOneAndUpdate({ status: "ready", source: "manual", scheduledFor: { $ne: null, $lte: now } }, { $set: { status: "processing", processingStartedAt: now }, $unset: { failureReason: 1 } }, { new: true, sort: { scheduledFor: 1, priority: -1, createdAt: 1 } });
   if (scheduled) return scheduled;
-  const primary = await BlogTopicPlan.findOneAndUpdate({ status: "ready", scheduledFor: null, source: { $ne: "fallback" } }, { $set: { status: "processing", processingStartedAt: now }, $unset: { failureReason: 1 } }, { new: true, sort: { priority: -1, createdAt: 1 } });
-  if (primary) return primary;
+  const manual = await BlogTopicPlan.findOneAndUpdate({ status: "ready", source: "manual", scheduledFor: null }, { $set: { status: "processing", processingStartedAt: now }, $unset: { failureReason: 1 } }, { new: true, sort: { priority: -1, createdAt: 1 } });
+  if (manual) return manual;
   await activateFallbackTopics();
   return BlogTopicPlan.findOneAndUpdate({ status: "ready", scheduledFor: null, source: "fallback" }, { $set: { status: "processing", processingStartedAt: now }, $unset: { failureReason: 1 } }, { new: true, sort: { priority: -1, createdAt: 1 } });
 }
 
 export const formatTopicPlanForWriter = (plan) => `Title direction: ${plan.title}. Pillar: ${plan.pillar}. Specific subtopic: ${plan.subtopic}. Problem: ${plan.problem}. Engineering solution angle: ${plan.solutionAngle}. Business value: ${plan.businessValue}. Audience: ${plan.audience}. Primary search query: ${plan.focusKeyword}. Search intent: ${plan.searchIntent}. Article format: ${plan.format}. Relevant service slugs for contextual internal links: ${(plan.relatedServiceSlugs || []).join(", ") || "none"}.`;
-export async function markTopicPlanUsed(id, blogId) { if (!id) return; await BlogTopicPlan.findByIdAndUpdate(id, { $set: { status: "used", usedAt: new Date(), usedByBlogId: blogId }, $unset: { processingStartedAt: 1, failureReason: 1 } }); }
+export async function markTopicPlanUsed(id, blogId) {
+  if (!id) return null;
+  const topic = await BlogTopicPlan.findByIdAndUpdate(
+    id,
+    {
+      $set: { status: "used", usedAt: new Date(), usedByBlogId: blogId },
+      $unset: { processingStartedAt: 1, failureReason: 1 },
+    },
+    { new: true },
+  );
+  if (!topic) throw new Error(`Topic plan ${id} was not found after blog creation.`);
+  return topic;
+}
 export async function releaseTopicPlan(id, reason, { reject = false } = {}) { if (!id) return; const plan = await BlogTopicPlan.findById(id); if (!plan || plan.status !== "processing") return; plan.retryCount += 1; plan.failureReason = String(reason || "Generation failed").slice(0, 300); plan.status = reject ? "rejected" : plan.retryCount >= 3 ? "failed" : "ready"; plan.processingStartedAt = undefined; await plan.save(); }

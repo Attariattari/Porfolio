@@ -69,8 +69,13 @@ const nextConfig = {
     async redirects() {
         return [
             {
-                source: "/blog/why-we-retired-custom-auth-systems",
-                destination: "/blog/why-we-stopped-building-our-own-authentication-systems",
+                source: "/blog/why-we-stopped-building-our-own-authentication-systems",
+                destination: "/blog/why-we-retired-custom-auth-systems",
+                permanent: true,
+            },
+            {
+                source: "/blog/beyond-the-meta-tag-engineering-seo-sustainable-discovery",
+                destination: "/blog/seo-engineering-technical-deep-dives-real-traffic",
                 permanent: true,
             },
             {

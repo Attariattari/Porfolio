@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import { getAuthSession, checkPermission } from "@/lib/auth";
 import { BlogTopicPlan } from "@/models/BlogTopicPlan";
-import { activateFallbackTopics, createTopicPlan, reconcileFallbackTopics, refillTopicQueue } from "@/lib/ai/blog/topicQueue";
+import { activateFallbackTopics, createTopicPlan, reconcileFallbackTopics, reconcileUsedTopicPlans, refillTopicQueue } from "@/lib/ai/blog/topicQueue";
 
 export const dynamic = "force-dynamic";
 
@@ -15,11 +15,14 @@ export async function GET(request) {
   if (!(await authorize("edit"))) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
   await dbConnect();
   await reconcileFallbackTopics();
+  await reconcileUsedTopicPlans();
   const status = request.nextUrl.searchParams.get("status");
   const fallbackActive = await BlogTopicPlan.exists({ source: "fallback", status: "ready" });
   const primaryReady = await BlogTopicPlan.exists({ source: { $ne: "fallback" }, status: "ready" });
   const showFallback = Boolean(fallbackActive && !primaryReady);
-  const visibility = showFallback ? {} : { source: { $ne: "fallback" } };
+  const visibility = showFallback
+    ? {}
+    : { $or: [{ source: { $ne: "fallback" } }, { status: "used" }] };
   const query = { ...visibility, status: status && status !== "all" ? status : { $ne: "reserve" } };
   const [topics, statusCounts] = await Promise.all([
     BlogTopicPlan.find(query).sort({ status: 1, scheduledFor: 1, priority: -1, createdAt: 1 }).limit(300).lean(),

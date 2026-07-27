@@ -183,6 +183,12 @@ const BlogSchema = new mongoose.Schema({
         index: true,
     },
     automationSource: { type: String },
+    topicPlanId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "BlogTopicPlan",
+        index: true,
+        sparse: true,
+    },
     editorialCampaign: { type: String, index: true },
     image_prompt: { type: String },
     imagePrompt: { type: String },

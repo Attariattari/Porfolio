@@ -58,8 +58,10 @@ const SERVICE_CATALOG = {
 };
 
 export const BLOG_LEGACY_REDIRECTS = {
-  "why-we-retired-custom-auth-systems":
-    "why-we-stopped-building-our-own-authentication-systems",
+  "why-we-stopped-building-our-own-authentication-systems":
+    "why-we-retired-custom-auth-systems",
+  "beyond-the-meta-tag-engineering-seo-sustainable-discovery":
+    "seo-engineering-technical-deep-dives-real-traffic",
   "why-we-finally-sharded-our-database":
     "database-sharding-when-and-why-we-finally-pulled-the-trigger",
   "mongodb-aggregation-real-world-performance":
