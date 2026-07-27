@@ -2,7 +2,9 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
+import { createPortal } from "react-dom";
 import BookingForm from "./BookingForm";
+import useModalScrollLock from "@/hooks/useModalScrollLock";
 
 export default function BookingModal({
   isOpen,
@@ -12,15 +14,16 @@ export default function BookingModal({
   sourcePage = "modal",
   contextTitle = "",
 }) {
-  if (!isOpen) return null;
+  useModalScrollLock(isOpen);
+  if (!isOpen || typeof document === "undefined") return null;
 
-  return (
+  return createPortal(
     <AnimatePresence>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[150] flex items-end justify-center p-0 md:items-center md:p-8"
+        className="fixed inset-0 z-[1000] flex h-[100dvh] w-screen items-end justify-center p-0 md:items-center md:p-8"
         role="dialog"
         aria-modal="true"
         aria-labelledby="booking-modal-title"
@@ -75,6 +78,7 @@ export default function BookingModal({
           </div>
         </motion.div>
       </motion.div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 }
