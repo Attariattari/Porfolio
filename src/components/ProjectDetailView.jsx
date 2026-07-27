@@ -128,7 +128,11 @@ export default function ProjectDetailView({
   const goals = asArray(project.goals);
   const responsibilities = asArray(project.responsibilities);
   const features = asArray(project.features);
-  const modules = asArray(project.modules);
+  const modules = asArray(project.modules)
+    .map((module) => typeof module === "string"
+      ? { title: module, type: "Module", description: "Included in the project scope and connected to the wider product workflow." }
+      : module)
+    .filter((module) => module?.title);
   const processSteps = asArray(project.processSteps);
   const challenges = asArray(project.challenges);
   const results = asArray(project.results);
@@ -313,15 +317,13 @@ export default function ProjectDetailView({
           <section>
             <SectionHeading eyebrow="Pages / modules" title="What is included" />
             <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-              {modules.map((module) => (
-                <GlassCard key={module.title}>
+              {modules.map((module, index) => (
+                <GlassCard key={`${module.title}-${index}`}>
                   <span className="mb-4 inline-block rounded-full border border-accent/20 bg-accent/10 px-3 py-1 text-[10px] font-bold text-accent">
                     {module.type || "Module"}
                   </span>
                   <h3 className="mb-3 text-lg font-bold text-foreground">{module.title}</h3>
-                  <p className="text-sm font-medium leading-relaxed text-muted-foreground">
-                    {module.description}
-                  </p>
+                  {module.description && <p className="text-sm font-medium leading-relaxed text-muted-foreground">{module.description}</p>}
                 </GlassCard>
               ))}
             </div>

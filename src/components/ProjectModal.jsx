@@ -57,6 +57,12 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
   const galleryAlts = galleryImages.map((_, index) =>
     getProjectMediaAlt(selectedProject, index === 0 ? "thumbnail" : "gallery", Math.max(0, index - 1)),
   );
+  const featureItems = (selectedProject.features || []).map((feature) =>
+    typeof feature === "string" ? feature : feature.title,
+  ).filter(Boolean);
+  const resultItems = (selectedProject.results || []).map((result) =>
+    typeof result === "string" ? result : result.description || result.title,
+  ).filter(Boolean);
 
   const openLightbox = (index) => setLightboxIndex(index);
 
@@ -116,9 +122,7 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
                 Project Overview
               </h4>
               <p className="text-muted-foreground leading-relaxed">
-                A deep dive into the architecture and execution of this{" "}
-                {selectedProject.purpose} platform, focused on delivering a
-                high-performance solution that aligns with business objectives.
+                {selectedProject.overview || selectedProject.longDescription || selectedProject.details}
               </p>
             </div>
 
@@ -204,8 +208,7 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
                 </div>
                 <h5 className="font-bold text-foreground">The Challenge</h5>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  {selectedProject.challenge ||
-                    "Navigating a complex legacy infrastructure while aiming for a 2x performance increase without disrupting live users."}
+                  {selectedProject.challenge || selectedProject.problem || "The project focused on turning a practical web requirement into a maintainable product experience."}
                 </p>
               </div>
               <div className="p-6 rounded-2xl border border-border bg-background/50 space-y-4 shadow-sm">
@@ -242,14 +245,11 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
                 Key Features
               </h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-4">
-                {[
-                  "Highly Responsive Architecture",
-                  "Automated Workflow Integration",
-                  "Scalable Cloud Backend",
-                  "Real-time Data Visualization",
-                  "Performance Optimized Assets",
-                  "Secure OAuth Integration",
-                ].map((feature, i) => (
+                {(featureItems.length ? featureItems : [
+                  "Responsive interface",
+                  "Maintainable content structure",
+                  "Clear user journeys",
+                ]).map((feature, i) => (
                   <div key={i} className="flex items-center gap-3">
                     <CheckCircle2 className="w-4 h-4 text-accent" />
                     <span className="text-sm text-muted-foreground font-medium">
@@ -268,37 +268,14 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
                   Results & Impact
                 </h4>
               </div>
-              <p className="text-lg md:text-xl font-semibold text-foreground leading-relaxed">
-                &ldquo;{selectedProject.impact}&rdquo;
-              </p>
-              <div className="flex gap-6 md:gap-8 pt-2">
-                <div className="space-y-1">
-                  <p className="text-xl md:text-2xl font-extrabold text-foreground">
-                    40%+
-                  </p>
-                  <p className="text-[9px] uppercase tracking-widest text-muted-foreground font-bold font-mono">
-                    Performance
-                  </p>
-                </div>
-                <div className="space-y-1 border-l border-border pl-6 md:pl-8">
-                  <p className="text-xl md:text-2xl font-extrabold text-foreground">
-                    100%
-                  </p>
-                  <p className="text-[9px] uppercase tracking-widest text-muted-foreground font-bold font-mono">
-                    Reliability
-                  </p>
-                </div>
-              </div>
+              <p className="text-lg md:text-xl font-semibold text-foreground leading-relaxed">{selectedProject.impact}</p>
+              {resultItems.length > 0 && <ul className="space-y-3 pt-1">{resultItems.slice(0, 3).map((result) => <li key={result} className="flex gap-3 text-sm leading-6 text-muted-foreground"><CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-accent" />{result}</li>)}</ul>}
             </div>
 
             {/* Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 pt-6 pb-2">
-              <Button className="w-full sm:w-auto">
-                Live Project <ExternalLink className="w-4 h-4" />
-              </Button>
-              <Button variant="outline" className="w-full sm:w-auto">
-                View Source <Github className="w-4 h-4" />
-              </Button>
+              {selectedProject.liveUrl && <Button className="w-full sm:w-auto" onClick={() => window.open(selectedProject.liveUrl, "_blank", "noopener,noreferrer")}>Live Project <ExternalLink className="w-4 h-4" /></Button>}
+              {selectedProject.githubUrl && <Button variant="outline" className="w-full sm:w-auto" onClick={() => window.open(selectedProject.githubUrl, "_blank", "noopener,noreferrer")}>View Source <Github className="w-4 h-4" /></Button>}
             </div>
           </div>
 
