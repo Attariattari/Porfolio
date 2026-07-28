@@ -9,8 +9,10 @@
  * Logic:
  * 1. If any blogs exist in the database that are marked as 'featured' and 'published',
  *    use ONLY those. This prevents mixing real data with stale fallback data.
- * 2. If no featured blogs are found in the database, fallback to the static data.js blogs.
- * 3. Supports AI-generated blogs which are stored in the database.
+ * 2. If real database blogs exist but none qualify, return an empty list.
+ *    This prevents ordinary recent posts from being presented as Featured.
+ * 3. Use static featured blogs only while the database has no real blogs.
+ * 4. Supports AI-generated blogs which are stored in the database.
  *
  * @param {Array} dbBlogs - All blogs from the database (may include some auto-merged fallbacks)
  * @param {Array} staticBlogs - The original blogs from data.js
@@ -38,19 +40,17 @@ export function resolveFeaturedBlogs(dbBlogs = [], staticBlogs = []) {
         });
     }
 
-    // 4. Priority 2 (Real-Time Fallback): If DB has blogs but none featured,
-    // show the latest 3 DB blogs to ensure the content is always fresh.
+    // 4. A populated database with no qualified Featured articles must remain
+    // empty. Recent publication alone is not a Featured qualification.
     if (realDbBlogs.length > 0) {
-        // They are already sorted by createdAt in BlogController.getAll
-        return realDbBlogs.slice(0, 3);
+        return [];
     }
 
     // 5. Priority 3: Fallback to data.js featured blogs if DB is empty
     const staticFeatured = safeStaticBlogs.filter((b) => b && !!b.featured);
     if (staticFeatured.length > 0) return staticFeatured;
 
-    // 6. Final Fallback: First 3 items from whatever list we have
-    return safeDbBlogs.slice(0, 3);
+    return [];
 }
 
 const toTimestamp = (blog = {}) => {

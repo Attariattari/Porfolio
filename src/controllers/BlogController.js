@@ -93,7 +93,7 @@ export const BlogController = {
                             "socialKit",
                             "_id",
                         ])
-                        .sort({ featuredOrder: 1, order: 1, featured: -1, createdAt: -1 })
+                        .sort({ featured: -1, featuredOrder: 1, createdAt: -1, order: 1 })
                         .lean();
 
                     if (dbBlogs.length > 0) {

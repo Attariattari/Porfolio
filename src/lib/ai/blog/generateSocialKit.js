@@ -23,8 +23,8 @@ function createFallbackKit(blog) {
   const url = blogUrl(blog);
   const summary = cleanText(blog.summary || blog.seoDescription || blog.content).slice(0, 240);
   const tags = hashtags(blog);
-  const linkedin = `${blog.title}\n\n${summary}\n\nIn this Muhyo Tech article, we break the topic down into practical decisions, common mistakes, and useful next steps for modern web projects.\n\nRead the full article: ${url}\n\n${tags}`.trim();
-  const facebook = `${blog.title}\n\n${summary}\n\nRead the full practical guide from Muhyo Tech: ${url}\n\n${hashtags(blog, 3)}`.trim();
+  const linkedin = `${blog.title}\n\n${summary}\n\nThe full Muhyo Tech article explores the idea in context and explains what it means for modern web projects.\n\nRead the article: ${url}\n\n${tags}`.trim();
+  const facebook = `${blog.title}\n\n${summary}\n\nExplore the complete article from Muhyo Tech: ${url}\n\n${hashtags(blog, 3)}`.trim();
   const xBase = `${blog.title}\n\n${summary.slice(0, 90)}\n\n${url} ${hashtags(blog, 2)}`;
   const x = xBase.length <= 280 ? xBase : `${cleanText(blog.title).slice(0, 100)}\n\n${url} ${hashtags(blog, 2)}`;
   const whatsapp = `New from Muhyo Tech: ${blog.title}\n\n${summary.slice(0, 150)}\n\nRead here: ${url}`;
@@ -41,12 +41,44 @@ function parseKit(response, blog) {
     if (!value.includes(url)) value = `${value}\n\n${url}`;
     return [key, value];
   }));
-  const unsafeStyle = /\bever wonder\b|\bdid you know\b|\bin today'?s digital world\b|\bkey takeaways\b|\bsearch engines? (?:will )?reward\b|\bboost(?:ing)? (?:your )?(?:rankings?|ctr)\b|\blet'?s talk\b/i;
+  const unsafeStyle = /\bever wonder\b|\bdid you know\b|\bin today'?s digital world\b|\bkey takeaways\b|\bsearch engines? (?:will )?reward\b|\bboost(?:ing)? (?:your )?(?:rankings?|ctr)\b|\bguaranteed?\b|\b100%\b|\bskyrocket\b|\bgame[- ]changer\b|\blet'?s talk\b|\bclick here\b/i;
   if (Object.values(kit).some((value) => unsafeStyle.test(value))) {
     throw new Error("Social response used an unprofessional or unsupported formula.");
   }
-  if (kit.x.length > 280) kit.x = createFallbackKit(blog).x;
+  if (Object.values(kit).some((value) => /<[^>]+>|\[link\]|\{\{/.test(value))) {
+    throw new Error("Social response contains markup or unresolved placeholders.");
+  }
+  if (kit.linkedin.length < 80 || kit.facebook.length < 60 || kit.whatsapp.length < 35) {
+    throw new Error("Social response is too thin to be useful.");
+  }
+  if (kit.x.length > 280) throw new Error("X post exceeds 280 characters.");
   return { ...kit, source: "ai" };
+}
+
+async function reviewSocialKit(kit, blog) {
+  const response = await generateGeminiResponse(`Act as a strict senior social editor for Muhyo Tech. Verify these posts against the source article.
+
+SOURCE TITLE: ${blog.title}
+SOURCE SUMMARY: ${cleanText(blog.summary || blog.seoDescription)}
+SOURCE EXTRACT: ${cleanText(blog.content).slice(0, 14000)}
+
+POSTS:
+${JSON.stringify(kit)}
+
+Reject if any post contains an invented fact, result, statistic, client experience, ranking promise, awkward or embarrassing wording, generic AI hook, unnecessary jargon, clickbait, excessive sales language, misleading simplification, or a claim stronger than the source. Also reject if the post is dull, unclear, repetitive, or fails to give a relevant reason to read the article. Technical terms must be necessary and understandable in context.
+
+Return strict JSON only: {"approved":true,"issues":[],"revisionDirection":""}`, {
+    temperature: 0.05,
+    responseMimeType: "application/json",
+    maxOutputTokens: 700,
+    thinkingBudget: 0,
+    timeoutMs: Number(process.env.AI_SOCIAL_REVIEW_TIMEOUT_MS || 9000),
+  });
+  const review = JSON.parse(String(response).replace(/```json/gi, "").replace(/```/g, "").trim());
+  return {
+    approved: review.approved === true && Array.isArray(review.issues) && review.issues.length === 0,
+    direction: cleanText(review.revisionDirection || (review.issues || []).join("; ")).slice(0, 500),
+  };
 }
 
 export async function buildSocialKit(blog, { useAI = true, feedback = "" } = {}) {
@@ -59,7 +91,7 @@ Summary: ${cleanText(blog.summary)}
 Article type: ${blog.articleType || "supporting"}
 Category: ${blog.category || "Web Development"}
 Focus keyword: ${blog.focusKeyword || ""}
-Article extract: ${cleanText(blog.content).slice(0, 4500)}
+Article extract: ${cleanText(blog.content).slice(0, blog.articleType === "pillar" ? 10000 : 6500)}
 Canonical URL: ${blogUrl(blog)}
 ${feedback ? `Editor direction: ${cleanText(feedback).slice(0, 300)}` : ""}
 
@@ -82,7 +114,7 @@ EDITORIAL RULES:
 
 Return strict JSON only: {"linkedin":"","facebook":"","x":"","whatsapp":""}`;
 
-  try {
+  const generateCandidate = async () => {
     const response = await generateGeminiResponse(prompt, {
       temperature: 0.65,
       responseMimeType: "application/json",
@@ -91,6 +123,27 @@ Return strict JSON only: {"linkedin":"","facebook":"","x":"","whatsapp":""}`;
       timeoutMs: Number(process.env.AI_SOCIAL_TIMEOUT_MS || 9000),
     });
     return parseKit(response, blog);
+  };
+
+  try {
+    let candidate = await generateCandidate();
+    let review = await reviewSocialKit(candidate, blog);
+
+    if (!review.approved) {
+      const correctedPrompt = `${prompt}\n\nMANDATORY REVIEW CORRECTIONS: ${review.direction || "Rewrite with stricter factual accuracy, natural language, and a stronger article-specific reader benefit."}`;
+      const correctedResponse = await generateGeminiResponse(correctedPrompt, {
+        temperature: 0.45,
+        responseMimeType: "application/json",
+        maxOutputTokens: 1800,
+        thinkingBudget: 0,
+        timeoutMs: Number(process.env.AI_SOCIAL_TIMEOUT_MS || 9000),
+      });
+      candidate = parseKit(correctedResponse, blog);
+      review = await reviewSocialKit(candidate, blog);
+    }
+
+    if (!review.approved) throw new Error(`Editorial review rejected the social kit: ${review.direction || "quality standard not met"}`);
+    return candidate;
   } catch (error) {
     console.warn("[SocialKit] AI generation unavailable; using safe fallback.", error.message);
     return { ...fallback, error: error.message };

@@ -66,6 +66,8 @@ const EditorialHeader = ({
   trendingTags,
   onImageClick,
 }) => {
+  const hasFeaturedBlogs = Array.isArray(featuredBlogs) && featuredBlogs.length > 0;
+
   return (
     <header className="relative py-10 px-6 overflow-hidden">
       {/* --- Premium Background Elements --- */}
@@ -74,7 +76,9 @@ const EditorialHeader = ({
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-center">
           {/* --- Left Side: Editorial Content --- */}
-          <div className="lg:col-span-7 space-y-12">
+          <div
+            className={`${hasFeaturedBlogs ? "lg:col-span-7" : "lg:col-span-12"} space-y-12`}
+          >
             {/* Label & Heading */}
             <div className="space-y-6">
               <div className="flex items-center gap-4">
@@ -180,23 +184,25 @@ const EditorialHeader = ({
           </div>
 
           {/* --- Right Side: Featured Preview Card --- */}
-          <div className="lg:col-span-5 relative group">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, rotate: 2 }}
-              animate={{ opacity: 1, scale: 1, rotate: 0 }}
-              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            >
-              {/* --- Featured Slider --- */}
-              <FeaturedBlogSlider 
-                featuredBlogs={featuredBlogs}
-                onImageClick={onImageClick}
-              />
-            </motion.div>
+          {hasFeaturedBlogs && (
+            <div className="lg:col-span-5 relative group">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, rotate: 2 }}
+                animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+              >
+                {/* --- Featured Slider --- */}
+                <FeaturedBlogSlider
+                  featuredBlogs={featuredBlogs}
+                  onImageClick={onImageClick}
+                />
+              </motion.div>
 
-            {/* Decorative Elements around card */}
-            <div className="absolute -z-10 -bottom-6 -right-6 w-full h-full border border-accent/10 rounded-[2.5rem]" />
-            <div className="absolute -z-10 -top-6 -left-6 w-1/2 h-1/2 bg-accent/5 blur-3xl rounded-full" />
-          </div>
+              {/* Decorative Elements around card */}
+              <div className="absolute -z-10 -bottom-6 -right-6 w-full h-full border border-accent/10 rounded-[2.5rem]" />
+              <div className="absolute -z-10 -top-6 -left-6 w-1/2 h-1/2 bg-accent/5 blur-3xl rounded-full" />
+            </div>
+          )}
         </div>
       </div>
     </header>
@@ -591,7 +597,12 @@ export default function Blog({ data, isHomePage = false }) {
 
   if (!data) return null;
   if (isHomePage) {
-    const homeBlogs = resolveFeaturedBlogs(data, portfolioData.blogs).slice(0, 3);
+    const qualifiedFeatured = resolveFeaturedBlogs(data, portfolioData.blogs);
+    const homeBlogs = (qualifiedFeatured.length > 0
+      ? qualifiedFeatured
+      : data.filter((blog) => !blog.publishStatus || blog.publishStatus === "published")
+    ).slice(0, 3);
+    const showingFeatured = qualifiedFeatured.length > 0;
     return (
       <>
         <SectionWrapper id="blog" title="Latest Articles" subtitle="My Blog">
@@ -599,7 +610,7 @@ export default function Blog({ data, isHomePage = false }) {
             <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
               <div>
                 <p className="mb-2 text-sm font-semibold text-accent">
-                  Featured writing
+                  {showingFeatured ? "Featured writing" : "Latest writing"}
                 </p>
                 <h3 className="mb-0 max-w-2xl text-2xl font-bold tracking-tight text-foreground md:text-3xl">
                   Selected articles from the portfolio journal.

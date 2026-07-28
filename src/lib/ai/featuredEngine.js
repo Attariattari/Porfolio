@@ -3,9 +3,91 @@ import dbConnect from "@/lib/dbConnect";
 import { cacheManager } from "@/lib/cache";
 import { revalidatePath } from "next/cache";
 
+const FEATURED_LIMIT = 4;
+const FEATURED_THRESHOLD = 76;
+
+const plainText = (value = "") => String(value)
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&[a-z]+;/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+const wordCount = (content = "") => plainText(content).split(/\s+/).filter(Boolean).length;
+const countMatches = (content, pattern) => (String(content || "").match(pattern) || []).length;
+
+function scoreFeaturedCandidate(blog, now) {
+    const content = String(blog.content || "");
+    const words = wordCount(content);
+    const isPillar = blog.articleType === "pillar";
+    const minimumWords = isPillar ? 1800 : 700;
+    const quality = Number(blog.qualityScore || 0);
+    const seoDescriptionLength = String(blog.seoDescription || "").trim().length;
+    const summaryLength = String(blog.summary || "").trim().length;
+    const h2Count = countMatches(content, /<h2\b/gi);
+    const h3Count = countMatches(content, /<h3\b/gi);
+    const hasList = /<(ul|ol)\b/i.test(content);
+    const hasTable = /<table\b/i.test(content);
+    const hasFaq = /frequently asked|<h[23][^>]*>\s*faqs?\b/i.test(content);
+    const practicalSignals = [hasList, /common mistakes/i.test(content), /best practices/i.test(content), /checklist/i.test(content), /step[- ]by[- ]step/i.test(content)].filter(Boolean).length;
+    const publishedAt = new Date(blog.generatedAt || blog.createdAt || now);
+    const ageDays = Number.isFinite(publishedAt.getTime())
+        ? Math.max(0, (now - publishedAt) / 86400000)
+        : 365;
+
+    const qualityGate = blog.aiGenerated
+        ? blog.qualityStatus === "passed" && quality >= 8
+        : words >= minimumWords && summaryLength >= 100;
+    const depthGate = words >= minimumWords;
+    const structureGate = h2Count >= (isPillar ? 8 : 5) && (!isPillar || h3Count >= 3);
+    const seoGate = Boolean(blog.seoTitle && blog.focusKeyword && seoDescriptionLength >= 120 && seoDescriptionLength <= 155);
+    const authorityGate = isPillar
+        ? hasList && hasTable && hasFaq && practicalSignals >= 3
+        : hasList && practicalSignals >= 2;
+    const eligible = qualityGate && depthGate && structureGate && seoGate && authorityGate;
+
+    const qualityScore = Math.min(30, (quality || (blog.aiGenerated ? 0 : 7)) * 3);
+    const depthScore = Math.min(20, (words / minimumWords) * 16 + (words >= minimumWords * 1.35 ? 4 : 0));
+    const structureScore = Math.min(15, h2Count * 1.4 + h3Count * 0.7 + (hasList ? 2 : 0) + (hasTable ? 1.5 : 0) + (hasFaq ? 1.5 : 0));
+    const seoScore = [blog.seoTitle, blog.focusKeyword, seoDescriptionLength >= 120 && seoDescriptionLength <= 155, summaryLength >= 100, Array.isArray(blog.tags) && blog.tags.length >= 2].filter(Boolean).length * 2;
+    const authorityScore = Math.min(10, practicalSignals * 1.5 + (isPillar ? 2.5 : 1.5) + (blog.relatedServiceSlugs?.length ? 1.5 : 0));
+    const imageScore = Math.min(10, 5 + Math.max(0, Number(blog.imageAuditScore || 0)) * 0.5);
+    const freshnessScore = Math.max(0, 5 - ageDays / 30);
+    const continuityScore = blog.featured ? 2 : 0;
+    const score = qualityScore + depthScore + structureScore + seoScore + authorityScore + imageScore + freshnessScore + continuityScore;
+
+    return {
+        _id: blog._id,
+        title: blog.title,
+        category: blog.category || "Uncategorized",
+        clusterKey: blog.clusterKey || "",
+        eligible,
+        score: parseFloat(Math.min(100, score).toFixed(2)),
+        metrics: { words, quality, h2Count, h3Count, seoDescriptionLength, practicalSignals },
+    };
+}
+
+function selectFeatured(rankedBlogs) {
+    const selected = [];
+    const categoryCounts = new Map();
+    const usedClusters = new Set();
+
+    for (const candidate of rankedBlogs) {
+        if (!candidate.eligible || candidate.score < FEATURED_THRESHOLD) continue;
+        const categoryCount = categoryCounts.get(candidate.category) || 0;
+        if (categoryCount >= 2) continue;
+        if (candidate.clusterKey && usedClusters.has(candidate.clusterKey)) continue;
+        selected.push(candidate);
+        categoryCounts.set(candidate.category, categoryCount + 1);
+        if (candidate.clusterKey) usedClusters.add(candidate.clusterKey);
+        if (selected.length === FEATURED_LIMIT) break;
+    }
+
+    return selected;
+}
+
 /**
  * Muhyo Tech - AI Featured Engine
- * Intelligently ranks and selects the top 6 eligible featured blogs.
+ * Intelligently qualifies and selects up to four Featured blogs.
  */
 export async function updateFeaturedRankings(triggerBlogInfo = null) {
     const startTime = Date.now();
@@ -31,37 +113,20 @@ export async function updateFeaturedRankings(triggerBlogInfo = null) {
             return { success: true, message: "No published blogs to rank." };
         }
 
-        // 2. Calculate featuredScore for each blog
+        // 2. Score real editorial quality instead of automatically rewarding recency.
         const now = new Date();
-        const rankedBlogs = blogs.map((blog) => {
-            const freshnessMetric = Math.max(
-                0,
-                10 - (now - new Date(blog.createdAt)) / (1000 * 60 * 60 * 24 * 7),
-            ); // Decay over 1 week
-            const contentMetric = Math.min(10, (blog.content || "").length / 2000);
-
-            const score =
-                ((blog.qualityScore || 8) * 0.5 +
-                    freshnessMetric * 0.3 +
-                    contentMetric * 0.2) *
-                10; // Scale to 0-100
-
-            return {
-                _id: blog._id,
-                title: blog.title,
-                score: parseFloat(score.toFixed(2)),
-            };
-        });
+        const rankedBlogs = blogs.map((blog) => scoreFeaturedCandidate(blog, now));
 
         // 3. Sort by score DESC
         rankedBlogs.sort((a, b) => b.score - a.score);
 
-        // 4. Keep exactly the best six eligible blogs featured.
-        const top6Ids = rankedBlogs.slice(0, 6).map((b) => b._id.toString());
+        // 4. Feature only blogs that clear the threshold and diversity rules.
+        const selectedBlogs = selectFeatured(rankedBlogs);
+        const selectedIds = selectedBlogs.map((blog) => blog._id.toString());
 
         const bulkOps = blogs.map((blog) => {
-            const isTop6 = top6Ids.includes(blog._id.toString());
-            const rankIndex = top6Ids.indexOf(blog._id.toString());
+            const isSelected = selectedIds.includes(blog._id.toString());
+            const rankIndex = selectedIds.indexOf(blog._id.toString());
             const scoreObj = rankedBlogs.find((rb) => rb._id.equals(blog._id));
 
             return {
@@ -69,8 +134,8 @@ export async function updateFeaturedRankings(triggerBlogInfo = null) {
                     filter: { _id: blog._id },
                     update: {
                         $set: {
-                            featured: isTop6,
-                            featuredOrder: isTop6 ? rankIndex + 1 : 0,
+                            featured: isSelected,
+                            featuredOrder: isSelected ? rankIndex + 1 : 0,
                             featuredScore: scoreObj ? scoreObj.score : 0,
                         },
                     },
@@ -85,7 +150,7 @@ export async function updateFeaturedRankings(triggerBlogInfo = null) {
         // Also clear stale flags from blogs that became unpublished or lost
         // their image and therefore were not part of the eligible query.
         await Blog.updateMany(
-            { _id: { $nin: top6Ids }, featured: true },
+            { _id: { $nin: selectedIds }, featured: true },
             { $set: { featured: false, featuredOrder: 0, featuredScore: 0 } },
         );
 
@@ -107,14 +172,14 @@ export async function updateFeaturedRankings(triggerBlogInfo = null) {
             const triggeredRank = rankedBlogs.find(
                 (b) => b._id.toString() === triggerBlogInfo.id.toString(),
             );
-            const enteredTop6 = top6Ids.includes(triggerBlogInfo.id.toString());
+            const enteredFeatured = selectedIds.includes(triggerBlogInfo.id.toString());
 
             console.log(`
 [AI Featured Refresh]
 Published Blog: ${triggerBlogInfo.title || "Unknown"}
 Blog ID: ${triggerBlogInfo.id}
 Featured Score: ${triggeredRank ? triggeredRank.score : "N/A"}
-Entered Top 6: ${enteredTop6 ? "Yes" : "No"}
+Qualified as Featured: ${enteredFeatured ? "Yes" : "No"}
 
 Ranking Duration: ${duration}ms
 Updated Count: ${rankedBlogs.length}
@@ -125,7 +190,7 @@ Updated Count: ${rankedBlogs.length}
             );
         }
 
-        return { success: true, count: rankedBlogs.length };
+        return { success: true, count: rankedBlogs.length, featuredCount: selectedIds.length, threshold: FEATURED_THRESHOLD };
     } catch (error) {
         console.error("[AI Featured Refresh] Ranking failure:", error);
         return { success: false, error: error.message };

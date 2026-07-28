@@ -1135,6 +1135,20 @@ body.modal-open {
     }
 }
 
+/* High-contrast publication badges on blog thumbnails. */
+[class*="border-emerald-300"][class*="bg-emerald-400"] {
+    background-color: var(--status-success) !important;
+    border-color: color-mix(in srgb, var(--status-success) 75%, white) !important;
+    color: white !important;
+    box-shadow: 0 6px 18px color-mix(in srgb, var(--status-success) 28%, transparent);
+}
+
+[class*="border-amber-300"][class*="bg-amber-400"] {
+    background-color: var(--status-warning) !important;
+    border-color: color-mix(in srgb, var(--status-warning) 75%, white) !important;
+    color: #111827 !important;
+}
+
 body.modal-open aside,
 body.modal-open .fixed.md\:flex,
 body.modal-open nav.md\:hidden {

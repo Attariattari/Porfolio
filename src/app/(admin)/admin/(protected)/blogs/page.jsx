@@ -312,10 +312,35 @@ export default function BlogsPage() {
                 event.stopPropagation();
                 setSelectedSocialBlog(item);
               }}
-              className={`inline-flex items-center gap-1 rounded-md border px-2 py-1.5 text-[9px] font-bold uppercase tracking-wider ${item.socialKit?.status === "ready" ? "border-violet-300/20 bg-violet-400/10 text-violet-300" : "border-border text-muted-foreground hover:text-foreground"}`}
+              className={`inline-flex h-8 min-w-[104px] flex-1 items-center justify-center gap-1.5 rounded-lg border px-3 text-[9px] font-bold uppercase tracking-wider transition ${item.socialKit?.status === "ready" ? "border-accent/30 bg-accent/15 text-accent" : "border-border bg-background/40 text-muted-foreground hover:border-accent/25 hover:text-accent"}`}
               title="Open Social Share Kit"
             >
               <Share2 className="h-3 w-3" /> Social kit
+            </button>
+          ) : null}
+          {!item._isFromDataJs && item._id ? (
+            <button
+              onClick={async (event) => {
+                event.stopPropagation();
+                const toastId = toast.loading("Regenerating all social posts...");
+                try {
+                  const response = await fetch(`/api/admin/blogs/${item._id}/social-kit`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({}),
+                  });
+                  const result = await response.json();
+                  if (!response.ok || !result.success) throw new Error(result.error || "Social regeneration failed.");
+                  toast.success("LinkedIn, Facebook, X and WhatsApp posts regenerated.", { id: toastId });
+                  await fetchBlogs({ force: true });
+                } catch (error) {
+                  toast.error(error.message, { id: toastId });
+                }
+              }}
+              className="inline-flex h-8 min-w-[104px] flex-1 items-center justify-center gap-1.5 rounded-lg border border-border bg-background/40 px-3 text-[9px] font-bold uppercase tracking-wider text-muted-foreground transition hover:border-accent/30 hover:bg-accent/10 hover:text-accent"
+              title="Regenerate LinkedIn, Facebook, X and WhatsApp posts"
+            >
+              <RefreshCcw className="h-3 w-3" /> {item.socialKit?.status === "ready" ? "Regenerate" : "Generate posts"}
             </button>
           ) : null}
         </div>
@@ -553,23 +578,33 @@ export default function BlogsPage() {
     );
   });
   const hasPendingImage = !!pendingImageBlog;
-  const visibleBlogs = blogs.filter((blog) =>
-    `${blog.title || ""} ${blog.category || ""} ${(blog.tags || []).join(" ")}`
-      .toLowerCase()
-      .includes(blogSearch.toLowerCase()),
-  );
+  const visibleBlogs = [...blogs]
+    .filter((blog) =>
+      `${blog.title || ""} ${blog.category || ""} ${(blog.tags || []).join(" ")}`
+        .toLowerCase()
+        .includes(blogSearch.toLowerCase()),
+    )
+    .sort((first, second) => {
+      if (Boolean(first.featured) !== Boolean(second.featured)) return first.featured ? -1 : 1;
+      if (first.featured && second.featured) {
+        const firstOrder = Number(first.featuredOrder || 0);
+        const secondOrder = Number(second.featuredOrder || 0);
+        if (firstOrder !== secondOrder) return firstOrder - secondOrder;
+      }
+      return new Date(second.createdAt || second.generatedAt || 0) - new Date(first.createdAt || first.generatedAt || 0);
+    });
   const aiActionRenderer = columns.find((column) => column.key === "ai_actions")?.render;
 
   return (
     <div className="mx-auto max-w-[1500px] space-y-6 pb-20">
       <header className="relative overflow-hidden rounded-[28px] border border-white/[0.08] bg-[#0d1727] p-6 sm:p-8"><div className="pointer-events-none absolute -right-20 -top-24 size-72 rounded-full bg-violet-400/[0.07] blur-3xl" /><div className="relative flex flex-col justify-between gap-6 xl:flex-row xl:items-center"><div className="flex items-start gap-4"><span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-violet-400/10 text-violet-300 ring-1 ring-inset ring-violet-400/15"><BookOpen className="size-5" /></span><div><p className="text-[10px] font-bold uppercase tracking-[.24em] text-violet-300">Editorial workspace</p><h1 className="mt-2 text-2xl font-semibold tracking-[-.035em] text-white sm:text-3xl">Blog management</h1><p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">Create, review and publish articles across your portfolio.</p></div></div>
 
-        <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center"><Link href="/admin/blog-topics" className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-background/40 px-4 text-xs font-bold text-foreground hover:border-accent/30 hover:text-accent"><ListChecks className="size-4" />Editorial planner</Link><button onClick={handleExport} className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-background/40 px-4 text-xs font-bold text-foreground hover:border-violet-300/30 hover:text-violet-300"><Download className="size-4" />Export JSON</button><button onClick={handleAdd} className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-violet-300 px-4 text-xs font-bold text-slate-950 hover:bg-violet-200"><Plus className="size-4" />New article</button>
+        <div className="grid items-stretch gap-2 sm:grid-cols-2 xl:flex xl:items-center"><Link href="/admin/blog-topics" className="group inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-background/45 px-4 text-xs font-semibold text-foreground shadow-sm transition hover:-translate-y-0.5 hover:border-accent/35 hover:bg-accent/5 hover:text-accent"><ListChecks className="size-4 transition group-hover:scale-105" />Editorial planner</Link><button onClick={handleExport} className="group inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-background/45 px-4 text-xs font-semibold text-muted-foreground shadow-sm transition hover:-translate-y-0.5 hover:border-accent/25 hover:bg-muted hover:text-foreground"><Download className="size-4 transition group-hover:-translate-y-0.5" />Export JSON</button><button onClick={handleAdd} className="group inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-accent/25 bg-accent/10 px-4 text-xs font-semibold text-accent shadow-sm transition hover:-translate-y-0.5 hover:bg-accent/15"><Plus className="size-4 transition group-hover:rotate-90" />New article</button>
           <label
-            className={`flex h-11 cursor-pointer select-none items-center justify-between gap-3 rounded-xl border px-3 text-[10px] font-bold uppercase tracking-wider transition-colors ${
+            className={`flex h-11 cursor-pointer select-none items-center justify-between gap-3 rounded-xl border px-3.5 text-[10px] font-semibold tracking-wide shadow-sm transition ${
               autoGenerateImages
-                ? "border-accent/40 bg-accent/10 text-accent"
-                : "border-border bg-muted/50 text-muted-foreground hover:text-foreground"
+                ? "border-status-success/30 bg-status-success/10 text-status-success"
+                : "border-border bg-background/45 text-muted-foreground hover:border-accent/25 hover:text-foreground"
             }`}
             title="Toggle automatic blog image generation"
           >
@@ -586,11 +621,11 @@ export default function BlogsPage() {
               ) : (
                 <Mail className="w-4 h-4" />
               )}
-              Auto Image
+              Auto image
             </span>
             <span
               className={`relative h-6 w-11 rounded-full p-0.5 transition-colors duration-200 ${
-                autoGenerateImages ? "bg-accent" : "bg-muted"
+                autoGenerateImages ? "bg-status-success" : "bg-muted"
               }`}
             >
               <span
@@ -610,12 +645,12 @@ export default function BlogsPage() {
               }
               setIsAIProgressOpen(true);
             }}
-            className={`flex h-11 items-center justify-center gap-2 rounded-xl px-4 text-[10px] font-bold uppercase tracking-wider text-white transition-all group ${
+            className={`group flex h-11 items-center justify-center gap-2 rounded-xl border px-5 text-xs font-semibold shadow-lg transition hover:-translate-y-0.5 disabled:opacity-50 ${
               hasPendingImage
                 ? autoGenerateImages
-                  ? "bg-gradient-to-r from-amber-500 to-orange-600 shadow-amber-500/20 hover:shadow-amber-500/40"
-                  : "bg-gradient-to-r from-emerald-500 to-teal-600 shadow-emerald-500/20 hover:shadow-emerald-500/40"
-                : "bg-gradient-to-r from-accent to-accent shadow-accent/20 hover:shadow-accent/40"
+                  ? "border-status-warning/30 bg-status-warning text-white shadow-status-warning/20 hover:brightness-105"
+                  : "border-status-success/30 bg-status-success text-white shadow-status-success/20 hover:brightness-105"
+                : "border-accent/40 bg-accent text-accent-foreground shadow-accent/20 hover:bg-accent/90"
             }`}
           >
             {hasPendingImage && !autoGenerateImages ? (
@@ -629,7 +664,7 @@ export default function BlogsPage() {
               ? autoGenerateImages
                 ? "Generate Blog Image"
                 : "Send Image Prompt"
-              : "AI Start Blog Generate"}
+              : "Generate AI blog"}
           </button>
         </div></div></header>
 
