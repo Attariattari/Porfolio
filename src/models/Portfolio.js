@@ -243,6 +243,22 @@ const BlogSchema = new mongoose.Schema({
         seo: { type: Number, default: 0 },
         humanTone: { type: Number, default: 0 },
     },
+    socialKit: {
+        status: {
+            type: String,
+            enum: ["missing", "generating", "ready", "failed"],
+            default: "missing",
+        },
+        linkedin: { type: String, default: "" },
+        facebook: { type: String, default: "" },
+        x: { type: String, default: "" },
+        whatsapp: { type: String, default: "" },
+        imageUrl: { type: String, default: "" },
+        source: { type: String, enum: ["ai", "fallback", "manual"], default: "fallback" },
+        generatedAt: { type: Date },
+        updatedAt: { type: Date },
+        error: { type: String, default: "" },
+    },
     // === NEW: Enhanced Image Generation Audit Data ===
     imagePromptEnhanced: { type: String }, // Final architectural prompt used for image generation
     imageNarrativeAnalysis: {

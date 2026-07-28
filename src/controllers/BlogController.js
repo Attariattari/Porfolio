@@ -90,6 +90,7 @@ export const BlogController = {
                             "imageNegativePrompt",
                             "imageGenerationAttempts",
                             "manualImageUploadTokenId",
+                            "socialKit",
                             "_id",
                         ])
                         .sort({ featuredOrder: 1, order: 1, featured: -1, createdAt: -1 })

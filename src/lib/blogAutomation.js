@@ -18,6 +18,7 @@ import {
   markTopicPlanUsed,
   releaseTopicPlan,
 } from "./ai/blog/topicQueue.js";
+import { generateAndSaveSocialKit } from "./ai/blog/generateSocialKit.js";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -1215,6 +1216,15 @@ export async function runBlogAutomationPipeline(
           error.message,
         );
       }
+    }
+
+    try {
+      await generateAndSaveSocialKit(newBlog._id);
+    } catch (error) {
+      console.warn(
+        "[SocialKit] Blog saved successfully; social drafts can be generated later from Admin.",
+        error.message,
+      );
     }
 
     report("CONTENT_SAVED", {

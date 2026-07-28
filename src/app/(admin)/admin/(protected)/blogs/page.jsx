@@ -14,8 +14,9 @@ import ImageUploader from "@/components/admin/ImageUploader";
 import { Controller } from "react-hook-form";
 import { AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
-import { Sparkles, CheckCircle2, Mail, RefreshCcw, Copy, BookOpen, Search, Pencil, Trash2, ExternalLink, Star, Plus, Download } from "lucide-react";
+import { Sparkles, CheckCircle2, Mail, RefreshCcw, Copy, BookOpen, Search, Pencil, Trash2, ExternalLink, Star, Plus, Download, Share2 } from "lucide-react";
 import AIBlogProgress from "@/components/admin/AIBlogProgress";
+import SocialShareKitModal from "@/components/admin/SocialShareKitModal";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ListChecks } from "lucide-react";
@@ -305,12 +306,25 @@ export default function BlogsPage() {
               ) : null}
             </>
           ) : null}
+          {!item._isFromDataJs && item._id ? (
+            <button
+              onClick={(event) => {
+                event.stopPropagation();
+                setSelectedSocialBlog(item);
+              }}
+              className={`inline-flex items-center gap-1 rounded-md border px-2 py-1.5 text-[9px] font-bold uppercase tracking-wider ${item.socialKit?.status === "ready" ? "border-violet-300/20 bg-violet-400/10 text-violet-300" : "border-border text-muted-foreground hover:text-foreground"}`}
+              title="Open Social Share Kit"
+            >
+              <Share2 className="h-3 w-3" /> Social kit
+            </button>
+          ) : null}
         </div>
       ),
     },
   ];
 
   const [selectedBlogForImage, setSelectedBlogForImage] = useState(null);
+  const [selectedSocialBlog, setSelectedSocialBlog] = useState(null);
 
   const fields = [
     {
@@ -667,6 +681,12 @@ export default function BlogsPage() {
           />
         )}
       </AnimatePresence>
+      <SocialShareKitModal
+        isOpen={Boolean(selectedSocialBlog)}
+        blog={selectedSocialBlog}
+        onClose={() => setSelectedSocialBlog(null)}
+        onUpdated={() => fetchBlogs({ force: true })}
+      />
     </div>
   );
 }

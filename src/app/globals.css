@@ -983,6 +983,114 @@ body.modal-open {
     overscroll-behavior: none;
 }
 
+/* Social Share Kit follows the active site theme, including custom themes. */
+.social-share-kit-theme [class*="text-slate-"],
+.social-share-kit-theme [class*="text-[#"],
+.social-share-kit-theme [class*="text-white"] {
+    color: var(--foreground) !important;
+}
+
+.social-share-kit-theme [class*="text-slate-600"],
+.social-share-kit-theme [class*="text-slate-500"],
+.social-share-kit-theme [class*="text-slate-400"],
+.social-share-kit-theme [class*="text-slate-300"] {
+    color: var(--muted-foreground) !important;
+}
+
+.social-share-kit-theme [class*="border-white"],
+.social-share-kit-theme [class*="border-[#"] {
+    border-color: color-mix(in srgb, var(--border) 85%, transparent) !important;
+}
+
+.social-share-kit-theme [class*="bg-slate-950"],
+.social-share-kit-theme [class*="bg-[#"],
+.social-share-kit-theme [class*="bg-white/"] {
+    background-color: color-mix(in srgb, var(--background) 72%, var(--card)) !important;
+}
+
+.social-share-kit-theme [class*="bg-violet-"],
+.social-share-kit-theme [class*="bg-emerald-"],
+.social-share-kit-theme [class*="bg-[#0a66c2"],
+.social-share-kit-theme [class*="bg-[#1877f2"] {
+    background-color: color-mix(in srgb, var(--accent) 18%, transparent) !important;
+}
+
+.social-share-kit-theme [class*="text-violet-"],
+.social-share-kit-theme [class*="text-emerald-"],
+.social-share-kit-theme [class*="text-[#"] {
+    color: var(--accent) !important;
+}
+
+.social-share-kit-theme [class*="bg-violet-300"] {
+    background-color: var(--accent) !important;
+    color: var(--accent-foreground) !important;
+    border-color: color-mix(in srgb, var(--accent) 70%, var(--border)) !important;
+}
+
+.social-share-kit-theme button[class*="border"][class*="bg-"]:hover {
+    border-color: color-mix(in srgb, var(--accent) 45%, var(--border)) !important;
+}
+
+/* Keep the two-column studio readable in both light and dark themes. */
+.social-share-kit-theme > section > .grid > aside:first-child,
+.social-share-kit-theme > section > .grid > div {
+    color: var(--foreground) !important;
+}
+
+.social-share-kit-theme > section > .grid > aside:first-child {
+    display: block !important;
+    background: color-mix(in srgb, var(--card) 94%, var(--accent) 6%) !important;
+    border-color: var(--border) !important;
+}
+
+.social-share-kit-theme > section > .grid > aside:first-child > * {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.social-share-kit-theme aside p,
+.social-share-kit-theme aside label,
+.social-share-kit-theme aside h3,
+.social-share-kit-theme aside h4 {
+    color: var(--foreground) !important;
+}
+
+.social-share-kit-theme aside p[class*="text-slate-"],
+.social-share-kit-theme aside label[class*="text-slate-"] {
+    color: var(--muted-foreground) !important;
+}
+
+.social-share-kit-theme textarea {
+    color: var(--foreground) !important;
+    background: color-mix(in srgb, var(--background) 78%, var(--card)) !important;
+    border-color: var(--border) !important;
+    box-sizing: border-box;
+    min-height: 0 !important;
+    height: clamp(220px, 46vh, 420px) !important;
+    max-height: calc(100dvh - 250px) !important;
+}
+
+.social-share-kit-theme textarea::placeholder {
+    color: var(--muted-foreground) !important;
+    opacity: .75;
+}
+
+.social-share-kit-theme textarea[rows="3"] {
+    height: auto !important;
+    max-height: none !important;
+}
+
+.social-share-kit-theme > section > .grid,
+.social-share-kit-theme > section > .grid > div,
+.social-share-kit-theme > section > .grid > div > .grid,
+.social-share-kit-theme footer {
+    min-height: 0 !important;
+}
+
+.social-share-kit-theme footer {
+    flex-shrink: 0 !important;
+}
+
 body.modal-open aside,
 body.modal-open .fixed.md\:flex,
 body.modal-open nav.md\:hidden {

@@ -753,13 +753,14 @@ const Contact = ({ isHomePage = false }) => {
               className="theme-surface-depth mt-12 relative h-[500px] glass p-2 rounded-[3.5rem] overflow-hidden group"
             >
               <iframe
-                src="https://www.google.com/maps?q=Chota,+Mohlanwal+Road,+Badu+Pura+Chung,+Lahore,+53720,+Pakistan&output=embed"
+                title="Muhyo Tech Office Location"
+                src="https://maps.google.com/maps?q=Chota%2C+Mohlanwal+Road%2C+Badu+Pura+Chung%2C+Lahore%2C+53720%2C+Pakistan&t=&z=15&ie=UTF8&iwloc=&output=embed"
                 width="100%"
                 height="100%"
                 allowFullScreen=""
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                className="border-0 rounded-[3rem] grayscale invert contrast-[1.1] opacity-60 group-hover:opacity-100 transition-all duration-1000 group-hover:grayscale-0 group-hover:invert-0"
+                className="w-full h-full border-0 rounded-[3rem] opacity-95 hover:opacity-100 transition-all duration-500"
               ></iframe>
 
               <div className="absolute top-10 left-10 p-8 glass rounded-[2rem] border border-border shadow-2xl hidden md:block">
