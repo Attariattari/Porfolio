@@ -1091,6 +1091,50 @@ body.modal-open {
     flex-shrink: 0 !important;
 }
 
+@media (max-width: 1023px) {
+    .social-share-kit-theme {
+        align-items: stretch !important;
+    }
+
+    .social-share-kit-theme > section {
+        height: 100dvh !important;
+        max-height: 100dvh !important;
+        overflow-y: auto !important;
+        overscroll-behavior: contain;
+    }
+
+    .social-share-kit-theme > section > .grid {
+        display: block !important;
+        overflow: visible !important;
+    }
+
+    .social-share-kit-theme > section > .grid > aside:first-child,
+    .social-share-kit-theme > section > .grid > div,
+    .social-share-kit-theme > section > .grid > div > .grid,
+    .social-share-kit-theme > section > .grid > div > .grid > div {
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+    }
+
+    .social-share-kit-theme textarea:not([rows="3"]) {
+        display: block;
+        height: 280px !important;
+        min-height: 280px !important;
+        max-height: 280px !important;
+        resize: none !important;
+    }
+
+    .social-share-kit-theme footer {
+        position: sticky !important;
+        bottom: 0;
+        z-index: 20;
+        background: color-mix(in srgb, var(--card) 94%, transparent) !important;
+        border-color: var(--border) !important;
+        backdrop-filter: blur(18px);
+    }
+}
+
 body.modal-open aside,
 body.modal-open .fixed.md\:flex,
 body.modal-open nav.md\:hidden {

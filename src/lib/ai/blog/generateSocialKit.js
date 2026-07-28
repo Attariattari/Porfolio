@@ -41,6 +41,10 @@ function parseKit(response, blog) {
     if (!value.includes(url)) value = `${value}\n\n${url}`;
     return [key, value];
   }));
+  const unsafeStyle = /\bever wonder\b|\bdid you know\b|\bin today'?s digital world\b|\bkey takeaways\b|\bsearch engines? (?:will )?reward\b|\bboost(?:ing)? (?:your )?(?:rankings?|ctr)\b|\blet'?s talk\b/i;
+  if (Object.values(kit).some((value) => unsafeStyle.test(value))) {
+    throw new Error("Social response used an unprofessional or unsupported formula.");
+  }
   if (kit.x.length > 280) kit.x = createFallbackKit(blog).x;
   return { ...kit, source: "ai" };
 }
@@ -49,7 +53,7 @@ export async function buildSocialKit(blog, { useAI = true, feedback = "" } = {})
   const fallback = createFallbackKit(blog);
   if (!useAI || !process.env.GEMINI_API_KEY) return fallback;
 
-  const prompt = `Create a professional social sharing kit for this Muhyo Tech web-development article.
+  const prompt = `Create a professional, human social sharing kit for this Muhyo Tech web-development article.
 Title: ${blog.title}
 Summary: ${cleanText(blog.summary)}
 Article type: ${blog.articleType || "supporting"}
@@ -60,12 +64,23 @@ Canonical URL: ${blogUrl(blog)}
 ${feedback ? `Editor direction: ${cleanText(feedback).slice(0, 300)}` : ""}
 
 Write four distinct posts:
-- linkedin: thoughtful professional hook, useful insight, 3-5 concise takeaways where natural, Muhyo Tech perspective, CTA, URL, 3-5 relevant hashtags.
-- facebook: conversational, useful summary, CTA, URL, no more than 3 hashtags.
+- linkedin: write like an experienced web developer sharing one useful lesson. Use a natural observation or direct statement, 2-4 short paragraphs, and bullets only when they genuinely improve clarity. End with a simple invitation to read the article, URL, and 3-5 relevant hashtags.
+- facebook: conversational and accessible, explain the practical value without turning it into a technical checklist, then include a simple read-more CTA, URL, and no more than 3 hashtags.
 - x: maximum 280 characters including URL, one clear insight, no more than 2 hashtags.
 - whatsapp: short, natural, no hashtags, title/benefit and URL.
 
-Never invent clients, rankings, traffic, revenue, percentages, results, awards, partnerships, or personal experience not stated in the article. Avoid clickbait and generic AI phrases. Return strict JSON only: {"linkedin":"","facebook":"","x":"","whatsapp":""}`;
+EDITORIAL RULES:
+- Do not start with "Ever wonder", "Did you know", "In today's digital world", or another generic AI hook.
+- Do not force "At Muhyo Tech" into every post. Mention Muhyo Tech naturally at most once when it adds context.
+- Do not repeat the article as a numbered summary by default. Select one strong lesson and make the reader curious about the full explanation.
+- Technical names such as Schema.org, JSON-LD, APIs, frameworks, or standards may appear only when essential to the article's central lesson, and should be explained in plain language. Do not stack jargon or put unnecessary tool names in parentheses.
+- Avoid claims such as "Google will reward this", "boost rankings", "improve CTR", "fully understood", or "guaranteed discovery" unless the article contains verified evidence. Prefer accurate language such as "helps search engines interpret the page" or "can make eligible content available for enhanced search features".
+- Do not use a sales-call CTA such as "let's talk" unless the article is explicitly commercial. Default CTA: invite the reader to read the full practical guide.
+- Keep paragraphs short, remove filler, avoid emojis unless specifically requested, and make each platform version feel independently written.
+- Never invent clients, rankings, traffic, revenue, percentages, results, awards, partnerships, or personal experience not stated in the article.
+- Avoid clickbait, motivational filler, repetitive formulas, and generic AI phrases.
+
+Return strict JSON only: {"linkedin":"","facebook":"","x":"","whatsapp":""}`;
 
   try {
     const response = await generateGeminiResponse(prompt, {
