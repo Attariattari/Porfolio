@@ -47,6 +47,7 @@ const applyThemeToRoot = (value) => {
 
 const ThemeContext = createContext({
   theme: "black",
+  themeReady: false,
   setTheme: () => {},
   refreshTheme: async () => {},
   isDark: true,
@@ -56,6 +57,7 @@ const ThemeContext = createContext({
 export const ThemeProvider = ({ children }) => {
   const refreshPromiseRef = useRef(null);
   const [theme, setThemeState] = useState("black");
+  const [themeReady, setThemeReady] = useState(false);
 
   const commitTheme = useCallback((value) => {
     const nextTheme = applyThemeToRoot(value);
@@ -110,6 +112,7 @@ export const ThemeProvider = ({ children }) => {
     const cachedTheme = localStorage.getItem(THEME_CACHE_KEY);
     const paintedTheme = document.documentElement.dataset.theme;
     commitTheme(preferredTheme || cachedTheme || paintedTheme || "black");
+    setThemeReady(true);
   }, [commitTheme]);
 
   useEffect(() => {
@@ -171,11 +174,12 @@ export const ThemeProvider = ({ children }) => {
 
   const contextValue = useMemo(() => ({
     theme,
+    themeReady,
     setTheme,
     refreshTheme,
     isDark: theme !== "light",
     isBlack: theme === "black",
-  }), [refreshTheme, setTheme, theme]);
+  }), [refreshTheme, setTheme, theme, themeReady]);
 
   return <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>;
 };

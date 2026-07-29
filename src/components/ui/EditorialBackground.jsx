@@ -12,7 +12,7 @@ const particleClasses = [
 ];
 
 const EditorialBackground = ({ text }) => {
-  const { isBlack } = useTheme();
+  const { isBlack, themeReady } = useTheme();
   const wordmarkRef = useRef(null);
 
   useEffect(() => {
@@ -39,7 +39,9 @@ const EditorialBackground = ({ text }) => {
     document.fonts?.ready.then(drawWordmark);
 
     return undefined;
-  }, [isBlack, text]);
+  }, [isBlack, text, themeReady]);
+
+  if (!themeReady) return null;
 
   return (
     <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden select-none">

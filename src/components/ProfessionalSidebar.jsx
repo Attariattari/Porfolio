@@ -94,7 +94,7 @@ function ThemeSwitcher({ theme, onChange, collapsed = false, compact = false }) 
 export default function ProfessionalSidebar({ data }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { theme, setTheme } = useTheme();
+  const { theme, themeReady, setTheme } = useTheme();
   const settings = usePublicSettingsStore((state) => state.settings);
   const [collapsed, setCollapsed] = useState(false);
   const about = data || {};
@@ -184,7 +184,7 @@ export default function ProfessionalSidebar({ data }) {
           </span>
         </Link>
         <ThemeSwitcher
-          theme={theme}
+          theme={themeReady ? theme : null}
           onChange={changeTheme}
           compact
         />
@@ -357,7 +357,7 @@ export default function ProfessionalSidebar({ data }) {
           >
             {collapsed ? (
               <ThemeSwitcher
-                theme={theme}
+                theme={themeReady ? theme : null}
                 onChange={changeTheme}
                 collapsed
               />
@@ -372,7 +372,7 @@ export default function ProfessionalSidebar({ data }) {
                     Available
                   </span>
                 </div>
-                <ThemeSwitcher theme={theme} onChange={changeTheme} />
+                <ThemeSwitcher theme={themeReady ? theme : null} onChange={changeTheme} />
               </div>
             )}
           </div>

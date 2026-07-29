@@ -4,7 +4,14 @@ import { memo } from "react";
 import { useTheme } from "./ThemeProvider";
 
 const AnimatedBackgroundComponent = () => {
-  const { isBlack, isDark } = useTheme();
+  const { isBlack, isDark, themeReady } = useTheme();
+
+  // Server markup must never guess a theme. The inline head bootstrap has
+  // already set the correct CSS variables, so this neutral surface displays
+  // the saved theme while React synchronizes before its first painted frame.
+  if (!themeReady) {
+    return <div className="fixed inset-0 -z-50 bg-background pointer-events-none" />;
+  }
 
   return (
     <div className="fixed inset-0 -z-50 overflow-hidden bg-background pointer-events-none">
