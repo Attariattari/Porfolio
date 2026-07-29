@@ -43,7 +43,7 @@ export async function OrganizationSchema() {
       "https://www.linkedin.com/in/ghulam-muhyo-din-web-designer/",
       "https://github.com/Attariattari",
       "https://x.com/GhulamMuhyo",
-      "https://www.facebook.com/MuhammadMuhyoDinAttari",
+      "https://www.facebook.com/muhyotech",
     ];
     const managedProfiles = (Array.isArray(socialLinks) ? socialLinks : [])
       .map((profile) => profile?.url)
@@ -192,7 +192,7 @@ export async function OrganizationSchema() {
             "https://www.linkedin.com/in/ghulam-muhyo-din-web-designer/",
             "https://github.com/Attariattari",
             "https://x.com/GhulamMuhyo",
-            "https://www.facebook.com/MuhammadMuhyoDinAttari",
+            "https://www.facebook.com/muhyotech",
           ],
           founder: { "@id": `${SITE_URL}/about#person` },
           address: {
@@ -216,7 +216,7 @@ export async function OrganizationSchema() {
             "https://www.linkedin.com/in/ghulam-muhyo-din-web-designer/",
             "https://github.com/Attariattari",
             "https://x.com/GhulamMuhyo",
-            "https://www.facebook.com/MuhammadMuhyoDinAttari",
+            "https://www.facebook.com/muhyotech",
           ],
         },
         {

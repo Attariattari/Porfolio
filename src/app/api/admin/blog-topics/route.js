@@ -2,11 +2,11 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import { getAuthSession, checkPermission } from "@/lib/auth";
 import { BlogTopicPlan } from "@/models/BlogTopicPlan";
-import { activateFallbackTopics, createTopicPlan, rebuildClusterTopicCatalog, reconcileFallbackTopics, reconcileUsedTopicPlans, refillTopicQueue } from "@/lib/ai/blog/topicQueue";
+import { createTopicPlan, rebuildClusterTopicCatalog, reconcileFallbackTopics, reconcileUsedTopicPlans, refillTopicQueue } from "@/lib/ai/blog/topicQueue";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-export const maxDuration = 60;
+export const maxDuration = 150;
 
 async function authorize(action = "edit") {
   const session = await getAuthSession();
@@ -38,8 +38,7 @@ export async function POST(request) {
     }
     if (body.action === "refill") {
       const result = await refillTopicQueue({ force: true, target: Number(body.target) || 45, threshold: 0 });
-      const activation = result.ready === 0 ? await activateFallbackTopics() : { activated: 0 };
-      return NextResponse.json({ success: true, data: { ...result, ...activation } });
+      return NextResponse.json({ success: true, data: result });
     }
     const topic = await createTopicPlan(body, "manual");
     return NextResponse.json({ success: true, data: topic }, { status: 201 });

@@ -62,7 +62,7 @@ export const SOCIAL_LINKS = {
     facebook: {
         name: "Facebook",
         icon: "Facebook",
-        username: "MuhammadMuhyoDinAttari", // ← Editable
+        username: "muhyotech", // ← Editable
         get url() {
             return `https://www.facebook.com/${this.username}`;
         },

@@ -218,7 +218,7 @@ Before release:
 - LinkedIn: [Ghulam Muhyo Din](https://www.linkedin.com/in/ghulam-muhyo-din-web-designer/)
 - GitHub: [Attariattari](https://github.com/Attariattari)
 - X: [@GhulamMuhyo](https://x.com/GhulamMuhyo)
-- Facebook: [Muhammad Muhyo Din Attari](https://www.facebook.com/MuhammadMuhyoDinAttari)
+- Facebook: [Muhyo Tech](https://www.facebook.com/muhyotech)
 
 ## Ownership
 

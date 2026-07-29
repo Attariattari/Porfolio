@@ -44,7 +44,7 @@ const personSchema = {
     "https://www.linkedin.com/in/ghulam-muhyo-din-web-designer/",
     "https://github.com/Attariattari",
     "https://x.com/GhulamMuhyo",
-    "https://www.facebook.com/MuhammadMuhyoDinAttari",
+    "https://www.facebook.com/muhyotech",
   ],
   jobTitle: "Full Stack Web Developer",
   worksFor: {

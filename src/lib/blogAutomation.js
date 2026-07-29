@@ -1009,62 +1009,6 @@ export async function runBlogAutomationPipeline(
       }
     }
 
-    // A saved editorial topic always wins. The monthly spotlight remains a
-    // fallback only when the persisted topic queue has nothing ready to use.
-    if (!selectedTopic) {
-      const month = getUtcMonthContext();
-      const monthlySpotlightExists = await Blog.exists({
-        editorialCampaign: MONTHLY_MUHYO_TECH_CAMPAIGN,
-        createdAt: { $gte: month.start, $lt: month.end },
-      });
-
-      if (!monthlySpotlightExists) {
-        selectedTopic = buildMonthlyMuhyoTechTopic(month.label);
-        automationContext = {
-          ...(automationContext || {}),
-          editorialCampaign: MONTHLY_MUHYO_TECH_CAMPAIGN,
-        };
-        report("MONTHLY_BRAND_TOPIC", {
-          message: `The editorial queue is empty. Using this month's Muhyo Tech spotlight topic for ${month.label}.`,
-        });
-      }
-    }
-
-    if (!selectedTopic) {
-      report("SELECTING_TOPIC", {
-        message: "AI strategist is selecting a fresh Muhyo Tech topic...",
-      });
-      const recentBlogs = await Blog.find()
-        .sort({ createdAt: -1 })
-        .limit(10)
-        .select("title category tags");
-      recentBlogMeta = recentBlogs.map((blog) => ({
-        title: blog.title || "",
-        category: blog.category || "",
-        tags: Array.isArray(blog.tags) ? blog.tags : [],
-      }));
-      recentTitles = recentBlogs.map((b) => b.title);
-
-      const aiTopic = await withTimeout(
-        generateStrategicTopic(recentBlogMeta),
-        Number(process.env.AI_TOPIC_TIMEOUT_MS || 8000),
-        null,
-        "TopicStrategist",
-      );
-
-      selectedTopic = aiTopic || pickFallbackTopic(recentBlogMeta);
-
-      if (!selectedTopic) {
-        throw new Error("No sufficiently unique blog topic is currently available. Generation stopped to prevent duplication.");
-      }
-
-      if (!aiTopic) {
-        report("TOPIC_FALLBACK", {
-          message: `Topic strategist was slow/unavailable. Using curated topic: ${selectedTopic}`,
-        });
-      }
-    }
-
     report(previousDraft ? "REFINING" : "GENERATING", {
       message: `${previousDraft ? "Refining existing draft" : "Drafting fresh content"} for: ${selectedTopic}`,
     });
