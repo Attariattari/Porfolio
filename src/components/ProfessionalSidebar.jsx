@@ -18,7 +18,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { useTheme } from "@/components/ThemeProvider";
 import usePublicSettingsStore from "@/lib/store/publicSettingsStore";
 
@@ -118,16 +118,12 @@ export default function ProfessionalSidebar({ data }) {
     if (href !== pathname) router.prefetch(href);
   };
 
-  useEffect(() => {
-    const frame = window.requestAnimationFrame(() => {
-      try {
-        setCollapsed(
-          window.localStorage.getItem(SIDEBAR_STORAGE_KEY) === "true",
-        );
-      } catch {}
-    });
-
-    return () => window.cancelAnimationFrame(frame);
+  useLayoutEffect(() => {
+    try {
+      setCollapsed(
+        window.localStorage.getItem(SIDEBAR_STORAGE_KEY) === "true",
+      );
+    } catch {}
   }, []);
 
   useEffect(() => {
@@ -195,6 +191,7 @@ export default function ProfessionalSidebar({ data }) {
       </header>
 
       <div
+        data-public-desktop-sidebar
         className={`site-sidebar-shell fixed bottom-4 left-4 top-4 z-50 hidden transition-[width] duration-300 ease-out md:block ${
           collapsed ? "w-20" : "w-64"
         }`}

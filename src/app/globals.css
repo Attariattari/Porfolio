@@ -983,6 +983,17 @@ body.modal-open {
     overscroll-behavior: none;
 }
 
+/* The head bootstrap applies the saved sidebar state before React hydrates. */
+@media (min-width: 768px) {
+    html.sidebar-collapsed [data-public-desktop-sidebar] {
+        width: 5rem !important;
+    }
+
+    html.sidebar-expanded [data-public-desktop-sidebar] {
+        width: 16rem !important;
+    }
+}
+
 /* Keep below-the-fold homepage markup intact while deferring its paint cost. */
 .site-main-shell #main-content > section:not(:first-child) {
     content-visibility: auto;
