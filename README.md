@@ -1,253 +1,225 @@
 # Muhyo Tech
 
-Professional portfolio, content platform, and admin-managed software services website for Muhyo Tech, the personal software development brand of Pir Ghulam Muhyo Din.
+Production portfolio, services, content, and administration platform for **Muhyo Tech**, maintained by Pir Ghulam Muhyo Din in Lahore, Pakistan.
 
-Live site: https://www.muhyotech.com  
-Founder: Pir Ghulam Muhyo Din  
-Location: Lahore, Pakistan  
-Phone: +92 322 4458481  
-WhatsApp: https://wa.me/923224458481  
-Business email: MuhyoTech@gmail.com  
-Resume/contact email: attariattari549@gmail.com  
-Last updated: July 2026
+[![Website](https://img.shields.io/badge/Website-muhyotech.com-6d5dfc?style=flat-square)](https://www.muhyotech.com)
+![Next.js](https://img.shields.io/badge/Next.js-16.1.6-black?style=flat-square&logo=next.js)
+![React](https://img.shields.io/badge/React-19.2.3-149eca?style=flat-square&logo=react)
+![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-47a248?style=flat-square&logo=mongodb)
+![Status](https://img.shields.io/badge/status-active-success?style=flat-square)
 
-## Overview
+> Current project reference · Updated July 29, 2026
 
-Muhyo Tech is a full-stack portfolio and digital services platform built with Next.js, React, MongoDB, and a secure admin dashboard. It presents services, projects, blogs, resume data, goals, contact channels, and SEO/AI-friendly discovery files.
+## Platform overview
 
-The website is designed to represent Muhyo Tech professionally for clients, search engines, AI assistants, and technical reviewers.
+Muhyo Tech combines a public business website with a database-backed administration system. Public content—including services, projects, articles, skills, goals, resume information, and contact details—is managed from the admin console and delivered through the Next.js App Router.
 
-## What Muhyo Tech Offers
+The platform also includes an editorial automation system for topic planning, long-form and supporting article generation, image preparation, quality review, social sharing content, publishing, and Featured article selection.
 
-- Performance-first web development
-- UI/UX design and responsive interfaces
-- SaaS dashboards and admin systems
-- API and backend system development
-- MongoDB-powered dynamic content
-- SEO and digital growth strategy
-- Cloud deployment and DevOps setup
-- Blog publishing and portfolio management
-- Secure admin authentication and approvals
-- AI/search discovery support with `/llms.txt`
+## Current capabilities
 
-## Key Public Pages
+### Public website
 
-- Home: https://www.muhyotech.com
-- About: https://www.muhyotech.com/about
-- Services: https://www.muhyotech.com/services
-- Projects: https://www.muhyotech.com/projects
-- Blog: https://www.muhyotech.com/blog
-- Goals: https://www.muhyotech.com/goals
-- Skills: https://www.muhyotech.com/skills
-- Resume: https://www.muhyotech.com/resume
-- Contact: https://www.muhyotech.com/contact
-- AI profile: https://www.muhyotech.com/llms.txt
-- Sitemap: https://www.muhyotech.com/sitemap.xml
-- Robots: https://www.muhyotech.com/robots.txt
+- Responsive portfolio and service presentation
+- Dynamic projects, services, blog, skills, goals, resume, and contact content
+- Individual service, project, and article detail pages
+- Contact and WhatsApp inquiry paths
+- Theme-aware UI, animations, image galleries, and lightboxes
+- Canonical metadata, structured data, sitemap, robots rules, and legacy blog redirects
+- AI-readable brand information through `/llms.txt`
 
-## Features
+### Administration
 
-- Dynamic portfolio data for services, projects, blogs, goals, skills, and resume content
-- Admin dashboard for managing public content
-- Secure admin login with passkey-based authentication
-- Google OAuth account linking flow
-- Super Admin transfer and security controls
-- MongoDB/Mongoose data layer
-- SEO metadata, canonical URLs, sitemap, robots, and JSON-LD schema
-- Detailed `/llms.txt` file for AI assistants and answer engines
-- Contact form and WhatsApp project inquiry path
-- Blog automation and AI-assisted editorial tooling
-- Cloudinary image upload and media handling
-- Responsive public UI with animation and modern design
+- Central dashboard for public website content
+- Project, service, blog, profile, resume, skills, goals, and message management
+- Secure session-based admin access and account security controls
+- Google OAuth account-linking support
+- Cloudinary media upload and image management
+- Published, pending, and draft content states
+- Cache invalidation and optional real-time content events
 
-## Tech Stack
+### AI editorial system
 
-### Core
+- Persistent AI, manual, and fallback topic queues
+- Duplicate-aware topic validation against existing blogs and used plans
+- Pillar-first content clusters: one detailed Pillar article followed by two related Supporting articles
+- Strict parent verification that prevents Supporting generation before its Pillar blog exists
+- Detailed Pillar articles targeting complete subject coverage rather than word-count padding
+- Focused Supporting articles for narrow questions and internal topical support
+- AI quality review, retry limits, and safe failure handling
+- Topic usage tracking so completed topics are not selected again
+- Article-specific image prompts with varied visual direction and color themes
+- Image readiness and quality audit data
+- Platform-specific LinkedIn, Facebook, X, and WhatsApp post generation
+- Second-pass social editorial review for factual accuracy, tone, claims, jargon, and professionalism
+- Quality-based Featured article selection instead of automatically featuring every new post
 
-- Next.js 16
-- React 19
-- Tailwind CSS 4
-- MongoDB
-- Mongoose
-- Node.js
+## Editorial sequence
 
-### UI and State
+Each content cluster follows this enforced order:
 
-- Framer Motion
-- Lucide React
-- Zustand
-- React Hook Form
-- TanStack Query
-- Sonner
-- Swiper
-- Recharts
-
-### Backend and Security
-
-- Next.js App Router API routes
-- JWT sessions with `jose`
-- bcrypt passkey hashing
-- Nodemailer email delivery
-- Rate limiting
-- Admin approval workflows
-- Google OAuth integration
-
-### Media, Automation, and AI
-
-- Cloudinary
-- Google Generative AI package
-- Blog image generation helpers
-- SEO audit helpers
-- `/llms.txt` AI knowledge profile
-
-## Project Structure
-
-```txt
-muhyo-tech/
-├── public/                    Static assets and images
-├── src/
-│   ├── app/                   Next.js App Router pages and API routes
-│   │   ├── (main)/            Public website routes
-│   │   ├── (admin)/           Admin dashboard and auth routes
-│   │   ├── api/               Backend API endpoints
-│   │   ├── llms.txt/          AI profile route
-│   │   ├── robots.js          Robots configuration
-│   │   └── sitemap.js         Dynamic sitemap
-│   ├── components/            Public and admin UI components
-│   ├── controllers/           Business logic and data controllers
-│   ├── lib/                   Auth, SEO, config, data, mail, AI helpers
-│   └── models/                Mongoose models
-├── package.json
-├── next.config.mjs
-├── eslint.config.mjs
-└── README.md
+```text
+Detailed Pillar article
+        |
+        +--> Supporting article 1
+        |
+        +--> Supporting article 2
+        |
+        +--> Next Pillar cluster
 ```
 
-## Environment Variables
+A Supporting topic is eligible only when its linked Pillar topic is marked as used **and** the actual Pillar blog still exists. If no duplicate-safe Pillar topic is available, automated generation stops instead of producing an unrelated Supporting fallback.
 
-Create `.env.local` from `.env.sample` and configure the project secrets.
+## Featured article qualification
 
-Important variables include:
+Featured placement is earned through editorial signals rather than publication date alone. The ranking process considers:
 
-```env
-APP_URL=https://www.muhyotech.com
-NEXT_PUBLIC_SITE_URL=https://www.muhyotech.com
-MONGODB_URI=your_mongodb_connection_string
-AUTH_SECRET=your_secure_auth_secret
-SESSION_SECRET=your_secure_session_secret
-SUPER_ADMIN_EMAIL=your_super_admin_email
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your_email
-SMTP_PASS=your_app_password
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-GOOGLE_REDIRECT_URI=https://www.muhyotech.com/api/auth/google/callback
+- AI review status and quality score
+- Article type and appropriate content depth
+- Useful H2/H3 structure
+- SEO title, focus keyword, and description completeness
+- Lists, practical guidance, mistakes, best practices, tables, and FAQs where appropriate
+- Cover-image readiness and audit data
+- Category and topic-cluster diversity
+
+The public blog does not label ordinary recent posts as Featured when no article passes the qualification threshold.
+
+## Technology
+
+| Area | Current stack |
+| --- | --- |
+| Application | Next.js 16.1.6, React 19.2.3, App Router |
+| Styling | Tailwind CSS 4, Framer Motion |
+| Data | MongoDB, Mongoose 9 |
+| Forms and state | React Hook Form, Zustand, TanStack Query, Zod |
+| Authentication | Signed sessions with `jose`, bcrypt hashing, Google OAuth |
+| Media | Cloudinary |
+| AI | Google Generative AI integration |
+| Email | Nodemailer/SMTP |
+| Caching | Application cache with optional Redis |
+| UI utilities | Lucide, Swiper, Recharts, Sonner, dnd-kit |
+| Observability | Optional Vercel Analytics and Speed Insights |
+
+## Repository structure
+
+```text
+.
+|-- public/                         Static assets
+|-- src/
+|   |-- app/
+|   |   |-- (main)/                Public routes
+|   |   |-- (admin)/               Admin and authentication routes
+|   |   |-- api/                   APIs, cron handlers, and integrations
+|   |   |-- llms.txt/              AI-readable brand route
+|   |   |-- robots.js              Crawler policy
+|   |   `-- sitemap.js             Dynamic sitemap
+|   |-- components/                Public and admin interfaces
+|   |-- controllers/               Application business logic
+|   |-- lib/
+|   |   |-- ai/blog/               Topics, articles, images, and social content
+|   |   |-- cron/                  Scheduled pipeline orchestration
+|   |   `-- server/                Server-only helpers
+|   `-- models/                    Mongoose schemas and models
+|-- .env.sample                    Environment variable reference
+|-- package.json                   Dependencies and scripts
+`-- README.md                      Project documentation
 ```
 
-For local development, the app can still run on `http://localhost:3000`, but public SEO and AI files should point to the production domain.
+## Local development
 
-## Getting Started
+Requirements:
 
-Install dependencies:
+- A current Node.js LTS release
+- npm
+- MongoDB connection
+- Service credentials for the integrations being used
+
+Setup:
 
 ```bash
 npm install
-```
-
-Run the development server:
-
-```bash
+copy .env.sample .env.local
 npm run dev
 ```
 
-Open:
+Open [http://localhost:3000](http://localhost:3000).
 
-```txt
-http://localhost:3000
-```
-
-Build for production:
-
-```bash
-npm run build
-```
-
-Start production server:
-
-```bash
-npm start
-```
-
-Run linting:
-
-```bash
-npm run lint
-```
-
-## Available Scripts
+## Commands
 
 | Command | Purpose |
 | --- | --- |
-| `npm run dev` | Start the local Next.js development server |
-| `npm run build` | Create a production build |
-| `npm start` | Start the production server |
+| `npm run dev` | Start the Webpack development server |
+| `npm run build` | Create the production build |
+| `npm start` | Start a completed production build |
 | `npm run lint` | Run ESLint |
-| `npm run clean` | Remove the `.next` build folder on Windows |
+| `npm run clean` | Remove `.next` on Windows |
 
-## SEO And AI Discovery
+## Environment configuration
 
-Muhyo Tech includes a strong discovery setup:
+Use `.env.sample` as the source of truth. Never commit `.env.local` or expose credentials in client-side code.
 
-- `src/app/sitemap.js` generates public URLs for search engines.
-- `src/app/robots.js` allows public pages and blocks admin/API areas.
-- `src/components/schema/OrganizationSchema.jsx` adds Organization JSON-LD.
-- `src/app/(main)/about/page.jsx` adds Person JSON-LD for Pir Ghulam Muhyo Din.
-- `src/app/llms.txt/route.js` provides a detailed AI-readable brand profile.
+| Group | Variables |
+| --- | --- |
+| Database | `MONGODB_URI` |
+| Application URLs | `APP_URL`, `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_BASE_URL` |
+| Authentication | `AUTH_SECRET`, `SESSION_SECRET`, `AUTH_SESSION_DAYS`, `SUPER_ADMIN_EMAIL` |
+| Email | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` |
+| Google OAuth | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI` |
+| Cloudinary | `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME`, `NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET`, `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` |
+| AI | `GEMINI_API_KEY`; optional model and timeout overrides |
+| Blog automation | `AUTO_PUBLISH_AI_BLOGS`, `ALLOW_PUBLISH_WITHOUT_BLOG_IMAGE`, `DEFAULT_BLOG_FALLBACK_IMAGE_URL` |
+| Image upload links | `BLOG_IMAGE_UPLOAD_SECRET`, `BLOG_IMAGE_UPLOAD_LINK_TTL_HOURS` |
+| Scheduled routes | `CRON_SECRET` |
+| Optional services | `REDIS_URL`, analytics and Socket.IO feature flags |
 
-The `/llms.txt` route is intentionally configured to use the production domain so AI systems do not learn local development links.
+`OPENAI_API_KEY` is present in the environment template for optional integrations; the current editorial generator uses the configured Gemini service.
 
-## Admin And Security Notes
+## Scheduled editorial operation
 
-- Admin routes live under `/admin`.
-- API routes live under `/api`.
-- Private admin and API routes are excluded from public AI/source guidance.
-- Super Admin and Google OAuth account linking use extra verification rules.
-- Passkeys are hashed before storage.
-- Sensitive values must stay in environment variables, never in committed code.
+Protected cron handlers coordinate daily blog processing and Featured ranking refreshes. Production schedulers must send the configured `CRON_SECRET`. A topic is moved through its queue states and linked to the resulting blog, allowing interrupted processing to recover without intentionally reusing a completed topic.
+
+Automated publishing behavior remains controlled by environment settings and image readiness. Failed quality checks stop or retry within bounded limits instead of silently publishing degraded content.
+
+## SEO and discovery
+
+- Dynamic sitemap and crawler rules
+- Canonical production URLs
+- Page-specific metadata and social previews
+- Organization, person, service, project, and article structured data where relevant
+- Redirects for retired duplicate blog slugs
+- `/llms.txt` for concise AI-oriented brand context
+- Admin and private API areas excluded from public discovery
+
+Production verification should include:
+
+```text
+https://www.muhyotech.com/sitemap.xml
+https://www.muhyotech.com/robots.txt
+https://www.muhyotech.com/llms.txt
+```
 
 ## Deployment
 
-Recommended deployment platform: Vercel.
+The application is designed for Vercel-compatible deployment.
 
-Deployment checklist:
+Before release:
 
-- Set `APP_URL` and `NEXT_PUBLIC_SITE_URL` to `https://www.muhyotech.com`
-- Add MongoDB credentials
-- Add auth/session secrets
-- Add SMTP credentials
-- Add Google OAuth credentials
-- Confirm `GOOGLE_REDIRECT_URI`
-- Run a production build
-- Verify `/sitemap.xml`, `/robots.txt`, and `/llms.txt`
+1. Configure all required production environment variables.
+2. Confirm MongoDB, Cloudinary, SMTP, OAuth, and AI credentials.
+3. Set canonical URL variables to `https://www.muhyotech.com`.
+4. Configure protected scheduled requests with `CRON_SECRET`.
+5. Verify public metadata, redirects, sitemap, robots, and `/llms.txt`.
+6. Confirm admin routes and secrets are not publicly exposed.
 
 ## Contact
 
-For projects, collaboration, or technical inquiries:
+- Website: [muhyotech.com](https://www.muhyotech.com)
+- Contact: [muhyotech.com/contact](https://www.muhyotech.com/contact)
+- LinkedIn: [Ghulam Muhyo Din](https://www.linkedin.com/in/ghulam-muhyo-din-web-designer/)
+- GitHub: [Attariattari](https://github.com/Attariattari)
+- X: [@GhulamMuhyo](https://x.com/GhulamMuhyo)
+- Facebook: [Muhammad Muhyo Din Attari](https://www.facebook.com/MuhammadMuhyoDinAttari)
 
-- Website: https://www.muhyotech.com/contact
-- WhatsApp: https://wa.me/923224458481
-- Phone: +92 322 4458481
-- Email: MuhyoTech@gmail.com
-- LinkedIn: https://www.linkedin.com/in/ghulam-muhyo-din-web-designer/
-- GitHub: https://github.com/Attariattari
-- X/Twitter: https://x.com/GhulamMuhyo
-- Facebook: https://www.facebook.com/MuhammadMuhyoDinAttari
+## Ownership
 
-## License
-
-This project is private/proprietary unless a license file or repository setting states otherwise.
-
-## Maintainer
-
-Maintained by Muhyo Tech and Pir Ghulam Muhyo Din.
+This repository is private and proprietary unless a separate license or repository setting states otherwise. Maintained by Muhyo Tech and Pir Ghulam Muhyo Din.

@@ -998,11 +998,14 @@ export async function runBlogAutomationPipeline(
           report("PLANNED_TOPIC_SELECTED", {
             message: `Using editorial queue topic: ${topicPlan.title}`,
           });
+        } else {
+          throw new Error("No Pillar-first editorial topic is currently available.");
         }
       } catch (error) {
-        report("TOPIC_QUEUE_FALLBACK", {
-          message: `Editorial queue unavailable; continuing with the existing strategist. ${error.message}`,
+        report("TOPIC_QUEUE_BLOCKED", {
+          message: `Editorial queue unavailable; generation stopped to protect Pillar-first order. ${error.message}`,
         });
+        throw new Error(`Pillar-first topic selection failed: ${error.message}`);
       }
     }
 

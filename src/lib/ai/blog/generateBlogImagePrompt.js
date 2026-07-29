@@ -92,8 +92,9 @@ export function isProfessionalImagePromptReady(imagePrompt = {}) {
     /(composition|foreground|background|lighting|camera|editorial|cover|aspect ratio|16:9|style|palette|depth)/i.test(
       prompt,
     );
+  const hasUltraHdQuality = /(?:ultra[- ]?hd|4k|3840\s*[x×]\s*2160)/i.test(prompt);
 
-  return prompt.length >= 650 && visualDirection.length >= 80 && hasProfessionalDetail;
+  return prompt.length >= 650 && visualDirection.length >= 80 && hasProfessionalDetail && hasUltraHdQuality;
 }
 
 function excerptHtml(value = "", maxLength = 1800) {
@@ -115,7 +116,7 @@ export async function generateBlogImagePrompt(blog, options = {}) {
     : "No recent visual directions available.";
 
   const fallback = {
-    prompt: `Create a premium 16:9 technical editorial ${visualIdentity.articleType} cover for the Muhyo Tech article "${blog.title}". Communicate the exact lesson through realistic software-engineering and business artifacts, not generic stock imagery. Article-level composition: ${visualIdentity.composition}. Use this specific background direction: ${visualIdentity.background}. Use a clearly dominant, distinctive palette of ${visualIdentity.palette}; do not fall back to the usual dark-blue/cyan SaaS look. Show believable architecture cards, workflows, product states, infrastructure, devices, or before/after operational outcomes only when they explain this topic. Keep a strong focal point, balanced depth, clean social-preview crop space, realistic materials, and professional lighting. No reused banner layout, generic office scene, repeated dashboard wall, neon cyberpunk, floating code, plastic AI gloss, random robots, fake logos, gibberish, watermarks, or large title text.` ,
+    prompt: `Create a premium 16:9 technical editorial ${visualIdentity.articleType} cover for the Muhyo Tech article "${blog.title}". Render in ultra-HD 4K quality (3840 x 2160), with crisp focal details, clean edges, refined textures, and professional clarity. Communicate the exact lesson through realistic software-engineering and business artifacts, not generic stock imagery. Article-level composition: ${visualIdentity.composition}. Use this specific background direction: ${visualIdentity.background}. Use a clearly dominant, distinctive palette of ${visualIdentity.palette}; do not fall back to the usual dark-blue/cyan SaaS look. Show believable architecture cards, workflows, product states, infrastructure, devices, or before/after operational outcomes only when they explain this topic. Keep a strong focal point, balanced depth, clean social-preview crop space, realistic materials, and professional lighting. No reused banner layout, generic office scene, repeated dashboard wall, neon cyberpunk, floating code, plastic AI gloss, random robots, fake logos, gibberish, watermarks, or large title text.` ,
     altText: ensureBlogImageAlt("", blog.title),
     visualDirection:
       `${visualIdentity.articleType} cover; ${visualIdentity.composition}; ${visualIdentity.background}; palette: ${visualIdentity.palette}.`,
@@ -160,6 +161,7 @@ export async function generateBlogImagePrompt(blog, options = {}) {
       - The prompt must be production-ready for an AI image generator.
       - Prompt length: 850-1300 characters.
       - Include aspect ratio 16:9.
+      - Require ultra-HD 4K output (3840 x 2160) with crisp focal details, clean edges, refined textures, and professional clarity.
       - Include subject, composition, foreground/background, technical artifacts, mood, lighting, depth, palette, style, and quality.
       - Make it specific to this exact blog topic and content excerpt.
       - Follow the assigned palette, background, and composition. Do not replace them with a generic dark-blue dashboard theme.

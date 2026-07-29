@@ -431,10 +431,19 @@ async function takeClusterTopic(source, pillarStatus, supportingStatus) {
     usedByBlogId: { $ne: null },
   })
     .sort({ usedAt: 1, createdAt: 1 })
-    .select("_id")
+    .select("_id usedByBlogId")
     .lean();
 
   for (const pillar of completedPillars) {
+    // A supporting article is never allowed ahead of its real parent article.
+    // Do not trust the topic status alone: the linked Pillar blog must still
+    // exist and must itself be recorded as a Pillar article.
+    const parentBlogExists = await Blog.exists({
+      _id: pillar.usedByBlogId,
+      articleType: "pillar",
+    });
+    if (!parentBlogExists) continue;
+
     const supporting = await takeTopic(
       {
         source,
@@ -458,45 +467,47 @@ export async function acquireNextTopicPlan({ refill = true } = {}) {
   await dbConnect();
   await recoverStaleTopics();
 
-  const clusterCatalogExists = await BlogTopicPlan.exists({
+  let clusterCatalogExists = await BlogTopicPlan.exists({
     clusterKey: { $ne: "" },
     articleType: "pillar",
   });
+
+  // Never fall through to a standalone supporting-topic queue. If the cluster
+  // catalog is empty, seed duplicate-safe Pillar-first fallback clusters so
+  // the next run always has a detailed parent topic available.
+  if (!clusterCatalogExists) {
+    const [blogs, historicalPlans] = await Promise.all([
+      Blog.find().sort({ createdAt: -1 }).limit(500).select("title summary category tags focusKeyword slug").lean(),
+      BlogTopicPlan.find().select("title pillar subtopic problem solutionAngle businessValue audience focusKeyword format fingerprint articleType clusterKey").lean(),
+    ]);
+    await insertClusterPacks(
+      buildFallbackClusterPacks(),
+      "fallback",
+      "reserve",
+      blogs,
+      historicalPlans,
+    );
+    clusterCatalogExists = await BlogTopicPlan.exists({
+      clusterKey: { $ne: "" },
+      articleType: "pillar",
+    });
+  }
 
   if (clusterCatalogExists) {
     let topic = await takeClusterTopic("ai", "planned", "ready");
     if (topic) return topic;
 
-    const now = new Date();
-    topic = await takeTopic(
-      {
-        source: "manual",
-        status: "ready",
-        $or: [
-          { scheduledFor: null },
-          { scheduledFor: { $lte: now } },
-        ],
-      },
-      { scheduledFor: 1, priority: -1, createdAt: 1 },
-    );
-    if (topic) return addParentPillarContext(topic);
+    topic = await takeClusterTopic("manual", "ready", "ready");
+    if (topic) return topic;
 
     topic = await takeClusterTopic("fallback", "reserve", "reserve");
     if (topic) return topic;
     return null;
   }
 
-  if (refill) await refillTopicQueue().catch((error) => console.warn("[TopicQueue] Refill unavailable; checking reserved topics.", error.message));
-  const now = new Date();
-  const primary = await takeTopic({ status: "ready", scheduledFor: null, source: "ai" }, { priority: -1, createdAt: 1 });
-  if (primary) return addParentPillarContext(primary);
-  const scheduled = await takeTopic({ status: "ready", source: "manual", scheduledFor: { $ne: null, $lte: now } }, { scheduledFor: 1, priority: -1, createdAt: 1 });
-  if (scheduled) return addParentPillarContext(scheduled);
-  const manual = await takeTopic({ status: "ready", source: "manual", scheduledFor: null }, { priority: -1, createdAt: 1 });
-  if (manual) return addParentPillarContext(manual);
-  await activateFallbackTopics();
-  const fallback = await takeTopic({ status: "ready", scheduledFor: null, source: "fallback" }, { priority: -1, createdAt: 1 });
-  return addParentPillarContext(fallback);
+  // No cluster means there is no safe topic to generate. Returning null would
+  // invoke the legacy strategist as a supporting article, so stop explicitly.
+  throw new Error("No duplicate-safe Pillar topic cluster is currently available.");
 }
 
 export const formatTopicPlanForWriter = (plan) => `Article type: ${plan.articleType || "supporting"}. Content cluster: ${plan.clusterTitle || plan.pillar}. Title direction: ${plan.title}. Pillar: ${plan.pillar}. Specific subtopic: ${plan.subtopic}. Problem: ${plan.problem}. Engineering solution angle: ${plan.solutionAngle}. Business value: ${plan.businessValue}. Audience: ${plan.audience}. Primary search query: ${plan.focusKeyword}. Search intent: ${plan.searchIntent}. Article format: ${plan.format}. Relevant service slugs for contextual internal links: ${(plan.relatedServiceSlugs || []).join(", ") || "none"}.${plan.parentPillarBlog ? ` Parent pillar article: ${plan.parentPillarBlog.title} at /blog/${plan.parentPillarBlog.slug}. Link to it naturally.` : ""}`;
