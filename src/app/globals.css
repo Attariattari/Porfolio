@@ -983,6 +983,12 @@ body.modal-open {
     overscroll-behavior: none;
 }
 
+/* Keep below-the-fold homepage markup intact while deferring its paint cost. */
+.site-main-shell #main-content > section:not(:first-child) {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 900px;
+}
+
 /* Social Share Kit follows the active site theme, including custom themes. */
 .social-share-kit-theme [class*="text-slate-"],
 .social-share-kit-theme [class*="text-[#"],

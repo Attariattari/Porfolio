@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import { Subscriber } from "@/models/Subscriber";
 import { sendNewsletterEmail } from "@/lib/newsletter";
-import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socket";
+import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socketCore";
 
 export async function POST(request) {
   try {

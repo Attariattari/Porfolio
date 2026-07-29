@@ -1,7 +1,7 @@
 import dbConnect from "@/lib/dbConnect";
 import Booking from "@/models/Booking";
 import { serializeDoc } from "@/lib/mongooseHelper";
-import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socket";
+import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socketCore";
 import eventBus, { ADMIN_EVENTS } from "@/lib/eventBus";
 import { sendEmail } from "@/lib/mailer";
 import { NotificationController } from "./NotificationController";

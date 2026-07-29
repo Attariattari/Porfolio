@@ -108,8 +108,16 @@ export const ThemeProvider = ({ children }) => {
       const cachedTheme = localStorage.getItem(THEME_CACHE_KEY);
       const paintedTheme = document.documentElement.dataset.theme;
       commitTheme(preferredTheme || cachedTheme || paintedTheme || "black");
-      refreshTheme();
     });
+
+    let idleId;
+    const refreshTimer = window.setTimeout(() => {
+      if ("requestIdleCallback" in window) {
+        idleId = window.requestIdleCallback(refreshTheme, { timeout: 5000 });
+      } else {
+        refreshTheme();
+      }
+    }, 2500);
 
     const channel = "BroadcastChannel" in window
       ? new BroadcastChannel(THEME_CHANNEL)
@@ -147,6 +155,8 @@ export const ThemeProvider = ({ children }) => {
     const interval = window.setInterval(refreshTheme, 300000);
     return () => {
       window.cancelAnimationFrame(frame);
+      window.clearTimeout(refreshTimer);
+      if (idleId !== undefined) window.cancelIdleCallback?.(idleId);
       window.clearInterval(interval);
       window.removeEventListener(THEME_EVENT, handleThemeEvent);
       window.removeEventListener("storage", handleStorage);

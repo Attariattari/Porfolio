@@ -2,17 +2,16 @@ import ProfessionalSidebar from "@/components/ProfessionalSidebar";
 import { BottomNav } from "@/components/BottomNav";
 import Footer from "@/components/Footer";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
-import InitialLoader from "@/components/InitialLoader";
 import DeferredWhatsAppButton from "@/components/DeferredWhatsAppButton";
 import ScrollProgress from "@/components/ScrollProgress";
 import DeferredNavigationWatcher from "@/components/DeferredNavigationWatcher";
+import DeferredRuntimeWidgets from "@/components/DeferredRuntimeWidgets";
 import { AboutController } from "@/controllers/AboutController";
 import { SocialController } from "@/controllers/SocialController";
 import { portfolioData } from "@/lib/data";
 import { serializeDoc } from "@/lib/mongooseHelper";
 import { SITE_URL } from "@/lib/config";
 import { getSeoImage } from "@/lib/seo";
-import MainDataProvider from "./MainDataProvider";
 import { withTimeoutFallback } from "@/lib/withTimeoutFallback";
 
 export const metadata = {
@@ -78,19 +77,18 @@ export const metadata = {
 export default async function MainLayout({ children }) {
   // Global Hybrid Sync - IMPORTANT: Serialize Mongoose docs to plain objects
   const [dbAbout, dbSocials] = await Promise.all([
-    withTimeoutFallback(AboutController.get(), null, 3000),
-    withTimeoutFallback(SocialController.get(), [], 3000),
+    withTimeoutFallback(AboutController.get(), null, 1500),
+    withTimeoutFallback(SocialController.get(), [], 1500),
   ]);
   const serializedAbout = dbAbout ? serializeDoc(dbAbout) : null;
   const globalAbout = serializedAbout || portfolioData.about;
   const globalSocials = serializeDoc(dbSocials) || [];
 
   return (
-    <MainDataProvider>
     <div
       className="relative pb-32 transition-colors duration-300 md:pb-0"
     >
-      <InitialLoader />
+      <DeferredRuntimeWidgets />
       <DeferredNavigationWatcher />
       <ScrollProgress />
       <ProfessionalSidebar data={globalAbout} />
@@ -107,6 +105,5 @@ export default async function MainLayout({ children }) {
         <Footer data={globalAbout} socials={globalSocials} />
       </div>
     </div>
-    </MainDataProvider>
   );
 }

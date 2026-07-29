@@ -1,6 +1,5 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowUpRight,
   ChevronLeft,
@@ -232,45 +231,30 @@ export default function ProfessionalSidebar({ data }) {
                 />
               </span>
 
-              <AnimatePresence initial={false}>
-                {!collapsed && (
-                  <motion.span
-                    initial={{ opacity: 0, x: -8 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -8 }}
-                    transition={{ duration: 0.18 }}
-                    className="min-w-0"
-                  >
+              {!collapsed && (
+                  <span className="min-w-0">
                     <span className="block truncate text-[15px] font-black tracking-tight text-foreground">
                       {firstName} <span className="text-accent">{lastName}</span>
                     </span>
                     <span className="mt-0.5 block truncate text-[9px] font-bold uppercase tracking-[0.14em] text-muted-foreground/75">
                       {professionalTitle}
                     </span>
-                  </motion.span>
-                )}
-              </AnimatePresence>
+                  </span>
+              )}
             </Link>
           </div>
 
           <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden px-3 py-4 scrollbar-none">
-            <AnimatePresence initial={false}>
-              {!collapsed && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="mb-2 flex items-center justify-between px-3"
-                >
+            {!collapsed && (
+                <div className="mb-2 flex items-center justify-between px-3">
                   <span className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/65">
                     Navigation
                   </span>
                   <span className="text-[9px] font-semibold text-muted-foreground/40">
                     08 sections
                   </span>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                </div>
+            )}
 
             <nav className="space-y-1" aria-label="Portfolio pages">
               {navigation.map((item, index) => {
@@ -296,14 +280,8 @@ export default function ProfessionalSidebar({ data }) {
                     }`}
                   >
                     {active && (
-                      <motion.span
-                        layoutId="professional-sidebar-active"
+                      <span
                         className="absolute inset-0 rounded-2xl border border-accent/20 bg-accent/10 shadow-[inset_3px_0_0_var(--color-accent)]"
-                        transition={{
-                          type: "spring",
-                          stiffness: 360,
-                          damping: 34,
-                        }}
                       />
                     )}
 
@@ -317,15 +295,8 @@ export default function ProfessionalSidebar({ data }) {
                       <Icon aria-hidden="true" className="h-4 w-4" />
                     </span>
 
-                    <AnimatePresence initial={false}>
-                      {!collapsed && (
-                        <motion.span
-                          initial={{ opacity: 0, x: -6 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: -6 }}
-                          transition={{ duration: 0.16 }}
-                          className="relative z-10 flex min-w-0 flex-1 items-center justify-between"
-                        >
+                    {!collapsed && (
+                        <span className="relative z-10 flex min-w-0 flex-1 items-center justify-between">
                           <span className="truncate text-[13px] font-semibold tracking-tight">
                             {item.name}
                           </span>
@@ -338,9 +309,8 @@ export default function ProfessionalSidebar({ data }) {
                           >
                             {String(index + 1).padStart(2, "0")}
                           </span>
-                        </motion.span>
-                      )}
-                    </AnimatePresence>
+                        </span>
+                    )}
 
                   </Link>
                 );

@@ -128,7 +128,7 @@ export async function POST(req) {
         const savedLog = await visitorLog.save();
         
         // Emit socket events for real-time updates
-        const { emitSocketEvent } = await import("@/lib/socket");
+        const { emitSocketEvent } = await import("@/lib/socketCore");
         if (isNewSession) {
             emitSocketEvent('new_visitor', {
                 page: normalizedPage,

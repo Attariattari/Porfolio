@@ -2,7 +2,7 @@ import dbConnect from "@/lib/dbConnect";
 import { Blog } from "@/models/Portfolio";
 import { BlogAutomationLog } from "@/models/BlogAutomationLog";
 import { cacheManager } from "@/lib/cache";
-import { emitSocketEvent } from "@/lib/socket";
+import { emitSocketEvent } from "@/lib/socketCore";
 import {
   generateBlogImagePrompt,
   isProfessionalImagePromptReady,

@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui";
@@ -11,11 +10,7 @@ export default function HomeFinalCTA() {
 
   return (
     <section className="performance-section relative px-4 md:px-8 lg:px-12 pb-20">
-      <motion.div
-        initial={{ opacity: 0, y: 32 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
+      <div
         className="theme-surface-depth relative mx-auto max-w-7xl overflow-hidden rounded-[3rem] border border-border/60 bg-gradient-to-br from-accent/10 via-background to-accent/5 p-10 text-center md:p-20"
       >
         <div className="absolute right-0 top-0 h-80 w-80 translate-x-1/3 -translate-y-1/3 rounded-full bg-accent/10 blur-[100px]" />
@@ -53,7 +48,7 @@ export default function HomeFinalCTA() {
             ))}
           </div>
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 }

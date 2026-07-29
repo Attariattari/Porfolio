@@ -13,7 +13,6 @@ import {
   FileUser,
   Target,
 } from "lucide-react";
-import { motion } from "framer-motion";
 
 const navItems = [
   { name: "Home", href: "/", icon: Home },
@@ -77,13 +76,11 @@ export const BottomNav = () => {
                 />
 
                 {isActive && (
-                  <motion.span
-                    initial={{ opacity: 0, width: 0 }}
-                    animate={{ opacity: 1, width: "auto" }}
+                  <span
                     className="text-[10px] font-black tracking-tight text-accent whitespace-nowrap overflow-hidden"
                   >
                     {item.name}
-                  </motion.span>
+                  </span>
                 )}
               </div>
 
@@ -92,10 +89,8 @@ export const BottomNav = () => {
               )}
 
               {isActive && (
-                <motion.div
-                  layoutId="active-pill-dot"
+                <div
                   className="absolute -top-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-accent shadow-[0_0_10px_rgba(var(--accent-rgb),0.8)]"
-                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                 />
               )}
             </Link>

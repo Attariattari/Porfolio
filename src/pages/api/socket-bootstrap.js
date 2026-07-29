@@ -1,5 +1,5 @@
 import { Server } from 'socket.io';
-import { setupSocketServer } from '@/lib/socket';
+import { setupSocketServer } from '@/lib/socketCore';
 
 const SOCKET_TRANSPORT_PATH = '/api/socketio';
 

@@ -5,7 +5,7 @@ import { portfolioData } from "@/lib/data";
 import { getAuthSession } from "@/lib/auth";
 import { ActivityController } from "@/controllers/ActivityController";
 import { cacheManager } from "@/lib/cache";
-import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socket";
+import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socketCore";
 import { revalidatePath } from "next/cache";
 
 const isEmptyValue = (value) => {

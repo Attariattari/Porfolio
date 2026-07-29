@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import { VisitorLog } from "@/models/VisitorLog";
-import { emitSocketEvent } from "@/lib/socket";
+import { emitSocketEvent } from "@/lib/socketCore";
 import { parseUserAgent, getGeoFromIP, getClientIP } from "@/lib/tracking/deviceDetection";
 
 export async function POST(req) {

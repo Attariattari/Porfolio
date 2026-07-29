@@ -4,7 +4,6 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import ScrollToTop from "@/components/ScrollToTop";
-import DeferredRuntimeWidgets from "@/components/DeferredRuntimeWidgets";
 import DeferredToaster from "@/components/DeferredToaster";
 import { OrganizationSchema } from "@/components/schema/OrganizationSchema";
 import { SITE_URL } from "@/lib/config";
@@ -68,19 +67,14 @@ export default function RootLayout({ children }) {
         <link rel="dns-prefetch" href="//res.cloudinary.com" />
         {googleAnalyticsId && (
           <>
-            <link
-              rel="preconnect"
-              href="https://www.googletagmanager.com"
-              crossOrigin="anonymous"
-            />
             <Script
-              strategy="afterInteractive"
+              strategy="lazyOnload"
               async
               src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}
             />
             <Script
               id="google-analytics-config"
-              strategy="afterInteractive"
+              strategy="lazyOnload"
               dangerouslySetInnerHTML={{
                 __html: `
                   window.dataLayer = window.dataLayer || [];
@@ -128,7 +122,6 @@ export default function RootLayout({ children }) {
       </head>
       <body className={inter.className} suppressHydrationWarning>
         <ThemeProvider>
-          <DeferredRuntimeWidgets />
           <ScrollToTop />
           {children}
           <DeferredToaster />

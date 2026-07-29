@@ -8,7 +8,7 @@ import { ContactMessage } from "@/models/Portfolio";
 import { serializeDoc } from "@/lib/mongooseHelper";
 import { sendEmail } from "@/lib/mailer";
 import { generateContactReplyEmail } from "@/lib/emailTemplates";
-import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socket";
+import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socketCore";
 import eventBus, { ADMIN_EVENTS } from "@/lib/eventBus";
 
 export const ContactController = {

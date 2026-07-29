@@ -1,9 +1,6 @@
 "use client";
 
 import {
-  motion,
-} from "framer-motion";
-import {
   ArrowRight,
   Terminal,
   Layers,
@@ -15,7 +12,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import Image from "next/image";
 import { getHeroMediaAlt } from "@/lib/mediaAlt";
 import dynamic from "next/dynamic";
@@ -29,21 +26,7 @@ const HeroTypewriter = dynamic(() => import("./HeroTypewriter"), {
   loading: () => <>Full-Stack Developer</>,
 });
 
-const DesktopTilt = dynamic(() => import("./DesktopTilt"), {
-  ssr: false,
-});
-
 export default function Hero({ initialData = null }) {
-  const [showDesktopVisual, setShowDesktopVisual] = useState(false);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(min-width: 1024px)");
-    const syncDesktopVisual = () => setShowDesktopVisual(mediaQuery.matches);
-    syncDesktopVisual();
-    mediaQuery.addEventListener?.("change", syncDesktopVisual);
-    return () => mediaQuery.removeEventListener?.("change", syncDesktopVisual);
-  }, []);
-
   // Priority: Database Data > Static Data
   const data = {
     ...homeData.hero,
@@ -68,16 +51,6 @@ export default function Hero({ initialData = null }) {
     Shield,
     Monitor,
     Cpu,
-  };
-
-  const tiltOptions = {
-    tiltReverse: false,
-    tiltMaxAngleX: 15,
-    tiltMaxAngleY: 15,
-    perspective: 1000,
-    scale: 1.02,
-    transitionSpeed: 1000,
-    transitionEasing: "cubic-bezier(.03,.98,.52,.99)",
   };
 
   const features = (Array.isArray(data.features) ? data.features : []).map((feature) => ({
@@ -170,21 +143,8 @@ export default function Hero({ initialData = null }) {
           </div>
 
           {/* Right Visual Column */}
-          {showDesktopVisual && <motion.div
-            initial={{ opacity: 0, scale: 0.8, rotate: 5 }}
-            animate={{
-              opacity: 1,
-              scale: 1,
-              rotate: 0,
-            }}
-            transition={{
-              duration: 1.2,
-              delay: 0.4,
-              ease: [0.16, 1, 0.3, 1],
-            }}
-            className="relative hidden lg:block"
-          >
-            <DesktopTilt {...tiltOptions}>
+          <div className="relative hidden lg:block">
+            <div className="transition-transform duration-500 hover:scale-[1.01]">
               <div className="relative z-10 w-full aspect-square max-w-[500px] mx-auto">
                 {/* Main Visual - Borderless & Blended */}
                 <div className="hero-media-blend relative w-full h-full">
@@ -211,18 +171,7 @@ export default function Hero({ initialData = null }) {
                 />
 
                 {/* Floating Code Snippet Card */}
-                <motion.div
-                  initial={{ x: 50, opacity: 0 }}
-                  animate={{
-                    x: 0,
-                    opacity: 1,
-                  }}
-                  transition={{
-                    delay: 1.5,
-                    duration: 0.8,
-                  }}
-                  className="absolute -right-6 top-1/4 glass p-4 rounded-xl border-accent/30 shadow-xl hidden xl:block"
-                >
+                <div className="absolute -right-6 top-1/4 hidden rounded-xl border-accent/30 p-4 shadow-xl glass xl:block">
                   <div className="flex gap-1.5 mb-3">
                     <div className="w-2.5 h-2.5 rounded-full bg-red-500/50" />
                     <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/50" />
@@ -233,24 +182,18 @@ export default function Hero({ initialData = null }) {
                     <div className="h-1.5 w-16 bg-muted-foreground/30 rounded" />
                     <div className="h-1.5 w-20 bg-accent/20 rounded" />
                   </div>
-                </motion.div>
+                </div>
               </div>
-            </DesktopTilt>
-          </motion.div>}
+            </div>
+          </div>
         </div>
 
         {/* Engineering Principles Grid */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, delay: 1 }}
-          className="grid grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mr-auto border-t border-border/10 mt-6 pt-6 lg:mt-12 lg:pt-12"
-        >
+        <div className="grid max-w-6xl grid-cols-2 gap-8 border-t border-border/10 pt-6 mt-6 mr-auto lg:mt-12 lg:grid-cols-4 lg:pt-12">
           {features.map((feature, index) => (
-            <motion.div
+            <div
               key={index}
-              whileHover={{ y: -5 }}
-              className="flex items-center gap-4 group"
+              className="group flex items-center gap-4 transition-transform duration-300 hover:-translate-y-1"
             >
               <div className="w-12 h-12 shrink-0 rounded-xl bg-accent/5 border border-accent/10 flex items-center justify-center text-accent group-hover:bg-accent group-hover:text-accent-foreground transition-all duration-300 shadow-xl shadow-accent/5">
                 <feature.icon className="w-5 h-5" />
@@ -263,9 +206,9 @@ export default function Hero({ initialData = null }) {
                   {feature.description}
                 </p>
               </div>
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
       </div>
 
       {/* Elegant Scroll Indicator */}

@@ -4,7 +4,7 @@ import Service from "@/models/Service";
 import { servicesSeedData } from "@/data/services.seed";
 import { serializeDoc } from "@/lib/mongooseHelper";
 import { sendNewsletterEmail } from "@/lib/newsletter";
-import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socket";
+import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socketCore";
 import { cacheManager, withCache } from "@/lib/cache";
 import { ensureMuhyoTechAlt, getServiceMediaAlt } from "@/lib/mediaAlt";
 

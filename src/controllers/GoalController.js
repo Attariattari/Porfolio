@@ -14,7 +14,7 @@ import {
 import { Subscriber } from "@/models/Subscriber";
 import { portfolioData } from "@/lib/data";
 import { serializeDoc } from "@/lib/mongooseHelper";
-import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socket";
+import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socketCore";
 import { cacheManager, withCache } from "@/lib/cache";
 import { revalidatePath } from "next/cache";
 

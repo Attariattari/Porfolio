@@ -4,7 +4,7 @@ import dbConnect from "@/lib/dbConnect";
 import { portfolioData } from "@/lib/data";
 import { serializeDoc } from "@/lib/mongooseHelper";
 import { sendNewsletterEmail } from "@/lib/newsletter";
-import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socket";
+import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socketCore";
 import { cacheManager, withCache } from "@/lib/cache";
 import { getProjectMediaAlt } from "@/lib/mediaAlt";
 

@@ -13,7 +13,6 @@ import {
   CheckCircle2,
   Loader2,
 } from "lucide-react";
-import { motion } from "framer-motion";
 import { toast } from "sonner";
 import SocialLinks from "./SocialLinks";
 
@@ -343,18 +342,16 @@ export default function Footer({ data, socials = [] }) {
             </address>
           </div>
 
-          <motion.button
-            whileHover={{ y: -4 }}
-            whileTap={{ scale: 0.95 }}
+          <button
             onClick={scrollToTop}
-            className="flex items-center gap-3 text-xs font-bold tracking-normal text-accent group"
+            className="group flex items-center gap-3 text-xs font-bold tracking-normal text-accent transition-transform duration-200 hover:-translate-y-1 active:scale-95"
             aria-label="Back to top"
           >
             <span className="hidden sm:inline">Back to top</span>
             <div className="w-10 h-10 rounded-2xl border border-accent/25 bg-background/60 flex items-center justify-center group-hover:bg-accent/10 transition-colors">
               <ArrowUp size={16} />
             </div>
-          </motion.button>
+          </button>
         </div>
       </div>
     </footer>

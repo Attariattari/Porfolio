@@ -11,7 +11,7 @@ import {
   validateBlogImageFile,
 } from "@/lib/server/cloudinary/uploadBlogImage";
 import { cacheManager } from "@/lib/cache";
-import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socket";
+import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socketCore";
 import { ActivityController } from "@/controllers/ActivityController";
 import { revalidatePath } from "next/cache";
 import { triggerFeaturedUpdate } from "@/lib/ai/featuredEngine";

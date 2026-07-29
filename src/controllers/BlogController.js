@@ -4,7 +4,7 @@ import { Blog } from "@/models/Portfolio";
 import { portfolioData } from "@/lib/data";
 import { serializeDoc } from "@/lib/mongooseHelper";
 import { sendNewsletterEmail } from "@/lib/newsletter";
-import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socket";
+import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socketCore";
 import { withCache, cacheManager } from "@/lib/cache";
 import {
     updateFeaturedRankings,

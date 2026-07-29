@@ -106,7 +106,7 @@ export async function generateMetadata() {
       SiteConfig.findOne({}).select("seo siteTitle").lean(),
     ),
     null,
-    2000,
+    1200,
   );
 
   const { title, description } = resolveHomeSeo(configuredSeo?.seo);
@@ -147,12 +147,12 @@ export default async function HomePage() {
   // homepage from returning crawlable HTML within a safe response budget.
   const [dbSkills, dbServices, dbProjects, dbBlogs, dbAbout, dbHero] =
     await Promise.all([
-      withTimeoutFallback(SkillController.getAll(), [], 3000),
-      withTimeoutFallback(ServiceController.getAll(true), [], 3000),
-      withTimeoutFallback(ProjectController.getAll(true), [], 3000),
-      withTimeoutFallback(BlogController.getAll(true), [], 3000),
-      withTimeoutFallback(AboutController.get(), null, 3000),
-      withTimeoutFallback(HeroController.get(), null, 3000),
+      withTimeoutFallback(SkillController.getAll(), [], 1500),
+      withTimeoutFallback(ServiceController.getAll(true), [], 1500),
+      withTimeoutFallback(ProjectController.getAll(true), [], 1500),
+      withTimeoutFallback(BlogController.getAll(true), [], 1500),
+      withTimeoutFallback(AboutController.get(), null, 1500),
+      withTimeoutFallback(HeroController.get(), null, 1500),
     ]);
 
   // IMPORTANT: Serialize Mongoose documents to plain objects for React serialization

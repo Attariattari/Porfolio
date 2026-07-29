@@ -2,7 +2,7 @@ import dbConnect from "@/lib/dbConnect";
 import { Notification } from "@/models/AdminModels";
 import { serializeDoc } from "@/lib/mongooseHelper";
 import eventBus, { ADMIN_EVENTS } from "@/lib/eventBus";
-import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socket";
+import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socketCore";
 
 export const NotificationController = {
   /**

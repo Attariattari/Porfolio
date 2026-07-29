@@ -29,23 +29,7 @@ export default function SocialShareKitModal({ blog, isOpen, onClose, onUpdated }
   const [feedback, setFeedback] = useState("");
   const [saving, setSaving] = useState(false);
   const [generating, setGenerating] = useState(false);
-  const [isTouchMobile, setIsTouchMobile] = useState(false);
-  const [showPreview, setShowPreview] = useState(true);
   useModalScrollLock(isOpen);
-
-  useEffect(() => {
-    const detectDevice = () => {
-      const userAgent = navigator.userAgent || "";
-      const mobileUserAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent)
-        || (/Macintosh/i.test(userAgent) && navigator.maxTouchPoints > 1);
-      const touchMobile = mobileUserAgent;
-      setIsTouchMobile(touchMobile);
-      setShowPreview(!touchMobile && window.innerWidth >= 1100);
-    };
-    detectDevice();
-    window.addEventListener("resize", detectDevice);
-    return () => window.removeEventListener("resize", detectDevice);
-  }, []);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -158,8 +142,8 @@ export default function SocialShareKitModal({ blog, isOpen, onClose, onUpdated }
           <button onClick={onClose} className="grid size-10 shrink-0 place-items-center rounded-xl border border-border bg-background text-muted-foreground transition hover:text-foreground" aria-label="Close"><X className="size-4" /></button>
         </header>
 
-        <div className={`grid min-h-0 flex-1 ${isTouchMobile ? "grid-cols-1" : "grid-cols-[280px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)]"}`}>
-          <aside className={`${isTouchMobile ? "hidden" : "block"} min-h-0 overflow-y-auto border-r border-border/70 bg-card/45 p-5`}>
+        <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[280px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)]">
+          <aside className="hidden min-h-0 overflow-y-auto border-r border-border/70 bg-card/45 p-5 lg:block">
             <SectionLabel>Campaign asset</SectionLabel>
             <div className="mt-3 overflow-hidden rounded-2xl border border-border bg-background shadow-sm">
               <div className="relative aspect-video bg-muted/30">
@@ -181,7 +165,7 @@ export default function SocialShareKitModal({ blog, isOpen, onClose, onUpdated }
           </aside>
 
           <div className="flex min-h-0 flex-col bg-background">
-            <div className={`${isTouchMobile ? "flex" : "hidden"} shrink-0 items-center justify-between gap-3 border-b border-border/70 bg-card/40 px-4 py-3`}>
+            <div className="flex shrink-0 items-center justify-between gap-3 border-b border-border/70 bg-card/40 px-4 py-3 lg:hidden">
               <div><p className="text-[9px] font-black uppercase tracking-wider text-accent">Kit controls</p><p className="mt-0.5 text-[10px] text-muted-foreground">{missingPlatforms.length ? `${missingPlatforms.length} missing post${missingPlatforms.length === 1 ? "" : "s"}` : "All platforms ready"}</p></div>
               <button onClick={generate} disabled={generating} className="inline-flex h-9 items-center gap-2 rounded-xl bg-accent px-3 text-[10px] font-bold text-accent-foreground disabled:opacity-50">{generating ? <Loader2 className="size-3.5 animate-spin" /> : <RefreshCw className="size-3.5" />}{missingPlatforms.length ? "Generate missing" : "Regenerate"}</button>
             </div>
@@ -190,7 +174,7 @@ export default function SocialShareKitModal({ blog, isOpen, onClose, onUpdated }
               {platforms.map(({ key, label, Icon, tone }) => <button key={key} onClick={() => setActive(key)} className={`inline-flex h-10 shrink-0 items-center gap-2 rounded-xl border px-3 text-[10px] font-bold transition ${active === key ? tone : "border-transparent text-muted-foreground hover:border-border hover:bg-muted/50 hover:text-foreground"}`}><Icon className="size-3.5" />{label}{posts[key] && <CheckCircle2 className="size-3 text-status-success" />}</button>)}
             </nav>
 
-            <div className={`grid min-h-0 flex-1 ${showPreview ? "grid-cols-[minmax(0,1fr)_300px]" : "grid-cols-1"}`}>
+            <div className="grid min-h-0 flex-1 grid-cols-1 xl:grid-cols-[minmax(0,1fr)_300px]">
               <div className="flex min-h-0 flex-col p-4 sm:p-5">
                 <div className="mb-3 flex shrink-0 items-end justify-between gap-4">
                   <div><SectionLabel>Post editor</SectionLabel><h3 className="mt-1 text-sm font-black text-foreground">{selectedPlatform.label} copy</h3></div>
@@ -199,7 +183,7 @@ export default function SocialShareKitModal({ blog, isOpen, onClose, onUpdated }
                 <textarea value={posts[active]} onChange={(event) => setPosts((current) => ({ ...current, [active]: event.target.value }))} placeholder="Generate this platform post to begin editing." className="h-[42dvh] min-h-64 w-full flex-1 resize-none overflow-y-auto rounded-2xl border border-border bg-card p-4 text-sm leading-7 text-foreground shadow-inner outline-none placeholder:text-muted-foreground focus:border-accent focus:ring-4 focus:ring-accent/5 md:h-auto" />
               </div>
 
-              <aside className={`${showPreview ? "block" : "hidden"} min-h-0 overflow-y-auto border-l border-border/70 bg-card/35 p-5`}>
+              <aside className="hidden min-h-0 overflow-y-auto border-l border-border/70 bg-card/35 p-5 xl:block">
                 <SectionLabel>Live preview</SectionLabel>
                 <div className="mt-3 overflow-hidden rounded-2xl border border-border bg-background shadow-sm">
                   <div className="flex items-center gap-3 border-b border-border/70 p-4"><span className={`grid size-9 place-items-center rounded-full border ${selectedPlatform.tone}`}><SelectedIcon className="size-4" /></span><div><p className="text-xs font-bold text-foreground">Muhyo Tech</p><p className="text-[9px] text-muted-foreground">Prepared for {selectedPlatform.label}</p></div></div>
