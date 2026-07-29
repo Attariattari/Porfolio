@@ -21,11 +21,52 @@ export async function GET(request) {
   const status = request.nextUrl.searchParams.get("status");
   const query = status && status !== "all" ? { status } : {};
   const [topics, statusCounts] = await Promise.all([
-    BlogTopicPlan.find(query).sort({ status: 1, scheduledFor: 1, priority: -1, createdAt: 1 }).limit(300).lean(),
+    BlogTopicPlan.find(query)
+      .sort({ status: 1, scheduledFor: 1, priority: -1, createdAt: 1 })
+      .limit(300)
+      .populate({
+        path: "usedByBlogId",
+        select: "title slug articleType publishStatus createdAt generatedAt",
+      })
+      .lean(),
     BlogTopicPlan.aggregate([{ $group: { _id: "$status", count: { $sum: 1 } } }]),
   ]);
-  const counts = Object.fromEntries(statusCounts.map((item) => [item._id, item.count]));
-  return NextResponse.json({ success: true, data: { topics, counts, total: Object.values(counts).reduce((sum, count) => sum + count, 0) } });
+  const clusters = new Map();
+  topics.forEach((topic) => {
+    const clusterKey = topic.clusterKey || `standalone-${topic._id}`;
+    if (!clusters.has(clusterKey)) clusters.set(clusterKey, []);
+    clusters.get(clusterKey).push(topic);
+  });
+
+  const completedClusterKeys = new Set(
+    [...clusters.entries()]
+      .filter(([, clusterTopics]) => {
+        const pillar = clusterTopics.find((topic) => topic.articleType === "pillar" && Number(topic.clusterOrder) === 0);
+        const childOne = clusterTopics.find((topic) => topic.articleType === "supporting" && Number(topic.clusterOrder) === 1);
+        const childTwo = clusterTopics.find((topic) => topic.articleType === "supporting" && Number(topic.clusterOrder) === 2);
+        return [pillar, childOne, childTwo].every((topic) => topic?.status === "used" && topic?.usedByBlogId?._id);
+      })
+      .map(([clusterKey]) => clusterKey),
+  );
+
+  const displayTopics = topics.map((topic) => {
+    const clusterKey = topic.clusterKey || `standalone-${topic._id}`;
+    const queueStatus = topic.status;
+    let displayStatus = queueStatus;
+    if (completedClusterKeys.has(clusterKey)) displayStatus = "used";
+    else if (queueStatus === "processing") displayStatus = "selected";
+    else if (queueStatus === "used" && topic.usedByBlogId?._id) displayStatus = "created";
+    else if (queueStatus === "used") displayStatus = "failed";
+    return { ...topic, queueStatus, status: displayStatus };
+  });
+
+  const counts = displayTopics.reduce((result, topic) => {
+    result[topic.status] = (result[topic.status] || 0) + 1;
+    return result;
+  }, {});
+  counts.usedClusters = completedClusterKeys.size;
+  const total = statusCounts.reduce((sum, item) => sum + item.count, 0);
+  return NextResponse.json({ success: true, data: { topics: displayTopics, counts, total } });
 }
 
 export async function POST(request) {
