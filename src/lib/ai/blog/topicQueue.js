@@ -465,6 +465,13 @@ async function addParentPillarContext(topic, existingParentBlog = null) {
  * Sequence: Pillar Blog -> Supporting Blog 1 -> Supporting Blog 2 -> Next Pillar Blog
  */
 async function takeClusterTopic(source = "ai") {
+  const processingTopic = await BlogTopicPlan.findOne({ source, status: "processing" })
+    .select("_id title articleType clusterKey clusterOrder processingStartedAt")
+    .lean();
+  if (processingTopic) {
+    throw new Error(`Topic generation is already processing ${processingTopic.articleType} topic "${processingTopic.title}" in cluster ${processingTopic.clusterKey}. No other Pillar can be selected until this run finishes or is safely released.`);
+  }
+
   const completedPillars = await BlogTopicPlan.find({
     source,
     articleType: "pillar",
