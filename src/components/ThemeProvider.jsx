@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 const VALID_THEMES = ["light", "dark", "black"];
 const THEME_CACHE_KEY = "muhyo_global_theme";
@@ -30,14 +30,14 @@ const applyThemeToRoot = (value) => {
     root.dataset.theme = theme;
     root.style.colorScheme = theme === "light" ? "light" : "dark";
 
-    const themeColorMeta = document.querySelector('meta[name="theme-color"]');
-    if (themeColorMeta) {
-      themeColorMeta.setAttribute("content", THEME_COLORS[theme]);
-    }
-
     window.requestAnimationFrame(() => {
       window.requestAnimationFrame(() => root.classList.remove("theme-switching"));
     });
+  }
+
+  const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+  if (themeColorMeta) {
+    themeColorMeta.setAttribute("content", THEME_COLORS[theme]);
   }
 
   localStorage.setItem(THEME_CACHE_KEY, theme);
@@ -102,14 +102,17 @@ export const ThemeProvider = ({ children }) => {
     return refreshPromiseRef.current;
   }, [commitTheme]);
 
-  useEffect(() => {
-    const frame = window.requestAnimationFrame(() => {
-      const preferredTheme = localStorage.getItem(THEME_PREFERENCE_KEY);
-      const cachedTheme = localStorage.getItem(THEME_CACHE_KEY);
-      const paintedTheme = document.documentElement.dataset.theme;
-      commitTheme(preferredTheme || cachedTheme || paintedTheme || "black");
-    });
+  // The inline head script paints the saved theme before CSS is rendered.
+  // Synchronize React with that exact value before the browser paints the
+  // hydrated app, so context-driven backgrounds never flash the default theme.
+  useLayoutEffect(() => {
+    const preferredTheme = localStorage.getItem(THEME_PREFERENCE_KEY);
+    const cachedTheme = localStorage.getItem(THEME_CACHE_KEY);
+    const paintedTheme = document.documentElement.dataset.theme;
+    commitTheme(preferredTheme || cachedTheme || paintedTheme || "black");
+  }, [commitTheme]);
 
+  useEffect(() => {
     let idleId;
     const refreshTimer = window.setTimeout(() => {
       if ("requestIdleCallback" in window) {
@@ -154,7 +157,6 @@ export const ThemeProvider = ({ children }) => {
 
     const interval = window.setInterval(refreshTheme, 300000);
     return () => {
-      window.cancelAnimationFrame(frame);
       window.clearTimeout(refreshTimer);
       if (idleId !== undefined) window.cancelIdleCallback?.(idleId);
       window.clearInterval(interval);

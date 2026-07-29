@@ -135,9 +135,9 @@ export default function Footer({ data, socials = [] }) {
 
               <form
                 onSubmit={handleSubscribe}
-                className="mb-5 flex max-w-md gap-2 rounded-2xl border border-border/60 bg-muted/20 p-2"
+                className="mb-5 flex max-w-md flex-col gap-2 rounded-2xl border border-border/60 bg-muted/20 p-2 sm:flex-row"
               >
-                <div className="flex min-w-0 flex-1 items-center gap-3 px-2">
+                <div className="flex min-w-0 flex-1 items-center gap-3 px-2 py-2 sm:py-0">
                   <Mail size={16} className="shrink-0 text-accent" />
                   <input
                     type="email"
@@ -154,7 +154,7 @@ export default function Footer({ data, socials = [] }) {
                 <button
                   type="submit"
                   disabled={loading || subscribed}
-                  className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-xl bg-accent px-4 text-xs font-bold text-accent-foreground shadow-lg shadow-accent/20 transition-all hover:bg-accent/90 disabled:opacity-70"
+                  className="inline-flex h-10 w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-accent px-4 text-xs font-bold text-accent-foreground shadow-lg shadow-accent/20 transition-all hover:bg-accent/90 disabled:opacity-70 sm:w-auto"
                   aria-label="Subscribe"
                 >
                   {loading ? (
@@ -186,7 +186,7 @@ export default function Footer({ data, socials = [] }) {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-x-6 gap-y-8 p-6 sm:grid-cols-4 sm:p-7">
+            <div className="grid grid-cols-1 gap-x-6 gap-y-8 p-6 sm:grid-cols-2 sm:p-7 lg:grid-cols-4">
               <div>
                 <h4 className="mb-4 text-[10px] font-bold tracking-[0.18em] text-accent">
                   PORTFOLIO
@@ -241,13 +241,13 @@ export default function Footer({ data, socials = [] }) {
                   <li>
                     <a
                       href={`mailto:${publicEmail}`}
-                      className="group flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-accent"
+                      className="group flex min-w-0 items-start gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-accent"
                       aria-label="Email Muhyo Tech"
                     >
-                      {publicEmail}
+                      <span className="min-w-0 break-all">{publicEmail}</span>
                       <ExternalLink
                         size={12}
-                        className="ml-1 opacity-50 transition-opacity group-hover:opacity-100"
+                        className="mt-1 shrink-0 opacity-50 transition-opacity group-hover:opacity-100"
                       />
                     </a>
                   </li>
