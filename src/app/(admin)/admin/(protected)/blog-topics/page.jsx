@@ -36,9 +36,9 @@ export default function EditorialPlannerPage() {
   const clusterSummary = useMemo(() => {
     const groups = new Map();
     topics.forEach((topic) => {
-      if (!topic.clusterKey) return;
-      if (!groups.has(topic.clusterKey)) groups.set(topic.clusterKey, { pillar: null, supporting: [] });
-      const group = groups.get(topic.clusterKey);
+      const groupKey = topic.clusterKey || `standalone-${topic._id}`;
+      if (!groups.has(groupKey)) groups.set(groupKey, { pillar: null, supporting: [] });
+      const group = groups.get(groupKey);
       if (topic.articleType === "pillar") group.pillar = topic;
       else group.supporting.push(topic);
     });
@@ -47,12 +47,14 @@ export default function EditorialPlannerPage() {
   const visibleGroups = useMemo(() => {
     const visibleIds = new Set(visible.map((topic) => topic._id));
     return [...clusterSummary.entries()]
-      .map(([clusterKey, group]) => ({
-        clusterKey,
-        pillar: group.pillar,
-        supporting: [...group.supporting].sort((a, b) => Number(a.clusterOrder) - Number(b.clusterOrder)),
-      }))
-      .filter((group) => [group.pillar, ...group.supporting].some((topic) => topic && visibleIds.has(topic._id)));
+      .map(([clusterKey, group]) => {
+        const pillar = group.pillar && visibleIds.has(group.pillar._id) ? group.pillar : null;
+        const supporting = group.supporting
+          .filter((topic) => visibleIds.has(topic._id))
+          .sort((a, b) => Number(a.clusterOrder) - Number(b.clusterOrder));
+        return { clusterKey, pillar, parentPillar: group.pillar, supporting };
+      })
+      .filter((group) => group.pillar || group.supporting.length);
   }, [clusterSummary, visible]);
   const action = async (id, nextAction) => { const response = await fetch("/api/admin/blog-topics", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, action: nextAction }) }); const result = await response.json(); if (!response.ok) return toast.error(result.error); toast.success("Editorial topic updated."); load(); };
   const executeRemove = async (id) => { setDeletingId(id); try { const response = await fetch("/api/admin/blog-topics", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) }); const result = await response.json(); if (!response.ok) return toast.error(result.error); setConfirmation({ type: null, topicId: null }); toast.success("Topic removed."); await load(); } finally { setDeletingId(null); } };

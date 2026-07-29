@@ -253,6 +253,8 @@ const BlogSchema = new mongoose.Schema({
         facebook: { type: String, default: "" },
         x: { type: String, default: "" },
         whatsapp: { type: String, default: "" },
+        reddit: { type: String, default: "" },
+        instagram: { type: String, default: "" },
         imageUrl: { type: String, default: "" },
         source: { type: String, enum: ["ai", "fallback", "manual"], default: "fallback" },
         generatedAt: { type: Date },
