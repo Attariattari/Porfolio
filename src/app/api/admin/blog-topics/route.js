@@ -6,7 +6,7 @@ import { createTopicPlan, rebuildClusterTopicCatalog, reconcileFallbackTopics, r
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-export const maxDuration = 150;
+export const maxDuration = 60;
 
 async function authorize(action = "edit") {
   const session = await getAuthSession();

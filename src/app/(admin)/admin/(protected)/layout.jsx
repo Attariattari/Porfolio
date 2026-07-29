@@ -15,9 +15,8 @@ export default function ProtectedAdminLayout({ children }) {
       <div className="admin-app-glow" aria-hidden="true" />
       <AdminSidebar />
       <div
-        className={`flex-grow flex flex-col transition-[padding] duration-300 min-w-0
+        className={`admin-content-shell flex-grow flex flex-col transition-[padding] duration-300 min-w-0
           pl-0
-          md:pl-20
           ${sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-72'}
         `}
       >

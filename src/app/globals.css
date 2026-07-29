@@ -1038,7 +1038,6 @@ body.modal-open {
 }
 
 .social-share-kit-theme > section > .grid > aside:first-child {
-    display: block !important;
     background: color-mix(in srgb, var(--card) 94%, var(--accent) 6%) !important;
     border-color: var(--border) !important;
 }
@@ -1068,6 +1067,9 @@ body.modal-open {
     min-height: 0 !important;
     height: clamp(220px, 46vh, 420px) !important;
     max-height: calc(100dvh - 250px) !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
 }
 
 .social-share-kit-theme textarea::placeholder {
@@ -1091,7 +1093,67 @@ body.modal-open {
     flex-shrink: 0 !important;
 }
 
-@media (max-width: 1023px) {
+@media (min-width: 1280px) {
+    .social-share-kit-theme > section {
+        max-width: 1120px !important;
+    }
+
+    .social-share-kit-theme > section > .grid > div {
+        height: calc(94dvh - 120px) !important;
+        min-height: 0 !important;
+        overflow: hidden !important;
+    }
+
+    .social-share-kit-theme > section > .grid {
+        display: grid !important;
+        grid-template-columns: 360px minmax(0, 1fr) !important;
+        overflow: hidden !important;
+    }
+
+    .social-share-kit-theme > section > .grid > aside:first-child {
+        display: block !important;
+        min-height: 0 !important;
+        overflow-y: auto !important;
+    }
+
+    .social-share-kit-theme > section > .grid > div > div:first-child {
+        display: none !important;
+    }
+
+    .social-share-kit-theme > section > .grid > div > nav {
+        flex-shrink: 0 !important;
+        padding-inline: 1.25rem !important;
+    }
+
+    .social-share-kit-theme > section > .grid > div > .grid {
+        min-height: 0 !important;
+        flex: 1 1 auto !important;
+        overflow: hidden !important;
+    }
+
+    .social-share-kit-theme > section > .grid > div > .grid > div:first-child {
+        min-height: 0 !important;
+        height: 100% !important;
+        overflow: hidden !important;
+    }
+
+    .social-share-kit-theme textarea:not([rows="3"]) {
+        display: block !important;
+        width: 100% !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        overflow-y: auto !important;
+        resize: none !important;
+    }
+
+    .social-share-kit-theme footer {
+        position: relative !important;
+        z-index: 10;
+    }
+}
+
+@media (max-width: 1279px), (hover: none) and (pointer: coarse) {
     .social-share-kit-theme {
         align-items: stretch !important;
     }
@@ -1106,6 +1168,14 @@ body.modal-open {
     .social-share-kit-theme > section > .grid {
         display: block !important;
         overflow: visible !important;
+    }
+
+    .social-share-kit-theme > section > .grid > aside:first-child {
+        display: none !important;
+    }
+
+    .social-share-kit-theme > section > .grid > div > div:first-child {
+        display: flex !important;
     }
 
     .social-share-kit-theme > section > .grid > aside:first-child,
@@ -1135,6 +1205,15 @@ body.modal-open {
     }
 }
 
+html.admin-mobile-layout .admin-theme-scope .admin-content-shell {
+    width: 100% !important;
+    padding-left: 0 !important;
+}
+
+html.admin-mobile-layout .admin-theme-scope .admin-mobile-menu-trigger {
+    display: inline-flex !important;
+}
+
 /* High-contrast publication badges on blog thumbnails. */
 [class*="border-emerald-300"][class*="bg-emerald-400"] {
     background-color: var(--status-success) !important;
@@ -1149,7 +1228,8 @@ body.modal-open {
     color: #111827 !important;
 }
 
-body.modal-open aside,
+body.modal-open .site-sidebar-shell,
+body.modal-open .admin-sidebar-shell,
 body.modal-open .fixed.md\:flex,
 body.modal-open nav.md\:hidden {
     opacity: 0 !important;

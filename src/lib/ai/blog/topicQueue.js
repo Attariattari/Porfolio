@@ -238,7 +238,7 @@ Return strict JSON: {"clusters":[{"clusterKey":"","clusterTitle":"","pillar":{"t
       responseMimeType: "application/json",
       maxOutputTokens: 16384,
       thinkingBudget: 0,
-      timeoutMs: Math.max(90000, Number(process.env.AI_TOPIC_QUEUE_TIMEOUT_MS) || 120000),
+      timeoutMs: Math.min(52000, Math.max(10000, Number(process.env.AI_TOPIC_QUEUE_TIMEOUT_MS) || 52000)),
     });
     const parsed = JSON.parse(raw.replace(/```json/gi, "").replace(/```/g, "").trim());
     aiPacks = Array.isArray(parsed.clusters) ? parsed.clusters.slice(0, candidateTarget) : [];
@@ -302,7 +302,7 @@ Return strict JSON: {"clusters":[{"clusterKey":"","clusterTitle":"","pillar":{"t
       responseMimeType: "application/json",
       maxOutputTokens: 16384,
       thinkingBudget: 0,
-      timeoutMs: Math.max(90000, Number(process.env.AI_TOPIC_QUEUE_TIMEOUT_MS) || 120000),
+      timeoutMs: Math.min(52000, Math.max(10000, Number(process.env.AI_TOPIC_QUEUE_TIMEOUT_MS) || 52000)),
     });
     const parsed = JSON.parse(raw.replace(/```json/gi, "").replace(/```/g, "").trim());
     aiPacks = Array.isArray(parsed.clusters) ? parsed.clusters.slice(0, candidateTarget) : [];

@@ -126,7 +126,7 @@ export default function Topbar() {
       <div className="flex items-center gap-4 md:gap-6">
         <button
           onClick={toggleSidebar}
-          className="p-2.5 hover:bg-muted/60 rounded-xl text-muted-foreground hover:text-foreground transition-all lg:hidden"
+          className="admin-mobile-menu-trigger p-2.5 hover:bg-muted/60 rounded-xl text-muted-foreground hover:text-foreground transition-all lg:hidden"
         >
           <Menu className="w-5 h-5" />
         </button>

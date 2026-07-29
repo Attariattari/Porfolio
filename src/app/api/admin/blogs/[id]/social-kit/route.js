@@ -8,7 +8,7 @@ import { cacheManager } from "@/lib/cache";
 import { serializeDoc } from "@/lib/mongooseHelper";
 
 export const runtime = "nodejs";
-export const maxDuration = 180;
+export const maxDuration = 60;
 
 const canEdit = (session) =>
   ["super-admin", "root-super-admin"].includes(session?.role) || checkPermission(session, "blogs", "edit");

@@ -96,10 +96,18 @@ export default function AdminSidebar() {
   });
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 1024);
+    const handleResize = () => {
+      const mobileUserAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const mobile = window.innerWidth < 1024 || mobileUserAgent;
+      setIsMobile(mobile);
+      document.documentElement.classList.toggle("admin-mobile-layout", mobile);
+    };
     handleResize();
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      document.documentElement.classList.remove("admin-mobile-layout");
+    };
   }, []);
 
   useEffect(() => {

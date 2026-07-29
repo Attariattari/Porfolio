@@ -194,7 +194,7 @@ Return strict JSON only: {"approved":true,"issues":[],"revisionDirection":""}`, 
     responseMimeType: "application/json",
     maxOutputTokens: 700,
     thinkingBudget: 0,
-    timeoutMs: Math.max(20000, Number(process.env.AI_SOCIAL_REVIEW_TIMEOUT_MS) || 30000),
+    timeoutMs: Math.min(8000, Math.max(4000, Number(process.env.AI_SOCIAL_REVIEW_TIMEOUT_MS) || 8000)),
   });
   const review = JSON.parse(String(response).replace(/```json/gi, "").replace(/```/g, "").trim());
   return {
@@ -248,7 +248,7 @@ Return strict JSON only: {"linkedin":"","facebook":"","x":"","whatsapp":"","redd
       responseMimeType: "application/json",
       maxOutputTokens: 1800,
       thinkingBudget: 0,
-      timeoutMs: Math.max(30000, Number(process.env.AI_SOCIAL_TIMEOUT_MS) || 45000),
+      timeoutMs: Math.min(18000, Math.max(8000, Number(process.env.AI_SOCIAL_TIMEOUT_MS) || 18000)),
     });
     return parseKit(response, blog);
   };
@@ -264,7 +264,7 @@ Return strict JSON only: {"linkedin":"","facebook":"","x":"","whatsapp":"","redd
         responseMimeType: "application/json",
         maxOutputTokens: 1800,
         thinkingBudget: 0,
-        timeoutMs: Math.max(30000, Number(process.env.AI_SOCIAL_TIMEOUT_MS) || 45000),
+        timeoutMs: Math.min(18000, Math.max(8000, Number(process.env.AI_SOCIAL_TIMEOUT_MS) || 18000)),
       });
       candidate = parseKit(correctedResponse, blog);
       review = await reviewSocialKit(candidate, blog);
