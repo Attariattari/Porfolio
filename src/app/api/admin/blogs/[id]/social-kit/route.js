@@ -27,7 +27,7 @@ export async function POST(request, { params }) {
   try {
     const { id } = await params;
     const body = await request.json().catch(() => ({}));
-    const kit = await generateAndSaveSocialKit(id, { useAI: true, feedback: body.feedback || "" });
+    const kit = await generateAndSaveSocialKit(id, { useAI: true, feedback: body.feedback || "", platforms: body.platforms });
     return NextResponse.json({ success: true, data: serializeDoc(kit) });
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 400 });

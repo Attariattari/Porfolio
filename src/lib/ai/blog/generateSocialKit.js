@@ -4,6 +4,8 @@ import { generateGeminiResponse } from "@/lib/geminiService";
 import { SITE_URL } from "@/lib/config";
 import { cacheManager } from "@/lib/cache";
 
+const SOCIAL_PLATFORMS = ["linkedin", "facebook", "x", "whatsapp", "reddit", "instagram"];
+
 const cleanText = (value = "") => String(value)
   .replace(/<[^>]+>/g, " ")
   .replace(/&[a-z]+;/gi, " ")
@@ -20,6 +22,11 @@ const hashtags = (blog, limit = 4) => {
 };
 
 const firstLine = (value = "") => String(value).split(/\r?\n/).map((line) => line.trim()).find(Boolean) || "";
+const capitalizeFirstLetter = (value = "") => {
+  const text = String(value || "").trim();
+  const index = text.search(/[a-z]/i);
+  return index < 0 ? text : `${text.slice(0, index)}${text[index].toUpperCase()}${text.slice(index + 1)}`;
+};
 const hashtagCount = (value = "") => (String(value).match(/#[a-z0-9_]+/gi) || []).length;
 const urlCount = (value = "", url = "") => url ? String(value).split(url).length - 1 : 0;
 const plainFallbackText = (value = "") => cleanText(value)
@@ -39,6 +46,15 @@ const plainFallbackText = (value = "") => cleanText(value)
   .replace(/\bunprecedented\b/gi, "unusual")
   .replace(/\bintricacies\b/gi, "details")
   .replace(/\baforementioned\b/gi, "this");
+
+const easyExcerpt = (value = "", maxCharacters = 430) => {
+  const words = plainFallbackText(value).split(/\s+/).filter(Boolean);
+  const chunks = [];
+  for (let index = 0; index < words.length && chunks.join(" ").length < maxCharacters; index += 22) {
+    chunks.push(`${words.slice(index, index + 22).join(" ").replace(/[,:;]+$/, "")}.`);
+  }
+  return chunks.join(" ").slice(0, maxCharacters).replace(/\s+\S*$/, "").replace(/[,:;]+$/, "").trim();
+};
 const hasConfiguredGeminiKey = () => [
   process.env.GEMINI_API_KEY,
   process.env.GEMINI_API_KEY_1,
@@ -55,8 +71,8 @@ function validateShareReadyKit(kit, blog) {
   const titleFingerprint = cleanText(blog.title).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
   const unsafeStyle = /\bever wonder\b|\bdid you know\b|\bin today'?s digital world\b|\bkey takeaways\b|\bsearch engines? (?:will )?reward\b|\bboost(?:ing)? (?:your )?(?:rankings?|ctr)\b|\bguaranteed?\b|\b100%\b|\bskyrocket\b|\bgame[- ]changer\b|\blet'?s talk\b|\bclick here\b|\bunlock(?:ing)? the power\b|\brevolutioni[sz]e\b|\bdelve\b/i;
   const hardWording = /\b(?:utili[sz]e|leverage|facilitate|synergy|paradigm|multifaceted|holistic|cutting[- ]edge|state[- ]of[- ]the[- ]art|seamless(?:ly)?|robust|transformative|groundbreaking|unprecedented|intricacies|aforementioned|in order to|it is important to note|navigate the complexities|ever[- ]evolving landscape)\b/i;
-  const limits = { linkedin: [650, 1800], facebook: [500, 1400], x: [45, 280], whatsapp: [220, 650], reddit: [650, 2000], instagram: [550, 1600] };
-  const wordLimits = { linkedin: [100, 260], facebook: [80, 210], x: [7, 45], whatsapp: [35, 110], reddit: [100, 300], instagram: [90, 240] };
+  const limits = { linkedin: [650, 1800], facebook: [500, 1400], x: [270, 280], whatsapp: [220, 650], reddit: [650, 2000], instagram: [550, 1600] };
+  const wordLimits = { linkedin: [100, 260], facebook: [80, 210], x: [25, 60], whatsapp: [35, 110], reddit: [100, 300], instagram: [90, 240] };
   const hashtagLimits = { linkedin: [3, 5], facebook: [0, 3], x: [0, 2], whatsapp: [0, 0], reddit: [0, 0], instagram: [3, 8] };
   const hooks = [];
 
@@ -65,6 +81,7 @@ function validateShareReadyKit(kit, blog) {
     const text = String(value || "").trim();
     const hook = firstLine(text);
     const hookWords = cleanText(hook).split(/\s+/).filter(Boolean).length;
+    const firstAlphabet = hook.match(/[a-z]/i)?.[0] || "";
     const editorialText = text.replace(url, " ");
     const normalizedHook = cleanText(hook).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
     const [minimum, maximum] = limits[platform];
@@ -72,6 +89,7 @@ function validateShareReadyKit(kit, blog) {
     const [minimumTags, maximumTags] = hashtagLimits[platform];
     if (text.length < minimum || text.length > maximum) throw new Error(`${platform} post length is outside the professional platform limit.`);
     if (hook.length < 24 || hook.length > 170 || hookWords < 6 || hookWords > 22 || /https?:\/\/|#|\?/.test(hook)) throw new Error(`${platform} needs a concise standalone first-line hook.`);
+    if (firstAlphabet && firstAlphabet !== firstAlphabet.toUpperCase()) throw new Error(`${platform} must start with a capital letter.`);
     if (normalizedHook === titleFingerprint || unsafeStyle.test(editorialText)) throw new Error(`${platform} uses a weak, generic, or unsupported social formula.`);
     if (hardWording.test(editorialText)) throw new Error(`${platform} uses difficult corporate or AI-style wording instead of plain language.`);
     if (/!!!|\?\?\?|\.{4,}|<[^>]+>|\[link\]|\{\{/.test(text) || /\p{Extended_Pictographic}/u.test(text)) throw new Error(`${platform} contains embarrassing formatting, emoji, or unresolved markup.`);
@@ -83,7 +101,8 @@ function validateShareReadyKit(kit, blog) {
     const prose = editorialText.replace(/#[a-z0-9_]+/gi, " ");
     const proseWordCount = cleanText(prose).split(/\s+/).filter(Boolean).length;
     if (proseWordCount < minimumWords || proseWordCount > maximumWords) throw new Error(`${platform} must explain the article clearly without being too short or too long.`);
-    const longSentence = prose.split(/[.!?\n]+/).some((sentence) => cleanText(sentence).split(/\s+/).filter(Boolean).length > 30);
+    const sentenceWordLimit = ["x", "whatsapp"].includes(platform) ? 30 : 36;
+    const longSentence = prose.split(/[.!?\n]+/).some((sentence) => cleanText(sentence).split(/\s+/).filter(Boolean).length > sentenceWordLimit);
     if (longSentence) throw new Error(`${platform} contains a sentence that is too long for easy social reading.`);
     hooks.push(normalizedHook);
   }
@@ -96,37 +115,50 @@ export function validateShareReadySocialKit(kit, blog) {
   return validateShareReadyKit(kit, blog);
 }
 
-function createFallbackKit(blog) {
+function createFallbackKit(blog, { validate = true } = {}) {
   const url = blogUrl(blog);
   const title = plainFallbackText(blog.title);
   const topic = plainFallbackText(blog.focusKeyword || blog.category || "professional web development").slice(0, 70);
-  const sourceSummary = plainFallbackText(blog.summary || blog.seoDescription || blog.content).slice(0, 430);
-  const linkedinHook = `${topic} works better when the build choices are clear from the start.`;
-  const facebookHook = `Clear ${topic} choices can make a web project easier to use and maintain.`;
-  const xHook = `Good ${topic} work keeps every build choice tied to the real goal.`;
-  const whatsappHook = `A new practical guide explains the key choices behind ${topic}.`;
-  const redditHook = `${topic} raises a useful question about how web projects are planned and built.`;
-  const instagramHook = `Better ${topic} starts with clear choices people can understand.`;
+  const sourceSummary = easyExcerpt(blog.summary || blog.seoDescription || blog.content, 430);
+  const linkedinHook = capitalizeFirstLetter(`${topic} works better when the build choices are clear from the start.`);
+  const facebookHook = capitalizeFirstLetter(`Clear ${topic} choices can make a web project easier to use and maintain.`);
+  const xHook = capitalizeFirstLetter(`Good ${topic} work keeps every build choice tied to the real goal.`);
+  const whatsappHook = capitalizeFirstLetter(`A new practical guide explains the key choices behind ${topic}.`);
+  const redditHook = capitalizeFirstLetter(`${topic} raises a useful question about how web projects are planned and built.`);
+  const instagramHook = capitalizeFirstLetter(`Better ${topic} starts with clear choices people can understand.`);
   const tags = hashtags(blog);
   const linkedin = `${linkedinHook}\n\n${sourceSummary}\n\nThe article, “${title},” connects this lesson to the choices teams make while planning and building a web project. It explains the practical value without hiding the tradeoffs or filling the post with hard technical language.\n\nThe full guide gives the remaining context, examples, and steps.\n\nRead the practical guide: ${url}\n\n${tags}`.trim();
   const facebook = `${facebookHook}\n\n${sourceSummary}\n\nMuhyo Tech's article, “${title},” explains why this issue deserves attention and how clearer build choices can help. The post gives the main lesson, while the full article provides the context and practical details needed to use it well.\n\nRead the complete article: ${url}\n\n${hashtags(blog, 3)}`.trim();
-  const xBase = `${xHook}\n\n${url} ${hashtags(blog, 2)}`;
-  const x = xBase.length <= 280 ? xBase : `${cleanText(xHook).slice(0, 120)}\n\n${url} #MuhyoTech`;
+  const xSuffix = `\n\n${url} ${hashtags(blog, 2)}`;
+  const xDetailSource = `${sourceSummary || "This guide explains the main problem, the practical choices, and the context needed to make a better web project decision."} The guide explains why the choices matter in a real web project and gives readers clear context without making claims the article cannot support.`;
+  const xDetailLimit = Math.max(0, 279 - `${xHook}\n\n`.length - xSuffix.length);
+  const xDetailSlice = xDetailSource.slice(0, xDetailLimit + 1);
+  const xDetail = xDetailSlice.slice(0, Math.max(xDetailSlice.lastIndexOf(" "), 0)).replace(/[,:;.!?]+$/, "").trim();
+  const x = `${xHook}\n\n${xDetail}.${xSuffix}`.slice(0, 280);
   const whatsapp = `${whatsappHook}\n\n${sourceSummary.slice(0, 230)}\n\nThe article explains what matters, why it matters, and how the idea fits a real web project.\n\n${title}\n${url}`;
   const reddit = `${redditHook}\n\n${sourceSummary}\n\nMuhyo Tech's article, “${title},” looks at the problem, the choices behind it, and the practical effect those choices can have on a web project. This summary shares the central lesson without making sales claims or pretending there is one answer for every project.\n\nThe full article includes the context and details that cannot fit into one post.\n\nRead it here: ${url}`;
   const instagram = `${instagramHook}\n\n${sourceSummary}\n\nThe Muhyo Tech guide, “${title},” explains the central lesson in simple terms. It shows why the topic matters and which practical choices need attention, without turning the caption into the full article.\n\nRead the guide for the complete context and steps: ${url}\n\n${hashtags(blog, 6)}`;
   const kit = { linkedin, facebook, x, whatsapp, reddit, instagram };
-  validateShareReadyKit(kit, blog);
+  if (validate) validateShareReadyKit(kit, blog);
   return { ...kit, source: "fallback" };
+}
+
+function createSafeFallbackKit(blog) {
+  try {
+    return createFallbackKit(blog);
+  } catch (error) {
+    console.warn("[SocialKit] Strict fallback check needed a relaxed emergency draft:", error.message);
+    return { ...createFallbackKit(blog, { validate: false }), error: `AI copy was unavailable; a safe editable draft was prepared. ${error.message}` };
+  }
 }
 
 function parseKit(response, blog) {
   const parsed = JSON.parse(String(response).replace(/```json/gi, "").replace(/```/g, "").trim());
-  const required = ["linkedin", "facebook", "x", "whatsapp", "reddit", "instagram"];
+  const required = SOCIAL_PLATFORMS;
   if (required.some((key) => !cleanText(parsed[key]))) throw new Error("Social response is incomplete.");
   const url = blogUrl(blog);
   const kit = Object.fromEntries(required.map((key) => {
-    let value = String(parsed[key]).trim();
+    let value = capitalizeFirstLetter(parsed[key]);
     if (!value.includes(url)) value = `${value}\n\n${url}`;
     return [key, value];
   }));
@@ -172,8 +204,7 @@ Return strict JSON only: {"approved":true,"issues":[],"revisionDirection":""}`, 
 }
 
 export async function buildSocialKit(blog, { useAI = true, feedback = "" } = {}) {
-  const fallback = createFallbackKit(blog);
-  if (!useAI || !hasConfiguredGeminiKey()) return fallback;
+  if (!useAI || !hasConfiguredGeminiKey()) return createSafeFallbackKit(blog);
 
   const prompt = `Create a professional, human social sharing kit for this Muhyo Tech web-development article.
 Title: ${blog.title}
@@ -188,7 +219,7 @@ ${feedback ? `Editor direction: ${cleanText(feedback).slice(0, 300)}` : ""}
 Write six distinct posts:
 - linkedin: 110-220 words and at least 650 characters. Write like an experienced web developer sharing one useful lesson from the article. Use 4-6 short paragraphs and explain the problem, practical idea, tradeoff, and reader benefit without retelling everything. End with a simple invitation to read, URL, and 3-5 relevant hashtags.
 - facebook: 90-170 words and at least 500 characters. Conversational and accessible. Explain the article's main problem, core lesson, and practical value with enough context to stand on its own, then include a simple read-more CTA, URL, and no more than 3 hashtags.
-- x: maximum 280 characters including URL, one clear insight, no more than 2 hashtags.
+- x: exactly 270-280 characters including URL, one clear explained insight, no more than 2 hashtags. Keep the first word capitalized.
 - whatsapp: 40-90 words and at least 220 characters, natural, no hashtags. Explain the useful takeaway briefly, then give the title and URL.
 - reddit: 110-220 words and at least 650 characters, useful and community-minded, no hashtags and no sales pitch. Explain the problem, the article's approach, an important tradeoff, and what readers can learn before including the URL.
 - instagram: 100-190 words and at least 550 characters, easy to scan, with a strong first line and short paragraphs. Explain the central lesson, practical value, and one useful detail, then include the URL and 3-8 relevant hashtags. Do not depend on the link being clickable.
@@ -243,7 +274,8 @@ Return strict JSON only: {"linkedin":"","facebook":"","x":"","whatsapp":"","redd
     return candidate;
   } catch (error) {
     console.warn("[SocialKit] AI generation unavailable; using safe fallback.", error.message);
-    return { ...fallback, error: error.message };
+    const fallback = createSafeFallbackKit(blog);
+    return { ...fallback, error: fallback.error || error.message };
   }
 }
 
@@ -257,14 +289,16 @@ export async function generateAndSaveSocialKit(blogId, options = {}) {
 
   try {
     const kit = await buildSocialKit(blog, options);
+    const requestedPlatforms = Array.isArray(options.platforms)
+      ? [...new Set(options.platforms)].filter((platform) => SOCIAL_PLATFORMS.includes(platform))
+      : SOCIAL_PLATFORMS;
+    const platformsToSave = requestedPlatforms.length ? requestedPlatforms : SOCIAL_PLATFORMS;
+    const generatedPosts = Object.fromEntries(platformsToSave.map((platform) => [platform, kit[platform]]));
+    const existingKit = blog.socialKit?.toObject?.() || blog.socialKit || {};
     blog.socialKit = {
+      ...existingKit,
       status: "ready",
-      linkedin: kit.linkedin,
-      facebook: kit.facebook,
-      x: kit.x,
-      whatsapp: kit.whatsapp,
-      reddit: kit.reddit,
-      instagram: kit.instagram,
+      ...generatedPosts,
       imageUrl: imageUrl(blog),
       source: kit.source,
       generatedAt: new Date(),
