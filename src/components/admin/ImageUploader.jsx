@@ -130,7 +130,9 @@ export default function ImageUploader({ images = [], onChange, compact = false, 
         // If it's already an object (pending upload), use its url as id
         return { ...item, id: item.url };
       });
-      setImageList(items);
+      // Do not let a late form reset/store refresh discard a file the user has
+      // just selected. Pending File objects only exist locally until submit.
+      setImageList((current) => current.some((item) => item.file) ? current : items);
     }, 0);
     return () => window.clearTimeout(timer);
   }, [images]);
@@ -163,7 +165,7 @@ export default function ImageUploader({ images = [], onChange, compact = false, 
   };
 
   const handleLocalSelect = async (e) => {
-    const availableSlots = maxFiles ? Math.max(0, maxFiles - imageList.length) : Infinity;
+    const availableSlots = maxFiles === 1 ? 1 : (maxFiles ? Math.max(0, maxFiles - imageList.length) : Infinity);
     const files = Array.from(e.target.files).slice(0, availableSlots);
     if (!files.length) return;
 
@@ -176,7 +178,7 @@ export default function ImageUploader({ images = [], onChange, compact = false, 
     }));
 
     // Add new items to display immediately
-    const updatedList = [...imageList, ...newItems];
+    const updatedList = maxFiles === 1 ? newItems.slice(0, 1) : [...imageList, ...newItems];
     setImageList(updatedList);
 
     // Call onChange with the updated state
