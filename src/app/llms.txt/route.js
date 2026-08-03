@@ -35,6 +35,11 @@ function absoluteUrl(path = "") {
   return `${LLM_SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
+function markdownLink(label, path = "") {
+  const safeLabel = cleanText(label).replace(/[\[\]]/g, "");
+  return `[${safeLabel || "Link"}](${absoluteUrl(path)})`;
+}
+
 function listItems(items = [], formatter) {
   return items.filter(Boolean).map(formatter).join("\n");
 }
@@ -128,6 +133,14 @@ export async function GET() {
 - Contact: ${absoluteUrl("/contact")}
 - Resume: ${absoluteUrl("/resume")}
 - About: ${absoluteUrl("/about")}
+
+## Essential Links
+- ${markdownLink("Home", "/")}: Brand overview and featured work.
+- ${markdownLink("Services", "/services")}: Software development services and capabilities.
+- ${markdownLink("Projects", "/projects")}: Selected portfolio projects and case studies.
+- ${markdownLink("Resume", "/resume")}: Professional experience and technical skills.
+- ${markdownLink("Blog", "/blog")}: Technical articles and learning resources.
+- ${markdownLink("Contact", "/contact")}: Project inquiries and contact details.
 
 ## Short Description
 ${cleanText(hero.description || about.bio || about.hero?.description || "Muhyo Tech builds fast, secure, responsive, and scalable digital products for businesses.")}

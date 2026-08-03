@@ -211,6 +211,16 @@ Before release:
 5. Verify public metadata, redirects, sitemap, robots, and `/llms.txt`.
 6. Confirm admin routes and secrets are not publicly exposed.
 
+## Safe dependency updates
+
+Dependabot proposes weekly patch and minor dependency updates in isolated pull
+requests. GitHub Actions must complete a production build and public-page smoke
+tests before an update is considered for manual approval. Updates never merge
+or deploy automatically from this repository.
+
+See [Safe Automated Dependency Updates](docs/AUTOMATED_DEPENDENCY_UPDATES.md)
+for the approval checklist, major-version policy, and rollback procedure.
+
 ## Contact
 
 - Website: [muhyotech.com](https://www.muhyotech.com)

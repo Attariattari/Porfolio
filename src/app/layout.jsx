@@ -8,7 +8,7 @@ import DeferredToaster from "@/components/DeferredToaster";
 import { OrganizationSchema } from "@/components/schema/OrganizationSchema";
 import { SITE_URL } from "@/lib/config";
 import { getSeoImage } from "@/lib/seo";
-import Script from "next/script";
+import DeferredGoogleAnalytics from "@/components/DeferredGoogleAnalytics";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -65,27 +65,6 @@ export default function RootLayout({ children }) {
       <head>
         <OrganizationSchema />
         <link rel="dns-prefetch" href="//res.cloudinary.com" />
-        {googleAnalyticsId && (
-          <>
-            <Script
-              strategy="lazyOnload"
-              async
-              src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}
-            />
-            <Script
-              id="google-analytics-config"
-              strategy="lazyOnload"
-              dangerouslySetInnerHTML={{
-                __html: `
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-                  gtag('config', '${googleAnalyticsId}');
-                `,
-              }}
-            />
-          </>
-        )}
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -121,6 +100,9 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className={inter.className} suppressHydrationWarning>
+        {googleAnalyticsId && (
+          <DeferredGoogleAnalytics measurementId={googleAnalyticsId} />
+        )}
         <ThemeProvider>
           <ScrollToTop />
           {children}
