@@ -214,9 +214,8 @@ Before release:
 ## Safe dependency updates
 
 Dependabot proposes weekly patch and minor dependency updates in isolated pull
-requests. GitHub Actions must complete a production build and public-page smoke
-tests before an update is considered for manual approval. Updates never merge
-or deploy automatically from this repository.
+requests. Review the Vercel preview and run the local production smoke test
+before manual approval. Updates never merge or deploy automatically.
 
 See [Safe Automated Dependency Updates](docs/AUTOMATED_DEPENDENCY_UPDATES.md)
 for the approval checklist, major-version policy, and rollback procedure.

@@ -1,29 +1,29 @@
 # Safe Automated Dependency Updates
 
-This project uses GitHub Dependabot and GitHub Actions to propose and validate
-dependency updates without changing the live site directly.
+This project uses GitHub Dependabot to propose dependency updates without
+changing the live site directly. Validation uses the Vercel preview and local
+production smoke tests, so paid GitHub Actions runners are not required.
 
 ## What happens automatically
 
 1. Dependabot checks npm dependencies every Monday at 03:00 Asia/Tokyo.
 2. Patch and minor updates are grouped into focused pull requests.
-3. Every pull request installs the exact lockfile, creates a production build,
-   and opens key public pages in Chromium.
-4. A failed build, server error, or public-page smoke test blocks the safety
-   check and provides a Playwright report for diagnosis.
+3. Vercel creates a preview deployment for every pull request.
+4. Before merging, run `npm ci`, `npm run build`, and `npm run test:smoke`
+   locally and verify the Vercel preview on desktop and mobile.
 
 The same public safety test can be run locally after a production build with
 `npm run test:smoke`.
 
 Dependabot cannot push an update directly to production. This repository does
-not include an auto-merge workflow, write permissions, production secrets, or
-production deployment commands.
+not include an auto-merge workflow, GitHub Actions runner, write permissions,
+production secrets, or production deployment commands.
 
 ## Owner approval checklist
 
 Only merge an update pull request when all of the following are true:
 
-- The `Build and public smoke tests` check is green.
+- The local production build and public smoke tests pass.
 - The Vercel preview deployment is green.
 - Home, services, projects, blog, contact, and admin login look correct in the
   preview deployment on desktop and mobile.
@@ -41,11 +41,11 @@ so the final merge remains a manual owner decision.
 - Major Next.js, React, and React DOM updates: intentionally ignored by the
   automatic updater. Create a dedicated upgrade branch and migration plan.
 
-## If a check fails
+## If validation fails
 
-Do not merge the pull request. Open the failed GitHub Actions run, download the
-`playwright-report` artifact, and inspect the first failing step. Dependabot
-will keep the live site unchanged while the pull request remains open.
+Do not merge the pull request. Inspect the local build or Playwright output and
+the Vercel preview logs. Dependabot keeps the live site unchanged while the
+pull request remains open.
 
 ## Rollback
 
