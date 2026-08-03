@@ -1,5 +1,3 @@
-"use client";
-
 import {
   ArrowRight,
   Terminal,
@@ -12,19 +10,13 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import Link from "next/link";
-import { useRef } from "react";
 import Image from "next/image";
 import { getHeroMediaAlt } from "@/lib/mediaAlt";
-import dynamic from "next/dynamic";
 import { Button } from "@/components/ui";
 import EditorialBackground from "@/components/ui/EditorialBackground";
+import HeroTypewriter from "./HeroTypewriter";
 
 import { homeData, portfolioData } from "@/lib/data";
-
-const HeroTypewriter = dynamic(() => import("./HeroTypewriter"), {
-  ssr: false,
-  loading: () => <>Full-Stack Developer</>,
-});
 
 export default function Hero({ initialData = null }) {
   // Priority: Database Data > Static Data
@@ -41,7 +33,6 @@ export default function Hero({ initialData = null }) {
       portfolioData.siteConfig.hero?.highlights ||
       homeData.hero.highlights,
   };
-  const containerRef = useRef(null);
   // Icon mapping for feature icons
   const iconMap = {
     Terminal,
@@ -60,7 +51,6 @@ export default function Hero({ initialData = null }) {
 
   return (
     <section
-      ref={containerRef}
       className="relative min-h-[500px] flex flex-col justify-center px-6 py-12 overflow-hidden"
     >
       <EditorialBackground text="Home" />

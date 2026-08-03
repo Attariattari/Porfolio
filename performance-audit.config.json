@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "name": "Muhyo Tech public performance audit",
+  "baseUrl": "http://127.0.0.1:3000",
+  "routes": [
+    "/",
+    "/about",
+    "/services",
+    "/services/custom-website-development",
+    "/projects",
+    "/blog",
+    "/contact",
+    "/book-call",
+    "/resume",
+    "/skills",
+    "/goals"
+  ],
+  "formFactors": ["mobile", "desktop"],
+  "categories": ["performance", "accessibility", "best-practices", "seo"],
+  "output": {
+    "format": "summary",
+    "directory": "./.lighthouse"
+  },
+  "notes": "Run audits on demand or in CI; generated reports stay outside the repository."
+}
