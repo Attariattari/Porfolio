@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Home, ArrowLeft, Ghost } from "lucide-react";
+import EditorialBackground from "@/components/ui/EditorialBackground";
 
 export default function NotFound() {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-6 overflow-hidden relative">
+      <EditorialBackground text="404" />
       {/* Decorative Background Elements */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent/10 blur-[120px] rounded-full" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/10 blur-[120px] rounded-full" />

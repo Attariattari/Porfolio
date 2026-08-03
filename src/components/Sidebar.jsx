@@ -14,7 +14,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Sparkles,
-  Target,
   Sun,
   Moon,
   Circle,
@@ -31,7 +30,6 @@ const IconMap = {
   Projects: Code2,
   Blogs: FileText,
   Resume: FileUser,
-  Goals: Target,
   Contact: Mail,
 };
 
@@ -44,7 +42,6 @@ const navLinks = [
   { name: "About", href: "/about", icon: "User" },
   { name: "Services", href: "/services", icon: "Cpu" },
   { name: "Projects", href: "/projects", icon: "Code2" },
-  { name: "Goals", href: "/goals", icon: "Target" },
   { name: "Blogs", href: "/blog", icon: "FileText" },
   { name: "Resume", href: "/resume", icon: "FileUser" },
   { name: "Contact", href: "/contact", icon: "Mail" },

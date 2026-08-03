@@ -11,7 +11,6 @@ import {
   FileText,
   Mail,
   FileUser,
-  Target,
 } from "lucide-react";
 
 const navItems = [
@@ -20,7 +19,6 @@ const navItems = [
   { name: "Services", href: "/services", icon: Cpu },
   { name: "Projects", href: "/projects", icon: Code2 },
   { name: "Blogs", href: "/blog", icon: FileText },
-  { name: "Goals", href: "/goals", icon: Target },
   { name: "Resume", href: "/resume", icon: FileUser },
   { name: "Contact", href: "/contact", icon: Mail },
 ];

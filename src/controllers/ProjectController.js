@@ -35,17 +35,6 @@ const detailFields = [
     "keywords",
 ];
 
-const REMOVED_PROJECT_IDENTITIES = new Set([
-    "muhyo-tech-portfolio-elite-edition",
-    "muhyo-tech-admin-console",
-    "muhyo tech portfolio (elite edition)",
-    "muhyo tech admin console",
-]);
-
-const isRemovedProject = (project = {}) =>
-    REMOVED_PROJECT_IDENTITIES.has(String(project.slug || "").toLowerCase()) ||
-    REMOVED_PROJECT_IDENTITIES.has(String(project.title || "").toLowerCase());
-
 const isEmptyProjectValue = (value) => {
     if (value === undefined || value === null || value === "") return true;
     if (Array.isArray(value)) return value.length === 0;
@@ -161,9 +150,9 @@ export const ProjectController = {
                         : {};
 
                     // Use .lean() for faster execution and smaller memory footprint
-                    const dbProjects = (await Project.find(query)
+                    const dbProjects = await Project.find(query)
                         .sort({ order: 1, featured: -1, createdAt: -1 })
-                        .lean()).filter((project) => !isRemovedProject(project));
+                        .lean();
 
                     // Merge with fallback data only if necessary
                     const uploadedTitles = new Set(dbProjects.map((p) => p.title));
@@ -213,7 +202,6 @@ export const ProjectController = {
                     const project = await Project.findOne(query).lean();
 
                     if (project) {
-                        if (isRemovedProject(project)) return null;
                         const serialized = mergeWithSeedCaseStudy(serializeDoc(project));
                         if (!isPublicProject(serialized) || !isCompletePublicProject(serialized)) {
                             return null;

@@ -25,8 +25,8 @@ export const SOCIAL_LINKS = {
     whatsapp: {
         name: "WhatsApp",
         icon: "WhatsApp",
-        phoneNumber: "923224458481", // ← Editable
-        defaultMessage: "Hi Ghulam Muhyo Din! I came across your portfolio and would love to connect. Are you available to discuss a potential project or collaboration?", // ← Editable
+        phoneNumber: "923224458481", // â† Editable
+        defaultMessage: "Hi Ghulam Muhyo Din! I came across your portfolio and would love to connect. Are you available to discuss a potential project or collaboration?", // â† Editable
         get url() {
             return `https://wa.me/${this.phoneNumber}?text=${encodeURIComponent(this.defaultMessage)}`;
         },
@@ -35,7 +35,7 @@ export const SOCIAL_LINKS = {
     linkedin: {
         name: "LinkedIn",
         icon: "Linkedin",
-        username: "ghulam-muhyo-din-web-designer", // ← Editable
+        username: "ghulam-muhyo-din-web-designer", // â† Editable
         get url() {
             return `https://www.linkedin.com/in/${this.username}`;
         },
@@ -44,7 +44,7 @@ export const SOCIAL_LINKS = {
     github: {
         name: "GitHub",
         icon: "Github",
-        username: "Attariattari", // ← Editable
+        username: "Attariattari", // â† Editable
         get url() {
             return `https://github.com/${this.username}`;
         },
@@ -53,7 +53,7 @@ export const SOCIAL_LINKS = {
     twitter: {
         name: "X (Twitter)",
         icon: "X",
-        username: "GhulamMuhyo", // ← Editable
+        username: "GhulamMuhyo", // â† Editable
         get url() {
             return `https://x.com/${this.username}`;
         },
@@ -62,7 +62,7 @@ export const SOCIAL_LINKS = {
     facebook: {
         name: "Facebook",
         icon: "Facebook",
-        username: "muhyotech", // ← Editable
+        username: "muhyotech", // â† Editable
         get url() {
             return `https://www.facebook.com/${this.username}`;
         },
@@ -377,7 +377,6 @@ export const portfolioData = {
                 { name: "About", href: "/about", icon: "User" },
                 { name: "Services", href: "/services", icon: "Cpu" },
                 { name: "Projects", href: "/projects", icon: "Code2" },
-                { name: "Goals", href: "/goals", icon: "Target" },
                 { name: "Blog", href: "/blog", icon: "FileText" },
                 { name: "Contact", href: "/contact", icon: "Mail" },
             ],
@@ -411,7 +410,6 @@ export const portfolioData = {
                 { name: "About", href: "/about" },
                 { name: "Services", href: "/services" },
                 { name: "Projects", href: "/projects" },
-                { name: "Goals", href: "/goals" },
                 { name: "Blog", href: "/blog" },
                 { name: "Contact", href: "/contact" },
             ],
@@ -722,7 +720,7 @@ export const portfolioData = {
         id: 1,
         slug: "web-development",
         title: "Performance-First Web Development",
-        description: "We engineer high-performance, SEO-optimized digital experiences using cutting-edge technologies like Next.js and React. Our websites aren't just pretty—they're built to convert and scale.",
+        description: "We engineer high-performance, SEO-optimized digital experiences using cutting-edge technologies like Next.js and React. Our websites aren't just prettyâ€”they're built to convert and scale.",
         problemSolved: "Converting casual visitors into loyal customers through lightning-fast load times and intuitive user journeys that drive business growth.",
         benefits: [
             "Blazing Fast Core Web Vitals",
@@ -1424,7 +1422,7 @@ export const portfolioData = {
         name: "Pir Ghulam Muhyo Din",
         role: "Full Stack Web Developer",
         tagline: "Full-Stack Engineer | Performance & Scalable Web Applications",
-        about: "I am a results-driven developer and project strategist with a unique background that blends sales management, team leadership, and full-stack engineering. After starting my career in sales—where I learned how to build relationships and lead teams—I transitioned into web development to bring ideas to life through code. I specialize in building smooth digital systems that help businesses grow and run efficiently. My goal is always to create tools that are not only powerful but also easy and helpful for people to use.",
+        about: "I am a results-driven developer and project strategist with a unique background that blends sales management, team leadership, and full-stack engineering. After starting my career in salesâ€”where I learned how to build relationships and lead teamsâ€”I transitioned into web development to bring ideas to life through code. I specialize in building smooth digital systems that help businesses grow and run efficiently. My goal is always to create tools that are not only powerful but also easy and helpful for people to use.",
         contact: [
             { icon: "Phone", text: "+92-322-4458481" },
             { icon: "Mail", text: "MuhyoTech@gmail.com" },
@@ -1449,8 +1447,8 @@ export const portfolioData = {
         experience: [{
             role: "Freelance Full Stack Web Developer",
             company: "Self-Employed",
-            duration: "2023 – Present",
-            metrics: "Global Reach • 95+ Performance",
+            duration: "2023 â€“ Present",
+            metrics: "Global Reach â€¢ 95+ Performance",
             achievements: [
                 "Engineered and delivered 10+ high-performance web applications using robust modern stacks (Next.js, Node.js), ensuring optimized performance and scalability.",
                 "Managed the end-to-end software development lifecycle (SDLC), from initial architecture to final cloud deployment, for global clients across multiple domains.",
@@ -1460,7 +1458,7 @@ export const portfolioData = {
         {
             role: "Project Manager & Computer Operator",
             company: "Digital Systems Division",
-            duration: "2025 – Jan 2026",
+            duration: "2025 â€“ Jan 2026",
             metrics: "100% On-Time Delivery",
             achievements: [
                 "Directed project execution and cross-functional team coordination, maintaining a 100% success rate in meeting project milestones.",
@@ -1471,7 +1469,7 @@ export const portfolioData = {
         {
             role: "Sales Manager",
             company: "Theme Park Society",
-            duration: "2020 – 2022",
+            duration: "2020 â€“ 2022",
             metrics: "Increased Rev. & Efficiency",
             achievements: [
                 "Orchestrated sales operations and managed high-priority client relationships, consistently exceeding quarterly performance targets.",
@@ -1488,12 +1486,12 @@ export const portfolioData = {
         {
             degree: "Intermediate",
             institution: "BISE Sahiwal",
-            duration: "2020 – 2021",
+            duration: "2020 â€“ 2021",
         },
         {
             degree: "Matric",
             institution: "BISE Sahiwal",
-            duration: "2018 – 2019",
+            duration: "2018 â€“ 2019",
         },
         ],
         skills: [{
@@ -2094,11 +2092,6 @@ const currentProjectSlugs = new Set([
     "technical-seo-service-discovery-system",
 ]);
 
-const removedProjectSlugs = new Set([
-    "muhyo-tech-portfolio-elite-edition",
-    "muhyo-tech-admin-console",
-]);
-
 const buildProjectCaseStudy = (project, index) => {
     const slug = project.slug || slugifyProject(project.title);
     const caseStudy = currentProjectSlugs.has(slug) ? {} : projectCaseStudyDetails[slug] || {};
@@ -2191,9 +2184,7 @@ const buildProjectCaseStudy = (project, index) => {
     };
 };
 
-export const projectsData = portfolioData.projects
-    .filter((project) => !removedProjectSlugs.has(project.slug || slugifyProject(project.title)))
-    .map(buildProjectCaseStudy);
+export const projectsData = portfolioData.projects.map(buildProjectCaseStudy);
 
 portfolioData.projects = projectsData;
 portfolioData.about = aboutData;
@@ -2288,7 +2279,7 @@ export const privacyDocument = {
                 "Authentication cookies and browser storage support authorised admin sessions and security controls.",
                 "You can limit cookies or clear browser storage through browser settings, but some protected or preference-based features may stop working correctly.",
             ],
-            note: "The website does not currently respond to a universal browser “Do Not Track” signal because there is no consistently adopted standard. Available browser and provider controls can still be used.",
+            note: "The website does not currently respond to a universal browser â€œDo Not Trackâ€ signal because there is no consistently adopted standard. Available browser and provider controls can still be used.",
         },
         {
             id: "sharing",
@@ -2428,7 +2419,7 @@ export const termsDocument = {
             title: "Muhyo Tech services",
             paragraphs: [
                 "Muhyo Tech provides professional website development, web applications, UI/UX implementation, backend and API work, performance and technical SEO improvements, deployment support, automation, AI-assisted workflows, and related digital services.",
-                "Website descriptions, case studies, timelines, technology references, and service pages are general information—not a binding offer or guaranteed result. The final scope is defined in a written proposal, statement of work, invoice, or contract accepted by both parties.",
+                "Website descriptions, case studies, timelines, technology references, and service pages are general informationâ€”not a binding offer or guaranteed result. The final scope is defined in a written proposal, statement of work, invoice, or contract accepted by both parties.",
             ],
         },
         {
@@ -2517,7 +2508,7 @@ export const termsDocument = {
             icon: "scale",
             title: "Disclaimers and liability",
             paragraphs: [
-                "The website and public content are provided on an “as available” basis. To the maximum extent permitted by applicable law, Muhyo Tech disclaims warranties that are not expressly stated in a signed project agreement.",
+                "The website and public content are provided on an â€œas availableâ€ basis. To the maximum extent permitted by applicable law, Muhyo Tech disclaims warranties that are not expressly stated in a signed project agreement.",
                 "To the maximum extent permitted by law, Muhyo Tech will not be liable for indirect, incidental, special, consequential, or lost-profit damages arising from public website use, reliance on general content, third-party services, or events outside reasonable control. Nothing in these Terms excludes liability that cannot legally be excluded.",
             ],
         },

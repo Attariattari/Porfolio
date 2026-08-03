@@ -53,7 +53,6 @@ export default function Footer({ data, socials = [] }) {
     { name: "About", href: "/about" },
     { name: "Services", href: "/services" },
     { name: "Projects", href: "/projects" },
-    { name: "Goals", href: "/goals" },
     { name: "Blog", href: "/blog" },
     { name: "Contact", href: "/contact" },
   ];

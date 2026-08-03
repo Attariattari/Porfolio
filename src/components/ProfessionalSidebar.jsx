@@ -12,7 +12,6 @@ import {
   Mail,
   Moon,
   Sun,
-  Target,
   User,
 } from "lucide-react";
 import Image from "next/image";
@@ -27,7 +26,6 @@ const navigation = [
   { name: "About", href: "/about", icon: User },
   { name: "Services", href: "/services", icon: Cpu },
   { name: "Projects", href: "/projects", icon: Code2 },
-  { name: "Goals", href: "/goals", icon: Target },
   { name: "Blog", href: "/blog", icon: FileText },
   { name: "Resume", href: "/resume", icon: FileUser },
   { name: "Contact", href: "/contact", icon: Mail },
