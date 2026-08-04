@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { SectionWrapper, Button } from "./ui";
 import { MapPin, Clock, ArrowRight, MessageSquare } from "lucide-react";
 import { homeData, portfolioData } from "@/lib/data";
@@ -232,7 +232,7 @@ const Contact = ({ isHomePage = false }) => {
         <div className="grid lg:grid-cols-12 gap-16 items-start">
           {/* Left Column: Context & Info */}
           <div className="lg:col-span-5 space-y-12">
-            <motion.div
+            <m.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
@@ -251,12 +251,12 @@ const Contact = ({ isHomePage = false }) => {
                 Have an idea or project requirement? Share the details and I&apos;ll
                 review your message to guide you with the right solution.
               </p>
-            </motion.div>
+            </m.div>
 
             {/* Info Items */}
             <div className="grid sm:grid-cols-2 gap-4">
               {contactInfo.map((info, idx) => (
-                <motion.a
+                <m.a
                   key={idx}
                   href={info.href}
                   target={info.target}
@@ -283,7 +283,7 @@ const Contact = ({ isHomePage = false }) => {
                     {info.label}
                   </p>
                   <ContactValue info={info} />
-                </motion.a>
+                </m.a>
               ))}
             </div>
 
@@ -296,7 +296,7 @@ const Contact = ({ isHomePage = false }) => {
             </div>
 
             {isHomePage && (
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, y: 18 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -320,13 +320,13 @@ const Contact = ({ isHomePage = false }) => {
                     </Link>
                   ))}
                 </div>
-              </motion.div>
+              </m.div>
             )}
           </div>
 
           {/* Right Column: Premium Form */}
           <div className="lg:col-span-7">
-            <motion.div
+            <m.div
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
@@ -447,18 +447,18 @@ const Contact = ({ isHomePage = false }) => {
                                 : "Select a service..."}
                             </span>
                           </div>
-                          <motion.div
+                          <m.div
                             animate={{ rotate: isDropdownOpen ? 180 : 0 }}
                             className="text-muted-foreground/60 group-hover/trigger:text-accent transition-colors"
                           >
                             <ChevronDown className="w-4 h-4" />
-                          </motion.div>
+                          </m.div>
                         </button>
 
                         {/* Smart Notification - Floating Popover */}
                         <AnimatePresence>
                           {isDropdownOpen && showNotification && (
-                            <motion.div
+                            <m.div
                               initial={{ opacity: 0, scale: 0.8, y: 10 }}
                               animate={{ opacity: 1, scale: 1, y: -45 }}
                               exit={{ opacity: 0, scale: 0.8, y: 0 }}
@@ -470,14 +470,14 @@ const Contact = ({ isHomePage = false }) => {
                               </div>
                               {/* Tooltip Arrow */}
                               <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-8 border-transparent border-t-accent" />
-                            </motion.div>
+                            </m.div>
                           )}
                         </AnimatePresence>
 
                         {/* Dropdown Menu */}
                         <AnimatePresence>
                           {isDropdownOpen && (
-                            <motion.div
+                            <m.div
                               initial={{ opacity: 0, y: 15, scale: 0.95 }}
                               animate={{ opacity: 1, y: 0, scale: 1 }}
                               exit={{ opacity: 0, y: 10, scale: 0.95 }}
@@ -524,7 +524,7 @@ const Contact = ({ isHomePage = false }) => {
                                           </span>
                                         </div>
                                         {formData.service === service.value && (
-                                          <motion.div
+                                          <m.div
                                             layoutId="active-dot"
                                             className="w-1.5 h-1.5 rounded-full bg-accent relative z-10"
                                           />
@@ -569,7 +569,7 @@ const Contact = ({ isHomePage = false }) => {
                                     <AnimatePresence>
                                       {formData.service === "other" &&
                                         formData.otherService.trim() && (
-                                          <motion.button
+                                          <m.button
                                             initial={{
                                               opacity: 0,
                                               scale: 0.8,
@@ -593,13 +593,13 @@ const Contact = ({ isHomePage = false }) => {
                                             className="absolute right-0 bg-accent text-white h-10 px-6 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-accent/20 hover:scale-105 active:scale-95 transition-all z-20"
                                           >
                                             Confirm
-                                          </motion.button>
+                                          </m.button>
                                         )}
                                     </AnimatePresence>
                                   </div>
                                 </div>
                               </div>
-                            </motion.div>
+                            </m.div>
                           )}
                         </AnimatePresence>
 
@@ -630,7 +630,7 @@ const Contact = ({ isHomePage = false }) => {
                     />
                   </div>
 
-                  <motion.div
+                  <m.div
                     whileHover={{ scale: loading ? 1 : 1.02 }}
                     whileTap={{ scale: loading ? 1 : 0.98 }}
                   >
@@ -646,10 +646,10 @@ const Contact = ({ isHomePage = false }) => {
                           : "Submit Project Inquiry"}
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                     </Button>
-                  </motion.div>
+                  </m.div>
                 </form>
               </div>
-            </motion.div>
+            </m.div>
           </div>
         </div>
 
@@ -668,7 +668,7 @@ const Contact = ({ isHomePage = false }) => {
 
               <div className="grid md:grid-cols-3 gap-8">
                 {data.process.map((item, idx) => (
-                  <motion.div
+                  <m.div
                     key={idx}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -685,7 +685,7 @@ const Contact = ({ isHomePage = false }) => {
                     <p className="text-sm text-muted-foreground leading-relaxed font-medium">
                       {item.desc}
                     </p>
-                  </motion.div>
+                  </m.div>
                 ))}
               </div>
             </section>
@@ -710,11 +710,11 @@ const Contact = ({ isHomePage = false }) => {
                         </span>
                       </div>
                       <Link href="/services" prefetch={false}>
-                        <motion.div whileHover={{ scale: 1.02 }}>
+                        <m.div whileHover={{ scale: 1.02 }}>
                           <Button variant="outline">
                             Explore our Services
                           </Button>
-                        </motion.div>
+                        </m.div>
                       </Link>
                     </div>
                   </div>
@@ -722,7 +722,7 @@ const Contact = ({ isHomePage = false }) => {
 
                 <div className="lg:col-span-7 space-y-4">
                   {data.faq.map((faq, idx) => (
-                    <motion.div
+                    <m.div
                       key={idx}
                       initial={{ opacity: 0, x: 20 }}
                       whileInView={{ opacity: 1, x: 0 }}
@@ -739,14 +739,14 @@ const Contact = ({ isHomePage = false }) => {
                           {faq.a}
                         </p>
                       </details>
-                    </motion.div>
+                    </m.div>
                   ))}
                 </div>
               </div>
             </section>
 
             {/* Immersive Map Integration */}
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -778,7 +778,7 @@ const Contact = ({ isHomePage = false }) => {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </m.div>
           </>
         )}
       </SectionWrapper>

@@ -1,6 +1,6 @@
 "use client";
 import React, { useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import {
   Github,
   ExternalLink,
@@ -31,7 +31,7 @@ const ProjectRow = ({ project, index, setSelectedProject, showViewAll }) => {
   };
 
   return (
-    <motion.div
+    <m.div
       layout
       initial={{ opacity: 0, scale: 0.95, y: 30 }}
       whileInView={{ opacity: 1, scale: 1, y: 0 }}
@@ -168,7 +168,7 @@ const ProjectRow = ({ project, index, setSelectedProject, showViewAll }) => {
       >
         <div className="absolute inset-0 bg-accent/20 blur-[40px] rounded-full scale-90 opacity-70 -z-10" />
 
-        <motion.div
+        <m.div
           whileHover={{ scale: 1.02 }}
           transition={{ type: "spring", stiffness: 200, damping: 20 }}
           onClick={openProjectDetail}
@@ -213,9 +213,9 @@ const ProjectRow = ({ project, index, setSelectedProject, showViewAll }) => {
           </div>
 
           <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none z-30" />
-        </motion.div>
+        </m.div>
       </div>
-    </motion.div>
+    </m.div>
   );
 };
 
@@ -254,7 +254,7 @@ export default function Projects({ data, showViewAll = false }) {
       </div>
 
       {showViewAll && (
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -272,7 +272,7 @@ export default function Projects({ data, showViewAll = false }) {
             <div className="absolute top-0 -right-full w-full h-full bg-foreground/10 group-hover:right-0 transition-all duration-300" />
             <ArrowRight className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 w-5 h-5" />
           </Link>
-        </motion.div>
+        </m.div>
       )}
 
       {/* Reusable Project Modal */}

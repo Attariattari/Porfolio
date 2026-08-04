@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Home, ArrowLeft, Search, AlertCircle, MapPinOff } from "lucide-react";
 import { Button } from "@/components/ui";
 import EditorialBackground from "@/components/ui/EditorialBackground";
@@ -26,7 +26,7 @@ export default function NotFound() {
 
       <div className="container mx-auto max-w-2xl relative z-10 text-center">
         {/* Animated Visual Feedback */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{
@@ -46,32 +46,32 @@ export default function NotFound() {
               <MapPinOff className="w-20 h-20 text-accent" />
               
               {/* Floating Technical Tags */}
-              <motion.div
+              <m.div
                 animate={{ y: [0, -10, 0], x: [0, 5, 0] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                 className="absolute -top-6 -right-6 glass px-3 py-1.5 rounded-lg border-accent/30 shadow-lg"
               >
                 <span className="text-accent text-[10px] font-black tracking-widest uppercase">Lost</span>
-              </motion.div>
+              </m.div>
               
-              <motion.div
+              <m.div
                 animate={{ y: [0, 10, 0], x: [0, -5, 0] }}
                 transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
                 className="absolute -bottom-4 -left-8 glass px-3 py-1.5 rounded-lg border-accent/30 shadow-lg"
               >
                 <span className="text-accent text-[10px] font-black tracking-widest uppercase">404 Error</span>
-              </motion.div>
+              </m.div>
             </div>
           </div>
-        </motion.div>
+        </m.div>
 
         {/* Messaging Section */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
@@ -80,7 +80,7 @@ export default function NotFound() {
             <span className="text-accent font-black tracking-[0.3em] uppercase text-xs px-4 py-1.5 glass rounded-full border border-accent/10">
               System Alert
             </span>
-          </motion.div>
+          </m.div>
 
           <h1 className="text-4xl md:text-6xl font-black text-foreground mb-6 tracking-tighter uppercase italic leading-tight">
             PAGE NOT <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-accent/80 to-accent animate-gradient-flow bg-[length:200%_auto]">FOUND</span>
@@ -108,10 +108,10 @@ export default function NotFound() {
               Go Back
             </Button>
           </div>
-        </motion.div>
+        </m.div>
 
         {/* Metadata Display */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.3 }}
           transition={{ delay: 1.2, duration: 1.5 }}
@@ -129,7 +129,7 @@ export default function NotFound() {
             </div>
             <div className="h-px flex-grow bg-gradient-to-l from-transparent to-border/50" />
           </div>
-        </motion.div>
+        </m.div>
       </div>
     </div>
   );

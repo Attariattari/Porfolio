@@ -221,7 +221,6 @@ export default function ProfessionalSidebar({ data }) {
                   width={44}
                   height={44}
                   sizes="44px"
-                  priority
                   className="h-full w-full object-contain p-1.5"
                 />
               </span>

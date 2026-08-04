@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import {
   User,
   ArrowRight,
@@ -81,7 +81,7 @@ const EditorialHeader = ({
             {/* Label & Heading */}
             <div className="space-y-6">
               <div className="flex items-center gap-4">
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-accent/10 border border-accent/20"
@@ -90,7 +90,7 @@ const EditorialHeader = ({
                   <span className="text-xs font-semibold tracking-normal text-accent">
                     Blog & insights
                   </span>
-                </motion.div>
+                </m.div>
 
                 {/* Debug Indicator - Will show the source of data */}
                 <span className="text-[10px] font-mono text-muted-foreground/30 uppercase tracking-widest">
@@ -100,7 +100,7 @@ const EditorialHeader = ({
                 </span>
               </div>
 
-              <motion.h1
+              <m.h1
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -110,9 +110,9 @@ const EditorialHeader = ({
                 <span className="relative">
                   & <span className="text-accent">Insights.</span>
                 </span>
-              </motion.h1>
+              </m.h1>
 
-              <motion.p
+              <m.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
@@ -121,11 +121,11 @@ const EditorialHeader = ({
                 &quot;Exploring the intersection of high-performance
                 engineering, premium design, and future-forward digital
                 strategy.&quot;
-              </motion.p>
+              </m.p>
             </div>
 
             {/* Redesigned Stats */}
-            <motion.div
+            <m.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
@@ -155,10 +155,10 @@ const EditorialHeader = ({
                   {latestUpdate || "Updated"}
                 </p>
               </div>
-            </motion.div>
+            </m.div>
 
             {/* Trending Tags Row
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
@@ -179,13 +179,13 @@ const EditorialHeader = ({
                 </Link>
               ))}
             </div>
-          </motion.div> */}
+          </m.div> */}
           </div>
 
           {/* --- Right Side: Featured Preview Card --- */}
           {hasFeaturedBlogs && (
             <div className="lg:col-span-5 relative group">
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, scale: 0.9, rotate: 2 }}
                 animate={{ opacity: 1, scale: 1, rotate: 0 }}
                 transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
@@ -195,7 +195,7 @@ const EditorialHeader = ({
                   featuredBlogs={featuredBlogs}
                   onImageClick={onImageClick}
                 />
-              </motion.div>
+              </m.div>
 
               {/* Decorative Elements around card */}
               <div className="absolute -z-10 -bottom-6 -right-6 w-full h-full border border-accent/10 rounded-[2.5rem]" />
@@ -236,7 +236,7 @@ const ControlHub = ({
               >
                 <span className="relative z-10">{category}</span>
                 {activeCategory === category && (
-                  <motion.div
+                  <m.div
                     layoutId="pill-selector"
                     className="absolute inset-0 bg-accent rounded-[1.8rem] shadow-xl shadow-accent/20"
                     transition={{
@@ -296,7 +296,7 @@ const TrendingTabs = ({ activeTab, setActiveTab }) => {
               </span>
             )}
             {activeTab === tab.id && (
-              <motion.div
+              <m.div
                 layoutId="underline-selector"
                 className="absolute bottom-0 left-0 w-full h-[2px] bg-accent"
                 transition={{ type: "spring", bounce: 0, duration: 0.5 }}
@@ -310,7 +310,7 @@ const TrendingTabs = ({ activeTab, setActiveTab }) => {
 };
 
 const ArticleCard = ({ blog, index, onImageClick }) => (
-  <motion.div
+  <m.div
     initial={{ opacity: 0, y: 28 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true, margin: "-80px" }}
@@ -381,7 +381,7 @@ const ArticleCard = ({ blog, index, onImageClick }) => (
         </div>
       </div>
     </article>
-  </motion.div>
+  </m.div>
 );
 
 const HomeArticleCard = ({ blog, index, onImageClick }) => {
@@ -389,7 +389,7 @@ const HomeArticleCard = ({ blog, index, onImageClick }) => {
   const isFeatured = !!blog.featured;
 
   return (
-    <motion.article
+    <m.article
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
@@ -460,7 +460,7 @@ const HomeArticleCard = ({ blog, index, onImageClick }) => {
           </div>
         </div>
       </div>
-    </motion.article>
+    </m.article>
   );
 };
 
@@ -522,7 +522,7 @@ const NewsletterCTA = () => {
           <div className="w-full lg:w-[450px] space-y-6">
             <AnimatePresence mode="wait">
               {subscribed ? (
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   className="bg-accent/10 backdrop-blur-3xl border border-accent/20 rounded-[2.5rem] p-12 flex flex-col items-center gap-4 text-center shadow-2xl shadow-accent/5"
@@ -538,9 +538,9 @@ const NewsletterCTA = () => {
                       You are now part of the Muhyo Tech network.
                     </p>
                   </div>
-                </motion.div>
+                </m.div>
               ) : (
-                <motion.form
+                <m.form
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -566,7 +566,7 @@ const NewsletterCTA = () => {
                       "Subscribe"
                     )}
                   </Button>
-                </motion.form>
+                </m.form>
               )}
             </AnimatePresence>
             <p className="text-[11px] text-muted-foreground/30 text-center tracking-normal font-semibold italic">
@@ -640,7 +640,7 @@ export default function Blog({ data, isHomePage = false }) {
                 />
               ))}
             </div>
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -658,7 +658,7 @@ export default function Blog({ data, isHomePage = false }) {
                 <div className="absolute top-0 -right-full w-full h-full bg-foreground/10 group-hover:right-0 transition-all duration-300" />
                 <ArrowRight className="absolute right-5 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 w-5 h-5" />
               </Link>
-            </motion.div>
+            </m.div>
           </div>
         </SectionWrapper>
         {lightboxIndex !== null && (
@@ -723,7 +723,7 @@ export default function Blog({ data, isHomePage = false }) {
         <div className="max-w-7xl mx-auto">
           <AnimatePresence mode="popLayout">
             {displayPosts.length > 0 ? (
-              <motion.div
+              <m.div
                 layout
                 className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"
               >
@@ -739,9 +739,9 @@ export default function Blog({ data, isHomePage = false }) {
                     }}
                   />
                 ))}
-              </motion.div>
+              </m.div>
             ) : (
-              <motion.div
+              <m.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="flex flex-col items-center justify-center py-40 text-center"
@@ -764,7 +764,7 @@ export default function Blog({ data, isHomePage = false }) {
                 >
                   Reset Discovery
                 </Button>
-              </motion.div>
+              </m.div>
             )}
           </AnimatePresence>
         </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import {
   Layout,
   Palette,
@@ -88,7 +88,7 @@ const ServiceRow = ({ service, index, onImageClick }) => {
   const isReversed = index % 2 !== 0;
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 50 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
@@ -169,7 +169,7 @@ const ServiceRow = ({ service, index, onImageClick }) => {
             href={`/services/${service.slug || service.id}`}
             prefetch={false}
           >
-            <motion.button
+            <m.button
               whileHover={{ x: isReversed ? 5 : -5 }}
               whileTap={{ scale: 0.95 }}
               className={`inline-flex items-center gap-3 text-sm font-bold text-accent-foreground bg-accent hover:bg-accent/90 px-6 py-4 rounded-xl transition-all shadow-xl shadow-accent/20 cursor-pointer ${isReversed ? "" : "lg:flex-row-reverse"}`}
@@ -178,16 +178,16 @@ const ServiceRow = ({ service, index, onImageClick }) => {
               <ArrowRight
                 className={`w-4 h-4 ${isReversed ? "" : "lg:rotate-180"}`}
               />
-            </motion.button>
+            </m.button>
           </Link>
           <Link href="/book-a-call" prefetch={false}>
-            <motion.button
+            <m.button
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.95 }}
               className="inline-flex items-center gap-3 rounded-xl border border-accent/40 bg-card/50 px-6 py-4 text-sm font-bold text-accent transition-all hover:bg-accent hover:text-accent-foreground"
             >
               Book a Call
-            </motion.button>
+            </m.button>
           </Link>
         </div>
       </div>
@@ -199,14 +199,14 @@ const ServiceRow = ({ service, index, onImageClick }) => {
         {/* Accent glow */}
         <div className="absolute inset-0 bg-accent/20 blur-[40px] rounded-full scale-90 animate-pulse -z-10" />
 
-        <motion.div
+        <m.div
           whileHover={{ scale: 1.02 }}
           transition={{ type: "spring", stiffness: 200, damping: 20 }}
           className="theme-media-frame relative w-full aspect-[4/3] rounded-2xl overflow-hidden border border-border/70 bg-background cursor-pointer"
           onClick={() => onImageClick(index)}
         >
           {/* PHASE 1: Next/Image replaces CSS background-image */}
-          <motion.div
+          <m.div
             initial={{ scale: 1.2, opacity: 0 }}
             whileInView={{ scale: 1, opacity: 1 }}
             viewport={{ once: true }}
@@ -226,7 +226,7 @@ const ServiceRow = ({ service, index, onImageClick }) => {
             {/* Dark gradient overlay */}
             <div className="theme-media-gradient absolute inset-0 z-10" />
             <div className="theme-media-tint absolute inset-0 z-10" />
-          </motion.div>
+          </m.div>
 
           {/* Overlay content at bottom */}
           <div className="absolute inset-0 p-8 md:p-10 flex flex-col justify-end pointer-events-none z-20">
@@ -256,9 +256,9 @@ const ServiceRow = ({ service, index, onImageClick }) => {
 
           {/* Glass reflection */}
           <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none z-30" />
-        </motion.div>
+        </m.div>
       </div>
-    </motion.div>
+    </m.div>
   );
 };
 
@@ -308,7 +308,7 @@ export default function Services({ data, showViewAll = false }) {
       )}
 
       {showViewAll && (
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -326,7 +326,7 @@ export default function Services({ data, showViewAll = false }) {
             <div className="absolute top-0 -right-full w-full h-full bg-foreground/10 group-hover:right-0 transition-all duration-300" />
             <ArrowRight className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 w-5 h-5" />
           </Link>
-        </motion.div>
+        </m.div>
       )}
     </SectionWrapper>
   );

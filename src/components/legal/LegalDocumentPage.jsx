@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { useRef, useState } from "react";
 import {
   ArrowUpRight,
@@ -188,14 +188,14 @@ export default function LegalDocumentPage({ document }) {
                 <ShieldCheck className="h-4 w-4" />
                 Clear by design
               </div>
-              <motion.h1
+              <m.h1
                 initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.65 }}
                 className="max-w-5xl text-5xl font-black leading-[0.95] tracking-[-0.055em] sm:text-7xl lg:text-[4.9rem] xl:text-[5.4rem]"
               >
                 {document.title}
-              </motion.h1>
+              </m.h1>
               <p className="mt-7 max-w-3xl text-base font-medium leading-8 text-muted-foreground sm:text-lg">
                 {document.description}
               </p>
@@ -222,7 +222,7 @@ export default function LegalDocumentPage({ document }) {
           {document.highlights.map((item, index) => {
             const Icon = ICONS[item.icon] || CheckCircle2;
             return (
-              <motion.article
+              <m.article
                 key={item.title}
                 {...reveal}
                 transition={{ ...reveal.transition, delay: index * 0.06 }}
@@ -233,7 +233,7 @@ export default function LegalDocumentPage({ document }) {
                 </div>
                 <h2 className="mt-4 text-base font-bold tracking-tight">{item.title}</h2>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.text}</p>
-              </motion.article>
+              </m.article>
             );
           })}
         </section>
@@ -251,7 +251,7 @@ export default function LegalDocumentPage({ document }) {
               section.compact ?? (!section.items?.length && textLength < 430);
             const useItemColumns = !isCompact && section.items?.length >= 6;
             return (
-              <motion.section
+              <m.section
                 key={section.id}
                 id={section.id}
                 {...reveal}
@@ -291,7 +291,7 @@ export default function LegalDocumentPage({ document }) {
                     )}
                   </div>
                 </div>
-              </motion.section>
+              </m.section>
             );
           })}
         </div>

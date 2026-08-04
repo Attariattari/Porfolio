@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import {
   Linkedin,
   Github,
@@ -103,7 +103,7 @@ export default function SocialLinks({
         );
 
         return (
-          <motion.a
+          <m.a
             key={`${platform}-${i}`}
             href={social.url}
             target="_blank"
@@ -122,7 +122,7 @@ export default function SocialLinks({
             title={config.name}
           >
             <Icon className={`relative z-10 ${iconSize}`} />
-          </motion.a>
+          </m.a>
         );
       })}
     </div>

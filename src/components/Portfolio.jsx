@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import {
   ExternalLink,
   Github,
@@ -84,7 +84,7 @@ const Portfolio = ({ projects }) => {
         <div className="max-w-7xl mx-auto relative z-10 w-full">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
             {/* LEFT SIDE: Content */}
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
@@ -143,7 +143,7 @@ const Portfolio = ({ projects }) => {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </m.div>
 
             {/* RIGHT SIDE: Elevated Visual Showcase */}
             <div
@@ -157,7 +157,7 @@ const Portfolio = ({ projects }) => {
                   const isActive = position === 0;
 
                   return (
-                    <motion.div
+                    <m.div
                       key={project._id || project.slug || project.id}
                       initial={{ opacity: 0, x: 200, rotateY: 30 }}
                       animate={{
@@ -253,7 +253,7 @@ const Portfolio = ({ projects }) => {
 
                       {/* Glass Reflection */}
                       <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none z-30" />
-                    </motion.div>
+                    </m.div>
                   );
                 })}
 
@@ -270,7 +270,7 @@ const Portfolio = ({ projects }) => {
         <div className="max-w-7xl mx-auto relative z-10">
           {/* Minimal Section Header */}
           <div className="mb-12 flex flex-col md:flex-row justify-between items-end gap-6">
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -285,9 +285,9 @@ const Portfolio = ({ projects }) => {
               <h2 className="text-4xl font-bold tracking-tight text-foreground italic">
                 Engineering <span className="text-accent">showcase</span>
               </h2>
-            </motion.div>
+            </m.div>
 
-            <motion.div
+            <m.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
@@ -300,13 +300,13 @@ const Portfolio = ({ projects }) => {
                 View full gallery
                 <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </Button>
-            </motion.div>
+            </m.div>
           </div>
 
           {/* Clean 3-Column Grid */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {featuredProjects.map((project, idx) => (
-              <motion.div
+              <m.div
                 key={project._id || project.slug || project.id}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -337,8 +337,7 @@ const Portfolio = ({ projects }) => {
                       src={getSafeImageSrc(project.thumbnail || project.thumbnailImage || project.image)}
                       alt={getProjectMediaAlt(project)}
                       fill
-                      priority={idx === 0}
-                      loading={idx === 0 ? undefined : "lazy"}
+                      loading="lazy"
                       sizes="(max-width: 768px) 100vw, 33vw"
                       className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
@@ -399,7 +398,7 @@ const Portfolio = ({ projects }) => {
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </m.div>
             ))}
           </div>
         </div>
@@ -418,7 +417,7 @@ const Portfolio = ({ projects }) => {
         <div className="max-w-7xl mx-auto">
           {/* Section Header */}
           <div className="text-center mb-12">
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -438,7 +437,7 @@ const Portfolio = ({ projects }) => {
                 A legacy of digital precision—exploring the intersections of
                 scalable architecture and impactful user experience.
               </p>
-            </motion.div>
+            </m.div>
           </div>
 
           {/* Category Filter - Premium Switcher */}
@@ -455,7 +454,7 @@ const Portfolio = ({ projects }) => {
               >
                 <span className="relative z-10">{cat}</span>
                 {activeCategory === cat && (
-                  <motion.div
+                  <m.div
                     layoutId="active-pill"
                     className="absolute inset-0 bg-accent -z-0"
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
@@ -478,7 +477,7 @@ const Portfolio = ({ projects }) => {
                   const isReversed = index % 2 !== 0;
 
                   return (
-                    <motion.div
+                    <m.div
                       key={project._id || project.slug || project.id}
                       layout
                       initial={{ opacity: 0, scale: 0.95, y: 30 }}
@@ -598,7 +597,7 @@ const Portfolio = ({ projects }) => {
                         {/* Accent glow */}
                         <div className="absolute bg-accent/20 blur-[40px] rounded-full scale-90 animate-pulse -z-10 inset-0" />
 
-                        <motion.div
+                        <m.div
                           whileHover={{ scale: 1.02 }}
                           transition={{
                             type: "spring",
@@ -609,7 +608,7 @@ const Portfolio = ({ projects }) => {
                           onClick={() => openProjectDetail(project)}
                         >
                           {/* Background image with animated scale-in */}
-                          <motion.div
+                          <m.div
                             initial={{ scale: 1.2, opacity: 0 }}
                             whileInView={{ scale: 1, opacity: 1 }}
                             viewport={{ once: true }}
@@ -627,7 +626,7 @@ const Portfolio = ({ projects }) => {
                             />
                             <div className="theme-media-gradient absolute inset-0" />
                             <div className="theme-media-tint absolute inset-0" />
-                          </motion.div>
+                          </m.div>
 
                           {/* Overlay content at bottom */}
                           <div className="absolute inset-0 p-8 md:p-10 flex flex-col justify-end pointer-events-none">
@@ -650,9 +649,9 @@ const Portfolio = ({ projects }) => {
 
                           {/* Glass reflection — same as hero cards */}
                           <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none z-30" />
-                        </motion.div>
+                        </m.div>
                       </div>
-                    </motion.div>
+                    </m.div>
                   );
                 })}
               </AnimatePresence>
@@ -679,7 +678,7 @@ const Portfolio = ({ projects }) => {
               },
               { label: "User Growth", value: "45%+", sub: "Engagement Delta" },
             ].map((stat, i) => (
-              <motion.div
+              <m.div
                 key={i}
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
@@ -695,7 +694,7 @@ const Portfolio = ({ projects }) => {
                 <span className="text-muted-foreground text-[8px] font-medium tracking-normal">
                   {stat.sub}
                 </span>
-              </motion.div>
+              </m.div>
             ))}
           </div>
         </div>
@@ -733,7 +732,7 @@ const Portfolio = ({ projects }) => {
                 color: "text-purple-500 bg-purple-500/10",
               },
             ].map((feature, i) => (
-              <motion.div
+              <m.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -750,7 +749,7 @@ const Portfolio = ({ projects }) => {
                 <p className="text-muted-foreground leading-relaxed text-sm">
                   {feature.desc}
                 </p>
-              </motion.div>
+              </m.div>
             ))}
           </div>
         </div>
@@ -793,7 +792,7 @@ const Portfolio = ({ projects }) => {
       {/* 7. Final CTA */}
       <section className="py-12 px-6 relative z-10">
         <div className="max-w-5xl mx-auto">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -818,7 +817,7 @@ const Portfolio = ({ projects }) => {
                 </Button>
               </Link>
             </div>
-          </motion.div>
+          </m.div>
         </div>
       </section>
 

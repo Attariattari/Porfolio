@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import {
   X,
   Target,
@@ -68,7 +68,7 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
 
   return (
     <AnimatePresence>
-      <motion.div
+      <m.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -79,7 +79,7 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
           onClick={() => setSelectedProject(null)}
         />
 
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: "100%" }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: "100%" }}
@@ -129,7 +129,7 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
             {/* Mobile Gallery Slider (Framer Motion Drag) */}
             {galleryImages.length > 0 && (
               <div className="md:hidden py-6 -mx-6 relative overflow-hidden">
-                <motion.div
+                <m.div
                   drag="x"
                   dragConstraints={{
                     right: 0,
@@ -163,7 +163,7 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
                   className="flex w-max gap-4 px-6 cursor-grab active:cursor-grabbing"
                 >
                   {galleryImages.map((img, i) => (
-                    <motion.div
+                    <m.div
                       key={i}
                       className="flex-shrink-0 w-[85vw]"
                       onDoubleClick={() => openLightbox(i)}
@@ -176,9 +176,9 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
                         sizes="85vw"
                         className="w-full aspect-[16/10] object-cover rounded-2xl border border-border shadow-md select-none pointer-events-none"
                       />
-                    </motion.div>
+                    </m.div>
                   ))}
-                </motion.div>
+                </m.div>
 
                 {/* Scroll Indicator Dots */}
                 {galleryImages.length > 1 && (
@@ -322,7 +322,7 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
               </div>
             </div>
           </div>
-        </motion.div>
+        </m.div>
 
         {/* Professional Image Lightbox Overlay */}
       {lightboxIndex !== null && (
@@ -335,7 +335,7 @@ const ProjectModal = ({ selectedProject, setSelectedProject }) => {
           initialIndex={lightboxIndex || 0}
         />
       )}
-      </motion.div>
+      </m.div>
     </AnimatePresence>
   );
 };

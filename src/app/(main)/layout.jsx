@@ -6,6 +6,7 @@ import DeferredWhatsAppButton from "@/components/DeferredWhatsAppButton";
 import ScrollProgress from "@/components/ScrollProgress";
 import DeferredNavigationWatcher from "@/components/DeferredNavigationWatcher";
 import DeferredRuntimeWidgets from "@/components/DeferredRuntimeWidgets";
+import MotionFeaturesProvider from "@/components/MotionFeaturesProvider";
 import { AboutController } from "@/controllers/AboutController";
 import { SocialController } from "@/controllers/SocialController";
 import { portfolioData } from "@/lib/data";
@@ -85,6 +86,7 @@ export default async function MainLayout({ children }) {
   const globalSocials = serializeDoc(dbSocials) || [];
 
   return (
+    <MotionFeaturesProvider>
     <div
       className="relative pb-32 transition-colors duration-300 md:pb-0"
     >
@@ -105,5 +107,6 @@ export default async function MainLayout({ children }) {
         <Footer data={globalAbout} socials={globalSocials} />
       </div>
     </div>
+    </MotionFeaturesProvider>
   );
 }

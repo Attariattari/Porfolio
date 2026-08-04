@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { HelpCircle, Plus, Minus } from "lucide-react";
 import { useState } from "react";
 
@@ -22,7 +22,7 @@ const FAQItem = ({ question, answer }) => {
           <Plus className="w-5 h-5 text-muted-foreground/40 group-hover:text-accent transition-colors" />
         )}
       </button>
-      <motion.div
+      <m.div
         initial={false}
         animate={{ height: isOpen ? "auto" : 0, opacity: isOpen ? 1 : 0 }}
         className="overflow-hidden"
@@ -30,7 +30,7 @@ const FAQItem = ({ question, answer }) => {
         <p className="py-4 text-muted-foreground leading-relaxed italic">
           {answer}
         </p>
-      </motion.div>
+      </m.div>
     </div>
   );
 };

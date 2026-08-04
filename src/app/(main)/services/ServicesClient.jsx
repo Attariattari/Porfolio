@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import Services from "@/components/Services";
 import { SectionWrapper, Card, Button } from "@/components/ui";
 import {
@@ -66,7 +66,7 @@ const ServiceSlider = ({ services }) => {
 
       <div className="theme-media-frame relative w-full aspect-[4/3] rounded-2xl overflow-hidden border border-border/70 bg-background">
         <AnimatePresence initial={false} mode="wait">
-          <motion.div
+          <m.div
             key={currentIndex}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -75,7 +75,7 @@ const ServiceSlider = ({ services }) => {
             className="absolute inset-0"
           >
             {/* Background image with animated scale-in — OPTIMIZED with Next/Image */}
-            <motion.div
+            <m.div
               initial={{ scale: 1.2, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 1.2, ease: "easeOut" }}
@@ -100,11 +100,11 @@ const ServiceSlider = ({ services }) => {
               {/* Dark gradient overlay */}
               <div className="theme-media-gradient absolute inset-0 z-10" />
               <div className="theme-media-tint absolute inset-0 z-10" />
-            </motion.div>
+            </m.div>
 
             {/* Overlay content at bottom — same structure as Portfolio */}
             <div className="absolute inset-0 p-8 md:p-10 flex flex-col justify-end pointer-events-none z-20">
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
@@ -130,16 +130,16 @@ const ServiceSlider = ({ services }) => {
                 <Link
                   href={`/services/${services[currentIndex].slug || services[currentIndex]._id}`}
                 >
-                  <motion.div
+                  <m.div
                     whileHover={{ x: 10 }}
                     className="flex items-center gap-3 text-accent font-black uppercase tracking-[0.2em] text-[10px] md:text-xs bg-white/5 w-fit px-4 py-2 rounded-lg backdrop-blur-sm border border-white/10"
                   >
                     Experience details <ArrowRight className="w-5 h-5" />
-                  </motion.div>
+                  </m.div>
                 </Link>
-              </motion.div>
+              </m.div>
             </div>
-          </motion.div>
+          </m.div>
         </AnimatePresence>
 
         {/* Navigation dots */}
@@ -189,7 +189,7 @@ export default function ServicesClient({ services, pageData }) {
         <EditorialBackground text="SERVICES" />
         <div className="max-w-7xl mx-auto px-4 w-full">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <motion.div
+            <m.div
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
             >
@@ -217,7 +217,7 @@ export default function ServicesClient({ services, pageData }) {
                   Book a Call
                 </Button>
               </div>
-            </motion.div>
+            </m.div>
             <div className="relative z-10">
               <ServiceSlider services={services} />
             </div>

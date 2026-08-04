@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Button } from "@/components/ui";
 
 const ImageLightbox = dynamic(
@@ -21,7 +21,7 @@ const fadeUp = {
 
 export function SectionHeading({ eyebrow, title, description }) {
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -40,13 +40,13 @@ export function SectionHeading({ eyebrow, title, description }) {
           {description}
         </p>
       )}
-    </motion.div>
+    </m.div>
   );
 }
 
 export function GlassCard({ children, className = "" }) {
   return (
-    <motion.div
+    <m.div
       variants={fadeUp}
       initial="hidden"
       whileInView="visible"
@@ -54,19 +54,19 @@ export function GlassCard({ children, className = "" }) {
       className={`glass rounded-[2rem] border border-white/10 p-6 transition-all hover:border-accent/30 md:p-8 ${className}`}
     >
       {children}
-    </motion.div>
+    </m.div>
   );
 }
 
 export function ProjectHeroMotion({ children }) {
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, x: -28 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.75 }}
     >
       {children}
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -95,14 +95,14 @@ export function ProjectLightboxButton({
 
   return (
     <>
-      <motion.button
+      <m.button
         type="button"
         {...motionProps}
         onClick={() => setIsOpen(true)}
         className={className}
       >
         {children}
-      </motion.button>
+      </m.button>
       {isOpen && (
         <ImageLightbox
           isOpen
