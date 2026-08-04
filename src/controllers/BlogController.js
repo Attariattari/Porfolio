@@ -23,6 +23,7 @@ const revalidatePublicBlogPaths = (slug) => {
         revalidatePath("/");
         revalidatePath("/blog");
         revalidatePath("/sitemap.xml");
+        revalidatePath("/llms.txt");
         if (slug) revalidatePath(`/blog/${slug}`);
     } catch {
         // Revalidation is unavailable when controllers run outside a Next.js

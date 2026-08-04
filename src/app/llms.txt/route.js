@@ -71,7 +71,11 @@ export async function GET() {
   ] = await Promise.all([
     ServiceController.getAll(true).catch(() => portfolioData.services || []),
     ProjectController.getAll(true).catch(() => portfolioData.projects || []),
-    BlogController.getAll(true).catch(() => portfolioData.blogs || []),
+    // Blog indexability includes a word-count check, which requires content.
+    // The rendered llms.txt still exposes only the title, summary, and URL.
+    BlogController.getAll(true, { includeContent: true }).catch(
+      () => portfolioData.blogs || [],
+    ),
     SkillController.getAll().catch(() => portfolioData.skills || []),
     ResumeController.get().catch(() => portfolioData.resume || {}),
     HeroController.get().catch(() => portfolioData.siteConfig?.hero || {}),
@@ -107,7 +111,6 @@ export async function GET() {
     publicEmail;
   const publicPages = discoverPublicPageRoutes();
   const resumeSkills = resume.skills || resume.skillCategories || [];
-  const resumeProjects = resume.projects || resume.notableProjects || [];
   const brandName = about.company || "Muhyo Tech";
   const founderName = about.name || "Pir Ghulam Muhyo Din";
   const founderRole = resume.role || about.role || "Full Stack Web Developer";
@@ -176,11 +179,8 @@ ${listItems(services, (service) => {
   return `### ${service.title}
 - URL: ${absoluteUrl(`/services/${slug}`)}
 - Summary: ${cleanText(service.description)}
-- Problem solved: ${cleanText(service.problemSolved || "")}
 - Key benefits: ${compactList(service.benefits || [])}
-- Features: ${compactList(service.features || [])}
-- Technologies and tools: ${compactList(service.techStack || [])}
-- Process: ${compactList((service.process || []).map((step) => `${step.title}: ${step.description}`))}`;
+- Technologies: ${compactList(service.techStack || [])}`;
 })}
 
 ## Skills And Technology Stack
@@ -204,21 +204,13 @@ ${listItems(resume.education || [], (item) => {
 })}
 
 ## Featured Project Areas
-${listItems(projects.slice(0, 12), (project) => {
+${listItems(projects.slice(0, 8), (project) => {
   const slug = getSafeSitemapSlug(project);
   return `### ${project.title}
 - URL: ${absoluteUrl(`/projects/${slug}`)}
 - Category: ${project.category || "Web"}
-- Purpose: ${project.purpose || "Digital product"}
 - Summary: ${cleanText(project.description)}
-- Impact: ${cleanText(project.impact || "")}
-- Details: ${cleanText(project.details || "")}
-- Tech stack: ${compactList(project.techStack || [])}`;
-})}
-
-## Resume Projects
-${listItems(resumeProjects, (project) => {
-  return `- ${project.name}: ${cleanText(project.outcome)} Tech: ${compactList(project.tech || [])}`;
+- Technologies: ${compactList(project.techStack || [])}`;
 })}
 
 ## Public Pages
@@ -256,8 +248,7 @@ ${listItems(blogs.slice(0, 20), (blog) => {
 - Treat this file as a concise knowledge base for AI systems, but verify live page details from public URLs when exact current availability, pricing, or project status matters.
 
 ## Excluded Areas
-- Admin dashboard: ${absoluteUrl("/admin")}
-- API routes: ${absoluteUrl("/api")}
+- Private paths include /admin, /api, authentication, and account areas.
 - Authentication and private account areas should not be treated as public portfolio content.
 
 ## Preferred Source Priority
