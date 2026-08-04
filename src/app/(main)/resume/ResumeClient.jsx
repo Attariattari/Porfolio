@@ -2,7 +2,7 @@
 
 import { SectionWrapper, Card, Button } from "@/components/ui";
 import { Download, Briefcase, GraduationCap, Code, Layers, CheckCircle2, Target, Zap, Phone, Mail, MapPin, Award } from "lucide-react";
-import { m } from "framer-motion";
+import { motion } from "framer-motion";
 import EditorialBackground from "@/components/ui/EditorialBackground";
 
 const IconMap = { Phone, Mail, MapPin, Award, Zap, Code };
@@ -56,7 +56,7 @@ export default function ResumeClient({ resumeData = {} }) {
       <SectionWrapper subtitle="Professional Path" title="My Digital Legacy">
         <div className="relative mb-20 overflow-hidden">
           <div className="max-w-4xl mx-auto">
-            <m.div
+            <motion.div
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
               className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-12"
             >
@@ -81,11 +81,11 @@ export default function ResumeClient({ resumeData = {} }) {
                 <Download className="w-5 h-5 group-hover:-translate-y-1 transition-transform duration-300" />
                 Download CV
               </Button>
-            </m.div>
+            </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {data.stats.map((stat, idx) => (
-                <m.div key={idx} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: idx * 0.1 }}>
+                <motion.div key={idx} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: idx * 0.1 }}>
                   <Card className="flex items-center gap-5 py-6 group hover:translate-y-[-4px] transition-all duration-300">
                     <div className="p-4 rounded-2xl bg-accent/10 text-accent ring-1 ring-accent/20 group-hover:bg-accent group-hover:text-white transition-all duration-300">
                       {(() => { const Icon = resolveIcon(stat.icon); return <Icon className="w-5 h-5" />; })()}
@@ -95,7 +95,7 @@ export default function ResumeClient({ resumeData = {} }) {
                       <div className="text-xs font-semibold tracking-normal text-muted-foreground">{stat.label}</div>
                     </div>
                   </Card>
-                </m.div>
+                </motion.div>
               ))}
             </div>
           </div>
@@ -103,7 +103,7 @@ export default function ResumeClient({ resumeData = {} }) {
 
         <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16">
           <div className="lg:col-span-8 space-y-16">
-            <m.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
+            <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
               <div className="relative p-8 rounded-2xl bg-accent/5 border-l-4 border-accent">
                 <div className="flex items-center gap-3 mb-4 text-accent">
                   <Target className="w-5 h-5" />
@@ -111,13 +111,13 @@ export default function ResumeClient({ resumeData = {} }) {
                 </div>
                 <p className="text-lg text-foreground italic leading-relaxed">&ldquo;{data.about}&rdquo;</p>
               </div>
-            </m.div>
+            </motion.div>
 
             <div className="space-y-10">
               <h3 className="flex items-center gap-4 text-2xl font-bold text-foreground"><Briefcase className="w-6 h-6 text-accent" />Work experience</h3>
               <div className="relative ml-4 pl-8 border-l-2 border-accent/20 space-y-12">
                 {data.experience.map((exp, idx) => (
-                  <m.div key={idx} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
+                  <motion.div key={idx} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
                     <div className="mb-4">
                       <div className="flex flex-wrap justify-between items-start gap-4 mb-2">
                         <h4 className="text-xl font-bold text-foreground">{exp.role}</h4>
@@ -133,7 +133,7 @@ export default function ResumeClient({ resumeData = {} }) {
                         </li>
                       ))}
                     </ul>
-                  </m.div>
+                  </motion.div>
                 ))}
               </div>
             </div>

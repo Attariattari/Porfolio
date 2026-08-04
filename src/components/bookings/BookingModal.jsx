@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, m } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 import { createPortal } from "react-dom";
 import BookingForm from "./BookingForm";
@@ -19,7 +19,7 @@ export default function BookingModal({
 
   return createPortal(
     <AnimatePresence>
-      <m.div
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -35,7 +35,7 @@ export default function BookingModal({
           aria-label="Close booking modal"
         />
 
-        <m.div
+        <motion.div
           initial={{ opacity: 0, y: "100%" }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: "100%" }}
@@ -76,8 +76,8 @@ export default function BookingModal({
               submitLabel="Request Call Slot"
             />
           </div>
-        </m.div>
-      </m.div>
+        </motion.div>
+      </motion.div>
     </AnimatePresence>,
     document.body,
   );

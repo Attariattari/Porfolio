@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, memo } from "react";
-import { m, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronLeft,
   ChevronRight,
@@ -55,7 +55,7 @@ const BlogSliderComponent = ({ posts }) => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <AnimatePresence mode="wait">
-        <m.div
+        <motion.div
           key={currentPost.id}
           initial={{ opacity: 0, scale: 1.1 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -78,7 +78,7 @@ const BlogSliderComponent = ({ posts }) => {
 
           {/* Content */}
           <div className="relative h-full flex flex-col justify-center px-8 md:px-16 lg:px-24 max-w-4xl">
-            <m.div
+            <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.5 }}
@@ -107,9 +107,9 @@ const BlogSliderComponent = ({ posts }) => {
                   <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1 duration-300" />
                 </Button>
               </Link>
-            </m.div>
+            </motion.div>
           </div>
-        </m.div>
+        </motion.div>
       </AnimatePresence>
 
       {/* Navigation Arrows */}

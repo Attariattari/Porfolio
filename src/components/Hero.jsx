@@ -143,8 +143,8 @@ export default function Hero({ initialData = null }) {
                     alt={getHeroMediaAlt(data)}
                     fill
                     className="object-cover"
-                    loading="lazy"
-                    fetchPriority="auto"
+                    loading="eager"
+                    fetchPriority="high"
                     sizes="500px"
                   />
                   {/* Subtle Glow to match the theme */}

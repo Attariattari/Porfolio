@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Mail, Send, CheckCircle2, Loader2 } from "lucide-react";
-import { m, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 
 export default function Newsletter() {
@@ -49,16 +49,16 @@ export default function Newsletter() {
 
       <AnimatePresence mode="wait">
         {subscribed ? (
-          <m.div
+          <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="flex items-center gap-3 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500"
           >
             <CheckCircle2 size={18} />
             <span className="text-sm font-semibold">Transmission Received!</span>
-          </m.div>
+          </motion.div>
         ) : (
-          <m.form
+          <motion.form
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -92,7 +92,7 @@ export default function Newsletter() {
                 )}
               </button>
             </div>
-          </m.form>
+          </motion.form>
         )}
       </AnimatePresence>
       

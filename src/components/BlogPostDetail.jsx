@@ -1,6 +1,6 @@
 "use client";
 
-import { m } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   Calendar,
   Clock,
@@ -98,7 +98,7 @@ export default function BlogPostDetail({
             </Link>
           </div>
 
-          <m.div
+          <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.75 }}
@@ -158,9 +158,9 @@ export default function BlogPostDetail({
                 </div>
               </Link>
             </div>
-          </m.div>
+          </motion.div>
 
-          <m.figure
+          <motion.figure
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.08 }}
@@ -185,7 +185,7 @@ export default function BlogPostDetail({
                 <span className="h-2 w-2 rounded-full bg-accent shadow-[0_0_18px_rgba(20,184,166,0.9)]" />
               </div>
             </div>
-          </m.figure>
+          </motion.figure>
         </div>
       </header>
 
@@ -193,7 +193,7 @@ export default function BlogPostDetail({
       <SectionWrapper className="pt-12 md:pt-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 max-w-7xl mx-auto">
           {/* Main Content */}
-          <m.div
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -283,13 +283,13 @@ export default function BlogPostDetail({
                 </Button>
               </Link>
             </div>
-          </m.div>
+          </motion.div>
 
           {/* Sidebar */}
           <aside className="lg:sticky lg:top-6 lg:col-span-4 lg:h-fit lg:self-start">
             <div className="space-y-5">
               {/* Share Box - Premium Card */}
-              <m.div
+              <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 }}
@@ -351,10 +351,10 @@ export default function BlogPostDetail({
                     <ArrowUpRight className="w-4 h-4 opacity-70 transition-all group-hover/copy:translate-x-0.5 group-hover/copy:-translate-y-0.5 group-hover/copy:opacity-100" />
                   </button>
                 </div>
-              </m.div>
+              </motion.div>
 
               {relatedBlogs.length > 0 && (
-                <m.div
+                <motion.div
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.4 }}
@@ -398,7 +398,7 @@ export default function BlogPostDetail({
                       <ArrowRight className="w-4 h-4 -translate-x-2 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100" />
                     </Link>
                   </div>
-                </m.div>
+                </motion.div>
               )}
             </div>
           </aside>

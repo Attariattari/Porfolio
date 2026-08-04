@@ -1,6 +1,6 @@
 "use client";
 
-import { m } from "framer-motion";
+import { motion } from "framer-motion";
 
 export const SectionWrapper = ({
   children,
@@ -15,7 +15,7 @@ export const SectionWrapper = ({
       className={`performance-section py-12 px-4 md:px-8 lg:px-12 mx-auto max-w-7xl overflow-hidden ${className}`}
     >
       {title && (
-        <m.div
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -29,7 +29,7 @@ export const SectionWrapper = ({
             {title}
           </h2>
           <div className="h-1 w-24 bg-accent mx-auto rounded-full opacity-30"></div>
-        </m.div>
+        </motion.div>
       )}
       {children}
     </section>

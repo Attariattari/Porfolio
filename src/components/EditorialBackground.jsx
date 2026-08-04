@@ -1,6 +1,6 @@
 "use client";
 
-import { m, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
 
 const EditorialBackground = ({ text }) => {
@@ -46,7 +46,7 @@ const EditorialBackground = ({ text }) => {
       </div>
 
       {/* PHASE 3: Dynamic Atmospheric Glows — paused when hidden or reduced-motion */}
-      <m.div
+      <motion.div
         animate={glowAnimate1}
         transition={
           shouldReduceMotion || !isVisible
@@ -56,7 +56,7 @@ const EditorialBackground = ({ text }) => {
         className="absolute top-1/4 right-[5%] w-[600px] h-[600px] bg-accent/5 blur-[120px] rounded-full"
       />
 
-      <m.div
+      <motion.div
         animate={glowAnimate2}
         transition={
           shouldReduceMotion || !isVisible

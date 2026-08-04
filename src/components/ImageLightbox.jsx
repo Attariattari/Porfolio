@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { m, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { X, ZoomIn, ZoomOut, Maximize2, Minimize2, Download, ChevronLeft, ChevronRight } from "lucide-react";
 import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
 import { ensureMuhyoTechAlt } from "@/lib/mediaAlt";
@@ -288,7 +288,7 @@ export const ImageLightbox = ({
 
   return createPortal(
     <AnimatePresence>
-      <m.div
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -353,7 +353,7 @@ export const ImageLightbox = ({
         )}
 
         {/* Main Image Container */}
-        <m.div
+        <motion.div
           className="relative w-full h-full flex items-center justify-center p-4 md:p-20"
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -361,7 +361,7 @@ export const ImageLightbox = ({
         >
           <div className="relative flex h-full w-full items-center justify-center overflow-hidden">
             <AnimatePresence initial={false} custom={slideDirection}>
-              <m.img
+              <motion.img
                 key={currentIndex}
                 src={safeImages[currentIndex]}
                 alt={imageAlts[currentIndex]}
@@ -393,7 +393,7 @@ export const ImageLightbox = ({
               />
             </AnimatePresence>
           </div>
-        </m.div>
+        </motion.div>
 
         {/* Thumbnails Strip (Desktop) */}
         <div
@@ -466,7 +466,7 @@ export const ImageLightbox = ({
             <ChevronRight size={18} />
           </button>
         </div>
-      </m.div>
+      </motion.div>
     </AnimatePresence>,
     document.body,
   );

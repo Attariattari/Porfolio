@@ -1,6 +1,6 @@
 "use client";
 
-import { m } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   ArrowRight,
   Award,
@@ -127,7 +127,7 @@ const stagger = {
 };
 
 const SectionHeading = ({ eyebrow, title, description }) => (
-  <m.div
+  <motion.div
     initial={{ opacity: 0, y: 24 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
@@ -147,12 +147,12 @@ const SectionHeading = ({ eyebrow, title, description }) => (
         {description}
       </p>
     )}
-  </m.div>
+  </motion.div>
 );
 
 const IconCard = ({ item, index, compact = false }) => {
   return (
-    <m.div
+    <motion.div
       variants={fadeUp}
       transition={{ delay: index * 0.04 }}
       whileHover={{ y: -6 }}
@@ -181,7 +181,7 @@ const IconCard = ({ item, index, compact = false }) => {
           </Link>
         )}
       </div>
-    </m.div>
+    </motion.div>
   );
 };
 
@@ -202,7 +202,7 @@ const CtaButton = ({ cta, fallbackVariant = "primary" }) => {
 };
 
 const ProfileCard = ({ data, isHomePage }) => (
-  <m.div
+  <motion.div
     initial={{ opacity: 0, x: -45 }}
     whileInView={{ opacity: 1, x: 0 }}
     viewport={{ once: true }}
@@ -238,7 +238,7 @@ const ProfileCard = ({ data, isHomePage }) => (
     </div>
     <div className="absolute -bottom-8 right-0 md:-right-6 z-20 hidden sm:flex flex-col gap-4">
       {(data.hero.highlights || []).slice(0, 2).map((highlight, index) => (
-        <m.div
+        <motion.div
           key={highlight}
           initial={{ opacity: 0, y: 18 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -250,28 +250,28 @@ const ProfileCard = ({ data, isHomePage }) => (
             <CheckCircle2 className="w-5 h-5" />
           </div>
           <span className="text-sm font-bold text-foreground">{highlight}</span>
-        </m.div>
+        </motion.div>
       ))}
     </div>
-  </m.div>
+  </motion.div>
 );
 
 const HeroSection = ({ data, isHomePage }) => {
-  const TitleHeading = isHomePage ? m.h2 : m.h1;
-  const HeadlineHeading = isHomePage ? m.h3 : m.h2;
+  const TitleHeading = isHomePage ? motion.h2 : motion.h1;
+  const HeadlineHeading = isHomePage ? motion.h3 : motion.h2;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-24 items-center relative z-10">
       <ProfileCard data={data} isHomePage={isHomePage} />
 
-      <m.div
+      <motion.div
         variants={stagger}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
         className="flex flex-col"
       >
-        <m.div
+        <motion.div
           variants={fadeUp}
           className="inline-flex w-fit items-center gap-2 px-4 py-2 rounded-full bg-accent/5 border border-accent/20 mb-6"
         >
@@ -279,7 +279,7 @@ const HeroSection = ({ data, isHomePage }) => {
           <span className="text-accent text-xs font-bold tracking-normal">
             {data.hero.badge}
           </span>
-        </m.div>
+        </motion.div>
 
         <TitleHeading
           variants={fadeUp}
@@ -295,7 +295,7 @@ const HeroSection = ({ data, isHomePage }) => {
           {data.hero.headline}
         </HeadlineHeading>
 
-        <m.div
+        <motion.div
           variants={fadeUp}
           className="text-lg font-semibold text-accent mb-6 min-h-8"
         >
@@ -307,16 +307,16 @@ const HeroSection = ({ data, isHomePage }) => {
               cursorStyle="|"
             />
           </span>
-        </m.div>
+        </motion.div>
 
-        <m.p
+        <motion.p
           variants={fadeUp}
           className="text-muted-foreground text-base md:text-lg leading-relaxed font-medium mb-8 max-w-2xl"
         >
           {data.hero.description}
-        </m.p>
+        </motion.p>
 
-        <m.div variants={fadeUp} className="flex flex-wrap gap-3 mb-8">
+        <motion.div variants={fadeUp} className="flex flex-wrap gap-3 mb-8">
           {(data.hero.highlights || []).map((highlight) => (
             <span
               key={highlight}
@@ -325,9 +325,9 @@ const HeroSection = ({ data, isHomePage }) => {
               {highlight}
             </span>
           ))}
-        </m.div>
+        </motion.div>
 
-        <m.div
+        <motion.div
           variants={fadeUp}
           className="flex flex-col sm:flex-row gap-4 mb-8"
         >
@@ -346,19 +346,19 @@ const HeroSection = ({ data, isHomePage }) => {
               </Button>
             </Link>
           )}
-        </m.div>
+        </motion.div>
 
-        <m.div variants={fadeUp}>
+        <motion.div variants={fadeUp}>
           <SocialLinks />
-        </m.div>
-      </m.div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 };
 
 const StorySection = ({ data }) => (
   <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-    <m.div
+    <motion.div
       initial={{ opacity: 0, y: 28 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -372,9 +372,9 @@ const StorySection = ({ data }) => (
           <p key={paragraph}>{paragraph}</p>
         ))}
       </div>
-    </m.div>
+    </motion.div>
 
-    <m.div
+    <motion.div
       initial={{ opacity: 0, y: 28 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -401,7 +401,7 @@ const StorySection = ({ data }) => (
           <div className="font-bold text-accent">{data.availability.status}</div>
         </div>
       </div>
-    </m.div>
+    </motion.div>
   </div>
 );
 
@@ -417,7 +417,7 @@ const SkillsSection = ({ skills }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-5">
       {groups.map(([title, items], index) => (
-        <m.div
+        <motion.div
           key={title}
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -436,7 +436,7 @@ const SkillsSection = ({ skills }) => {
               </span>
             ))}
           </div>
-        </m.div>
+        </motion.div>
       ))}
     </div>
   );
@@ -447,7 +447,7 @@ const ExperienceSection = ({ items }) => (
     <div className="absolute left-4 top-0 bottom-0 w-px bg-border hidden md:block" />
     <div className="space-y-6">
       {(items || []).map((item, index) => (
-        <m.div
+        <motion.div
           key={`${item.role}-${item.company}-${index}`}
           initial={{ opacity: 0, x: 24 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -484,7 +484,7 @@ const ExperienceSection = ({ items }) => (
               ))}
             </div>
           </div>
-        </m.div>
+        </motion.div>
       ))}
     </div>
   </div>
@@ -493,7 +493,7 @@ const ExperienceSection = ({ items }) => (
 const EducationSection = ({ items }) => (
   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
     {(items || []).map((item, index) => (
-      <m.div
+      <motion.div
         key={`${item.degree}-${item.institute}-${index}`}
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -512,7 +512,7 @@ const EducationSection = ({ items }) => (
         <p className="text-sm text-muted-foreground leading-relaxed font-medium">
           {item.description || item.period || item.duration}
         </p>
-      </m.div>
+      </motion.div>
     ))}
   </div>
 );
@@ -530,7 +530,7 @@ const AvailabilitySection = ({ data }) => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-      <m.div
+      <motion.div
         initial={{ opacity: 0, x: -24 }}
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true }}
@@ -547,9 +547,9 @@ const AvailabilitySection = ({ data }) => {
             Book a Call <ArrowRight className="w-4 h-4" />
           </Button>
         </Link>
-      </m.div>
+      </motion.div>
 
-      <m.div
+      <motion.div
         initial={{ opacity: 0, x: 24 }}
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true }}
@@ -596,13 +596,13 @@ const AvailabilitySection = ({ data }) => {
             );
           })}
         </div>
-      </m.div>
+      </motion.div>
     </div>
   );
 };
 
 const FinalCTA = ({ data }) => (
-  <m.div
+  <motion.div
     initial={{ opacity: 0, y: 40 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
@@ -633,7 +633,7 @@ const FinalCTA = ({ data }) => (
         <CtaButton cta={data.finalCTA.tertiaryButton} fallbackVariant="outline" />
       </div>
     </div>
-  </m.div>
+  </motion.div>
 );
 
 export default function About({ data: initialData = null, isHomePage = false }) {
@@ -672,7 +672,7 @@ export default function About({ data: initialData = null, isHomePage = false }) 
                 title="Web solutions with a clear purpose"
                 description="Muhyo Tech builds practical digital products that help visitors understand, trust, contact, book, buy, and manage."
               />
-              <m.div
+              <motion.div
                 variants={stagger}
                 initial="hidden"
                 whileInView="visible"
@@ -682,7 +682,7 @@ export default function About({ data: initialData = null, isHomePage = false }) 
                 {(data.whatIBuild || []).map((item, index) => (
                   <IconCard key={item.title} item={item} index={index} compact />
                 ))}
-              </m.div>
+              </motion.div>
             </section>
 
             <section>
@@ -718,7 +718,7 @@ export default function About({ data: initialData = null, isHomePage = false }) 
                 title="How your project is handled"
                 description="A clear process helps turn ideas into clean UI, secure structure, and a launch-ready product."
               />
-              <m.div
+              <motion.div
                 variants={stagger}
                 initial="hidden"
                 whileInView="visible"
@@ -728,7 +728,7 @@ export default function About({ data: initialData = null, isHomePage = false }) 
                 {(data.approach || []).map((item, index) => (
                   <IconCard key={item.title} item={item} index={index} />
                 ))}
-              </m.div>
+              </motion.div>
             </section>
 
             <section>
@@ -737,7 +737,7 @@ export default function About({ data: initialData = null, isHomePage = false }) 
                 title="Built for trust, clarity, and growth"
                 description="Muhyo Tech focuses on practical, modern, and scalable web solutions for businesses, startups, professionals, and personal brands."
               />
-              <m.div
+              <motion.div
                 variants={stagger}
                 initial="hidden"
                 whileInView="visible"
@@ -747,7 +747,7 @@ export default function About({ data: initialData = null, isHomePage = false }) 
                 {(data.whyChoose || []).map((item, index) => (
                   <IconCard key={item.title} item={item} index={index} compact />
                 ))}
-              </m.div>
+              </motion.div>
             </section>
 
             <section>
@@ -756,7 +756,7 @@ export default function About({ data: initialData = null, isHomePage = false }) 
                 title="Values that guide the work"
                 description="Short, practical principles that keep the project focused on quality and long-term usefulness."
               />
-              <m.div
+              <motion.div
                 variants={stagger}
                 initial="hidden"
                 whileInView="visible"
@@ -766,7 +766,7 @@ export default function About({ data: initialData = null, isHomePage = false }) 
                 {(data.values || []).map((item, index) => (
                   <IconCard key={item.title || item} item={typeof item === "string" ? { title: item, description: data.mission, icon: "CheckCircle2" } : item} index={index} />
                 ))}
-              </m.div>
+              </motion.div>
             </section>
 
             <AvailabilitySection data={data} />

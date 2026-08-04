@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
-import { m } from "framer-motion";
+import { motion } from "framer-motion";
 import { Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui";
 
@@ -17,33 +17,33 @@ const sectionVariants = {
 
 export function HeroMotion({ children, className = "" }) {
   return (
-    <m.div
+    <motion.div
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7 }}
       className={className}
     >
       {children}
-    </m.div>
+    </motion.div>
   );
 }
 
 export function PreviewMotion({ children, className = "" }) {
   return (
-    <m.aside
+    <motion.aside
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, delay: 0.1 }}
       className={className}
     >
       {children}
-    </m.aside>
+    </motion.aside>
   );
 }
 
 export function Reveal({ children, className = "" }) {
   return (
-    <m.section
+    <motion.section
       variants={sectionVariants}
       initial="hidden"
       whileInView="visible"
@@ -52,13 +52,13 @@ export function Reveal({ children, className = "" }) {
       className={className}
     >
       {children}
-    </m.section>
+    </motion.section>
   );
 }
 
 export function ListMotionCard({ children, className = "", delay = 0 }) {
   return (
-    <m.div
+    <motion.div
       initial={{ opacity: 0, y: 18 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -66,7 +66,7 @@ export function ListMotionCard({ children, className = "", delay = 0 }) {
       className={className}
     >
       {children}
-    </m.div>
+    </motion.div>
   );
 }
 
@@ -89,7 +89,7 @@ export function FAQItem({ question, answer }) {
           <Plus className="h-4 w-4 shrink-0 text-muted-foreground" />
         )}
       </button>
-      <m.div
+      <motion.div
         initial={false}
         animate={{ height: isOpen ? "auto" : 0, opacity: isOpen ? 1 : 0 }}
         className="overflow-hidden"
@@ -97,7 +97,7 @@ export function FAQItem({ question, answer }) {
         <p className="pt-4 text-sm leading-relaxed text-muted-foreground">
           {answer}
         </p>
-      </m.div>
+      </motion.div>
     </div>
   );
 }

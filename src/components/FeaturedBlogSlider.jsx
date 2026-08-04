@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { m } from "framer-motion";
+import { motion } from "framer-motion";
 import { Clock, ArrowRight, Eye } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -77,7 +77,7 @@ export default function FeaturedBlogSlider({ featuredBlogs, onImageClick }) {
 
                 {/* Badge */}
                 <div className="absolute top-8 left-8">
-                  <m.span
+                  <motion.span
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.2 }}
@@ -85,13 +85,13 @@ export default function FeaturedBlogSlider({ featuredBlogs, onImageClick }) {
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
                     Featured
-                  </m.span>
+                  </motion.span>
                 </div>
               </div>
 
               {/* Content Area */}
               <div className="relative p-8 space-y-4">
-                <m.div
+                <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
@@ -99,7 +99,7 @@ export default function FeaturedBlogSlider({ featuredBlogs, onImageClick }) {
                   <h3 className="text-2xl font-black text-foreground line-clamp-2 leading-tight tracking-tight">
                     {blog.title}
                   </h3>
-                </m.div>
+                </motion.div>
 
                 <p className="text-sm text-muted-foreground line-clamp-2 italic leading-relaxed">
                   {blog.summary}

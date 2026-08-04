@@ -1,22 +1,16 @@
-"use client";
-
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
 import {
-  Mail,
-  ArrowUp,
   ChevronRight,
   ExternalLink,
-  Send,
-  CheckCircle2,
-  Loader2,
 } from "lucide-react";
-import { toast } from "sonner";
 import SocialLinks from "./SocialLinks";
-
-import usePublicSettingsStore from "@/lib/store/publicSettingsStore";
+import {
+  FooterAnchorLink,
+  FooterBackToTop,
+  FooterLegalLinks,
+  FooterNewsletterForm,
+} from "./FooterInteractions";
 
 // Keep the small, static footer navigation local to this client component.
 // Importing the full data catalogue here would ship every project, service,
@@ -41,26 +35,15 @@ const footerData = {
 };
 
 export default function Footer({ data, socials = [] }) {
-  const pathname = usePathname();
   const about = data || {};
-  const settings = usePublicSettingsStore((state) => state.settings);
-  const brandAccent = settings?.siteAccent || about.lastName || "Tech";
-  const configuredTitle = settings?.siteTitle || about.firstName || "Muhyo";
+  const brandAccent = about.lastName || "Tech";
+  const configuredTitle = about.firstName || "Muhyo";
   const brandTitle = configuredTitle.toLowerCase().endsWith(brandAccent.toLowerCase())
     ? configuredTitle.slice(0, -brandAccent.length).trim()
     : configuredTitle;
   const displayName = `${brandTitle || "Muhyo"} ${brandAccent}`;
-  const publicEmail = settings?.email || "MuhyoTech@gmail.com";
-  const publicLocation = settings?.location || "Chota, Mohlanwal Road, Badu Pura Chung, Lahore 53720, Pakistan";
-  const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [subscribed, setSubscribed] = useState(false);
-
-  const scrollToTop = () => {
-    if (typeof window !== "undefined") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  };
+  const publicEmail = "MuhyoTech@gmail.com";
+  const publicLocation = "Chota, Mohlanwal Road, Badu Pura Chung, Lahore 53720, Pakistan";
 
   const footerLinks = {
     navigation: footerData.navigation,
@@ -76,46 +59,6 @@ export default function Footer({ data, socials = [] }) {
     { name: "Blog", href: "/blog" },
     { name: "Contact", href: "/contact" },
   ];
-
-  const handleLinkClick = (e, href) => {
-    if (href.startsWith("/#")) {
-      const id = href.split("#")[1];
-      const element = document.getElementById(id);
-      if (element) {
-        e.preventDefault();
-        element.scrollIntoView({ behavior: "smooth" });
-        window.history.pushState(null, "", href);
-      }
-    }
-  };
-
-  const handleSubscribe = async (e) => {
-    e.preventDefault();
-    if (!email) return;
-
-    setLoading(true);
-    try {
-      const res = await fetch("/api/subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-
-      const result = await res.json();
-
-      if (result.success) {
-        setSubscribed(true);
-        setEmail("");
-        toast.success(result.message);
-      } else {
-        toast.error(result.error || "Subscription failed.");
-      }
-    } catch {
-      toast.error("An error occurred. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <footer className="relative border-t border-border/35 px-6 pt-12 pb-8 overflow-hidden">
@@ -152,42 +95,7 @@ export default function Footer({ data, socials = [] }) {
                 experiences crafted with performance and detail in mind.
               </p>
 
-              <form
-                onSubmit={handleSubscribe}
-                className="mb-5 flex max-w-md flex-col gap-2 rounded-2xl border border-border/60 bg-muted/20 p-2 sm:flex-row"
-              >
-                <div className="flex min-w-0 flex-1 items-center gap-3 px-2 py-2 sm:py-0">
-                  <Mail size={16} className="shrink-0 text-accent" />
-                  <input
-                    type="email"
-                    aria-label="Email address for project updates"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder={
-                      subscribed ? "Subscribed successfully" : "Get project updates"
-                    }
-                    className="min-w-0 flex-1 bg-transparent text-sm font-medium text-foreground outline-none placeholder:text-muted-foreground/70"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  disabled={loading || subscribed}
-                  className="inline-flex h-10 w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-accent px-4 text-xs font-bold text-accent-foreground shadow-lg shadow-accent/20 transition-all hover:bg-accent/90 disabled:opacity-70 sm:w-auto"
-                  aria-label="Subscribe"
-                >
-                  {loading ? (
-                    <Loader2 size={15} className="animate-spin" />
-                  ) : subscribed ? (
-                    <CheckCircle2 size={15} />
-                  ) : (
-                    <>
-                      Subscribe
-                      <Send size={14} />
-                    </>
-                  )}
-                </button>
-              </form>
+              <FooterNewsletterForm />
 
               <div className="flex flex-wrap items-center gap-3">
                 <div className="flex items-center gap-2 rounded-full border border-border/60 bg-muted/20 px-3 py-2">
@@ -213,9 +121,8 @@ export default function Footer({ data, socials = [] }) {
                 <ul className="space-y-3">
                   {portfolioLinks.map((link) => (
                     <li key={link.name}>
-                      <Link
+                      <FooterAnchorLink
                         href={link.href}
-                        onClick={(e) => handleLinkClick(e, link.href)}
                         className="group flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-accent"
                       >
                         {link.name}
@@ -223,7 +130,7 @@ export default function Footer({ data, socials = [] }) {
                           size={12}
                           className="opacity-0 -translate-x-2 transition-all group-hover:translate-x-1 group-hover:opacity-100"
                         />
-                      </Link>
+                      </FooterAnchorLink>
                     </li>
                   ))}
                 </ul>
@@ -236,9 +143,8 @@ export default function Footer({ data, socials = [] }) {
                 <ul className="space-y-3">
                   {footerLinks.resources.map((link) => (
                     <li key={link.name}>
-                      <Link
+                      <FooterAnchorLink
                         href={link.href}
-                        onClick={(e) => handleLinkClick(e, link.href)}
                         className="group flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-accent"
                       >
                         {link.name}
@@ -246,7 +152,7 @@ export default function Footer({ data, socials = [] }) {
                           size={12}
                           className="opacity-0 -translate-x-2 transition-all group-hover:translate-x-1 group-hover:opacity-100"
                         />
-                      </Link>
+                      </FooterAnchorLink>
                     </li>
                   ))}
                 </ul>
@@ -315,33 +221,7 @@ export default function Footer({ data, socials = [] }) {
                   LEGAL
                 </h4>
                 <ul className="space-y-3">
-                  {footerLinks.legal.map((link) => {
-                    const isActive = pathname === link.href;
-
-                    return (
-                      <li key={link.name}>
-                        <Link
-                          href={link.href}
-                          aria-current={isActive ? "page" : undefined}
-                          className={`group -ml-2 flex w-fit items-center rounded-lg px-2 py-1 text-sm font-medium transition-colors ${
-                            isActive
-                              ? "bg-accent/10 text-accent"
-                              : "text-muted-foreground hover:text-accent"
-                          }`}
-                        >
-                          {link.name}
-                          <ChevronRight
-                            size={12}
-                            className={`transition-all ${
-                              isActive
-                                ? "translate-x-1 opacity-100"
-                                : "-translate-x-2 opacity-0 group-hover:translate-x-1 group-hover:opacity-100"
-                            }`}
-                          />
-                        </Link>
-                      </li>
-                    );
-                  })}
+                  <FooterLegalLinks links={footerLinks.legal} />
                 </ul>
               </div>
 
@@ -361,16 +241,7 @@ export default function Footer({ data, socials = [] }) {
             </address>
           </div>
 
-          <button
-            onClick={scrollToTop}
-            className="group flex items-center gap-3 text-xs font-bold tracking-normal text-accent transition-transform duration-200 hover:-translate-y-1 active:scale-95"
-            aria-label="Back to top"
-          >
-            <span className="hidden sm:inline">Back to top</span>
-            <div className="w-10 h-10 rounded-2xl border border-accent/25 bg-background/60 flex items-center justify-center group-hover:bg-accent/10 transition-colors">
-              <ArrowUp size={16} />
-            </div>
-          </button>
+          <FooterBackToTop />
         </div>
       </div>
     </footer>

@@ -42,4 +42,30 @@ test.describe("Production public-page safety", () => {
       expect(hydrationErrors).toEqual([]);
     });
   }
+
+  test("footer client islands preserve newsletter and navigation behavior", async ({ page }) => {
+    await page.route("**/api/subscribe", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ success: true, message: "Subscribed" }),
+      });
+    });
+
+    await page.goto("/", { waitUntil: "networkidle" });
+    const emailInput = page.getByLabel("Email address for project updates");
+    await emailInput.fill("performance-test@example.com");
+    await page.getByRole("button", { name: "Subscribe" }).click();
+    await expect(emailInput).toHaveAttribute("placeholder", "Subscribed successfully");
+
+    await page.getByRole("button", { name: "Back to top" }).scrollIntoViewIfNeeded();
+    await page.getByRole("button", { name: "Back to top" }).click();
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(5);
+
+    await page.goto("/privacy", { waitUntil: "domcontentloaded" });
+    await expect(page.getByRole("link", { name: "Privacy Policy" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+  });
 });
