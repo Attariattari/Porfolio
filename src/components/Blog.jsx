@@ -21,7 +21,6 @@ import Image from "next/image";
 import { SectionWrapper, Button } from "./ui";
 import EditorialBackground from "./ui/EditorialBackground";
 import { rankBlogsByMode, resolveFeaturedBlogs } from "@/lib/blogUtils";
-import { portfolioData } from "@/lib/data";
 import React from "react";
 import dynamic from "next/dynamic";
 import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
@@ -318,7 +317,7 @@ const ArticleCard = ({ blog, index, onImageClick }) => (
     transition={{ delay: index * 0.05, duration: 0.55 }}
     className="h-full group"
   >
-    <article className="theme-surface-depth relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-border/60 bg-background/70 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-accent/40">
+    <article className="content-visibility-auto theme-surface-depth relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-border/60 bg-background/70 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-accent/40">
       <button
         type="button"
         onClick={() => onImageClick(index)}
@@ -597,7 +596,7 @@ export default function Blog({ data, isHomePage = false }) {
 
   if (!data) return null;
   if (isHomePage) {
-    const qualifiedFeatured = resolveFeaturedBlogs(data, portfolioData.blogs);
+    const qualifiedFeatured = resolveFeaturedBlogs(data, data);
     const homeBlogs = (qualifiedFeatured.length > 0
       ? qualifiedFeatured
       : data.filter((blog) => !blog.publishStatus || blog.publishStatus === "published")
@@ -690,13 +689,6 @@ export default function Blog({ data, isHomePage = false }) {
 
   const displayPosts = rankBlogsByMode(filteredBlogs, activeTab);
 
-  // Diagnostic Log
-  if (typeof window !== "undefined") {
-    console.log(
-      `[Blog Component] Rendering with ${data?.length || 0} items. Data Source: ${data?.[0]?._isFromDataJs ? "Static" : "Database"}`,
-    );
-  }
-
   return (
     <div className="min-h-screen selection:bg-accent selection:text-accent-foreground">
       {/* 1. Blog Hero Introduction */}
@@ -704,10 +696,10 @@ export default function Blog({ data, isHomePage = false }) {
         totalArticles={data.length}
         totalCategories={categories.length - 1}
         latestUpdate={data[0]?.date || "Updated recently"}
-        featuredBlogs={resolveFeaturedBlogs(data, portfolioData.blogs)}
+        featuredBlogs={resolveFeaturedBlogs(data, data)}
         trendingTags={[...new Set(data.flatMap((b) => b.tags))].slice(0, 6)}
         onImageClick={(idx) => {
-          const featured = resolveFeaturedBlogs(data, portfolioData.blogs);
+          const featured = resolveFeaturedBlogs(data, data);
           setLightboxImages(featured.map((b) => b.image));
           setLightboxAlts(featured.map(getBlogImageAlt));
           setLightboxIndex(idx);

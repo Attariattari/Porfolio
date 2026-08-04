@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { SOCIAL_LINKS } from "@/lib/data";
 import {
   Linkedin,
   Github,

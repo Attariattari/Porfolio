@@ -16,13 +16,33 @@ import {
 import { toast } from "sonner";
 import SocialLinks from "./SocialLinks";
 
-import { portfolioData } from "@/lib/data";
 import usePublicSettingsStore from "@/lib/store/publicSettingsStore";
+
+// Keep the small, static footer navigation local to this client component.
+// Importing the full data catalogue here would ship every project, service,
+// and blog record to every public page.
+const footerData = {
+  navigation: [
+    { name: "Home", href: "/" },
+    { name: "About", href: "/about" },
+    { name: "Services", href: "/services" },
+    { name: "Projects", href: "/projects" },
+  ],
+  resources: [
+    { name: "Blog", href: "/blog" },
+    { name: "Resume", href: "/resume" },
+    { name: "Skills", href: "/#skills" },
+    { name: "Contact", href: "/contact" },
+  ],
+  legal: [
+    { name: "Privacy Policy", href: "/privacy" },
+    { name: "Terms of Service", href: "/terms" },
+  ],
+};
 
 export default function Footer({ data, socials = [] }) {
   const pathname = usePathname();
-  const footerData = portfolioData.siteConfig.footer;
-  const about = data || portfolioData.about;
+  const about = data || {};
   const settings = usePublicSettingsStore((state) => state.settings);
   const brandAccent = settings?.siteAccent || about.lastName || "Tech";
   const configuredTitle = settings?.siteTitle || about.firstName || "Muhyo";

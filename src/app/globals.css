@@ -1490,3 +1490,11 @@ html.not-found-active .site-main-shell {
 .skip-to-content:focus {
   transform: translateY(0);
 }
+
+/* Keep long editorial/service/project lists in the document and preserve
+   their layout, while allowing the browser to skip paint/layout work for
+   cards that are far outside the viewport. */
+.content-visibility-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 560px;
+}

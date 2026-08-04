@@ -12,6 +12,33 @@ import BreadcrumbSchema from "@/components/seo/BreadcrumbSchema";
 // Removes force-dynamic that causes every page view to hit database
 export const revalidate = 300;
 
+const toPublicBlogCard = (blog = {}) => ({
+  id: blog.id || blog._id,
+  slug: blog.slug,
+  title: blog.title,
+  summary: blog.summary,
+  image: blog.image,
+  featuredImage: blog.featuredImage
+    ? { url: blog.featuredImage.url, alt: blog.featuredImage.alt }
+    : undefined,
+  category: blog.category,
+  tags: blog.tags || [],
+  date: blog.date,
+  author: blog.author,
+  readTime: blog.readTime,
+  publishStatus: blog.publishStatus,
+  featured: blog.featured,
+  featuredOrder: blog.featuredOrder,
+  featuredScore: blog.featuredScore,
+  qualityScore: blog.qualityScore,
+  order: blog.order,
+  createdAt: blog.createdAt,
+  generatedAt: blog.generatedAt,
+  updatedAt: blog.updatedAt,
+  views: blog.views,
+  _isFromDataJs: blog._isFromDataJs,
+});
+
 export const metadata = {
   title: { absolute: "Web Development & Engineering Blog | Muhyo Tech" },
   description:
@@ -49,6 +76,11 @@ export default async function BlogPage() {
   const blogs = await BlogController.getAll(true).catch(
     () => portfolioData.blogs,
   );
+  // Keep the complete records on the server for schema generation, but send
+  // only card fields across the React server/client boundary. This preserves
+  // every visible article and interaction while removing unused AI/editorial
+  // metadata from the browser payload.
+  const publicBlogCards = blogs.map(toPublicBlogCard);
   const blogCollectionSchema = {
     "@context": "https://schema.org",
     "@type": "Blog",
@@ -90,7 +122,7 @@ export default async function BlogPage() {
         ]}
       />
       <div className="pt-0">
-        <Blog data={blogs} />
+        <Blog data={publicBlogCards} />
       </div>
     </>
   );

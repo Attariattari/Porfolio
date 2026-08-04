@@ -54,7 +54,7 @@ export const SocialController = {
                     { returnDocument: "after", upsert: true, setDefaultsOnInsert: true },
                 ).lean();
                 return initialized.links || [];
-            }, 3600, ["social-links"]);
+            }, 86400, ["social-links"]);
         } catch (error) {
             console.error("SocialController.get() error:", error);
             return [];

@@ -19,7 +19,7 @@ export const AboutController = {
                     const profile = await About.findOne({}).lean();
                     return getAboutPageData(serializeDoc(profile));
                 },
-                3600, // 1 hour cache
+                86400, // 24 hours; admin updates invalidate the tag immediately
                 ["about"]
             );
         } catch {

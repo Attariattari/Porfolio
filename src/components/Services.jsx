@@ -93,7 +93,7 @@ const ServiceRow = ({ service, index, onImageClick }) => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
       transition={{ duration: 0.8 }}
-      className="relative flex flex-col lg:flex-row items-center justify-between w-full rounded-2xl border border-border/60 bg-card/45 p-4 shadow-sm backdrop-blur-md lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none"
+      className="content-visibility-auto relative flex flex-col lg:flex-row items-center justify-between w-full rounded-2xl border border-border/60 bg-card/45 p-4 shadow-sm backdrop-blur-md lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none"
     >
       {/* Central Node for Tree */}
       <div className="hidden lg:flex absolute left-1/2 top-1/2 w-6 h-6 rounded-full bg-background border-[3px] border-accent transform -translate-x-1/2 -translate-y-1/2 items-center justify-center z-20 transition-transform duration-500 hover:scale-[1.3] cursor-pointer shadow-lg shadow-accent/40">

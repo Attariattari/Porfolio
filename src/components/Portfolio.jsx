@@ -486,7 +486,7 @@ const Portfolio = ({ projects }) => {
                       exit={{ opacity: 0, scale: 0.9 }}
                       viewport={{ once: true, margin: "-100px" }}
                       transition={{ duration: 0.7, ease: "easeOut" }}
-                      className="relative flex flex-col lg:flex-row items-center justify-between w-full rounded-2xl border border-border/60 bg-card/45 p-4 shadow-sm backdrop-blur-md lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none group"
+                      className="content-visibility-auto relative flex flex-col lg:flex-row items-center justify-between w-full rounded-2xl border border-border/60 bg-card/45 p-4 shadow-sm backdrop-blur-md lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none group"
                     >
                       {/* Interactive Connector Node */}
                       <div className="hidden lg:flex absolute left-1/2 top-1/2 w-8 h-8 rounded-xl bg-card border-2 border-accent/30 transform -translate-x-1/2 -translate-y-1/2 items-center justify-center z-20 transition-all duration-500 group-hover:rotate-45 group-hover:border-accent group-hover:scale-110 shadow-[0_0_20px_rgba(var(--accent-rgb),0.2)]">
