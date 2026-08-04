@@ -18,6 +18,19 @@ const isPublicBlog = (blog = {}) => {
     return status === "published";
 };
 
+const revalidatePublicBlogPaths = (slug) => {
+    try {
+        revalidatePath("/");
+        revalidatePath("/blog");
+        revalidatePath("/sitemap.xml");
+        if (slug) revalidatePath(`/blog/${slug}`);
+    } catch {
+        // Revalidation is unavailable when controllers run outside a Next.js
+        // request (for example, maintenance scripts). The database write must
+        // still succeed; the sitemap's five-minute ISR remains the fallback.
+    }
+};
+
 /**
  * BlogController
  * Optimized with lean queries and caching for production.
@@ -227,10 +240,7 @@ export const BlogController = {
                 // Trigger AI Featured Ranking (Failsafe handled inside)
                 await triggerFeaturedUpdate(savedBlog);
 
-                try {
-                    revalidatePath("/");
-                    revalidatePath("/blog");
-                } catch (e) {}
+                revalidatePublicBlogPaths(savedBlog.slug);
             }
 
             emitSocketEvent(SOCKET_EVENTS.NEW_BLOG, serialized);
@@ -257,13 +267,9 @@ export const BlogController = {
 
             if (!updated) return null;
 
-            if (updated.publishStatus === "published") {
-                try {
-                    revalidatePath("/");
-                    revalidatePath("/blog");
-                    revalidatePath(`/blog/${updated.slug}`);
-                } catch (e) {}
-            }
+            // Refresh discovery even when a post is unpublished: its URL must
+            // then disappear from the public listing and XML sitemap.
+            revalidatePublicBlogPaths(updated.slug);
 
             // Re-rank after every update so publishing, unpublishing, image
             // removal, and editorial score changes are reflected immediately.
@@ -289,6 +295,7 @@ export const BlogController = {
                 await updateFeaturedRankings();
                 emitSocketEvent(SOCKET_EVENTS.STATS_UPDATED);
                 await cacheManager.invalidateByTag("blogs");
+                revalidatePublicBlogPaths(deleted.slug);
             }
             return deleted;
         } catch (error) {
@@ -303,6 +310,7 @@ export const BlogController = {
             const result = await Blog.deleteMany({});
             await cacheManager.invalidateByTag("blogs");
             emitSocketEvent(SOCKET_EVENTS.STATS_UPDATED);
+            revalidatePublicBlogPaths();
             return result;
         } catch (error) {
             throw new Error(`Failed to clear blogs: ${error.message}`);

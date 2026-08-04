@@ -168,8 +168,7 @@ export const ProjectController = {
                     const mergedDbProjects = serializeDoc(dbProjects).map(mergeWithSeedCaseStudy);
 
                     // Combine and return serialized results
-                    const result = [...mergedDbProjects, ...fallbackProjects];
-                    return filterPublished ? result.filter(isCompletePublicProject) : result;
+                    return [...mergedDbProjects, ...fallbackProjects];
                 },
                 300, // 5 minute cache
                 ["projects", filterPublished ? "public:projects" : "admin:projects"]
@@ -203,7 +202,7 @@ export const ProjectController = {
 
                     if (project) {
                         const serialized = mergeWithSeedCaseStudy(serializeDoc(project));
-                        if (!isPublicProject(serialized) || !isCompletePublicProject(serialized)) {
+                        if (!isPublicProject(serialized)) {
                             return null;
                         }
                         return serialized;

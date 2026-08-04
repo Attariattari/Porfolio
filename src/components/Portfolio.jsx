@@ -36,7 +36,7 @@ const Portfolio = ({ projects }) => {
   const [selectedProject, setSelectedProject] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const featuredProjects = projects.slice(0, 3); // Changed from slice(0, 3) to use all projects
+  const featuredProjects = projects.slice(0, 3);
   const filteredProjects = useMemo(
     () =>
       activeCategory === "All"
@@ -668,8 +668,8 @@ const Portfolio = ({ projects }) => {
             {[
               {
                 label: "Completed Projects",
-                value: "50+",
-                sub: "Engineering Excellence",
+                value: projects.length.toLocaleString(),
+                sub: "Projects shown above",
               },
               { label: "Happy Clients", value: "30+", sub: "Global Trust" },
               {

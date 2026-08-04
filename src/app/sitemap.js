@@ -22,7 +22,10 @@ export default async function sitemap() {
 
     // Fetch dynamic content
     const [blogs, projects, services] = await Promise.all([
-        BlogController.getAll(true).catch(() => []),
+        // Indexability includes a minimum article word-count check, so the
+        // sitemap query must include content. Without it every database blog
+        // appears to have zero words and is incorrectly excluded.
+        BlogController.getAll(true, { includeContent: true }).catch(() => []),
         ProjectController.getAll(true).catch(() => []),
         ServiceController.getAll(true).catch(() => []),
     ]);
