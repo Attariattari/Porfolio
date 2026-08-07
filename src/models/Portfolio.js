@@ -185,10 +185,14 @@ const BlogSchema = new mongoose.Schema({
     automationSource: { type: String },
     articleType: {
         type: String,
-        enum: ["pillar", "supporting"],
+        enum: ["pillar", "supporting", "standalone_authority", "verified_trend"],
         default: "supporting",
         index: true,
     },
+    contentCategory: { type: String, default: "core_web_engineering", index: true },
+    topicFamily: { type: String, index: true },
+    isTrend: { type: Boolean, default: false, index: true },
+    trendEvidence: { type: mongoose.Schema.Types.Mixed },
     clusterKey: { type: String, index: true },
     clusterTitle: { type: String },
     clusterOrder: { type: Number, min: 0, max: 2, default: 0 },
@@ -205,6 +209,7 @@ const BlogSchema = new mongoose.Schema({
         sparse: true,
     },
     editorialCampaign: { type: String, index: true },
+    internalLinksUpdatedAt: { type: Date },
     image_prompt: { type: String },
     imagePrompt: { type: String },
     imageNegativePrompt: { type: String },
@@ -469,6 +474,13 @@ const HeroSchema = new mongoose.Schema({
 
 // 11. SITE CONFIG SCHEMA - Real-Time Settings System
 const SiteConfigSchema = new mongoose.Schema({
+    blogAutomation: {
+        enabled: { type: Boolean, default: true },
+        dailyQuantity: { type: Number, min: 1, max: 12, default: 1 },
+        intervalHours: { type: Number, min: 1, max: 168, default: 24 },
+        updatedAt: { type: Date, default: Date.now },
+        updatedBy: { type: String },
+    },
     // Brand Identity
     siteTitle: {
         type: String,

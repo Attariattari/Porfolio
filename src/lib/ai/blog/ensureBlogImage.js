@@ -12,6 +12,7 @@ import { createBlogImageUploadLink } from "@/lib/server/blogImageUploadToken";
 import { sendBlogImagePromptEmail } from "@/lib/server/email/sendBlogImagePromptEmail";
 import { triggerFeaturedUpdate } from "@/lib/ai/featuredEngine";
 import { ensureBlogImageAlt } from "@/lib/blogImageAlt";
+import { scheduleInternalLinkAudit } from "./internalLinkingEngine";
 
 function safeErrorMessage(error) {
   if (!error) return "Image generation failed.";
@@ -117,6 +118,7 @@ export async function ensureBlogImage(blogId, options = {}) {
 
       if (blog.publishStatus === "published") {
         await triggerFeaturedUpdate(blog);
+        await scheduleInternalLinkAudit(blog._id);
       }
 
       return { success: true, status: "generated", blog };

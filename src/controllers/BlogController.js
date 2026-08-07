@@ -11,7 +11,8 @@ import {
     triggerFeaturedUpdate,
 } from "@/lib/ai/featuredEngine";
 import { revalidatePath } from "next/cache";
-import { isLegacyBlogSlug } from "@/lib/blogSeo";
+import { isLegacyBlogSlug, normalizeBlogServiceLinks } from "@/lib/blogSeo";
+import { scheduleInternalLinkAudit } from "@/lib/ai/blog/internalLinkingEngine";
 
 const isPublicBlog = (blog = {}) => {
     const status = blog.publishStatus ?? blog.status ?? "published";
@@ -91,6 +92,9 @@ export const BlogController = {
                             "readTime",
                             "aiGenerated",
                             "articleType",
+                            "contentCategory",
+                            "topicFamily",
+                            "isTrend",
                             "clusterKey",
                             "clusterTitle",
                             "clusterOrder",
@@ -183,7 +187,7 @@ export const BlogController = {
                         if (!isPublicBlog(serialized)) {
                             return null;
                         }
-                        return serialized;
+                        return { ...serialized, content: normalizeBlogServiceLinks(serialized.content) };
                     }
 
                     if (fallbackBlog) {
@@ -222,6 +226,8 @@ export const BlogController = {
         try {
             await dbConnect();
 
+            if (typeof data.content === "string") data.content = normalizeBlogServiceLinks(data.content);
+
             if (data.title && !data.slug) {
                 data.slug = data.title
                     .toLowerCase()
@@ -242,6 +248,7 @@ export const BlogController = {
                 await triggerFeaturedUpdate(savedBlog);
 
                 revalidatePublicBlogPaths(savedBlog.slug);
+                await scheduleInternalLinkAudit(savedBlog._id);
             }
 
             emitSocketEvent(SOCKET_EVENTS.NEW_BLOG, serialized);
@@ -258,6 +265,7 @@ export const BlogController = {
     async update(id, data) {
         try {
             await dbConnect();
+            if (typeof data.content === "string") data.content = normalizeBlogServiceLinks(data.content);
             const updated = await Blog.findByIdAndUpdate(id, {
                 ...data,
                 updatedAt: new Date(),
@@ -278,6 +286,7 @@ export const BlogController = {
                 id: updated._id,
                 title: updated.title,
             });
+            await scheduleInternalLinkAudit(updated.publishStatus === "published" ? updated._id : null);
 
             emitSocketEvent(SOCKET_EVENTS.STATS_UPDATED);
             await cacheManager.invalidateByTag("blogs");
@@ -297,6 +306,7 @@ export const BlogController = {
                 emitSocketEvent(SOCKET_EVENTS.STATS_UPDATED);
                 await cacheManager.invalidateByTag("blogs");
                 revalidatePublicBlogPaths(deleted.slug);
+                await scheduleInternalLinkAudit(null);
             }
             return deleted;
         } catch (error) {
@@ -312,6 +322,7 @@ export const BlogController = {
             await cacheManager.invalidateByTag("blogs");
             emitSocketEvent(SOCKET_EVENTS.STATS_UPDATED);
             revalidatePublicBlogPaths();
+            await scheduleInternalLinkAudit(null);
             return result;
         } catch (error) {
             throw new Error(`Failed to clear blogs: ${error.message}`);

@@ -11,6 +11,8 @@ import {
   findNearDuplicateBlog,
   getBlogSeoDescription,
   getBlogWordCount,
+  getInvalidBlogServiceSlugs,
+  normalizeBlogServiceLinks,
 } from "./blogSeo.js";
 import {
   acquireNextTopicPlan,
@@ -19,8 +21,20 @@ import {
   releaseTopicPlan,
 } from "./ai/blog/topicQueue.js";
 import { generateAndSaveSocialKit } from "./ai/blog/generateSocialKit.js";
+import { auditTrendDraft } from "./ai/blog/trendIntelligence.js";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const CATEGORY_WRITING_GUIDANCE = Object.freeze({
+  core_web_engineering: "Prioritize production web architecture, implementation boundaries, maintainability and concrete engineering trade-offs.",
+  software_architecture: "Frame the article as a durable architecture decision: context, constraints, options, failure modes, trade-offs and a practical selection framework.",
+  saas_product_engineering: "Connect product and engineering choices without inventing commercial results. Cover validation, operational workflow, maintainability, cost/risk and staged decisions for founders and product teams.",
+  cloud_devops_reliability: "Use production-safe operational reasoning. Cover deployment, observability, rollback, failure recovery, ownership and cost trade-offs without fabricated incidents or benchmarks.",
+  ai_software_development: "Separate probabilistic model behavior from deterministic application controls. Cover validation, privacy, security, human review, fallback, observability and cost without AI hype.",
+  technical_seo_growth: "Tie every recommendation to crawlability, indexation, performance or visible user value. Never promise rankings, traffic, leads or revenue.",
+  uiux_accessibility: "Explain user tasks, interaction states, accessibility, recovery and implementation constraints. Avoid subjective design claims presented as measured outcomes.",
+  verified_trend: "Explain only the verified release, who is affected, practical implications, adoption/migration decisions and limitations supported by the supplied official evidence.",
+});
 
 const ALLOWED_RELATED_SERVICE_SLUGS = new Set([
   "custom-website-development",
@@ -442,14 +456,19 @@ async function generateEditorialContent(
     recentTopics = [],
     options = {},
 ) {
-    const articleType = options.articleType === "pillar" ? "pillar" : "supporting";
+    const articleType = ["pillar", "supporting", "standalone_authority", "verified_trend"].includes(options.articleType) ? options.articleType : "supporting";
+    const contentCategory = options.contentCategory || "core_web_engineering";
+    const officialSourceUrls = Array.isArray(options.officialSources) ? options.officialSources.map((source) => source?.url).filter(Boolean) : [];
     const isPillar = articleType === "pillar";
-    const targetWords = isPillar ? "2,000-3,500 words when the topic requires that depth" : "900-1,200 words";
-    const minimumWords = isPillar ? 1800 : 700;
-    const minimumSections = isPillar ? 8 : 5;
+    const isAuthority = isPillar || articleType === "standalone_authority" || articleType === "verified_trend";
+    const targetWords = isPillar ? "2,000-3,500 words when the topic requires that depth" : isAuthority ? "1,800-3,000 words, or more only when the subject genuinely requires it" : "900-1,200 words";
+    const minimumWords = isPillar ? 1800 : isAuthority ? 1600 : 700;
+    const minimumSections = isAuthority ? 8 : 5;
     const prompt = `
     TASK: ${previousDraft ? "REFINE and IMPROVE" : "GENERATE"} a premium, human-written ${articleType} engineering blog post for Muhyo Tech.
     ARTICLE TYPE: ${articleType.toUpperCase()}
+    PROFESSIONAL CATEGORY: ${contentCategory}
+    CATEGORY-SPECIFIC DIRECTION: ${CATEGORY_WRITING_GUIDANCE[contentCategory] || CATEGORY_WRITING_GUIDANCE.core_web_engineering}
     TOPIC: ${topic || "Realistic Technical Problem Solving"}
 
     BRAND AND WEBSITE REPRESENTATION:
@@ -465,21 +484,23 @@ async function generateEditorialContent(
     - Tone must be Senior Engineering/Founder level.
     - Content must be a complete article, not a teaser. Target ${targetWords}; completeness and reader value matter more than padding.
     - Include at least ${minimumSections} meaningful <h2> sections and multiple <p> blocks.
-    ${isPillar ? `- Start with a direct answer/quick summary, then move logically from foundations to advanced decisions.
+    ${isAuthority ? `- Start with a direct answer/quick summary, then move logically from foundations to advanced decisions.
     - Use useful <h3> subsections, a real comparison <table>, a practical checklist, explicit pros/cons, common mistakes, best practices, FAQs, and actionable final advice.
     - Cover what the topic is, why it matters, how it works, realistic examples, tradeoffs, business implications, and decision criteria without repeating the same formula under every heading.
     - Include original founder-level reasoning and honest limitations. Cite official standards or documentation naturally when factual claims require support; never fabricate sources.
-    - Make this an evergreen, backlink-worthy authority resource rather than a stretched supporting post.` : "- Keep the scope focused on the one specific question defined by the supporting topic."}
+    - Make this a complete, backlink-worthy authority resource rather than a stretched supporting post.
+    ${articleType === "verified_trend" ? `- This is a verified trend analysis. Stay inside the supplied official evidence; clearly qualify uncertainty and never invent release behavior.
+    - Cite the primary official source naturally with a single-quoted HTML link and include a short Official sources section. Required official URLs: ${officialSourceUrls.join(" | ") || "none supplied — generation must fail safely"}.` : ""}` : "- Keep the scope focused on the one specific question defined by the supporting topic."}
     - Paragraphs MUST be 2-3 sentences max. No exceptions.
     - Voice should be Muhyo Tech centric (using "we", "our team").
     - If the topic supports it, use a practical problem-solving arc: real pain, root cause, engineering decision, implementation approach, tradeoffs, business result.
     - Connect the technical lesson to Muhyo Tech's practical work: websites, web apps, AI workflows, performance, SEO, deployment, automation, or scalable digital systems.
     - Make the blog useful and attractive for both founders and developers so it can bring qualified attention to the website.
     - Include 1-2 natural lines showing how this thinking shapes Muhyo Tech's work or standards, without sounding like an ad.
-    - Mention client/business outcomes naturally: faster launches, fewer bugs, better UX, less downtime, cleaner operations, stronger SEO, or easier scaling.
+    - Discuss plausible business implications carefully, never as measured results unless the verified evidence explicitly supplies them.
     - Choose ONE clear primary search query that the article answers. Use it naturally; never repeat it mechanically.
     - Do not invent a production incident, client engagement, metric, testimonial, or result. Clearly describe hypothetical scenarios as examples.
-    - Link the topic to 1-3 genuinely relevant Muhyo Tech services using only the allowed service slugs below.
+    - Link the topic to 1-3 genuinely relevant Muhyo Tech services using canonical hrefs in the exact form /services/allowed-slug. Never link a service at /allowed-slug or invent a slug.
     - Avoid "AI-isms" and common tropes.
     - The Image Prompt must be REALISTIC and EDITORIAL (No neon, no cyberpunk).
 
@@ -498,7 +519,7 @@ async function generateEditorialContent(
       "relatedServiceSlugs": ["1 to 3 relevant slugs chosen only from: custom-website-development, mern-stack-web-development, nextjs-website-development, full-stack-web-app-development, admin-dashboard-development, e-commerce-website-development, portfolio-website-development, landing-page-design, website-redesign, api-integration, database-integration, seo-friendly-website-setup, website-speed-optimization, maintenance-support"],
       "category": "Engineering | Design | Backend | SEO | Technology | Architecture | Culture | Security | Infrastructure",
       "tags": ["tag1", "tag2", "tag3"],
-      "content": "Full HTML article body with <p>, <h2>, <h3>, <ul>/<ol>/<li>${isPillar ? ", <table>/<thead>/<tbody>/<tr>/<th>/<td>" : ""} where useful. ${targetWords}. 2-3 sentences per paragraph ONLY. Keep HTML simple and do not use attributes with double quotes.",
+      "content": "Full HTML article body with <p>, <h2>, <h3>, <ul>/<ol>/<li>${isAuthority ? ", <table>/<thead>/<tbody>/<tr>/<th>/<td>" : ""} where useful. ${targetWords}. 2-3 sentences per paragraph ONLY. Keep HTML simple and do not use attributes with double quotes.",
       "author": "Pir Ghulam Muhyo Din",
       "authorRole": "Founder",
       "readTime": "e.g. 7 min read",
@@ -510,9 +531,9 @@ async function generateEditorialContent(
     systemInstruction: EDITORIAL_GUIDELINES,
     temperature: 0.9, // High for natural sentence variation
     responseMimeType: "application/json",
-    maxOutputTokens: isPillar ? 16384 : 8192,
+    maxOutputTokens: isAuthority ? 16384 : 8192,
     thinkingBudget: 0,
-    timeoutMs: Number(isPillar ? process.env.AI_PILLAR_DRAFT_TIMEOUT_MS || 40000 : process.env.AI_DRAFT_TIMEOUT_MS || 35000),
+    timeoutMs: Number(isAuthority ? process.env.AI_PILLAR_DRAFT_TIMEOUT_MS || 40000 : process.env.AI_DRAFT_TIMEOUT_MS || 35000),
   });
 
   try {
@@ -562,10 +583,12 @@ async function generateEditorialContent(
       wordCount < minimumWords && `article has only ${wordCount} words (minimum ${minimumWords} for ${articleType})`,
       !hasHtmlBlocks && "article body is missing valid HTML blocks",
       sectionCount < minimumSections && `article has only ${sectionCount} H2 sections (minimum ${minimumSections})`,
-      isPillar && subsectionCount < 3 && `pillar has only ${subsectionCount} H3 subsections (minimum 3)`,
-      isPillar && !hasList && "pillar is missing a practical list or checklist",
+      isAuthority && subsectionCount < 3 && `authority article has only ${subsectionCount} H3 subsections (minimum 3)`,
+      isAuthority && !hasList && "authority article is missing a practical list or checklist",
       isPillar && !hasTable && "pillar is missing a useful comparison table",
-      isPillar && !hasFaq && "pillar is missing a clear FAQ section",
+      isAuthority && !hasFaq && "authority article is missing a clear FAQ section",
+      articleType === "verified_trend" && !officialSourceUrls.length && "verified trend has no official source URL",
+      articleType === "verified_trend" && officialSourceUrls.length && !officialSourceUrls.some((url) => content.includes(url)) && "verified trend does not cite its official source",
       !parsed.title && "title is missing",
       !parsed.slug && "slug is missing",
       summaryLength < 100 && `summary has only ${summaryLength} characters`,
@@ -866,11 +889,14 @@ async function reviewGeneratedImage(imageUrl, blogData, attemptCount = 1) {
  * Step 2: Internal AI Quality Review (The Critic)
  */
 async function runQualityReview(blogData, options = {}) {
-  const articleType = options.articleType === "pillar" ? "pillar" : "supporting";
+  const articleType = ["pillar", "supporting", "standalone_authority", "verified_trend"].includes(options.articleType) ? options.articleType : "supporting";
   const isPillar = articleType === "pillar";
+  const isAuthority = isPillar || articleType === "standalone_authority" || articleType === "verified_trend";
+  const contentCategory = options.contentCategory || "core_web_engineering";
   const reviewPrompt = `
     Act as a Senior Editorial Director at Muhyo Tech. 
     Review this ${articleType} blog for production-ready quality.
+    Category contract: ${CATEGORY_WRITING_GUIDANCE[contentCategory] || CATEGORY_WRITING_GUIDANCE.core_web_engineering}
 
     PASSING CRITERIA:
     - Score >= 8: Generally strong, authentic, and follows basic rules.
@@ -881,7 +907,7 @@ async function runQualityReview(blogData, options = {}) {
     - Reader Magnet: Offers a practical, specific angle that founders or developers would want to read and share.
     - Problem-Solution Value: When appropriate, connects a real technical/business pain to a practical engineering fix and a clear business outcome.
     - Visuals: Image prompt is realistic/editorial (No neon/cyberpunk).
-    ${isPillar ? `- Pillar completeness: Fully satisfies the primary search intent from direct answer through advanced decisions.
+    ${isAuthority ? `- Authority completeness: Fully satisfies the primary search intent from direct answer through advanced decisions.
     - Authority value: Includes practical examples, tradeoffs, mistakes, best practices, comparison table, checklist, FAQs, and actionable advice without filler.
     - EEAT: Uses honest engineering judgment, never fabricated incidents, metrics, clients, or citations.
     - Structure: Beginner-to-advanced flow with meaningful H2/H3 hierarchy and no repetitive section formula.
@@ -899,7 +925,7 @@ async function runQualityReview(blogData, options = {}) {
     CONTENT:
     Title: ${blogData.title}
     Summary: ${blogData.summary}
-    Content ${isPillar ? "Full Review Extract" : "Snippet"}: ${blogData.content.substring(0, isPillar ? 14000 : 2500)}
+    Content ${isAuthority ? "Full Review Extract" : "Snippet"}: ${blogData.content.substring(0, isAuthority ? 14000 : 2500)}
     Image Prompt: ${blogData.image_prompt}
 
     OUTPUT FORMAT (JSON):
@@ -989,6 +1015,20 @@ export async function runBlogAutomationPipeline(
             ...(automationContext || {}),
             topicPlanId: topicPlan._id.toString(),
             articleType: topicPlan.articleType || "supporting",
+            contentCategory: topicPlan.contentCategory || "core_web_engineering",
+            topicFamily: topicPlan.topicFamily || "",
+            isTrend: Boolean(topicPlan.isTrend),
+            trendPlan: topicPlan.isTrend ? {
+              articleType: topicPlan.articleType,
+              isTrend: true,
+              verificationScore: topicPlan.verificationScore,
+              verifiedClaims: topicPlan.verifiedClaims || [],
+              prohibitedClaims: topicPlan.prohibitedClaims || [],
+              officialSources: topicPlan.officialSources || [],
+              sourceVerifiedAt: topicPlan.sourceVerifiedAt,
+              lastReverifiedAt: topicPlan.lastReverifiedAt,
+              expiresAt: topicPlan.expiresAt,
+            } : null,
             clusterKey: topicPlan.clusterKey || "",
             clusterTitle: topicPlan.clusterTitle || topicPlan.pillar || "",
             clusterOrder: Number(topicPlan.clusterOrder || 0),
@@ -1020,7 +1060,11 @@ export async function runBlogAutomationPipeline(
       retryCount,
       previousDraft,
       recentTitles,
-      { articleType: automationContext?.articleType || "supporting" },
+      {
+        articleType: automationContext?.articleType || "supporting",
+        contentCategory: automationContext?.contentCategory || "core_web_engineering",
+        officialSources: automationContext?.trendPlan?.officialSources || [],
+      },
     );
 
     // 2. REVIEW
@@ -1029,6 +1073,7 @@ export async function runBlogAutomationPipeline(
     });
     const review = await runQualityReview(blogData, {
       articleType: automationContext?.articleType || "supporting",
+      contentCategory: automationContext?.contentCategory || "core_web_engineering",
     });
 
     console.log(`[Review] Score: ${review.score}/10 | Pass: ${review.passed}`);
@@ -1099,6 +1144,55 @@ export async function runBlogAutomationPipeline(
       }
     }
 
+    blogData.content = normalizeBlogServiceLinks(blogData.content);
+    const invalidServiceSlugs = getInvalidBlogServiceSlugs(blogData.content);
+    const outgoingBlogSlugs = [...new Set(
+      [...String(blogData.content || "").matchAll(/href=(["'])\/blog\/([^"'#?\/]+)(?:[?#][^"']*)?\1/gi)]
+        .map((match) => {
+          try { return decodeURIComponent(match[2]).toLowerCase(); } catch { return ""; }
+        }),
+    )];
+    const publishedTargets = outgoingBlogSlugs.length
+      ? await Blog.find({ slug: { $in: outgoingBlogSlugs }, publishStatus: { $in: ["published", "pending"] } }).select("slug").lean()
+      : [];
+    const publishedTargetSlugs = new Set(publishedTargets.map((target) => target.slug));
+    const invalidBlogSlugs = outgoingBlogSlugs.filter((slug) => !slug || !publishedTargetSlugs.has(slug));
+    if (invalidServiceSlugs.length || invalidBlogSlugs.length) {
+      const linkFeedback = [
+        invalidServiceSlugs.length && `invalid service slugs: ${invalidServiceSlugs.join(", ")}`,
+        invalidBlogSlugs.length && `unavailable or invalid blog slugs: ${invalidBlogSlugs.join(", ")}`,
+      ].filter(Boolean).join("; ");
+      if (retryCount < 3) {
+        return runBlogAutomationPipeline(
+          retryCount + 1,
+          onProgress,
+          { ...blogData, feedback: `Link validation failed (${linkFeedback}). Remove these links; never invent or guess a slug.` },
+          selectedTopic,
+          automationContext,
+        );
+      }
+      throw new Error(`Generated article failed strict link validation: ${linkFeedback}`);
+    }
+
+    // A verified trend receives a second independent, claim-by-claim audit
+    // after writing. Plausible outside knowledge is deliberately not enough.
+    if (automationContext?.isTrend) {
+      report("FACT_CHECKING", { message: "Checking every material trend claim against official evidence..." });
+      const factAudit = await auditTrendDraft(automationContext.trendPlan, blogData);
+      if (!factAudit.success) {
+        if (retryCount < 3) {
+          return runBlogAutomationPipeline(
+            retryCount + 1,
+            onProgress,
+            { ...blogData, feedback: `Trend fact audit failed: ${factAudit.message}. Remove every unsupported statement and use only the supplied verified claims.` },
+            selectedTopic,
+            automationContext,
+          );
+        }
+        throw new Error(`Verified trend factual audit failed: ${factAudit.message}`);
+      }
+    }
+
     // 5. SAVE
     const newBlog = new Blog({
       ...blogData,
@@ -1109,6 +1203,10 @@ export async function runBlogAutomationPipeline(
       qualityMetrics: review.metrics,
       generatedAt: new Date(),
       articleType: automationContext?.articleType || "supporting",
+      contentCategory: automationContext?.contentCategory || "core_web_engineering",
+      topicFamily: automationContext?.topicFamily || "",
+      isTrend: Boolean(automationContext?.isTrend),
+      ...(automationContext?.isTrend ? { trendEvidence: automationContext.trendPlan } : {}),
       clusterKey: automationContext?.clusterKey || "",
       clusterTitle: automationContext?.clusterTitle || "",
       clusterOrder: Number(automationContext?.clusterOrder || 0),

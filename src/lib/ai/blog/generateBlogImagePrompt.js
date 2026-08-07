@@ -53,12 +53,12 @@ function getVisualIdentity(blog = {}, recentDirections = []) {
     { length: BACKGROUND_DIRECTIONS.length },
     (_, offset) => (backgroundStart + offset) % BACKGROUND_DIRECTIONS.length,
   ).find((index) => !recentText.includes(BACKGROUND_DIRECTIONS[index].toLowerCase())) ?? backgroundStart;
-  const articleType = blog.articleType === "pillar" ? "pillar" : "supporting";
+  const articleType = blog.articleType === "pillar" ? "pillar" : ["standalone_authority", "verified_trend"].includes(blog.articleType) ? "authority" : "supporting";
   return {
     articleType,
     palette: VISUAL_PALETTES[paletteIndex],
     background: BACKGROUND_DIRECTIONS[backgroundIndex],
-    composition: articleType === "pillar"
+    composition: articleType === "pillar" || articleType === "authority"
       ? "a broad authority overview with multiple connected layers, clear hierarchy, and one central system-level focal point"
       : "a tightly focused close-up of the article's single problem, mechanism, and outcome with a distinct camera angle",
   };

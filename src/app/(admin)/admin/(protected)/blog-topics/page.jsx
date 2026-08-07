@@ -90,6 +90,28 @@ export default function EditorialPlannerPage() {
     };
   }, [load]);
   useEffect(() => {
+    const maintainReserve = async () => {
+      if (document.visibilityState !== "visible") return;
+      try {
+        const response = await fetch("/api/admin/blog-topics", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "maintain-professional-reserve" })
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || result.data?.authority?.message || result.data?.core?.message || "Topic reserve refill failed.");
+        if (Number(result.data?.generated || 0) > 0) {
+          await load();
+          toast.success(`${result.data.generated} professional topics added to the configured reserve.`);
+        }
+      } catch (error) {
+        toast.error(error.message);
+      }
+    };
+    const interval = window.setInterval(maintainReserve, 10 * 60 * 1000);
+    return () => window.clearInterval(interval);
+  }, [load]);
+  useEffect(() => {
     if (!generation.open || generation.status !== "running") return undefined;
     const timer = window.setInterval(() => setGeneration(current => ({
       ...current,
@@ -107,7 +129,7 @@ export default function EditorialPlannerPage() {
         supporting: []
       });
       const group = groups.get(groupKey);
-      if (topic.articleType === "pillar") group.pillar = topic;else group.supporting.push(topic);
+      if (["pillar", "standalone_authority", "verified_trend"].includes(topic.articleType)) group.pillar = topic;else group.supporting.push(topic);
     });
     return groups;
   }, [topics]);
@@ -206,7 +228,9 @@ export default function EditorialPlannerPage() {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          action: "rebuild-clusters"
+          action: "rebuild-professional-catalog",
+          authorityTarget: 10,
+          trendTarget: 2
         })
       });
       setGeneration(current => ({
@@ -223,10 +247,13 @@ export default function EditorialPlannerPage() {
         message: "Topics saved. Refreshing the editorial queue…"
       }));
       await load();
-      const added = result.data.ai?.topics || 0;
-      const pillarCount = result.data.ai?.pillarCount ?? result.data.ai?.clusters ?? 0;
-      const supportingCount = result.data.ai?.supportingCount ?? added - pillarCount;
-      const message = `${pillarCount} AI Pillar clusters generated, ${supportingCount} Supporting topics, ${added} total topics. Used-topic history was preserved.`;
+      const coreTopics = result.data.core?.ai?.topics || 0;
+      const pillarCount = result.data.core?.ai?.pillarCount ?? result.data.core?.ai?.clusters ?? 0;
+      const supportingCount = result.data.core?.ai?.supportingCount ?? coreTopics - pillarCount;
+      const authorityCount = result.data.authority?.generated || 0;
+      const trendCount = result.data.trends?.verified || 0;
+      const added = result.data.totalGenerated || coreTopics + authorityCount + trendCount;
+      const message = `${pillarCount} Core Pillars, ${supportingCount} Core Supporting topics, ${authorityCount} standalone authority topics and ${trendCount} verified trends generated. ${added} total plans are ready.`;
       setGeneration(current => ({
         ...current,
         status: "success",
@@ -257,7 +284,7 @@ export default function EditorialPlannerPage() {
     topicId: null
   });
   const total = Object.values(counts).reduce((sum, value) => sum + value, 0);
-  return <main className="mx-auto max-w-[1500px] space-y-6 pb-12"><section className="relative overflow-hidden rounded-[2rem] border border-border/70 bg-card p-6 shadow-sm md:p-8"><div className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-accent/15 blur-3xl" /><div className="relative flex flex-col justify-between gap-6 lg:flex-row lg:items-center"><div className="flex items-start gap-4"><Link href="/admin/blogs" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border bg-background text-muted-foreground hover:text-accent"><ArrowLeft className="h-4 w-4" /></Link><div><div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[.2em] text-accent"><Sparkles className="h-3.5 w-3.5" /> Smart editorial queue</div><h1 className="mt-2 text-3xl font-black tracking-[-.045em] text-foreground md:text-4xl">Editorial planner</h1><p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">A Pillar-first pipeline of duplicate-checked AI content clusters. Used-topic history remains preserved and Supporting topics stay linked to their published Pillar.</p></div></div><div className="flex flex-wrap gap-2"><Link href="/admin/blog-topics/new" className="inline-flex h-11 items-center gap-2 rounded-xl border border-border bg-background px-4 text-xs font-bold text-foreground hover:border-accent/30"><Plus className="h-4 w-4" /> Add manual topic</Link><button onClick={refill} disabled={refilling} className="inline-flex h-11 items-center gap-2 rounded-xl bg-accent px-5 text-xs font-bold text-accent-foreground shadow-lg shadow-accent/20 disabled:opacity-50">{refilling ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />} Generate unique topics</button></div></div></section>
+  return <main className="mx-auto max-w-[1500px] space-y-6 pb-12"><section className="relative overflow-hidden rounded-[2rem] border border-border/70 bg-card p-6 shadow-sm md:p-8"><div className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-accent/15 blur-3xl" /><div className="relative flex flex-col justify-between gap-6 lg:flex-row lg:items-center"><div className="flex items-start gap-4"><Link href="/admin/blogs" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border bg-background text-muted-foreground hover:text-accent"><ArrowLeft className="h-4 w-4" /></Link><div><div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[.2em] text-accent"><Sparkles className="h-3.5 w-3.5" /> Professional editorial intelligence</div><h1 className="mt-2 text-3xl font-black tracking-[-.045em] text-foreground md:text-4xl">Editorial planner</h1><p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">Generates protected Core Pillar clusters, standalone authority articles and only source-verified technology trends in one professional catalog.</p></div></div><div className="flex flex-wrap gap-2"><Link href="/admin/blog-topics/new" className="inline-flex h-11 items-center gap-2 rounded-xl border border-border bg-background px-4 text-xs font-bold text-foreground hover:border-accent/30"><Plus className="h-4 w-4" /> Add manual topic</Link><button onClick={refill} disabled={refilling} className="inline-flex h-11 items-center gap-2 rounded-xl bg-accent px-5 text-xs font-bold text-accent-foreground shadow-lg shadow-accent/20 disabled:opacity-50">{refilling ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />} Generate professional catalog</button></div></div></section>
     <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">{[{
         label: "Ready queue",
         value: counts.ready || 0,
@@ -296,7 +323,7 @@ export default function EditorialPlannerPage() {
             const active = generation.status === "running" && generation.stage === index;
             return <div key={label} className={`flex items-center gap-3 rounded-2xl border p-3.5 transition ${active ? "border-accent/30 bg-accent/5" : "border-border/60"}`}><span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${complete ? "bg-status-success/10 text-status-success" : active ? "bg-accent/10 text-accent" : "bg-muted text-muted-foreground"}`}>{complete ? <CheckCircle2 className="h-4 w-4" /> : active ? <Loader2 className="h-4 w-4 animate-spin" /> : <Icon className="h-4 w-4" />}</span><div className="min-w-0"><p className="text-xs font-bold text-foreground">{label}</p><p className="mt-0.5 text-[10px] text-muted-foreground">{detail}</p></div></div>;
           })}</div><div className="flex items-center justify-between border-t border-border/70 bg-muted/25 px-6 py-4"><span className="flex items-center gap-2 text-[10px] font-semibold text-muted-foreground"><Clock3 className="h-3.5 w-3.5" />{generation.elapsed}s elapsed</span>{generation.status === "running" && <span className="text-[10px] font-bold text-accent">Please keep this window open</span>}{generation.status === "success" && <span className="text-[10px] font-bold text-status-success">{generation.added} topics processed · closing automatically</span>}{generation.status === "error" && <button onClick={refill} className="inline-flex h-9 items-center gap-2 rounded-xl bg-accent px-4 text-[10px] font-bold text-accent-foreground"><RefreshCw className="h-3.5 w-3.5" />Try again</button>}</div>{generation.error && <div className="mx-6 mb-6 rounded-xl border border-status-danger/20 bg-status-danger/10 p-3 text-xs leading-5 text-status-danger"><strong className="block text-[9px] uppercase tracking-wider">Error details</strong>{generation.error}</div>}</div></div>}
-    <ConfirmDialog isOpen={confirmation.type === "rebuild"} tone="accent" title="Generate a fresh topic catalog?" message="Every unused topic will be replaced only after Gemini prepares exactly 10 duplicate-checked AI Pillar clusters with 20 linked Supporting topics. Used topic history will remain protected." confirmText="Generate topics" cancelText="Keep current topics" isDeleting={refilling} onCancel={() => setConfirmation({
+    <ConfirmDialog isOpen={confirmation.type === "rebuild"} tone="accent" title="Generate the professional topic catalog?" message="One Core AI request will prepare 6 candidates and keep the best 5 protected Pillar clusters with 10 Supporting articles. One smaller Authority request will add up to 10 duplicate-safe standalone topics, while trends are added only after official verification. Used history remains protected." confirmText="Generate full catalog" cancelText="Keep current topics" isDeleting={refilling} onCancel={() => setConfirmation({
       type: null,
       topicId: null
     })} onConfirm={executeRefill} />

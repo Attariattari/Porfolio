@@ -31,7 +31,7 @@ const ImageLightbox = dynamic(
   { ssr: false },
 );
 
-// Lazy-load FeaturedBlogSlider to avoid bundling Swiper upfront
+// Keep the interactive featured carousel in its own client-side chunk.
 const FeaturedBlogSlider = dynamic(
   () => import("./FeaturedBlogSlider"),
   { 

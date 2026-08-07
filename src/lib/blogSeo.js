@@ -57,6 +57,24 @@ const SERVICE_CATALOG = {
   },
 };
 
+export function normalizeBlogServiceLinks(content = "") {
+  const serviceSlugs = Object.keys(SERVICE_CATALOG).map((slug) => slug.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  if (!serviceSlugs.length) return String(content || "");
+  const legacyHref = new RegExp(`href=(["'])/(${serviceSlugs.join("|")})([?#][^"']*)?\\1`, "gi");
+  return String(content || "").replace(legacyHref, 'href=$1/services/$2$3$1');
+}
+
+export function getInvalidBlogServiceSlugs(content = "") {
+  const known = new Set(Object.keys(SERVICE_CATALOG));
+  return [...new Set(
+    [...String(content || "").matchAll(/href=(["'])\/services\/([^"'#?\/]+)(?:[?#][^"']*)?\1/gi)]
+      .map((match) => {
+        try { return decodeURIComponent(match[2]).toLowerCase(); } catch { return ""; }
+      })
+      .filter((slug) => !slug || !known.has(slug)),
+  )];
+}
+
 export const BLOG_LEGACY_REDIRECTS = {
   "why-we-stopped-building-our-own-authentication-systems":
     "why-we-retired-custom-auth-systems",

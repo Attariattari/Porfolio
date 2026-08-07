@@ -1,12 +1,20 @@
 {
   "crons": [
     {
+      "path": "/api/cron/topic-intelligence",
+      "schedule": "*/10 * * * *"
+    },
+    {
       "path": "/api/cron/blog-pipeline",
-      "schedule": "0 0 * * *"
+      "schedule": "0 * * * *"
     },
     {
       "path": "/api/cron/featured-rankings",
-      "schedule": "0 2 * * *"
+      "schedule": "30 2 * * *"
+    },
+    {
+      "path": "/api/cron/internal-links",
+      "schedule": "0 3 * * *"
     }
   ]
 }

@@ -17,9 +17,8 @@ export async function GET(request) {
     }
   }
 
-  // This second daily cron doubles as a safe catch-up. Vercel does not retry
-  // failed cron invocations, while the shared workflow is idempotent per UTC
-  // day and therefore cannot create a duplicate scheduled blog.
+  // This second cron doubles as a safe catch-up. The shared workflow enforces
+  // interval, UTC-day quantity and unique-slot guards before writing.
   const dailyBlog = await runDailyBlogPipeline({
     baseUrl: new URL(request.url).origin,
     source: "featured-backup",

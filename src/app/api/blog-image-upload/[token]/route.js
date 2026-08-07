@@ -16,6 +16,7 @@ import { ActivityController } from "@/controllers/ActivityController";
 import { revalidatePath } from "next/cache";
 import { triggerFeaturedUpdate } from "@/lib/ai/featuredEngine";
 import { ensureBlogImageAlt } from "@/lib/blogImageAlt";
+import { scheduleInternalLinkAudit } from "@/lib/ai/blog/internalLinkingEngine";
 
 function isSuperAdmin(session) {
   return session?.role === "super-admin" || session?.role === "root-super-admin";
@@ -125,6 +126,7 @@ export async function POST(request, { params }) {
     emitSocketEvent(SOCKET_EVENTS.BLOG_UPDATED, {
       blogId: updatedBlog._id.toString(),
     });
+    await scheduleInternalLinkAudit(updatedBlog._id);
 
     return NextResponse.json({
       success: true,

@@ -2,11 +2,13 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import { getAuthSession, checkPermission } from "@/lib/auth";
 import { BlogTopicPlan } from "@/models/BlogTopicPlan";
-import { createTopicPlan, rebuildClusterTopicCatalog, reconcileFallbackTopics, reconcileUsedTopicPlans, refillTopicQueue } from "@/lib/ai/blog/topicQueue";
+import { appendAuthorityTopics, createTopicPlan, rebuildClusterTopicCatalog, reconcileFallbackTopics, reconcileUsedTopicPlans, refillTopicQueue } from "@/lib/ai/blog/topicQueue";
+import { discoverVerifiedTrends } from "@/lib/ai/blog/trendIntelligence";
+import { maintainProfessionalTopicReserve } from "@/lib/ai/blog/maintainTopicReserve";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-export const maxDuration = 60;
+export const maxDuration = 300;
 
 async function authorize(action = "edit") {
   const session = await getAuthSession();
@@ -77,9 +79,38 @@ export async function POST(request) {
       const result = await rebuildClusterTopicCatalog({ targetClusters: 10 });
       return NextResponse.json({ success: true, data: result });
     }
+    if (body.action === "rebuild-professional-catalog") {
+      const core = await rebuildClusterTopicCatalog({ targetClusters: 5 });
+      const authority = await appendAuthorityTopics({ target: Number(body.authorityTarget) || 10 });
+      let trends;
+      try {
+        trends = await discoverVerifiedTrends({ maxTopics: Number(body.trendTarget) || 2 });
+      } catch (error) {
+        trends = { success: false, verified: 0, message: error.message };
+      }
+      return NextResponse.json({
+        success: true,
+        data: {
+          core,
+          authority,
+          trends,
+          totalGenerated: Number(core.ai?.topics || 0) + Number(authority.generated || 0) + Number(trends.verified || 0),
+        },
+      });
+    }
     if (body.action === "refill") {
       const result = await refillTopicQueue({ force: true, target: Number(body.target) || 45, threshold: 0 });
       return NextResponse.json({ success: true, data: result });
+    }
+    if (body.action === "refill-authority") {
+      return NextResponse.json({ success: true, data: await appendAuthorityTopics({ target: Number(body.target) || 21 }) });
+    }
+    if (body.action === "discover-trends") {
+      return NextResponse.json({ success: true, data: await discoverVerifiedTrends({ maxTopics: Number(body.target) || 2 }) });
+    }
+    if (body.action === "maintain-professional-reserve") {
+      const result = await maintainProfessionalTopicReserve();
+      return NextResponse.json({ success: result.success, data: result }, { status: result.success ? 200 : 500 });
     }
     const topic = await createTopicPlan(body, "manual");
     return NextResponse.json({ success: true, data: topic }, { status: 201 });
@@ -95,9 +126,12 @@ export async function PATCH(request) {
     await dbConnect();
     const { id, action, ...changes } = await request.json();
     if (!id) return NextResponse.json({ success: false, error: "Topic id is required." }, { status: 400 });
-    const allowed = ["title", "articleType", "clusterKey", "clusterTitle", "parentTopicId", "clusterOrder", "pillar", "subtopic", "problem", "solutionAngle", "businessValue", "audience", "focusKeyword", "searchIntent", "format", "relatedServiceSlugs", "priority", "scheduledFor", "notes"];
+    const allowed = ["title", "articleType", "contentCategory", "topicFamily", "clusterKey", "clusterTitle", "parentTopicId", "clusterOrder", "pillar", "subtopic", "problem", "solutionAngle", "businessValue", "audience", "focusKeyword", "searchIntent", "format", "relatedServiceSlugs", "priority", "scheduledFor", "notes", "trendPriority"];
     const update = Object.fromEntries(Object.entries(changes).filter(([key]) => allowed.includes(key)));
-    if (action === "approve") update.status = "ready";
+    if (action === "approve") {
+      const existing = await BlogTopicPlan.findById(id).select("articleType").lean();
+      update.status = existing?.articleType === "pillar" ? "planned" : "ready";
+    }
     if (action === "reject") update.status = "rejected";
     if (action === "retry") { update.status = "ready"; update.failureReason = null; }
     const topic = await BlogTopicPlan.findByIdAndUpdate(id, { $set: update }, { new: true, runValidators: true });

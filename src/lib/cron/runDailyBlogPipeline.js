@@ -5,6 +5,7 @@ import {
   finalizeBlogPipeline,
   runBlogAutomationPipeline,
 } from "@/lib/blogAutomation";
+import { getBlogAutomationSettings, getNextAutomationAt } from "@/lib/blogAutomationSettings";
 
 function getUtcDay() {
   const start = new Date();
@@ -61,9 +62,10 @@ async function sendPromptWhenRequired(blog, baseUrl) {
 }
 
 /**
- * Idempotent daily blog contract shared by the primary cron and its backup.
- * One UTC slot can create at most one scheduled blog. A later invocation can
- * safely finish or retry the prompt email without creating a duplicate post.
+ * Idempotent scheduled blog contract shared by the primary cron and backup.
+ * Each invocation creates at most one article; hourly invocations continue
+ * until the configured UTC-day limit is reached, while interval and unique
+ * slot guards prevent bursts and duplicates.
  */
 export async function runDailyBlogPipeline({
   baseUrl,
@@ -73,29 +75,41 @@ export async function runDailyBlogPipeline({
   await dbConnect();
 
   const { start, slot } = getUtcDay();
+  const settings = await getBlogAutomationSettings();
   const results = {
     slot,
     source,
+    settings,
     step1: null,
     step2: [],
   };
 
-  let dailyBlog = await Blog.findOne({
+  const automatedToday = await Blog.find({
     aiGenerated: true,
-    $or: [
-      { automationSlot: slot },
-      { createdAt: { $gte: start } },
-    ],
-  }).sort({ createdAt: 1 });
+    createdAt: { $gte: start },
+    automationSlot: { $exists: true, $ne: null },
+  }).sort({ createdAt: 1 }).select("_id automationSlot createdAt generatedAt").lean();
+  const lastAutomatedBlog = await Blog.findOne({ aiGenerated: true, automationSlot: { $exists: true, $ne: null } })
+    .sort({ createdAt: -1 })
+    .select("createdAt generatedAt")
+    .lean();
+  const nextEligibleAt = getNextAutomationAt({ settings, lastGeneratedAt: lastAutomatedBlog?.generatedAt || lastAutomatedBlog?.createdAt });
+  const due = settings.enabled && automatedToday.length < settings.dailyQuantity && nextEligibleAt <= new Date();
+  const highestSlotOrdinal = automatedToday.reduce((highest, blog) => {
+    const match = String(blog.automationSlot || "").match(new RegExp(`^${slot}-(\\d+)$`));
+    return match ? Math.max(highest, Number(match[1]) || 0) : highest;
+  }, 0);
+  const nextSlot = `${slot}-${String(highestSlotOrdinal + 1).padStart(2, "0")}`;
+  let dailyBlog = null;
 
-  if (!dailyBlog) {
+  if (due) {
     results.step1 = await runBlogAutomationPipeline(
       0,
       null,
       null,
       null,
       {
-        automationSlot: slot,
+        automationSlot: nextSlot,
         automationSource: `vercel-cron:${source}`,
       },
     );
@@ -106,8 +120,12 @@ export async function runDailyBlogPipeline({
   } else {
     results.step1 = {
       success: true,
-      blogId: dailyBlog._id,
-      message: "Daily blog slot already exists.",
+      skipped: true,
+      message: !settings.enabled
+        ? "Automatic blog generation is disabled."
+        : automatedToday.length >= settings.dailyQuantity
+          ? `Daily limit of ${settings.dailyQuantity} automated blogs is complete.`
+          : `Next automated blog is eligible after ${nextEligibleAt.toISOString()}.`,
     };
   }
 
@@ -142,11 +160,13 @@ export async function runDailyBlogPipeline({
 
   const failed =
     results.step1?.success !== true ||
-    !dailyBlog ||
     results.step2.some((step) =>
       step.success === false ||
       (step.status === "manual_required" && !step.emailSent),
     );
+  const reportedNextEligibleAt = dailyBlog
+    ? new Date(new Date(dailyBlog.generatedAt || dailyBlog.createdAt).getTime() + settings.intervalHours * 3600000)
+    : nextEligibleAt;
 
   return {
     success: !failed,
@@ -154,6 +174,13 @@ export async function runDailyBlogPipeline({
       ? "Daily blog contract is incomplete and should be retried."
       : "Daily blog and image-prompt workflow is complete.",
     dailyBlogId: dailyBlog?._id?.toString() || null,
+    schedule: {
+      enabled: settings.enabled,
+      generatedToday: automatedToday.length + (dailyBlog ? 1 : 0),
+      dailyQuantity: settings.dailyQuantity,
+      intervalHours: settings.intervalHours,
+      nextEligibleAt: reportedNextEligibleAt.toISOString(),
+    },
     results,
   };
 }

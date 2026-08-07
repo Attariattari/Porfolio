@@ -19,7 +19,8 @@ function scoreFeaturedCandidate(blog, now) {
     const content = String(blog.content || "");
     const words = wordCount(content);
     const isPillar = blog.articleType === "pillar";
-    const minimumWords = isPillar ? 1800 : 700;
+    const isAuthority = isPillar || ["standalone_authority", "verified_trend"].includes(blog.articleType);
+    const minimumWords = isPillar ? 1800 : isAuthority ? 1600 : 700;
     const quality = Number(blog.qualityScore || 0);
     const seoDescriptionLength = String(blog.seoDescription || "").trim().length;
     const summaryLength = String(blog.summary || "").trim().length;
@@ -38,9 +39,9 @@ function scoreFeaturedCandidate(blog, now) {
         ? blog.qualityStatus === "passed" && quality >= 8
         : words >= minimumWords && summaryLength >= 100;
     const depthGate = words >= minimumWords;
-    const structureGate = h2Count >= (isPillar ? 8 : 5) && (!isPillar || h3Count >= 3);
+    const structureGate = h2Count >= (isAuthority ? 8 : 5) && (!isAuthority || h3Count >= 3);
     const seoGate = Boolean(blog.seoTitle && blog.focusKeyword && seoDescriptionLength >= 120 && seoDescriptionLength <= 155);
-    const authorityGate = isPillar
+    const authorityGate = isAuthority
         ? hasList && hasTable && hasFaq && practicalSignals >= 3
         : hasList && practicalSignals >= 2;
     const eligible = qualityGate && depthGate && structureGate && seoGate && authorityGate;
@@ -49,7 +50,7 @@ function scoreFeaturedCandidate(blog, now) {
     const depthScore = Math.min(20, (words / minimumWords) * 16 + (words >= minimumWords * 1.35 ? 4 : 0));
     const structureScore = Math.min(15, h2Count * 1.4 + h3Count * 0.7 + (hasList ? 2 : 0) + (hasTable ? 1.5 : 0) + (hasFaq ? 1.5 : 0));
     const seoScore = [blog.seoTitle, blog.focusKeyword, seoDescriptionLength >= 120 && seoDescriptionLength <= 155, summaryLength >= 100, Array.isArray(blog.tags) && blog.tags.length >= 2].filter(Boolean).length * 2;
-    const authorityScore = Math.min(10, practicalSignals * 1.5 + (isPillar ? 2.5 : 1.5) + (blog.relatedServiceSlugs?.length ? 1.5 : 0));
+    const authorityScore = Math.min(10, practicalSignals * 1.5 + (isAuthority ? 2.5 : 1.5) + (blog.relatedServiceSlugs?.length ? 1.5 : 0));
     const imageScore = Math.min(10, 5 + Math.max(0, Number(blog.imageAuditScore || 0)) * 0.5);
     const freshnessScore = Math.max(0, 5 - ageDays / 30);
     const continuityScore = blog.featured ? 2 : 0;

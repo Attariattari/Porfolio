@@ -24,6 +24,7 @@ import {
   UserRound,
   UsersRound,
   Wrench,
+  Link2,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -61,6 +62,7 @@ const ICON_MAP = {
   BellRing,
   UsersRound,
   SlidersHorizontal,
+  Link2,
 };
 
 export default function AdminSidebar() {
@@ -183,6 +185,7 @@ export default function AdminSidebar() {
           "Services",
           "Blog",
           "Editorial Planner",
+          "Internal Links",
           "Skills",
           "Resume",
           "Social Links",

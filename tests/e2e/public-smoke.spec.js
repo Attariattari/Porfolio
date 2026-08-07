@@ -68,4 +68,39 @@ test.describe("Production public-page safety", () => {
       "page",
     );
   });
+
+  test("featured blog carousel preserves autoplay, controls, links, and lightbox", async ({ page }) => {
+    const errors = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    page.on("console", (message) => {
+      if (message.type() === "error") errors.push(message.text());
+    });
+
+    await page.goto("/blog", { waitUntil: "networkidle" });
+    const carousel = page.getByRole("region", { name: "Featured blog articles" });
+    await expect(carousel).toBeVisible();
+
+    const dots = carousel.getByRole("button", { name: /Show featured article/ });
+    expect(await dots.count()).toBeGreaterThan(1);
+    await expect(dots.first()).toHaveAttribute("aria-current", "true");
+
+    await expect.poll(
+      async () => dots.first().getAttribute("aria-current"),
+      { timeout: 6500 },
+    ).not.toBe("true");
+
+    await dots.first().click();
+    await expect(dots.first()).toHaveAttribute("aria-current", "true");
+    await expect(carousel.locator('[aria-hidden="false"]')).toHaveCount(1);
+
+    const readLink = carousel.getByRole("link", { name: /Read/i });
+    await expect(readLink).toHaveAttribute("href", /^\/blog\/[a-z0-9-]+$/i);
+
+    await carousel.getByRole("button", { name: /Preview image for/i }).click();
+    await expect(page.getByRole("dialog", { name: "Image gallery" })).toBeVisible();
+    await page.getByRole("button", { name: "Close image gallery" }).click();
+    await expect(page.getByRole("dialog", { name: "Image gallery" })).toBeHidden();
+
+    expect(errors).toEqual([]);
+  });
 });

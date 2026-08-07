@@ -212,7 +212,7 @@ Summary: ${cleanText(blog.summary)}
 Article type: ${blog.articleType || "supporting"}
 Category: ${blog.category || "Web Development"}
 Focus keyword: ${blog.focusKeyword || ""}
-Article extract: ${cleanText(blog.content).slice(0, blog.articleType === "pillar" ? 10000 : 6500)}
+Article extract: ${cleanText(blog.content).slice(0, ["pillar", "standalone_authority", "verified_trend"].includes(blog.articleType) ? 10000 : 6500)}
 Canonical URL: ${blogUrl(blog)}
 ${feedback ? `Editor direction: ${cleanText(feedback).slice(0, 300)}` : ""}
 

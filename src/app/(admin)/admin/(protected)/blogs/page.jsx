@@ -14,7 +14,7 @@ import ImageUploader from "@/components/admin/ImageUploader";
 import { Controller } from "react-hook-form";
 import { AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
-import { Sparkles, CheckCircle2, Mail, RefreshCcw, Copy, BookOpen, Search, Pencil, Trash2, ExternalLink, Star, Plus, Download, Share2 } from "lucide-react";
+import { Sparkles, CheckCircle2, Mail, RefreshCcw, Copy, BookOpen, Search, Pencil, Trash2, ExternalLink, Star, Plus, Download, Share2, Clock3, Save } from "lucide-react";
 import AIBlogProgress from "@/components/admin/AIBlogProgress";
 import SocialShareKitModal from "@/components/admin/SocialShareKitModal";
 import { useRouter } from "next/navigation";
@@ -55,11 +55,27 @@ export default function BlogsPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [autoGenerateImages, setAutoGenerateImages] = useState(false);
   const [blogSearch, setBlogSearch] = useState("");
+  const [automationSettings, setAutomationSettings] = useState({ enabled: true, dailyQuantity: 1, intervalHours: 24 });
+  const [automationSettingsLoading, setAutomationSettingsLoading] = useState(true);
+  const [automationSettingsSaving, setAutomationSettingsSaving] = useState(false);
 
   // Sync entries on mount
   useEffect(() => {
     fetchBlogs();
   }, [fetchBlogs]);
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/admin/blog-automation-settings", { cache: "no-store" })
+      .then(async (response) => {
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || "Automation settings could not be loaded.");
+        if (active) setAutomationSettings(result.data);
+      })
+      .catch((error) => toast.error(error.message))
+      .finally(() => { if (active) setAutomationSettingsLoading(false); });
+    return () => { active = false; };
+  }, []);
 
   // Socket.IO provides the immediate update. While an emailed image is still
   // pending, this small polling fallback keeps Vercel/serverless deployments in
@@ -433,6 +449,25 @@ export default function BlogsPage() {
     router.push("/admin/blogs/new");
   };
 
+  const saveAutomationSettings = async () => {
+    setAutomationSettingsSaving(true);
+    try {
+      const response = await fetch("/api/admin/blog-automation-settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(automationSettings),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Automation settings could not be saved.");
+      setAutomationSettings(result.data);
+      toast.success(`Automation set to ${result.data.dailyQuantity} blog${result.data.dailyQuantity === 1 ? "" : "s"} per day, at least ${result.data.intervalHours} hour${result.data.intervalHours === 1 ? "" : "s"} apart.`);
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setAutomationSettingsSaving(false);
+    }
+  };
+
   const handleExport = () => {
     if (!blogs.length) {
       toast.error("There are no blogs to export.");
@@ -667,6 +702,8 @@ export default function BlogsPage() {
               : "Generate AI blog"}
           </button>
         </div></div></header>
+
+      <section className="rounded-[24px] border border-white/[0.08] bg-[#0d1727] p-5 sm:p-6"><div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between"><div><div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.2em] text-violet-300"><Clock3 className="size-4" />AI publishing schedule</div><h2 className="mt-2 text-lg font-semibold text-white">Automated blog frequency</h2><p className="mt-1 max-w-2xl text-xs leading-5 text-slate-500">The scheduler writes one safe article per eligible run until the daily quantity is complete. Topic Intelligence keeps a seven-day queue reserve based on this demand.</p></div><div className="grid gap-3 sm:grid-cols-[140px_160px_auto_auto] sm:items-end"><label><span className="mb-2 block text-[10px] font-semibold text-slate-400">Blogs per day</span><input type="number" min="1" max="12" step="1" disabled={automationSettingsLoading || automationSettingsSaving} value={automationSettings.dailyQuantity} onChange={(event) => setAutomationSettings((current) => ({ ...current, dailyQuantity: Number(event.target.value) }))} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-white outline-none focus:border-violet-400/40" /></label><label><span className="mb-2 block text-[10px] font-semibold text-slate-400">Interval hours</span><input type="number" min="1" max="168" step="1" disabled={automationSettingsLoading || automationSettingsSaving} value={automationSettings.intervalHours} onChange={(event) => setAutomationSettings((current) => ({ ...current, intervalHours: Number(event.target.value) }))} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-white outline-none focus:border-violet-400/40" /></label><label className="flex h-11 cursor-pointer items-center gap-2 rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-xs text-slate-300"><input type="checkbox" checked={automationSettings.enabled} disabled={automationSettingsLoading || automationSettingsSaving} onChange={(event) => setAutomationSettings((current) => ({ ...current, enabled: event.target.checked }))} className="size-4 accent-violet-400" />Enabled</label><button type="button" onClick={saveAutomationSettings} disabled={automationSettingsLoading || automationSettingsSaving} className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-violet-400 px-4 text-xs font-bold text-slate-950 transition hover:bg-violet-300 disabled:opacity-50"><Save className="size-4" />{automationSettingsSaving ? "Saving..." : "Save schedule"}</button></div></div></section>
 
       <div className="grid overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0d1727] sm:grid-cols-4"><BlogMetric label="Total articles" value={blogs.length} /><BlogMetric label="Published" value={blogs.filter((item) => item.publishStatus === "published").length} /><BlogMetric label="Drafts" value={blogs.filter((item) => item.publishStatus === "draft").length} /><BlogMetric label="AI generated" value={blogs.filter((item) => item.aiGenerated).length} last /></div>
 

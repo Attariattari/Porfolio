@@ -2,7 +2,12 @@ import mongoose from "mongoose";
 
 const BlogTopicPlanSchema = new mongoose.Schema({
   title: { type: String, required: true, trim: true },
-  articleType: { type: String, enum: ["pillar", "supporting"], default: "supporting", index: true },
+  articleType: { type: String, enum: ["pillar", "supporting", "standalone_authority", "verified_trend"], default: "supporting", index: true },
+  contentCategory: { type: String, trim: true, default: "core_web_engineering", index: true },
+  topicFamily: { type: String, trim: true, index: true },
+  primaryTechnology: { type: String, trim: true, index: true },
+  cooldownUntil: { type: Date, default: null, index: true },
+  cooldownReason: { type: String, trim: true },
   clusterKey: { type: String, trim: true, index: true },
   clusterTitle: { type: String, trim: true },
   parentTopicId: { type: mongoose.Schema.Types.ObjectId, ref: "BlogTopicPlan", default: null, index: true },
@@ -21,6 +26,36 @@ const BlogTopicPlanSchema = new mongoose.Schema({
   source: { type: String, enum: ["ai", "manual", "fallback"], default: "ai", index: true },
   status: { type: String, enum: ["planned", "reserve", "ready", "processing", "used", "rejected", "failed"], default: "ready", index: true },
   priority: { type: Number, min: 0, max: 100, default: 50, index: true },
+  professionalScore: { type: Number, min: 0, max: 100, default: 0, index: true },
+  scoreBreakdown: { type: mongoose.Schema.Types.Mixed, default: {} },
+  selectionReason: { type: String, trim: true },
+  isTrend: { type: Boolean, default: false, index: true },
+  trendPriority: { type: String, enum: ["normal", "high", "critical"], default: "normal", index: true },
+  trendStatus: {
+    type: String,
+    enum: ["not_applicable", "discovered", "verification_pending", "source_verified", "verified_waiting", "reverification_pending", "verification_blocked", "fact_checking", "fact_check_failed", "verified"],
+    default: "not_applicable",
+    index: true,
+  },
+  officialSources: [{
+    name: String,
+    url: String,
+    domain: String,
+    sourceType: String,
+    title: String,
+    publishedAt: Date,
+    retrievedAt: Date,
+    excerpt: String,
+    fingerprint: String,
+  }],
+  verifiedClaims: [{ type: String }],
+  prohibitedClaims: [{ type: String }],
+  verificationScore: { type: Number, min: 0, max: 100, default: 0 },
+  verificationReason: String,
+  sourceVerifiedAt: Date,
+  lastReverifiedAt: Date,
+  expiresAt: { type: Date, index: true },
+  preemptRequestedAt: Date,
   scheduledFor: { type: Date, default: null, index: true },
   notes: { type: String, trim: true },
   retryCount: { type: Number, default: 0 },
@@ -32,5 +67,7 @@ const BlogTopicPlanSchema = new mongoose.Schema({
 
 BlogTopicPlanSchema.index({ status: 1, scheduledFor: 1, priority: -1, createdAt: 1 });
 BlogTopicPlanSchema.index({ clusterKey: 1, articleType: 1, clusterOrder: 1 });
+BlogTopicPlanSchema.index({ isTrend: 1, trendStatus: 1, trendPriority: 1, priority: -1 });
+BlogTopicPlanSchema.index({ status: 1, articleType: 1, cooldownUntil: 1, priority: -1 });
 
 export const BlogTopicPlan = mongoose.models.BlogTopicPlan || mongoose.model("BlogTopicPlan", BlogTopicPlanSchema);

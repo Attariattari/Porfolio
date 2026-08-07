@@ -28,6 +28,7 @@ export const ADMIN_NAVIGATION_LINKS = [
   { name: "Skills", href: "/admin/skills", icon: "Braces" },
   { name: "Blog", href: "/admin/blogs", icon: "Newspaper" },
   { name: "Editorial Planner", href: "/admin/blog-topics", icon: "ListChecks" },
+  { name: "Internal Links", href: "/admin/internal-links", icon: "Link2" },
   { name: "Resume", href: "/admin/resume", icon: "IdCard" },
   { name: "Subscribers", href: "/admin/subscribers", icon: "MailCheck" },
   { name: "Social Links", href: "/admin/social-links", icon: "Share2" },
