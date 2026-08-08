@@ -71,7 +71,6 @@ const VisitorTrackerComponent = () => {
       });
     };
 
-    // PHASE 4: Count clicks without triggering re-renders
     const handleInteraction = () => {
       interactionsRef.current++;
     };
