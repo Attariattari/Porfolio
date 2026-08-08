@@ -1,14 +1,12 @@
 import { Inter } from "next/font/google";
 import "@/app/globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import ScrollToTop from "@/components/ScrollToTop";
 import DeferredToaster from "@/components/DeferredToaster";
 import { OrganizationSchema } from "@/components/schema/OrganizationSchema";
 import { SITE_URL } from "@/lib/config";
 import { getSeoImage } from "@/lib/seo";
-import DeferredGoogleAnalytics from "@/components/DeferredGoogleAnalytics";
+import PublicAnalytics from "@/components/PublicAnalytics";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -100,19 +98,14 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className={inter.className} suppressHydrationWarning>
-        {googleAnalyticsId && (
-          <DeferredGoogleAnalytics measurementId={googleAnalyticsId} />
-        )}
+        <PublicAnalytics
+          enableVercelAnalytics={enableVercelAnalytics}
+          googleAnalyticsId={googleAnalyticsId}
+        />
         <ThemeProvider>
           <ScrollToTop />
           {children}
           <DeferredToaster />
-          {enableVercelAnalytics && (
-            <>
-              <Analytics />
-              <SpeedInsights />
-            </>
-          )}
         </ThemeProvider>
       </body>
     </html>
