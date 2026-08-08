@@ -38,6 +38,50 @@ const revalidatePublicBlogPaths = (slug) => {
  * Optimized with lean queries and caching for production.
  */
 export const BlogController = {
+    async getPublicPage({ offset = 0, limit = 15, category = "", search = "" } = {}) {
+        const safeOffset = Math.max(0, Math.trunc(Number(offset) || 0));
+        const safeLimit = Math.min(30, Math.max(1, Math.trunc(Number(limit) || 15)));
+        try {
+            await dbConnect();
+            const query = {
+                $or: [
+                    { publishStatus: "published" },
+                    { status: "published" },
+                    { publishStatus: { $exists: false }, status: { $exists: false } },
+                ],
+            };
+            if (category && category !== "All") query.category = category;
+            if (search) {
+                const escaped = String(search).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+                query.$and = [{ $or: [{ title: { $regex: escaped, $options: "i" } }, { summary: { $regex: escaped, $options: "i" } }] }];
+            }
+            const projection = "title slug summary image featuredImage category tags date createdAt updatedAt generatedAt featured featuredOrder featuredScore qualityScore order publishStatus author readTime views";
+            const [rows, total, categories] = await Promise.all([
+                Blog.find(query).select(projection).sort({ featured: -1, featuredOrder: 1, createdAt: -1, order: 1 }).skip(safeOffset).limit(safeLimit + 1).lean(),
+                Blog.countDocuments(query),
+                Blog.distinct("category", { $or: query.$or }),
+            ]);
+            const serialized = serializeDoc(rows).filter((blog) => !isLegacyBlogSlug(blog.slug));
+            return {
+                items: serialized.slice(0, safeLimit),
+                hasMore: safeOffset + safeLimit < total && serialized.length > safeLimit,
+                total,
+                categories: categories.filter(Boolean).sort(),
+            };
+        } catch (error) {
+            const fallback = portfolioData.blogs.filter((blog) => isPublicBlog(blog) && !isLegacyBlogSlug(blog.slug));
+            const filtered = fallback.filter((blog) =>
+                (!category || category === "All" || blog.category === category) &&
+                (!search || `${blog.title || ""} ${blog.summary || ""}`.toLowerCase().includes(String(search).toLowerCase())),
+            );
+            return {
+                items: filtered.slice(safeOffset, safeOffset + safeLimit),
+                hasMore: safeOffset + safeLimit < filtered.length,
+                total: filtered.length,
+                categories: [...new Set(fallback.map((blog) => blog.category).filter(Boolean))].sort(),
+            };
+        }
+    },
     // 1. Get All Blogs - Optimized with lean() and field selection for list pages
     async getAll(filterPublished = false, options = {}) {
         const includeContent = options.includeContent === true;

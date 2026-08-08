@@ -12,12 +12,25 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const includeContent = searchParams.get("includeContent") === "true";
+    const paginated = searchParams.has("offset") || searchParams.has("limit") || searchParams.has("category") || searchParams.has("search");
 
     if (includeContent) {
       const session = await getAuthSession();
       if (!checkPermission(session, "blogs", "edit")) {
         return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
       }
+    }
+
+    if (!includeContent && paginated) {
+      const page = await BlogController.getPublicPage({
+        offset: searchParams.get("offset"),
+        limit: searchParams.get("limit"),
+        category: searchParams.get("category") || "",
+        search: searchParams.get("search") || "",
+      });
+      const response = NextResponse.json({ success: true, ...page, data: page.items });
+      response.headers.set("Cache-Control", "public, s-maxage=300, stale-while-revalidate=900");
+      return response;
     }
 
     const blogs = await BlogController.getAll(false, { includeContent });

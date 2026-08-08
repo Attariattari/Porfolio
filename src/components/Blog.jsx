@@ -615,7 +615,10 @@ const NewsletterCTA = () => {
 
 // --- MAIN PAGE ---
 
-export default function Blog({ data, isHomePage = false }) {
+export default function Blog({ data, isHomePage = false, initialHasMore = false, initialTotal = 0, initialCategories = [] }) {
+  const [loadedBlogs, setLoadedBlogs] = useState(data || []);
+  const [hasMoreBlogs, setHasMoreBlogs] = useState(initialHasMore);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
   const [activeTab, setActiveTab] = useState("latest");
@@ -624,9 +627,42 @@ export default function Blog({ data, isHomePage = false }) {
   const [lightboxAlts, setLightboxAlts] = useState([]);
 
   const categories = useMemo(
-    () => ["All", ...new Set(data?.map((b) => b.category) || [])],
-    [data],
+    () => ["All", ...new Set([...(initialCategories || []), ...(data?.map((b) => b.category) || [])])],
+    [data, initialCategories],
   );
+
+  useEffect(() => {
+    if (isHomePage) return undefined;
+    if (!searchQuery && activeCategory === "All") {
+      setLoadedBlogs(data || []);
+      setHasMoreBlogs(initialHasMore);
+      return undefined;
+    }
+    const controller = new AbortController();
+    setIsLoadingMore(true);
+    const params = new URLSearchParams({ offset: "0", limit: "15" });
+    if (searchQuery) params.set("search", searchQuery);
+    if (activeCategory !== "All") params.set("category", activeCategory);
+    fetch(`/api/blogs?${params}`, { signal: controller.signal, cache: "no-store" })
+      .then((response) => response.json())
+      .then((result) => { if (result.success) { setLoadedBlogs(result.data || []); setHasMoreBlogs(Boolean(result.hasMore)); } })
+      .catch((error) => { if (error.name !== "AbortError") console.error("Blog page loading failed", error); })
+      .finally(() => setIsLoadingMore(false));
+    return () => controller.abort();
+  }, [activeCategory, isHomePage, searchQuery]);
+
+  const loadMoreBlogs = async () => {
+    if (isLoadingMore || !hasMoreBlogs) return;
+    setIsLoadingMore(true);
+    const params = new URLSearchParams({ offset: String(loadedBlogs.length), limit: "15" });
+    if (searchQuery) params.set("search", searchQuery);
+    if (activeCategory !== "All") params.set("category", activeCategory);
+    try {
+      const response = await fetch(`/api/blogs?${params}`, { cache: "no-store" });
+      const result = await response.json();
+      if (result.success) { setLoadedBlogs((current) => [...current, ...(result.data || [])]); setHasMoreBlogs(Boolean(result.hasMore)); }
+    } finally { setIsLoadingMore(false); }
+  };
 
   if (!data) return null;
   if (isHomePage) {
@@ -709,7 +745,7 @@ export default function Blog({ data, isHomePage = false }) {
     );
   }
 
-  const filteredBlogs = data.filter((blog) => {
+  const filteredBlogs = loadedBlogs.filter((blog) => {
     // Only published blogs
     if (blog.publishStatus && blog.publishStatus !== "published") return false;
 
@@ -727,7 +763,7 @@ export default function Blog({ data, isHomePage = false }) {
     <div className="min-h-screen selection:bg-accent selection:text-accent-foreground">
       {/* 1. Blog Hero Introduction */}
       <EditorialHeader
-        totalArticles={data.length}
+        totalArticles={initialTotal || loadedBlogs.length}
         totalCategories={categories.length - 1}
         latestUpdate={data[0]?.date || "Updated recently"}
         featuredBlogs={resolveFeaturedBlogs(data, data)}
@@ -801,6 +837,13 @@ export default function Blog({ data, isHomePage = false }) {
               </motion.div>
             )}
           </AnimatePresence>
+          {hasMoreBlogs && (
+            <div className="mt-14 flex justify-center">
+              <Button onClick={loadMoreBlogs} disabled={isLoadingMore}>
+                {isLoadingMore ? "Loading articles..." : "Load more articles"}
+              </Button>
+            </div>
+          )}
         </div>
       </section>
 
