@@ -2,6 +2,9 @@
     "name": "muhyo-tech",
     "version": "0.1.0",
     "private": true,
+    "engines": {
+        "node": ">=20.9.0 <25"
+    },
     "scripts": {
         "dev": "next dev --webpack",
         "build": "next build --webpack",
