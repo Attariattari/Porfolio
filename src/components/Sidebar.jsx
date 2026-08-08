@@ -4,13 +4,13 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import {
-  Home,
-  User,
-  Cpu,
-  Code2,
-  FileText,
-  Mail,
-  FileUser,
+  House,
+  UserRound,
+  BriefcaseBusiness,
+  Layers3,
+  Newspaper,
+  FileBadge2,
+  Send,
   ChevronLeft,
   ChevronRight,
   Sparkles,
@@ -24,13 +24,13 @@ import { portfolioData } from "@/lib/data";
 import { useTheme } from "@/components/ThemeProvider";
 
 const IconMap = {
-  Home,
-  About: User,
-  Services: Cpu,
-  Projects: Code2,
-  Blogs: FileText,
-  Resume: FileUser,
-  Contact: Mail,
+  Home: House,
+  About: UserRound,
+  Services: BriefcaseBusiness,
+  Projects: Layers3,
+  Blogs: Newspaper,
+  Resume: FileBadge2,
+  Contact: Send,
 };
 
 const resolveIcon = (name, icon) => {
@@ -38,13 +38,13 @@ const resolveIcon = (name, icon) => {
 };
 
 const navLinks = [
-  { name: "Home", href: "/", icon: "Home" },
-  { name: "About", href: "/about", icon: "User" },
-  { name: "Services", href: "/services", icon: "Cpu" },
-  { name: "Projects", href: "/projects", icon: "Code2" },
-  { name: "Blogs", href: "/blog", icon: "FileText" },
-  { name: "Resume", href: "/resume", icon: "FileUser" },
-  { name: "Contact", href: "/contact", icon: "Mail" },
+  { name: "Home", href: "/", icon: "House" },
+  { name: "About", href: "/about", icon: "UserRound" },
+  { name: "Services", href: "/services", icon: "BriefcaseBusiness" },
+  { name: "Projects", href: "/projects", icon: "Layers3" },
+  { name: "Blogs", href: "/blog", icon: "Newspaper" },
+  { name: "Resume", href: "/resume", icon: "FileBadge2" },
+  { name: "Contact", href: "/contact", icon: "Send" },
 ];
 
 const SIDEBAR_STORAGE_KEY = "muhyo:sidebar-collapsed";
