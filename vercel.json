@@ -2,11 +2,11 @@
   "crons": [
     {
       "path": "/api/cron/topic-intelligence",
-      "schedule": "*/10 * * * *"
+      "schedule": "0 0 * * *"
     },
     {
       "path": "/api/cron/blog-pipeline",
-      "schedule": "0 * * * *"
+      "schedule": "0 1 * * *"
     },
     {
       "path": "/api/cron/featured-rankings",
