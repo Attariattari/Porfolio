@@ -640,7 +640,7 @@ export default function Blog({ data, isHomePage = false, initialHasMore = false,
     }
     const controller = new AbortController();
     setIsLoadingMore(true);
-    const params = new URLSearchParams({ offset: "0", limit: "15" });
+    const params = new URLSearchParams({ offset: "0", limit: "12" });
     if (searchQuery) params.set("search", searchQuery);
     if (activeCategory !== "All") params.set("category", activeCategory);
     fetch(`/api/blogs?${params}`, { signal: controller.signal, cache: "no-store" })
@@ -654,7 +654,7 @@ export default function Blog({ data, isHomePage = false, initialHasMore = false,
   const loadMoreBlogs = async () => {
     if (isLoadingMore || !hasMoreBlogs) return;
     setIsLoadingMore(true);
-    const params = new URLSearchParams({ offset: String(loadedBlogs.length), limit: "15" });
+    const params = new URLSearchParams({ offset: String(loadedBlogs.length), limit: "12" });
     if (searchQuery) params.set("search", searchQuery);
     if (activeCategory !== "All") params.set("category", activeCategory);
     try {

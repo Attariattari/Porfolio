@@ -40,7 +40,7 @@ const revalidatePublicBlogPaths = (slug) => {
 export const BlogController = {
     async getPublicPage({ offset = 0, limit = 15, category = "", search = "" } = {}) {
         const safeOffset = Math.max(0, Math.trunc(Number(offset) || 0));
-        const safeLimit = Math.min(30, Math.max(1, Math.trunc(Number(limit) || 15)));
+        const safeLimit = Math.min(30, Math.max(1, Math.trunc(Number(limit) || 12)));
         try {
             await dbConnect();
             const query = {

@@ -73,7 +73,7 @@ export const metadata = {
 export default async function BlogPage() {
   // Get merged blogs: MongoDB + data.js fallback items
   // Note: BlogController.getAll(true) already handles serialization and merging
-  const initialPage = await BlogController.getPublicPage({ limit: 15 });
+  const initialPage = await BlogController.getPublicPage({ limit: 12 });
   const blogs = initialPage.items;
   // Keep the complete records on the server for schema generation, but send
   // only card fields across the React server/client boundary. This preserves
