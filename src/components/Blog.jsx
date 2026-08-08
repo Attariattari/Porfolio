@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   User,
@@ -214,7 +214,41 @@ const ControlHub = ({
   activeCategory,
   setActiveCategory,
 }) => {
+  const categoryScrollerRef = useRef(null);
+  const dragStateRef = useRef({ active: false, startX: 0, startScrollLeft: 0, moved: false });
+
+  const handleCategoryPointerDown = (event) => {
+    const scroller = categoryScrollerRef.current;
+    if (!scroller) return;
+    dragStateRef.current = {
+      active: true,
+      startX: event.clientX,
+      startScrollLeft: scroller.scrollLeft,
+      moved: false,
+    };
+    scroller.setPointerCapture?.(event.pointerId);
+  };
+
+  const handleCategoryPointerMove = (event) => {
+    const scroller = categoryScrollerRef.current;
+    const drag = dragStateRef.current;
+    if (!scroller || !drag.active) return;
+    const delta = event.clientX - drag.startX;
+    if (Math.abs(delta) > 4) drag.moved = true;
+    if (drag.moved) scroller.scrollLeft = drag.startScrollLeft - delta;
+  };
+
+  const handleCategoryPointerUp = (event) => {
+    const scroller = categoryScrollerRef.current;
+    if (scroller?.hasPointerCapture?.(event.pointerId)) scroller.releasePointerCapture(event.pointerId);
+    dragStateRef.current.active = false;
+  };
+
   const handleCategoryClick = (category) => {
+    if (dragStateRef.current.moved) {
+      dragStateRef.current.moved = false;
+      return;
+    }
     setActiveCategory(category);
   };
 
@@ -222,7 +256,7 @@ const ControlHub = ({
     <div className="max-w-7xl mx-auto px-6 mb-16">
       <div className="flex flex-col lg:flex-row items-center justify-between gap-10 bg-card/30 border border-border/50 p-3 rounded-[2.5rem]">
         {/* Category Navigation */}
-        <div className="relative w-full lg:flex-1 min-w-0 rounded-[1.8rem] overflow-x-auto scrollbar-hide">
+        <div ref={categoryScrollerRef} onPointerDown={handleCategoryPointerDown} onPointerMove={handleCategoryPointerMove} onPointerUp={handleCategoryPointerUp} onPointerCancel={handleCategoryPointerUp} className="relative w-full lg:flex-1 min-w-0 rounded-[1.8rem] overflow-x-auto scrollbar-hide cursor-grab active:cursor-grabbing touch-pan-y select-none">
           <div className="flex w-max min-w-full gap-1 py-1">
             {categories.map((category) => (
               <button
