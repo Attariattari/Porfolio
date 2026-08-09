@@ -24,10 +24,7 @@ export async function getBlogAutomationSettings() {
 }
 
 export function getNextAutomationAt({ settings, lastGeneratedAt = null } = {}) {
-  const updatedAt = settings?.updatedAt ? new Date(settings.updatedAt) : null;
   const generatedAt = lastGeneratedAt ? new Date(lastGeneratedAt) : null;
-  const anchors = [updatedAt, generatedAt].filter((date) => Number.isFinite(date?.getTime()));
-  if (!anchors.length) return new Date(0);
-  const anchor = new Date(Math.max(...anchors.map((date) => date.getTime())));
-  return new Date(anchor.getTime() + Number(settings.intervalHours || 24) * 3600000);
+  if (!Number.isFinite(generatedAt?.getTime())) return new Date(0);
+  return new Date(generatedAt.getTime() + Number(settings?.intervalHours || 24) * 3600000);
 }
