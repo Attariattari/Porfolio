@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Search, User, LogOut, ExternalLink, Settings, X, Check, Trash2, ShieldCheck, Mail, Cpu, UserCheck, MessageSquare, Loader2, Menu } from "lucide-react";
+import { Bell, Search, User, LogOut, ExternalLink, Settings, X, Check, Trash2, ShieldCheck, Mail, Cpu, UserCheck, MessageSquare, Loader2, Menu, Sun, Moon } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -10,7 +10,7 @@ import { formatDistanceToNow } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { formatName } from "@/lib/utils";
-
+import { useTheme } from "@/components/ThemeProvider";
 export default function Topbar() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [session, setSession] = useState(null);
@@ -21,6 +21,11 @@ export default function Topbar() {
     deleteNotification,
     toggleSidebar,
   } = useAdminStore();
+  const { theme, setTheme } = useTheme();
+  const toggleTheme = () => {
+    const nextTheme = theme === "light" ? "dark" : "light";
+    setTheme(nextTheme, { persistPreference: true });
+  };
   const dropdownRef = useRef(null);
   const displayName = session?.name
     ? formatName(session.name)
@@ -140,12 +145,23 @@ export default function Topbar() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={handleSearchSubmit}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleSearchSubmit}
           />
         </div>
       </div>
 
       <div className="flex items-center gap-2 md:gap-4">
         <div className="hidden sm:flex items-center gap-2 mr-4 border-r border-border/70 pr-4">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="p-2.5 hover:bg-muted/60 rounded-xl text-muted-foreground hover:text-foreground transition-all flex items-center justify-center"
+            title={theme === "light" ? "Switch to Dark Mode" : "Switch to Light Mode"}
+          >
+            {theme === "light" ? <Moon className="w-5 h-5 text-indigo-400" /> : <Sun className="w-5 h-5 text-amber-400" />}
+          </button>
           <Link
             href="/"
             target="_blank"

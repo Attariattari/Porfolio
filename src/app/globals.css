@@ -1255,7 +1255,33 @@ body.modal-open nav.md\:hidden {
     transition: all 0.3s ease-in-out;
 }
 
-/* Premium admin workspace -------------------------------------------------- */
+/* Scoped Admin Workspace Themes (Safely isolated to Admin ONLY) */
+:is(.dark, .black, html.dark, html.black) .admin-theme-scope {
+    --background: #090e1a;
+    --card: #0d1526;
+    --border: rgba(255, 255, 255, 0.09);
+    --muted: #141f36;
+    --muted-foreground: #94a3b8;
+    --foreground: #f8fafc;
+    --popover: #0d1526;
+    --popover-foreground: #f8fafc;
+    --accent: #38bdf8;
+    --accent-rgb: 56, 189, 248;
+}
+
+:is(.light, html:not(.dark):not(.black)) .admin-theme-scope {
+    --background: #f8fafc;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --muted: #f1f5f9;
+    --muted-foreground: #475569;
+    --foreground: #0f172a;
+    --popover: #ffffff;
+    --popover-foreground: #0f172a;
+    --accent: #2563eb;
+    --accent-rgb: 37, 99, 235;
+}
+
 .admin-app-shell {
     position: relative;
     isolation: isolate;
