@@ -25,6 +25,7 @@ import {
   UsersRound,
   Wrench,
   Link2,
+  Wand2,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -55,6 +56,7 @@ const ICON_MAP = {
   FolderKanban,
   Braces,
   Newspaper,
+  Wand2,
   ListChecks,
   IdCard,
   MailCheck,
@@ -184,6 +186,7 @@ export default function AdminSidebar() {
           "Projects",
           "Services",
           "Blog",
+          "AI Blog Optimizer",
           "Editorial Planner",
           "Internal Links",
           "Skills",
@@ -232,6 +235,21 @@ export default function AdminSidebar() {
         transition={{ type: "spring", damping: 20, stiffness: 150 }}
         className="admin-sidebar-shell fixed left-0 top-0 z-[70] flex h-full flex-col border-r border-border/60 bg-background shadow-2xl"
       >
+        {/* Desktop Collapse / Expand Toggle Button */}
+        {!isMobile && (
+          <button
+            onClick={toggleSidebarCollapse}
+            title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+            className="hidden lg:flex absolute -right-3.5 top-6 z-[80] h-7 w-7 items-center justify-center rounded-full border border-border/80 bg-background text-muted-foreground shadow-lg hover:bg-accent hover:text-accent-foreground hover:scale-110 transition-all"
+          >
+            {isCollapsed ? (
+              <ChevronRight className="h-4 w-4" />
+            ) : (
+              <ChevronLeft className="h-4 w-4" />
+            )}
+          </button>
+        )}
+
         {/* Inner Wrapper for content transition safety */}
         <div className="flex-1 flex flex-col w-full h-full overflow-hidden relative">
           {/* Branding */}
@@ -277,29 +295,46 @@ export default function AdminSidebar() {
             {sidebarSections.map((section, idx) => (
               <div key={idx} className="space-y-2">
                 {!isCollapsed && (
-                  <h3 className="px-4 text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4">
+                  <h3 className="px-3 text-[10px] font-bold tracking-widest text-muted-foreground/60 uppercase">
                     {section.label}
                   </h3>
                 )}
-                {isCollapsed && <div className="h-px bg-border mx-4 my-4" />}
-
                 <div className="space-y-1">
                   {section.links.map((link) => {
-                    const IconComponent = ICON_MAP[link.icon] || FileText;
-                    const isActive =
-                      pathname === link.href || pathname.startsWith(`${link.href}/`);
+                    const IconComponent = ICON_MAP[link.icon] || Newspaper;
+                    const isActive = pathname === link.href;
 
                     return (
-                      <SidebarItem
-                        key={link.name}
+                      <Link
+                        key={link.href}
                         href={link.href}
-                        icon={IconComponent}
-                        label={link.name}
-                        active={isActive}
-                        collapsed={isCollapsed}
-                        badge={link.badge}
-                        badgeColor={link.badgeColor}
-                      />
+                        title={isCollapsed ? link.name : undefined}
+                        className={`group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold transition-all duration-200 ${
+                          isActive
+                            ? "bg-accent/15 text-accent font-bold shadow-sm"
+                            : "text-muted-foreground hover:bg-accent/5 hover:text-foreground"
+                        } ${isCollapsed ? "justify-center px-0" : ""}`}
+                      >
+                        <IconComponent
+                          className={`h-4 w-4 shrink-0 transition-transform duration-200 group-hover:scale-110 ${
+                            isActive ? "text-accent" : "text-muted-foreground"
+                          }`}
+                        />
+                        {!isCollapsed && (
+                          <span className="truncate">{link.name}</span>
+                        )}
+
+                        {/* Badges */}
+                        {link.badge && (
+                          <span
+                            className={`ml-auto flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[10px] font-bold text-white ${
+                              link.badgeColor || "bg-accent"
+                            } ${isCollapsed ? "absolute top-1 right-1 h-3 min-w-3 px-0 text-[8px]" : ""}`}
+                          >
+                            {link.badge}
+                          </span>
+                        )}
+                      </Link>
                     );
                   })}
                 </div>
@@ -307,151 +342,38 @@ export default function AdminSidebar() {
             ))}
           </nav>
 
-          {/* User Profile & Logout */}
-          <div className="admin-sidebar-footer p-4 border-t border-border/60 space-y-4 shrink-0 bg-card/35">
-            <div
-              className={`flex items-center gap-3 ${isCollapsed ? "justify-center" : "px-2"}`}
-            >
-              <div
-                className="h-10 w-10 shrink-0 rounded-xl bg-accent p-0.5 shadow-lg shadow-accent/20"
-              >
-                <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-[9px] bg-background">
-                  {session?.avatar ? (
-                    <Image
-                      src={session.avatar}
-                      alt={`Muhyo Tech administrator ${displayName}`}
-                      width={36}
-                      height={36}
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <User className="h-5 w-5 text-accent" />
-                  )}
+          {/* User Profile & Logout Footer */}
+          <div className="shrink-0 border-t border-border/60 bg-muted/20 p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 overflow-hidden">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/20 text-accent font-bold text-xs border border-accent/30">
+                  {displayName.charAt(0).toUpperCase()}
                 </div>
+                {!isCollapsed && (
+                  <div className="flex flex-col overflow-hidden">
+                    <span className="text-xs font-bold text-foreground truncate">
+                      {displayName}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground capitalize truncate">
+                      {session?.role || "Admin"}
+                    </span>
+                  </div>
+                )}
               </div>
-              {!isCollapsed && (
-                <div className="flex flex-col min-w-0">
-                  <span className="text-xs font-bold text-foreground truncate">
-                    {displayName}
-                    {isSuperAdmin && <span className="text-accent"> (Super Admin)</span>}
-                  </span>
-                  <span className="truncate text-[10px] font-medium text-muted-foreground">
-                    {session?.email || "Synchronizing..."}
-                  </span>
-                </div>
-              )}
+
               {!isCollapsed && (
                 <button
                   onClick={handleLogout}
-                  className="ml-auto p-2 text-muted-foreground hover:text-red-500 transition-colors bg-muted/50 rounded-lg border border-border/60 hover:border-red-500/30"
                   title="Logout"
+                  className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-xl transition-colors"
                 >
-                  <LogOut className="w-4 h-4" />
+                  <LogOut className="h-4 w-4" />
                 </button>
               )}
             </div>
-
-            {isCollapsed && (
-              <button
-                onClick={handleLogout}
-                className="w-full p-2 text-muted-foreground hover:text-red-400 transition-colors flex justify-center"
-                title="Logout"
-              >
-                <LogOut className="w-5 h-5" />
-              </button>
-            )}
           </div>
         </div>
-
-        {/* Collapse Toggle Button (Desktop) - PLACED OUTSIDE OVERFLOW HIDDEN CONTAINER */}
-        {!isMobile && (
-          <button
-            type="button"
-            onClick={toggleSidebarCollapse}
-            aria-label={sidebarCollapsed ? "Expand admin sidebar" : "Collapse admin sidebar"}
-            aria-expanded={!sidebarCollapsed}
-            className="absolute -right-3 top-24 w-6 h-6 bg-accent rounded-full flex items-center justify-center text-accent-foreground shadow-lg z-[80] hover:scale-110 transition-transform active:scale-95 border border-border"
-          >
-            {sidebarCollapsed ? (
-              <ChevronRight size={14} />
-            ) : (
-              <ChevronLeft size={14} />
-            )}
-          </button>
-        )}
       </motion.div>
     </>
-  );
-}
-
-function SidebarItem({
-  href,
-  icon: Icon,
-  label,
-  active,
-  collapsed,
-  badge,
-  badgeColor,
-}) {
-  return (
-    <Link
-      href={href}
-      className={`group relative flex items-center h-12 rounded-xl transition-all duration-300 ${
-        active
-          ? "bg-accent/10 text-accent"
-          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-      }`}
-    >
-      {/* Active Indicator Line */}
-      {active && (
-        <motion.div
-          layoutId="sidebar-active-pill"
-          className="absolute left-0 h-6 w-1 rounded-r-full bg-accent"
-        />
-      )}
-
-      <div
-        className={`flex items-center w-full px-4 gap-4 ${collapsed ? "justify-center px-0" : ""}`}
-      >
-        <div
-          className={`relative transition-transform duration-300 group-hover:scale-110 ${active ? "text-accent" : "group-hover:text-accent"}`}
-        >
-          <Icon size={collapsed ? 22 : 20} strokeWidth={active ? 2.5 : 2} />
-
-          {/* Badge for Collapsed View */}
-          {collapsed && badge && (
-            <span
-              className={`absolute -right-1 -top-1 h-2 w-2 rounded-full ${badgeColor || "bg-accent"} border border-background`}
-            />
-          )}
-        </div>
-
-        {!collapsed && (
-          <span
-            className={`text-[13px] font-semibold tracking-wide transition-all ${active ? "text-foreground" : ""}`}
-          >
-            {label}
-          </span>
-        )}
-
-        {!collapsed && badge && (
-          <motion.span
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-bold text-foreground shadow-sm ${badgeColor || "bg-accent"}`}
-          >
-            {badge}
-          </motion.span>
-        )}
-      </div>
-
-      {/* Tooltip for Collapsed view */}
-      {collapsed && (
-        <div className="invisible pointer-events-none absolute left-full z-[100] ml-3 translate-x-3 whitespace-nowrap rounded-lg bg-popover px-3 py-2 text-[11px] font-bold text-popover-foreground opacity-0 shadow-xl ring-1 ring-border transition-all group-hover:visible group-hover:translate-x-0 group-hover:opacity-100">
-          {label}
-          <div className="absolute -left-1 top-1/2 h-2 w-2 -translate-y-1/2 rotate-45 border-b border-l border-border bg-popover" />
-        </div>
-      )}
-    </Link>
   );
 }

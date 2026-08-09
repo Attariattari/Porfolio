@@ -27,6 +27,7 @@ export const ADMIN_NAVIGATION_LINKS = [
   { name: "Projects", href: "/admin/projects", icon: "FolderKanban" },
   { name: "Skills", href: "/admin/skills", icon: "Braces" },
   { name: "Blog", href: "/admin/blogs", icon: "Newspaper" },
+  { name: "AI Blog Optimizer", href: "/admin/blog-optimizer", icon: "Wand2" },
   { name: "Editorial Planner", href: "/admin/blog-topics", icon: "ListChecks" },
   { name: "Internal Links", href: "/admin/internal-links", icon: "Link2" },
   { name: "Resume", href: "/admin/resume", icon: "IdCard" },
@@ -46,6 +47,7 @@ export const ADMIN_NAVIGATION_LINKS = [
     role: "super-admin",
   },
 ];
+
 export const SERVICE_OPTIONS = [
   { value: "web-development", label: "Web Development" },
   { value: "ui-ux-design", label: "UI/UX Design" },

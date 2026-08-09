@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect } from "react";
 import useModalScrollLock from "@/hooks/useModalScrollLock";
+import useAdminStore from "@/lib/store/adminStore";
 
 export default function FormModal({
   isOpen,
@@ -14,9 +15,11 @@ export default function FormModal({
   schema,
   defaultValues,
   onSubmit,
-  fields
+  fields,
 }) {
+  const { sidebarCollapsed } = useAdminStore();
   useModalScrollLock(isOpen);
+
   const {
     register,
     handleSubmit,
@@ -24,10 +27,10 @@ export default function FormModal({
     control,
     watch,
     setValue,
-    formState: { errors, isSubmitting }
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(schema),
-    defaultValues: defaultValues || {}
+    defaultValues: defaultValues || {},
   });
 
   useEffect(() => {
@@ -39,7 +42,11 @@ export default function FormModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-6 overflow-y-auto">
+    <div
+      className={`fixed inset-y-0 right-0 z-50 transition-[left] duration-300 flex items-center justify-center p-6 overflow-y-auto left-0 ${
+        sidebarCollapsed ? "lg:left-20" : "lg:left-72"
+      }`}
+    >
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -58,98 +65,93 @@ export default function FormModal({
         <div className="absolute -top-32 -right-32 w-64 h-64 bg-accent/10 rounded-full blur-[100px] pointer-events-none" />
 
         <div className="flex justify-between items-center mb-6 md:mb-10 border-b border-border pb-6 md:pb-8 relative z-10">
-          <div>
-            <h2 className="text-xl md:text-3xl font-black text-foreground italic uppercase tracking-tighter flex items-center gap-3 md:gap-4 leading-tight">
-              <LayoutTemplate className="w-6 h-6 md:w-8 md:h-8 text-accent" />
-              {title}
-            </h2>
-            <p className="text-[10px] md:text-sm text-muted-foreground mt-2 font-medium">Please fill in the required fields to save changes.</p>
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-accent/10 rounded-2xl text-accent border border-accent/20">
+              <LayoutTemplate className="w-6 h-6" />
+            </div>
+            <div>
+              <h2 className="text-xl md:text-2xl font-black text-foreground tracking-tight">
+                {title}
+              </h2>
+              <p className="text-xs text-muted-foreground font-medium mt-1">
+                Fill in the details below to update records.
+              </p>
+            </div>
           </div>
           <button
-            type="button"
             onClick={onClose}
-            className="p-2 md:p-3 rounded-xl md:rounded-2xl hover:bg-muted text-muted-foreground hover:text-foreground transition-all border border-border hover:border-accent/30"
+            className="p-3 rounded-2xl hover:bg-muted/60 text-muted-foreground hover:text-foreground transition-all duration-200"
           >
-            <X className="w-5 h-5 md:w-6 md:h-6" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 md:space-y-8 relative z-10 overflow-y-auto max-h-[60vh] md:max-h-[70vh] pr-2 md:pr-4 custom-scrollbar">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 md:gap-x-10 gap-y-6 md:gap-y-8">
-            {fields.map((field, index) => (
-              <div key={field.name} className={`${field.fullWidth ? 'md:col-span-2' : ''} flex flex-col gap-2`}>
-                {field.section && fields[index - 1]?.section !== field.section && (
-                  <div className="mb-2 mt-2 border-b border-white/[0.07] pb-4 md:col-span-2">
-                    <p className="text-[9px] font-bold uppercase tracking-[.2em] text-accent/70">Service editor</p>
-                    <h3 className="mt-1 text-sm font-semibold text-foreground">{field.section}</h3>
-                  </div>
-                )}
-                <label className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-accent/80 pl-2">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {fields.map((field) => (
+              <div
+                key={field.name}
+                className={field.fullWidth ? "col-span-full" : ""}
+              >
+                <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
                   {field.label}
-                  {field.required && <span className="text-red-500 ml-1 pb-1 transform scale-150 inline-block">*</span>}
+                  {field.required && <span className="text-destructive ml-1">*</span>}
                 </label>
-
-                {field.type === 'textarea' ? (
+                {field.type === "textarea" ? (
                   <textarea
                     {...register(field.name)}
+                    rows={field.rows || 4}
                     placeholder={field.placeholder}
-                    className="w-full h-32 p-4 md:p-5 bg-background/60 border border-input rounded-xl md:rounded-2xl text-xs md:text-sm text-foreground focus:outline-none focus:ring-4 focus:ring-ring/10 focus:border-accent/40 transition-all font-medium resize-none placeholder:text-muted-foreground/50 focus:bg-background"
+                    className="w-full px-4 py-3 bg-muted/30 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-accent text-sm transition-all"
                   />
-                ) : field.type === 'select' ? (
+                ) : field.type === "select" ? (
                   <select
                     {...register(field.name)}
-                    className="w-full p-4 md:p-5 bg-background/60 border border-input rounded-xl md:rounded-2xl text-xs md:text-sm text-foreground focus:outline-none focus:ring-4 focus:ring-ring/10 focus:border-accent/40 transition-all font-medium appearance-none cursor-pointer focus:bg-background"
+                    className="w-full px-4 py-3 bg-muted/30 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-accent text-sm transition-all"
                   >
-                    <option value="" className="bg-background">Select {field.label}</option>
-                    {field.options?.map(opt => (
-                      <option key={opt.value} value={opt.value} className="bg-background">
-                          {opt.label}
+                    {field.options.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
                       </option>
                     ))}
                   </select>
-                ) : field.type === 'custom' ? (
-                  field.render({ register, errors, control, setValue, watch })
                 ) : (
                   <input
-                    type={field.type || 'text'}
+                    type={field.type || "text"}
                     {...register(field.name)}
                     placeholder={field.placeholder}
-                    className="w-full p-4 md:p-5 bg-background/60 border border-input rounded-xl md:rounded-2xl text-xs md:text-sm text-foreground focus:outline-none focus:ring-4 focus:ring-ring/10 focus:border-accent/40 transition-all font-medium placeholder:text-muted-foreground/50 focus:bg-background"
+                    className="w-full px-4 py-3 bg-muted/30 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-accent text-sm transition-all"
                   />
                 )}
-
                 {errors[field.name] && (
-                  <p className="text-[9px] md:text-[10px] text-destructive font-bold uppercase tracking-wider pl-4 pt-1 opacity-90 italic">
-                      &times; {errors[field.name].message}
+                  <p className="text-xs text-destructive mt-1 font-semibold">
+                    {errors[field.name]?.message}
                   </p>
                 )}
               </div>
             ))}
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 pt-6 md:pt-10 mt-6 md:mt-10 border-t border-border">
+          <div className="flex justify-end gap-3 pt-6 border-t border-border mt-8">
             <button
               type="button"
-              onClick={() => reset()}
-              className="px-6 md:px-8 py-4 md:py-5 rounded-xl md:rounded-2xl border border-border hover:bg-muted font-black uppercase text-[10px] md:text-xs tracking-[0.2em] text-muted-foreground transition-all flex items-center justify-center gap-3 active:scale-95 group"
+              onClick={onClose}
+              className="px-6 py-3 rounded-xl border border-border text-sm font-semibold text-muted-foreground hover:bg-muted hover:text-foreground transition-all"
             >
-              <RefreshCcw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-700" />
-              Reset Form
+              Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 py-4 md:py-5 rounded-xl md:rounded-2xl bg-accent text-accent-foreground font-black uppercase text-[10px] md:text-xs tracking-[0.2em] hover:bg-accent/90 transition-all shadow-xl shadow-accent/20 flex items-center justify-center gap-3 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed group"
+              className="px-6 py-3 rounded-xl bg-accent text-accent-foreground font-semibold text-sm hover:opacity-90 shadow-lg shadow-accent/20 flex items-center gap-2 transition-all disabled:opacity-50"
             >
               {isSubmitting ? (
-                 <>
-                  <div className="w-4 h-4 border-2 border-accent-foreground/30 border-t-accent-foreground rounded-full animate-spin" />
-                  Processing...
-                 </>
+                <>
+                  <RefreshCcw className="w-4 h-4 animate-spin" /> Saving...
+                </>
               ) : (
                 <>
-                  <Save className="w-4 h-4 md:w-5 md:h-5 group-hover:scale-110 transition-all" />
-                  Publish Changes
+                  <Save className="w-4 h-4" /> Save Changes
                 </>
               )}
             </button>

@@ -22,6 +22,7 @@ import {
 } from "./ai/blog/topicQueue.js";
 import { generateAndSaveSocialKit } from "./ai/blog/generateSocialKit.js";
 import { auditTrendDraft } from "./ai/blog/trendIntelligence.js";
+import { auditAndFixBlogContent } from "./ai/blog/blogAuditEngine.js";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -1292,123 +1293,6 @@ export async function runBlogAutomationPipeline(
  * - Tracks image quality scores and audit results
  * - Uses narrative analysis for blog-specific images
  */
-export async function finalizeBlogPipeline(
-  blogId,
-  options = {},
-  onProgress = null,
-) {
-  const report = (status, details = {}) => {
-    if (onProgress) onProgress({ status, details });
-    console.log(`[Pipeline-Step2] ${status}:`, details.message || "");
-  };
-
-  try {
-    await dbConnect();
-    const blog = await Blog.findById(blogId);
-    if (!blog) throw new Error("Blog not found");
-
-    if (options.generateImage === false) {
-      report("SKIPPING_IMAGE", {
-        message: "AI image generation is off. Preparing secure upload email...",
-      });
-      const ensured = await ensureBlogImage(blogId, {
-        skipGeneration: true,
-        baseUrl: options.baseUrl,
-      });
-
-      report("MANUAL_IMAGE_REQUIRED", {
-        message: ensured.emailSent
-          ? "Secure upload email sent to Super Admin."
-          : "Manual upload is required, but email could not be sent.",
-        emailSent: !!ensured.emailSent,
-        uploadLinkId: ensured.uploadLinkId,
-      });
-
-      return ensured;
-    }
-
-    const ensured = await ensureBlogImage(blogId, {
-      maxImageRetries: 1,
-      providerTimeoutMs: 12000,
-      baseUrl: options.baseUrl,
-    });
-    report(
-      ensured.status === "generated" ? "IMAGE_COMPLETED" : "MANUAL_IMAGE_REQUIRED",
-      {
-        message:
-          ensured.status === "generated"
-            ? "AI image generated and attached to the blog."
-            : ensured.emailSent
-              ? "AI image failed. Secure upload email sent to Super Admin."
-              : "AI image failed. Manual upload is required, but email could not be sent.",
-        emailSent: !!ensured.emailSent,
-        uploadLinkId: ensured.uploadLinkId,
-      },
-    );
-
-    return ensured;
-
-  } catch (error) {
-    console.error("[Pipeline] Pipeline error:", error.message);
-    console.log("[Pipeline] Updating blog with failure state...");
-
-    try {
-      await Blog.findByIdAndUpdate(blogId, {
-        imageGenerated: false,
-        imageStatus: "failed",
-        imageError: error.message,
-        $inc: { imageRetryCount: 1 },
-      });
-    } catch (dbError) {
-      console.error("[Pipeline] Failed to update blog error state:", dbError);
-    }
-
-    report("ERROR", { message: error.message });
-    return { success: false, error: error.message };
-  }
-}
-
-async function generateAndUploadGeminiImage(prompt) {
-  try {
-    console.log(
-      "[Image] Attempting professional AI generation via Pollinations...",
-    );
-
-    // Clean prompt - Very simple to avoid 402
-    const cleanPrompt = encodeURIComponent(
-      prompt.split(".")[0].substring(0, 80).trim(),
-    );
-    const seed = Math.floor(Math.random() * 10000);
-
-    // Attempt 1: Simple Pollinations (No complex models to avoid 402)
-    const aiUrl = `https://image.pollinations.ai/prompt/${cleanPrompt}?nologo=true&seed=${seed}`;
-
-    let response = await fetch(aiUrl);
-
-    // Fallback to LoremFlicker (Professional Stock Search) if Pollinations fails
-    if (!response.ok) {
-      console.log(
-        "[Image] AI Model restricted (402). Switching to Professional Stock Library...",
-      );
-      const searchTags = "technology,coding,minimalist,engineering,startup";
-      const stockUrl = `https://loremflickr.com/g/1200/800/${searchTags}/all`;
-      response = await fetch(stockUrl);
-    }
-
-    if (!response.ok) throw new Error("All image sources failed.");
-
-    const imageBlob = await response.blob();
-    return await uploadBlobToCloudinary(imageBlob, "blog_header.png");
-  } catch (e) {
-    console.error("[Image] Visual sourcing failed:", e.message);
-    // Absolute safety fallback
-    return "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80";
-  }
-}
-
-/**
- * Placeholder for legacy compatibility - now handled by generateAndUploadGeminiImage
- */
 async function callGeminiImageREST(apiKey, model, prompt) {
   return await generateAndUploadGeminiImage(prompt);
 }
@@ -1455,6 +1339,118 @@ async function uploadBlobToCloudinary(blob, filename = "image.png") {
 
   console.log("[Pipeline] Cloudinary blob-upload succeeded.");
   return data.secure_url;
+}
+
+export async function finalizeBlogPipeline(
+  blogId,
+  options = {},
+  onProgress = null,
+) {
+  const report = (status, details = {}) => {
+    if (onProgress) onProgress({ status, details });
+    console.log(`[Pipeline-Step2] ${status}:`, details.message || "");
+  };
+
+  try {
+    await dbConnect();
+    const blog = await Blog.findById(blogId);
+    if (!blog) throw new Error("Blog not found");
+
+    if (options.generateImage === false) {
+      report("SKIPPING_IMAGE", {
+        message: "AI image generation is off. Preparing secure upload email...",
+      });
+      const ensured = await ensureBlogImage(blogId, {
+        skipGeneration: true,
+        baseUrl: options.baseUrl,
+      });
+
+      report("MANUAL_IMAGE_REQUIRED", {
+        message: ensured.emailSent
+          ? "Secure upload email sent to Super Admin."
+          : "Manual upload is required, but email could not be sent.",
+        emailSent: !!ensured.emailSent,
+        uploadLinkId: ensured.uploadLinkId,
+      });
+      return ensured;
+    }
+
+    const ensured = await ensureBlogImage(blogId, {
+      maxImageRetries: 1,
+      providerTimeoutMs: 12000,
+      baseUrl: options.baseUrl,
+    });
+    report(
+      ensured.status === "generated" ? "IMAGE_COMPLETED" : "MANUAL_IMAGE_REQUIRED",
+      {
+        message:
+          ensured.status === "generated"
+            ? "AI image generated and attached to the blog."
+            : ensured.emailSent
+              ? "AI image failed. Secure upload email sent to Super Admin."
+              : "AI image failed. Manual upload is required, but email could not be sent.",
+        emailSent: !!ensured.emailSent,
+        uploadLinkId: ensured.uploadLinkId,
+      },
+    );
+
+    // Auto-proofread blog before publishing
+    try {
+      report("PROOFREADING", { message: "Running AI Grammar, Syntax & SEO Auto-Fixer..." });
+      const auditResult = await auditAndFixBlogContent({
+        title: blog.title,
+        summary: blog.summary || "",
+        content: blog.content || "",
+        seoTitle: blog.seoTitle || blog.title,
+        seoDescription: blog.seoDescription || blog.summary || "",
+        focusKeyword: blog.focusKeyword || "",
+        contentCategory: blog.contentCategory || "core_web_engineering",
+      });
+
+      if (auditResult.success) {
+        blog.auditBackup = {
+          title: blog.title,
+          summary: blog.summary,
+          content: blog.content,
+          seoTitle: blog.seoTitle,
+          seoDescription: blog.seoDescription,
+          auditedAt: new Date(),
+        };
+        blog.title = auditResult.optimized.title;
+        blog.summary = auditResult.optimized.summary;
+        blog.content = auditResult.optimized.content;
+        blog.seoTitle = auditResult.optimized.seoTitle;
+        blog.seoDescription = auditResult.optimized.seoDescription;
+        blog.auditStatus = "optimized";
+        blog.auditMetrics = auditResult.metrics;
+        blog.auditedAt = new Date();
+        await blog.save();
+        report("PROOFREADING_COMPLETED", { message: `Proofread complete. Fixed ${auditResult.metrics.errorsFixedCount} errors.` });
+      }
+    } catch (auditErr) {
+      console.warn("[Pipeline] Proofreading step warning:", auditErr.message);
+    }
+
+    return ensured;
+
+  } catch (error) {
+    console.error("[Pipeline] Pipeline error:", error.message);
+    console.log("[Pipeline] Updating blog with failure state...");
+
+    try {
+      await Blog.findByIdAndUpdate(blogId, {
+        imageGenerated: false,
+        imageStatus: "failed",
+        imageError: error.message,
+        $inc: { imageRetryCount: 1 },
+      });
+    } catch (dbError) {
+      console.error("[Pipeline] Failed to update blog error state:", dbError);
+    }
+
+    report("ERROR", { message: error.message });
+    return { success: false, error: error.message };
+  }
 }
 
 export async function runFullBlogPipeline(onProgress) {

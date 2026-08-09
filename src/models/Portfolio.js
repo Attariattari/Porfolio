@@ -248,6 +248,29 @@ const BlogSchema = new mongoose.Schema({
         seo: { type: Number, default: 0 },
         humanTone: { type: Number, default: 0 },
     },
+    auditStatus: {
+        type: String,
+        enum: ["pending", "optimized", "needs_review", "reverted"],
+        default: "pending",
+        index: true,
+    },
+    auditBackup: {
+        title: { type: String },
+        summary: { type: String },
+        content: { type: String },
+        seoTitle: { type: String },
+        seoDescription: { type: String },
+        auditedAt: { type: Date },
+    },
+    auditMetrics: {
+        originalScore: { type: Number, default: 0 },
+        optimizedScore: { type: Number, default: 0 },
+        errorsFixedCount: { type: Number, default: 0 },
+        keywordsAdded: [{ type: String }],
+        spellingFixes: [{ type: String }],
+        syntaxFixes: [{ type: String }],
+    },
+    auditedAt: { type: Date },
     socialKit: {
         status: {
             type: String,
