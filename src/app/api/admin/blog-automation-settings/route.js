@@ -16,6 +16,15 @@ import { Blog } from "@/models/Portfolio";
 import { getNextAutomationAt } from "@/lib/blogAutomationSettings";
 
 async function enrichWithScheduleTimes(settings) {
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+
+  const automatedToday = await Blog.find({
+    aiGenerated: true,
+    createdAt: { $gte: startOfDay },
+    automationSlot: { $exists: true, $ne: null },
+  }).select("_id").lean();
+
   const lastAutomatedBlog = await Blog.findOne({ aiGenerated: true, automationSlot: { $exists: true, $ne: null } })
     .sort({ createdAt: -1 })
     .select("createdAt generatedAt")
@@ -24,6 +33,7 @@ async function enrichWithScheduleTimes(settings) {
   const nextEligibleAt = getNextAutomationAt({ settings, lastGeneratedAt });
   return {
     ...settings,
+    generatedTodayCount: automatedToday.length,
     lastGeneratedAt: lastGeneratedAt ? new Date(lastGeneratedAt).toISOString() : null,
     nextEligibleAt: nextEligibleAt ? nextEligibleAt.toISOString() : null,
   };

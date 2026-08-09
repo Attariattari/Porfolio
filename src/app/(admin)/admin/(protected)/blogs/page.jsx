@@ -857,49 +857,40 @@ export default function BlogsPage() {
       />
     </div>
   );
-}
-
-function BlogPublishCountdown({ settings }) {
-  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0, targetTimeMs: 0 });
+}function BlogPublishCountdown({ settings }) {
+  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0, isDue: false, isQuotaComplete: false });
 
   useEffect(() => {
     if (settings?.enabled === false) {
-      setTimeLeft({ hours: 0, minutes: 0, seconds: 0, targetTimeMs: 0 });
+      setTimeLeft({ hours: 0, minutes: 0, seconds: 0, isDue: false, isQuotaComplete: false });
       return;
     }
 
-    const intervalHours = Number(settings?.intervalHours || 24);
     const dailyQuantity = Math.max(1, Number(settings?.dailyQuantity || 1));
-    const intervalPerBlogMs = (intervalHours / dailyQuantity) * 3600_000;
+    const generatedTodayCount = Number(settings?.generatedTodayCount || 0);
 
     const updateTimer = () => {
       const now = Date.now();
-      let targetTime = settings?.nextEligibleAt ? new Date(settings.nextEligibleAt).getTime() : 0;
+      const targetTime = settings?.nextEligibleAt ? new Date(settings.nextEligibleAt).getTime() : 0;
+      const isQuotaComplete = generatedTodayCount >= dailyQuantity;
+      const diff = targetTime - now;
 
-      if (!targetTime || isNaN(targetTime)) {
-        const anchor = settings?.lastGeneratedAt ? new Date(settings.lastGeneratedAt).getTime() : (settings?.updatedAt ? new Date(settings.updatedAt).getTime() : now);
-        targetTime = anchor + intervalPerBlogMs;
+      if (isQuotaComplete) {
+        setTimeLeft({ hours: 0, minutes: 0, seconds: 0, isDue: false, isQuotaComplete: true });
+      } else if (targetTime > 0 && diff <= 0) {
+        setTimeLeft({ hours: 0, minutes: 0, seconds: 0, isDue: true, isQuotaComplete: false });
+      } else {
+        const hours = Math.floor(Math.max(0, diff) / (1000 * 60 * 60));
+        const minutes = Math.floor((Math.max(0, diff) % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((Math.max(0, diff) % (1000 * 60)) / 1000);
+        setTimeLeft({ hours, minutes, seconds, isDue: false, isQuotaComplete: false });
       }
-
-      // If the scheduled time is in the past, project forward to the next upcoming slot
-      if (targetTime <= now) {
-        const elapsedSinceTarget = now - targetTime;
-        const slotsPassed = Math.floor(elapsedSinceTarget / intervalPerBlogMs) + 1;
-        targetTime = targetTime + (slotsPassed * intervalPerBlogMs);
-      }
-
-      const diff = Math.max(0, targetTime - now);
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-      setTimeLeft({ hours, minutes, seconds, targetTimeMs: targetTime });
     };
 
     updateTimer();
     const interval = setInterval(updateTimer, 1000);
     return () => clearInterval(interval);
-  }, [settings?.nextEligibleAt, settings?.lastGeneratedAt, settings?.updatedAt, settings?.intervalHours, settings?.dailyQuantity, settings?.enabled]);
+  }, [settings?.nextEligibleAt, settings?.dailyQuantity, settings?.generatedTodayCount, settings?.enabled]);
 
   if (settings?.enabled === false) {
     return (
@@ -915,8 +906,8 @@ function BlogPublishCountdown({ settings }) {
     );
   }
 
-  const targetDateFormatted = timeLeft.targetTimeMs
-    ? format(new Date(timeLeft.targetTimeMs), "h:mm:ss a (MMM d, yyyy)")
+  const targetDateFormatted = settings?.nextEligibleAt
+    ? format(new Date(settings.nextEligibleAt), "h:mm:ss a (MMM d, yyyy)")
     : "Calculating schedule...";
 
   const pad = (num) => String(num).padStart(2, "0");
@@ -938,35 +929,53 @@ function BlogPublishCountdown({ settings }) {
               Next Publication Schedule
             </div>
             <p className="mt-1 text-xs text-slate-400">
-              Next automated article will run at <span className="font-semibold text-white">{targetDateFormatted}</span>
+              {timeLeft.isQuotaComplete ? (
+                <span className="font-semibold text-emerald-300">✓ Today's daily quota ({settings.generatedTodayCount || 0}/{settings.dailyQuantity}) complete</span>
+              ) : timeLeft.isDue ? (
+                <span className="font-semibold text-emerald-300">⚡ Eligible for publication now (Will execute on next Vercel cron run)</span>
+              ) : (
+                <span>Next automated article will run at <span className="font-semibold text-white">{targetDateFormatted}</span></span>
+              )}
             </p>
           </div>
         </div>
 
         {/* Animated Digital Flip-Clock Display */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2">
-            <div className="flex flex-col items-center">
-              <div className="flex h-12 min-w-12 items-center justify-center rounded-xl border border-white/[0.08] bg-slate-950/60 px-2.5 font-mono text-xl font-bold tracking-tight text-white shadow-inner backdrop-blur-md">
-                {pad(timeLeft.hours)}
-              </div>
-              <span className="mt-1 text-[9px] font-bold uppercase tracking-[.18em] text-slate-500">Hours</span>
+          {timeLeft.isQuotaComplete ? (
+            <div className="flex items-center gap-2 rounded-xl border border-emerald-400/40 bg-emerald-400/15 px-4 py-2.5 text-xs font-bold text-emerald-200 shadow-lg shadow-emerald-500/10">
+              <CheckCircle2 className="size-4 text-emerald-300" />
+              Daily Quota Complete
             </div>
-            <span className="text-xl font-bold text-violet-400/70 animate-pulse">:</span>
-            <div className="flex flex-col items-center">
-              <div className="flex h-12 min-w-12 items-center justify-center rounded-xl border border-white/[0.08] bg-slate-950/60 px-2.5 font-mono text-xl font-bold tracking-tight text-white shadow-inner backdrop-blur-md">
-                {pad(timeLeft.minutes)}
-              </div>
-              <span className="mt-1 text-[9px] font-bold uppercase tracking-[.18em] text-slate-500">Mins</span>
+          ) : timeLeft.isDue ? (
+            <div className="flex items-center gap-2 rounded-xl border border-emerald-400/40 bg-emerald-400/15 px-4 py-2.5 text-xs font-bold text-emerald-200 shadow-lg shadow-emerald-500/10 animate-pulse">
+              <Sparkles className="size-4 text-emerald-300" />
+              Eligible Now (Vercel Cron)
             </div>
-            <span className="text-xl font-bold text-violet-400/70 animate-pulse">:</span>
-            <div className="flex flex-col items-center">
-              <div className="flex h-12 min-w-12 items-center justify-center rounded-xl border border-violet-400/30 bg-slate-950/60 px-2.5 font-mono text-xl font-bold tracking-tight text-violet-300 shadow-inner backdrop-blur-md ring-1 ring-violet-400/25">
-                {pad(timeLeft.seconds)}
+          ) : (
+            <div className="flex items-center gap-2">
+              <div className="flex flex-col items-center">
+                <div className="flex h-12 min-w-12 items-center justify-center rounded-xl border border-white/[0.08] bg-slate-950/60 px-2.5 font-mono text-xl font-bold tracking-tight text-white shadow-inner backdrop-blur-md">
+                  {pad(timeLeft.hours)}
+                </div>
+                <span className="mt-1 text-[9px] font-bold uppercase tracking-[.18em] text-slate-500">Hours</span>
               </div>
-              <span className="mt-1 text-[9px] font-bold uppercase tracking-[.18em] text-slate-500">Secs</span>
+              <span className="text-xl font-bold text-violet-400/70 animate-pulse">:</span>
+              <div className="flex flex-col items-center">
+                <div className="flex h-12 min-w-12 items-center justify-center rounded-xl border border-white/[0.08] bg-slate-950/60 px-2.5 font-mono text-xl font-bold tracking-tight text-white shadow-inner backdrop-blur-md">
+                  {pad(timeLeft.minutes)}
+                </div>
+                <span className="mt-1 text-[9px] font-bold uppercase tracking-[.18em] text-slate-500">Mins</span>
+              </div>
+              <span className="text-xl font-bold text-violet-400/70 animate-pulse">:</span>
+              <div className="flex flex-col items-center">
+                <div className="flex h-12 min-w-12 items-center justify-center rounded-xl border border-violet-400/30 bg-slate-950/60 px-2.5 font-mono text-xl font-bold tracking-tight text-violet-300 shadow-inner backdrop-blur-md ring-1 ring-violet-400/25">
+                  {pad(timeLeft.seconds)}
+                </div>
+                <span className="mt-1 text-[9px] font-bold uppercase tracking-[.18em] text-slate-500">Secs</span>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
