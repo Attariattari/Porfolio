@@ -474,6 +474,9 @@ async function generateEditorialContent(
     BRAND AND WEBSITE REPRESENTATION:
     ${BRAND_POSITIONING}
 
+    BRAND AND WEBSITE REPRESENTATION:
+    ${BRAND_POSITIONING}
+
     PROBLEM-SOLUTION BLOG DIRECTION:
     ${PROBLEM_SOLUTION_EDITORIAL_MODE}
     
@@ -483,19 +486,15 @@ async function generateEditorialContent(
     CRITIC ALIGNMENT (Follow these to pass first attempt):
     - Tone must be Senior Engineering/Founder level.
     - Content must be a complete article, not a teaser. Target ${targetWords}; completeness and reader value matter more than padding.
-    - Include at least ${minimumSections} meaningful <h2> sections and multiple <p> blocks.
+    - MANDATORY H2 COUNT: You MUST include at least ${minimumSections} distinct <h2> sections in the HTML content.
     ${isAuthority ? `- Start with a direct answer/quick summary, then move logically from foundations to advanced decisions.
-    - Use useful <h3> subsections, a real comparison <table>, a practical checklist, explicit pros/cons, common mistakes, best practices, FAQs, and actionable final advice.
+    - MANDATORY FAQ SECTION: You MUST include an <h2> heading titled "<h2>Frequently Asked Questions</h2>" or "<h2>Frequently Asked Questions (FAQs)</h2>" near the end with 3-4 actionable Q&A list items.
+    - Use useful <h3> subsections, a real comparison <table>, a practical checklist, explicit pros/cons, common mistakes, best practices, and actionable final advice.
     - Cover what the topic is, why it matters, how it works, realistic examples, tradeoffs, business implications, and decision criteria without repeating the same formula under every heading.
     - Include original founder-level reasoning and honest limitations. Cite official standards or documentation naturally when factual claims require support; never fabricate sources.
     - Make this a complete, backlink-worthy authority resource rather than a stretched supporting post.
     ${articleType === "verified_trend" ? `- This is a verified trend analysis. Stay inside the supplied official evidence; clearly qualify uncertainty and never invent release behavior.
     - Cite the primary official source naturally with a single-quoted HTML link and include a short Official sources section. Required official URLs: ${officialSourceUrls.join(" | ") || "none supplied — generation must fail safely"}.` : ""}` : "- Keep the scope focused on the one specific question defined by the supporting topic."}
-    - Paragraphs MUST be 2-3 sentences max. No exceptions.
-    - Voice should be Muhyo Tech centric (using "we", "our team").
-    - If the topic supports it, use a practical problem-solving arc: real pain, root cause, engineering decision, implementation approach, tradeoffs, business result.
-    - Connect the technical lesson to Muhyo Tech's practical work: websites, web apps, AI workflows, performance, SEO, deployment, automation, or scalable digital systems.
-    - Make the blog useful and attractive for both founders and developers so it can bring qualified attention to the website.
     - Include 1-2 natural lines showing how this thinking shapes Muhyo Tech's work or standards, without sounding like an ad.
     - Discuss plausible business implications carefully, never as measured results unless the verified evidence explicitly supplies them.
     - Choose ONE clear primary search query that the article answers. Use it naturally; never repeat it mechanically.
@@ -600,10 +599,10 @@ async function generateEditorialContent(
     ].filter(Boolean);
 
     if (validationIssues.length) {
-      if (retryCount < 2) {
+      if (retryCount < 3) {
         return generateEditorialContent(
           topic,
-          `Correct these exact validation problems: ${validationIssues.join("; ")}. Return a complete ${targetWords} ${articleType} article with at least ${minimumSections} useful H2 sections.`,
+          `Correct these exact validation problems: ${validationIssues.join("; ")}. Return a complete ${targetWords} ${articleType} article with at least ${minimumSections} useful H2 sections including an <h2>Frequently Asked Questions</h2> section.`,
           retryCount + 1,
           null,
           recentTopics,

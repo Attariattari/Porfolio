@@ -24,7 +24,32 @@ export async function getBlogAutomationSettings() {
 }
 
 export function getNextAutomationAt({ settings, lastGeneratedAt = null } = {}) {
+  const intervalHours = Number(settings?.intervalHours || 24);
+  const dailyQuantity = Math.max(1, Number(settings?.dailyQuantity || 1));
+
+  // Per-blog interval = total window ÷ number of blogs
+  // e.g. 24 hours / 12 blogs = 2 hours between each blog
+  const intervalPerBlogMs = (intervalHours / dailyQuantity) * 3600_000;
+
   const generatedAt = lastGeneratedAt ? new Date(lastGeneratedAt) : null;
-  if (!Number.isFinite(generatedAt?.getTime())) return new Date(0);
-  return new Date(generatedAt.getTime() + Number(settings?.intervalHours || 24) * 3600000);
+  const validGeneratedAt = Number.isFinite(generatedAt?.getTime());
+  const settingsUpdatedAt = settings?.updatedAt ? new Date(settings.updatedAt) : null;
+  const validSettingsUpdatedAt = settingsUpdatedAt && Number.isFinite(settingsUpdatedAt.getTime());
+
+  // If settings were saved AFTER the last blog (or no blog has ever been generated),
+  // the first blog should fire 10 minutes after the settings were saved.
+  if (validSettingsUpdatedAt && (!validGeneratedAt || settingsUpdatedAt > generatedAt)) {
+    const settingsTrigger = new Date(settingsUpdatedAt.getTime() + 10 * 60_000);
+    if (!validGeneratedAt) return settingsTrigger;
+    // Return whichever comes FIRST: settings trigger or normal interval
+    const normalNext = new Date(generatedAt.getTime() + intervalPerBlogMs);
+    return settingsTrigger < normalNext ? settingsTrigger : normalNext;
+  }
+
+  // No blog has been generated and no settings date → eligible immediately
+  if (!validGeneratedAt) return new Date(0);
+
+  // Normal schedule: last blog time + per-blog interval
+  return new Date(generatedAt.getTime() + intervalPerBlogMs);
 }
+

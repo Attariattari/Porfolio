@@ -451,12 +451,18 @@ export async function reconcileUsedTopicPlans() {
 async function recoverStaleTopics() {
   const cutoff = new Date(Date.now() - 30 * 60 * 1000);
   const { linkedTopicIds } = await reconcileUsedTopicPlans();
+  
+  // Stale topics that were interrupted >30 mins ago or missing processingStartedAt
   const staleBase = {
     status: "processing",
-    processingStartedAt: { $lt: cutoff },
-    retryCount: { $lt: 3 },
+    $or: [
+      { processingStartedAt: { $lt: cutoff } },
+      { processingStartedAt: null },
+      { processingStartedAt: { $exists: false } },
+    ],
     _id: { $nin: linkedTopicIds },
   };
+
   const recoveryUpdate = (status) => ({
     $set: {
       status,
@@ -465,13 +471,27 @@ async function recoverStaleTopics() {
     $inc: { retryCount: 1 },
     $unset: { processingStartedAt: 1 },
   });
+
+  // 1. Recover topics with retryCount < 3
   await BlogTopicPlan.updateMany(
-    { ...staleBase, articleType: "pillar" },
+    { ...staleBase, retryCount: { $lt: 3 }, articleType: "pillar" },
     recoveryUpdate("planned"),
   );
   await BlogTopicPlan.updateMany(
-    { ...staleBase, articleType: { $in: ["supporting", "standalone_authority", "verified_trend"] } },
+    { ...staleBase, retryCount: { $lt: 3 }, articleType: { $in: ["supporting", "standalone_authority", "verified_trend"] } },
     recoveryUpdate("ready"),
+  );
+
+  // 2. Mark topics with retryCount >= 3 as failed to avoid permanent processing lock
+  await BlogTopicPlan.updateMany(
+    { ...staleBase, retryCount: { $gte: 3 } },
+    {
+      $set: {
+        status: "failed",
+        failureReason: "Marked failed after 3 interrupted generation retries.",
+      },
+      $unset: { processingStartedAt: 1 },
+    },
   );
 }
 

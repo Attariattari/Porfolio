@@ -14,7 +14,7 @@ import ImageUploader from "@/components/admin/ImageUploader";
 import { Controller } from "react-hook-form";
 import { AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
-import { Sparkles, CheckCircle2, Mail, RefreshCcw, Copy, BookOpen, Search, Pencil, Trash2, ExternalLink, Star, Plus, Download, Share2, Clock3, Save } from "lucide-react";
+import { Sparkles, CheckCircle2, Mail, RefreshCcw, Copy, BookOpen, Search, Pencil, Trash2, ExternalLink, Star, Plus, Download, Upload, Share2, Clock3, Save, X } from "lucide-react";
 import AIBlogProgress from "@/components/admin/AIBlogProgress";
 import SocialShareKitModal from "@/components/admin/SocialShareKitModal";
 import { useRouter } from "next/navigation";
@@ -56,12 +56,23 @@ export default function BlogsPage() {
   const [autoGenerateImages, setAutoGenerateImages] = useState(false);
   const [blogSearch, setBlogSearch] = useState("");
   const [blogDateFilter, setBlogDateFilter] = useState("");
+  const [blogFeaturedFilter, setBlogFeaturedFilter] = useState("all");
   const [openedSocialKitIds, setOpenedSocialKitIds] = useState(() => new Set());
   // Editorial wording follows the admin request: ascending = newest first.
   const [blogSortDirection, setBlogSortDirection] = useState("ascending");
   const [automationSettings, setAutomationSettings] = useState({ enabled: true, dailyQuantity: 1, intervalHours: 24 });
   const [automationSettingsLoading, setAutomationSettingsLoading] = useState(true);
   const [automationSettingsSaving, setAutomationSettingsSaving] = useState(false);
+  const [importing, setImporting] = useState(false);
+
+  const isAnyFilterActive = Boolean(blogSearch || blogDateFilter || blogFeaturedFilter !== "all" || blogSortDirection !== "ascending");
+
+  const handleClearFilters = () => {
+    setBlogSearch("");
+    setBlogDateFilter("");
+    setBlogFeaturedFilter("all");
+    setBlogSortDirection("ascending");
+  };
 
   // Sync entries on mount
   useEffect(() => {
@@ -352,10 +363,19 @@ export default function BlogsPage() {
                 markSocialKitOpened(item._id);
                 setSelectedSocialBlog(item);
               }}
-              className={`inline-flex h-8 min-w-[104px] flex-1 items-center justify-center gap-1.5 rounded-lg border px-3 text-[9px] font-bold uppercase tracking-wider transition ${item.socialKit?.status === "ready" || openedSocialKitIds.has(String(item._id)) ? "border-emerald-400/35 bg-emerald-400/15 text-emerald-300" : "border-border bg-background/40 text-muted-foreground hover:border-accent/25 hover:text-accent"}`}
-              title="Open Social Share Kit"
+              className={`inline-flex h-8 min-w-[104px] flex-1 items-center justify-center gap-1.5 rounded-lg border px-3 text-[9px] font-bold uppercase tracking-wider transition-all duration-200 ${
+                openedSocialKitIds.has(String(item._id))
+                  ? "border-blue-500/50 bg-blue-500/20 text-blue-300 shadow-sm shadow-blue-500/10 hover:bg-blue-500/30"
+                  : "border-emerald-500/40 bg-emerald-500/15 text-emerald-300 hover:border-emerald-400/60 hover:bg-emerald-500/25"
+              }`}
+              title={openedSocialKitIds.has(String(item._id)) ? "Social kit already opened/used" : "Open Social Share Kit"}
             >
-              <Share2 className="h-3 w-3" /> Social kit
+              {openedSocialKitIds.has(String(item._id)) ? (
+                <CheckCircle2 className="h-3 w-3 text-blue-300" />
+              ) : (
+                <Share2 className="h-3 w-3 text-emerald-300" />
+              )}
+              {openedSocialKitIds.has(String(item._id)) ? "Social kit (Opened)" : "Social kit"}
             </button>
           ) : null}
           {!item._isFromDataJs && item._id ? (
@@ -543,6 +563,38 @@ export default function BlogsPage() {
     toast.success(`${blogs.length} blogs exported for content audit.`);
   };
 
+  const handleImportFileChange = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setImporting(true);
+    try {
+      const text = await file.text();
+      let parsed;
+      try {
+        parsed = JSON.parse(text);
+      } catch {
+        throw new Error("Invalid JSON file. Please upload a valid JSON document.");
+      }
+
+      const response = await fetch("/api/admin/blogs/import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(parsed),
+      });
+
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Failed to import blogs.");
+
+      toast.success(result.message || `Successfully imported ${result.count} blog(s).`);
+      fetchBlogs({ force: true });
+    } catch (err) {
+      toast.error(err.message || "Failed to import JSON file.");
+    } finally {
+      setImporting(false);
+      event.target.value = "";
+    }
+  };
+
   const handleView = (blog) => {
     if (!blog.slug) {
       toast.error("Entry has no identifier for indexing.");
@@ -652,6 +704,11 @@ export default function BlogsPage() {
       const blogDate = new Date(blog.createdAt || blog.generatedAt || 0);
       return Number.isFinite(blogDate.getTime()) && format(blogDate, "yyyy-MM-dd") === blogDateFilter;
     })
+    .filter((blog) => {
+      if (blogFeaturedFilter === "featured") return Boolean(blog.featured);
+      if (blogFeaturedFilter === "non-featured") return !blog.featured;
+      return true;
+    })
     .sort((first, second) => {
       const newestFirst = new Date(second.createdAt || second.generatedAt || 0) - new Date(first.createdAt || first.generatedAt || 0);
       if (newestFirst !== 0) return blogSortDirection === "ascending" ? newestFirst : -newestFirst;
@@ -665,16 +722,17 @@ export default function BlogsPage() {
     });
   const aiActionRenderer = columns.find((column) => column.key === "ai_actions")?.render;
 
+
   return (
     <div className="mx-auto max-w-[1500px] space-y-6 pb-20">
       <header className="relative overflow-hidden rounded-[28px] border border-white/[0.08] bg-[#0d1727] p-6 sm:p-8"><div className="pointer-events-none absolute -right-20 -top-24 size-72 rounded-full bg-violet-400/[0.07] blur-3xl" /><div className="relative flex flex-col justify-between gap-6 xl:flex-row xl:items-center"><div className="flex items-start gap-4"><span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-violet-400/10 text-violet-300 ring-1 ring-inset ring-violet-400/15"><BookOpen className="size-5" /></span><div><p className="text-[10px] font-bold uppercase tracking-[.24em] text-violet-300">Editorial workspace</p><h1 className="mt-2 text-2xl font-semibold tracking-[-.035em] text-white sm:text-3xl">Blog management</h1><p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">Create, review and publish articles across your portfolio.</p></div></div>
 
-        <div className="grid items-stretch gap-2 sm:grid-cols-2 xl:flex xl:items-center"><Link href="/admin/blog-topics" className="group inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-background/45 px-4 text-xs font-semibold text-foreground shadow-sm transition hover:-translate-y-0.5 hover:border-accent/35 hover:bg-accent/5 hover:text-accent"><ListChecks className="size-4 transition group-hover:scale-105" />Editorial planner</Link><button onClick={handleExport} className="group inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-background/45 px-4 text-xs font-semibold text-muted-foreground shadow-sm transition hover:-translate-y-0.5 hover:border-accent/25 hover:bg-muted hover:text-foreground"><Download className="size-4 transition group-hover:-translate-y-0.5" />Export JSON</button><button onClick={handleAdd} className="group inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-accent/25 bg-accent/10 px-4 text-xs font-semibold text-accent shadow-sm transition hover:-translate-y-0.5 hover:bg-accent/15"><Plus className="size-4 transition group-hover:rotate-90" />New article</button>
+        <div className="grid items-stretch gap-2 sm:grid-cols-2 xl:flex xl:items-center"><Link href="/admin/blog-topics" className="group inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-background/45 px-4 text-xs font-semibold text-foreground shadow-sm transition hover:-translate-y-0.5 hover:border-accent/35 hover:bg-accent/5 hover:text-accent"><ListChecks className="size-4 transition group-hover:scale-105" />Editorial planner</Link><button onClick={handleExport} className="group inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-background/45 px-4 text-xs font-semibold text-muted-foreground shadow-sm transition hover:-translate-y-0.5 hover:border-accent/25 hover:bg-muted hover:text-foreground"><Download className="size-4 transition group-hover:-translate-y-0.5" />Export JSON</button><input type="file" id="import-blog-json" accept=".json" onChange={handleImportFileChange} className="hidden" /><button type="button" onClick={() => document.getElementById("import-blog-json")?.click()} disabled={importing} className="group inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-background/45 px-4 text-xs font-semibold text-muted-foreground shadow-sm transition hover:-translate-y-0.5 hover:border-accent/25 hover:bg-muted hover:text-foreground disabled:opacity-50"><Upload className="size-4 transition group-hover:-translate-y-0.5" />{importing ? "Importing..." : "Import JSON"}</button><button onClick={handleAdd} className="group inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-accent/25 bg-accent/10 px-4 text-xs font-semibold text-accent shadow-sm transition hover:-translate-y-0.5 hover:bg-accent/15"><Plus className="size-4 transition group-hover:rotate-90" />New article</button>
           <label
-            className={`flex h-11 cursor-pointer select-none items-center justify-between gap-3 rounded-xl border px-3.5 text-[10px] font-semibold tracking-wide shadow-sm transition ${
+            className={`flex h-11 cursor-pointer select-none items-center justify-between gap-3 rounded-xl border px-3.5 text-xs font-semibold tracking-wide shadow-sm transition-all duration-200 ${
               autoGenerateImages
-                ? "border-status-success/30 bg-status-success/10 text-status-success"
-                : "border-border bg-background/45 text-muted-foreground hover:border-accent/25 hover:text-foreground"
+                ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-300 shadow-emerald-500/10"
+                : "border-white/[0.08] bg-slate-950/40 text-slate-400 hover:border-violet-400/30 hover:text-slate-200"
             }`}
             title="Toggle automatic blog image generation"
           >
@@ -687,19 +745,19 @@ export default function BlogsPage() {
             />
             <span className="flex items-center gap-2">
               {autoGenerateImages ? (
-                <Sparkles className="w-4 h-4" />
+                <Sparkles className="size-4 text-emerald-300" />
               ) : (
-                <Mail className="w-4 h-4" />
+                <Mail className="size-4 text-slate-500" />
               )}
               Auto image
             </span>
             <span
-              className={`relative h-6 w-11 rounded-full p-0.5 transition-colors duration-200 ${
-                autoGenerateImages ? "bg-status-success" : "bg-muted"
+              className={`relative h-5 w-10 rounded-full p-0.5 transition-colors duration-200 ${
+                autoGenerateImages ? "bg-emerald-500" : "bg-slate-800"
               }`}
             >
               <span
-                className={`block h-5 w-5 rounded-full bg-card shadow-lg transition-transform duration-200 ease-out ${
+                className={`block size-4 rounded-full bg-white shadow-md transition-transform duration-200 ease-out ${
                   autoGenerateImages ? "translate-x-5" : "translate-x-0"
                 }`}
               />
@@ -715,19 +773,19 @@ export default function BlogsPage() {
               }
               setIsAIProgressOpen(true);
             }}
-            className={`group flex h-11 items-center justify-center gap-2 rounded-xl border px-5 text-xs font-semibold shadow-lg transition hover:-translate-y-0.5 disabled:opacity-50 ${
+            className={`group flex h-11 items-center justify-center gap-2 rounded-xl border px-5 text-xs font-bold shadow-lg transition-all duration-200 hover:-translate-y-0.5 disabled:opacity-50 ${
               hasPendingImage
                 ? autoGenerateImages
-                  ? "border-status-warning/30 bg-status-warning text-white shadow-status-warning/20 hover:brightness-105"
-                  : "border-status-success/30 bg-status-success text-white shadow-status-success/20 hover:brightness-105"
-                : "border-accent/40 bg-accent text-accent-foreground shadow-accent/20 hover:bg-accent/90"
+                  ? "border-amber-400/40 bg-amber-400/20 text-amber-200 shadow-amber-500/10 hover:border-amber-400/60 hover:bg-amber-400/30"
+                  : "border-emerald-400/40 bg-emerald-400/20 text-emerald-200 shadow-emerald-500/10 hover:border-emerald-400/60 hover:bg-emerald-400/30"
+                : "border-violet-400/35 bg-violet-500/20 text-violet-200 shadow-violet-500/15 hover:border-violet-400/60 hover:bg-violet-500/30 hover:text-white"
             }`}
           >
             {hasPendingImage && !autoGenerateImages ? (
-              <Mail className="w-4 h-4" />
+              <Mail className="size-4" />
             ) : (
               <Sparkles
-                className={`w-4 h-4 ${hasPendingImage ? "animate-bounce" : "group-hover:animate-spin"}`}
+                className={`size-4 ${hasPendingImage ? "animate-bounce" : "group-hover:animate-spin"}`}
               />
             )}
             {hasPendingImage
@@ -738,11 +796,14 @@ export default function BlogsPage() {
           </button>
         </div></div></header>
 
-      <section className="rounded-[24px] border border-white/[0.08] bg-[#0d1727] p-5 sm:p-6"><div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between"><div><div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.2em] text-violet-300"><Clock3 className="size-4" />AI publishing schedule</div><h2 className="mt-2 text-lg font-semibold text-white">Automated blog frequency</h2><p className="mt-1 max-w-2xl text-xs leading-5 text-slate-500">The scheduler writes one safe article per eligible run until the daily quantity is complete. Topic Intelligence keeps a seven-day queue reserve based on this demand.</p></div><div className="grid gap-3 sm:grid-cols-[140px_160px_auto_auto_auto] sm:items-end"><label><span className="mb-2 block text-[10px] font-semibold text-slate-400">Blogs per day</span><input type="number" min="1" max="12" step="1" disabled={automationSettingsLoading || automationSettingsSaving} value={automationSettings.dailyQuantity} onChange={(event) => setAutomationSettings((current) => ({ ...current, dailyQuantity: Number(event.target.value) }))} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-white outline-none focus:border-violet-400/40" /></label><label><span className="mb-2 block text-[10px] font-semibold text-slate-400">Interval hours</span><input type="number" min="1" max="168" step="1" disabled={automationSettingsLoading || automationSettingsSaving} value={automationSettings.intervalHours} onChange={(event) => setAutomationSettings((current) => ({ ...current, intervalHours: Number(event.target.value) }))} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-white outline-none focus:border-violet-400/40" /></label><label className="flex h-11 cursor-pointer items-center gap-2 rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-xs text-slate-300"><input type="checkbox" checked={automationSettings.enabled} disabled={automationSettingsLoading || automationSettingsSaving} onChange={(event) => setAutomationSettings((current) => ({ ...current, enabled: event.target.checked }))} className="size-4 accent-violet-400" />Enabled</label><button type="button" onClick={resetAutomationSettings} disabled={automationSettingsLoading || automationSettingsSaving} className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-white/[0.1] bg-slate-950/35 px-4 text-xs font-bold text-slate-300 transition hover:border-violet-400/30 hover:text-violet-300 disabled:opacity-50"><RefreshCcw className="size-4" />Reset default</button><button type="button" onClick={() => saveAutomationSettings()} disabled={automationSettingsLoading || automationSettingsSaving} className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-violet-400 px-4 text-xs font-bold text-slate-950 transition hover:bg-violet-300 disabled:opacity-50"><Save className="size-4" />{automationSettingsSaving ? "Saving..." : "Save schedule"}</button></div></div></section>
+      <section className="rounded-[24px] border border-white/[0.08] bg-[#0d1727] p-5 sm:p-6">
+        <BlogPublishCountdown settings={automationSettings} />
+        <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between"><div><div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.2em] text-violet-300"><Clock3 className="size-4" />AI publishing schedule</div><h2 className="mt-2 text-lg font-semibold text-white">Automated blog frequency</h2><p className="mt-1 max-w-2xl text-xs leading-5 text-slate-500">The scheduler writes one safe article per eligible run until the daily quantity is complete. Topic Intelligence keeps a seven-day queue reserve based on this demand.</p></div><div className="grid gap-3 sm:grid-cols-[140px_160px_auto_auto_auto] sm:items-end"><label><span className="mb-2 block text-[10px] font-semibold text-slate-400">Blogs per day</span><input type="number" min="1" max="12" step="1" disabled={automationSettingsLoading || automationSettingsSaving} value={automationSettings.dailyQuantity} onChange={(event) => setAutomationSettings((current) => ({ ...current, dailyQuantity: Number(event.target.value) }))} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-white outline-none focus:border-violet-400/40" /></label><label><span className="mb-2 block text-[10px] font-semibold text-slate-400">Interval hours</span><input type="number" min="1" max="168" step="1" disabled={automationSettingsLoading || automationSettingsSaving} value={automationSettings.intervalHours} onChange={(event) => setAutomationSettings((current) => ({ ...current, intervalHours: Number(event.target.value) }))} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-white outline-none focus:border-violet-400/40" /></label><label className="flex h-11 cursor-pointer items-center gap-2 rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-xs text-slate-300"><input type="checkbox" checked={automationSettings.enabled} disabled={automationSettingsLoading || automationSettingsSaving} onChange={(event) => setAutomationSettings((current) => ({ ...current, enabled: event.target.checked }))} className="size-4 accent-violet-400" />Enabled</label><button type="button" onClick={resetAutomationSettings} disabled={automationSettingsLoading || automationSettingsSaving} className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-white/[0.1] bg-slate-950/35 px-4 text-xs font-bold text-slate-300 transition hover:border-violet-400/30 hover:text-violet-300 disabled:opacity-50"><RefreshCcw className="size-4" />Reset default</button><button type="button" onClick={() => saveAutomationSettings()} disabled={automationSettingsLoading || automationSettingsSaving} className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-violet-400 px-4 text-xs font-bold text-slate-950 transition hover:bg-violet-300 disabled:opacity-50"><Save className="size-4" />{automationSettingsSaving ? "Saving..." : "Save schedule"}</button></div></div>
+      </section>
 
       <div className="grid overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0d1727] sm:grid-cols-4"><BlogMetric label="Total articles" value={blogs.length} /><BlogMetric label="Published" value={blogs.filter((item) => item.publishStatus === "published").length} /><BlogMetric label="Drafts" value={blogs.filter((item) => item.publishStatus === "draft").length} /><BlogMetric label="AI generated" value={blogs.filter((item) => item.aiGenerated).length} last /></div>
 
-      <section data-columns={columns.length} data-reorder={Boolean(reorderBlogs)} className="overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#0d1727]"><div className="flex flex-col justify-between gap-4 border-b border-white/[0.07] p-4 xl:flex-row xl:items-center sm:p-5"><div><p className="text-sm font-semibold text-slate-200">Article library</p><p className="mt-1 text-xs text-slate-600">Manage manual and AI-assisted content in one place.</p></div><div className="flex w-full flex-col gap-2 sm:flex-row xl:w-auto"><label className="relative w-full sm:min-w-64"><Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-600" /><input value={blogSearch} onChange={(event) => setBlogSearch(event.target.value)} placeholder="Search articles..." className="w-full rounded-xl border border-white/[0.08] bg-slate-950/35 py-3 pl-10 pr-4 text-sm outline-none placeholder:text-slate-700 focus:border-violet-400/40" /></label><label><span className="sr-only">Filter articles by date</span><input type="date" value={blogDateFilter} onChange={(event) => setBlogDateFilter(event.target.value)} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40" title="Show blogs published on this date" /></label><label><span className="sr-only">Sort articles</span><select value={blogSortDirection} onChange={(event) => setBlogSortDirection(event.target.value)} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40"><option value="ascending">Ascending (newest first)</option><option value="descending">Descending (oldest first)</option></select></label></div></div><div className="grid gap-4 p-4 sm:p-5 md:grid-cols-2 xl:grid-cols-3">{visibleBlogs.map((blog) => <BlogCard key={blog._id || blog.slug || blog.title} blog={blog} aiActions={aiActionRenderer?.(blog)} onEdit={() => handleEdit(blog)} onView={() => handleView(blog)} onDelete={() => handleDelete(blog)} />)}</div>{visibleBlogs.length === 0 && <div className="grid min-h-72 place-items-center text-center"><div><BookOpen className="mx-auto size-9 text-slate-700" /><p className="mt-4 text-sm font-semibold text-slate-300">No matching articles</p><p className="mt-1 text-xs text-slate-600">Try another title, date, category or tag.</p></div></div>}</section>
+      <section data-columns={columns.length} data-reorder={Boolean(reorderBlogs)} className="overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#0d1727]"><div className="flex flex-col justify-between gap-4 border-b border-white/[0.07] p-4 xl:flex-row xl:items-center sm:p-5"><div><p className="text-sm font-semibold text-slate-200">Article library</p><p className="mt-1 text-xs text-slate-600">Manage manual and AI-assisted content in one place.</p></div><div className="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap xl:w-auto"><label className="relative w-full sm:min-w-64"><Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-600" /><input value={blogSearch} onChange={(event) => setBlogSearch(event.target.value)} placeholder="Search articles..." className="w-full rounded-xl border border-white/[0.08] bg-slate-950/35 py-3 pl-10 pr-4 text-sm outline-none placeholder:text-slate-700 focus:border-violet-400/40" /></label><label><span className="sr-only">Filter by featured</span><select value={blogFeaturedFilter} onChange={(event) => setBlogFeaturedFilter(event.target.value)} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40"><option value="all">All Articles</option><option value="featured">Featured ⭐</option><option value="non-featured">Non-Featured</option></select></label><label><span className="sr-only">Filter articles by date</span><input type="date" value={blogDateFilter} onChange={(event) => setBlogDateFilter(event.target.value)} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40" title="Show blogs published on this date" /></label><label><span className="sr-only">Sort articles</span><select value={blogSortDirection} onChange={(event) => setBlogSortDirection(event.target.value)} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40"><option value="ascending">Ascending (newest first)</option><option value="descending">Descending (oldest first)</option></select></label>{isAnyFilterActive && <button type="button" onClick={handleClearFilters} className="inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border border-rose-400/30 bg-rose-500/10 px-3.5 text-xs font-semibold text-rose-300 transition hover:bg-rose-500/20" title="Clear all active filters"><X className="size-3.5" />Clear filters</button>}</div></div><div className="grid gap-4 p-4 sm:p-5 md:grid-cols-2 xl:grid-cols-3">{visibleBlogs.map((blog) => <BlogCard key={blog._id || blog.slug || blog.title} blog={blog} aiActions={aiActionRenderer?.(blog)} onEdit={() => handleEdit(blog)} onView={() => handleView(blog)} onDelete={() => handleDelete(blog)} />)}</div>{visibleBlogs.length === 0 && <div className="grid min-h-72 place-items-center text-center"><div><BookOpen className="mx-auto size-9 text-slate-700" /><p className="mt-4 text-sm font-semibold text-slate-300">No matching articles</p><p className="mt-1 text-xs text-slate-600">Try another title, date, category or tag.</p></div></div>}</section>
 
       <AnimatePresence>
         {false && isModalOpen && (
@@ -794,6 +855,120 @@ export default function BlogsPage() {
         onClose={() => setSelectedSocialBlog(null)}
         onUpdated={() => fetchBlogs({ force: true })}
       />
+    </div>
+  );
+}
+
+function BlogPublishCountdown({ settings }) {
+  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0, targetTimeMs: 0 });
+
+  useEffect(() => {
+    if (settings?.enabled === false) {
+      setTimeLeft({ hours: 0, minutes: 0, seconds: 0, targetTimeMs: 0 });
+      return;
+    }
+
+    const intervalHours = Number(settings?.intervalHours || 24);
+    const dailyQuantity = Math.max(1, Number(settings?.dailyQuantity || 1));
+    const intervalPerBlogMs = (intervalHours / dailyQuantity) * 3600_000;
+
+    const updateTimer = () => {
+      const now = Date.now();
+      let targetTime = settings?.nextEligibleAt ? new Date(settings.nextEligibleAt).getTime() : 0;
+
+      if (!targetTime || isNaN(targetTime)) {
+        const anchor = settings?.lastGeneratedAt ? new Date(settings.lastGeneratedAt).getTime() : (settings?.updatedAt ? new Date(settings.updatedAt).getTime() : now);
+        targetTime = anchor + intervalPerBlogMs;
+      }
+
+      // If the scheduled time is in the past, project forward to the next upcoming slot
+      if (targetTime <= now) {
+        const elapsedSinceTarget = now - targetTime;
+        const slotsPassed = Math.floor(elapsedSinceTarget / intervalPerBlogMs) + 1;
+        targetTime = targetTime + (slotsPassed * intervalPerBlogMs);
+      }
+
+      const diff = Math.max(0, targetTime - now);
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      setTimeLeft({ hours, minutes, seconds, targetTimeMs: targetTime });
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, [settings?.nextEligibleAt, settings?.lastGeneratedAt, settings?.updatedAt, settings?.intervalHours, settings?.dailyQuantity, settings?.enabled]);
+
+  if (settings?.enabled === false) {
+    return (
+      <div className="mb-5 flex items-center justify-between rounded-2xl border border-amber-400/20 bg-amber-400/10 p-4 text-xs font-semibold text-amber-200">
+        <div className="flex items-center gap-2">
+          <span className="relative flex size-2.5">
+            <span className="size-2.5 rounded-full bg-amber-400"></span>
+          </span>
+          AI Publishing Automation is currently disabled.
+        </div>
+        <span className="text-[10px] font-bold uppercase tracking-wider text-amber-300/70">Paused</span>
+      </div>
+    );
+  }
+
+  const targetDateFormatted = timeLeft.targetTimeMs
+    ? format(new Date(timeLeft.targetTimeMs), "h:mm:ss a (MMM d, yyyy)")
+    : "Calculating schedule...";
+
+  const pad = (num) => String(num).padStart(2, "0");
+
+  return (
+    <div className="mb-6 relative overflow-hidden rounded-[20px] border border-white/[0.08] bg-[#070d18] p-5 shadow-2xl">
+      <div className="pointer-events-none absolute -right-20 -top-20 size-60 rounded-full bg-violet-400/[0.07] blur-3xl" />
+      <div className="relative flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+        <div className="flex items-center gap-4">
+          <div className="relative grid size-12 shrink-0 place-items-center rounded-2xl bg-violet-400/10 text-violet-300 ring-1 ring-inset ring-violet-400/15 shadow-inner">
+            <Clock3 className="size-5 animate-pulse text-violet-300" />
+            <span className="absolute -right-1 -top-1 flex size-3">
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex size-3 rounded-full bg-emerald-500"></span>
+            </span>
+          </div>
+          <div>
+            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.24em] text-violet-300">
+              Next Publication Schedule
+            </div>
+            <p className="mt-1 text-xs text-slate-400">
+              Next automated article will run at <span className="font-semibold text-white">{targetDateFormatted}</span>
+            </p>
+          </div>
+        </div>
+
+        {/* Animated Digital Flip-Clock Display */}
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
+            <div className="flex flex-col items-center">
+              <div className="flex h-12 min-w-12 items-center justify-center rounded-xl border border-white/[0.08] bg-slate-950/60 px-2.5 font-mono text-xl font-bold tracking-tight text-white shadow-inner backdrop-blur-md">
+                {pad(timeLeft.hours)}
+              </div>
+              <span className="mt-1 text-[9px] font-bold uppercase tracking-[.18em] text-slate-500">Hours</span>
+            </div>
+            <span className="text-xl font-bold text-violet-400/70 animate-pulse">:</span>
+            <div className="flex flex-col items-center">
+              <div className="flex h-12 min-w-12 items-center justify-center rounded-xl border border-white/[0.08] bg-slate-950/60 px-2.5 font-mono text-xl font-bold tracking-tight text-white shadow-inner backdrop-blur-md">
+                {pad(timeLeft.minutes)}
+              </div>
+              <span className="mt-1 text-[9px] font-bold uppercase tracking-[.18em] text-slate-500">Mins</span>
+            </div>
+            <span className="text-xl font-bold text-violet-400/70 animate-pulse">:</span>
+            <div className="flex flex-col items-center">
+              <div className="flex h-12 min-w-12 items-center justify-center rounded-xl border border-violet-400/30 bg-slate-950/60 px-2.5 font-mono text-xl font-bold tracking-tight text-violet-300 shadow-inner backdrop-blur-md ring-1 ring-violet-400/25">
+                {pad(timeLeft.seconds)}
+              </div>
+              <span className="mt-1 text-[9px] font-bold uppercase tracking-[.18em] text-slate-500">Secs</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

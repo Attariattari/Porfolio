@@ -165,7 +165,7 @@ export async function runDailyBlogPipeline({
       (step.status === "manual_required" && !step.emailSent),
     );
   const reportedNextEligibleAt = dailyBlog
-    ? new Date(new Date(dailyBlog.generatedAt || dailyBlog.createdAt).getTime() + settings.intervalHours * 3600000)
+    ? getNextAutomationAt({ settings, lastGeneratedAt: dailyBlog.generatedAt || dailyBlog.createdAt })
     : nextEligibleAt;
 
   return {

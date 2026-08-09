@@ -12,9 +12,29 @@ async function authorize() {
   return checkPermission(session, "blogs", "edit") ? session : null;
 }
 
+import { Blog } from "@/models/Portfolio";
+import { getNextAutomationAt } from "@/lib/blogAutomationSettings";
+
+async function enrichWithScheduleTimes(settings) {
+  const lastAutomatedBlog = await Blog.findOne({ aiGenerated: true, automationSlot: { $exists: true, $ne: null } })
+    .sort({ createdAt: -1 })
+    .select("createdAt generatedAt")
+    .lean();
+  const lastGeneratedAt = lastAutomatedBlog?.generatedAt || lastAutomatedBlog?.createdAt || null;
+  const nextEligibleAt = getNextAutomationAt({ settings, lastGeneratedAt });
+  return {
+    ...settings,
+    lastGeneratedAt: lastGeneratedAt ? new Date(lastGeneratedAt).toISOString() : null,
+    nextEligibleAt: nextEligibleAt ? nextEligibleAt.toISOString() : null,
+  };
+}
+
 export async function GET() {
   if (!(await authorize())) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
-  return NextResponse.json({ success: true, data: await getBlogAutomationSettings() });
+  await dbConnect();
+  const settings = await getBlogAutomationSettings();
+  const data = await enrichWithScheduleTimes(settings);
+  return NextResponse.json({ success: true, data });
 }
 
 export async function PATCH(request) {
@@ -42,5 +62,7 @@ export async function PATCH(request) {
     { $set: { blogAutomation: value, updatedAt: new Date() } },
     { new: true, upsert: true, runValidators: true, setDefaultsOnInsert: true },
   ).select("blogAutomation").lean();
-  return NextResponse.json({ success: true, data: sanitizeBlogAutomationSettings(config.blogAutomation) });
+  const settings = sanitizeBlogAutomationSettings(config.blogAutomation);
+  const data = await enrichWithScheduleTimes(settings);
+  return NextResponse.json({ success: true, data });
 }
