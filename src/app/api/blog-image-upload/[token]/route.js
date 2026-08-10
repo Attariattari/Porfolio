@@ -147,5 +147,11 @@ export async function POST(request, { params }) {
       blogTitle: updatedBlog.title,
       socialKit: socialKitResult?.socialKit || null,
     });
+  } catch (error) {
+    console.error("[BlogImageUpload] Safe upload failure:", error.message);
+    return NextResponse.json(
+      { success: false, code: "UPLOAD_FAILED", message: "Image upload failed. Please try again." },
+      { status: 500 }
+    );
   }
 }

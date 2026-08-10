@@ -102,15 +102,15 @@ export default function FormModal({
                     {...register(field.name)}
                     rows={field.rows || 4}
                     placeholder={field.placeholder}
-                    className="w-full px-4 py-3 bg-muted/30 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-accent text-sm transition-all"
+                    className="w-full px-4 py-3 bg-muted/50 border border-border text-foreground rounded-xl focus:ring-2 focus:ring-accent focus:border-accent text-sm outline-none transition-all placeholder:text-muted-foreground/60"
                   />
                 ) : field.type === "select" ? (
                   <select
                     {...register(field.name)}
-                    className="w-full px-4 py-3 bg-muted/30 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-accent text-sm transition-all"
+                    className="w-full px-4 py-3 bg-muted/50 border border-border text-foreground rounded-xl focus:ring-2 focus:ring-accent focus:border-accent text-sm outline-none transition-all"
                   >
                     {field.options.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
+                      <option key={opt.value} value={opt.value} className="bg-card text-foreground">
                         {opt.label}
                       </option>
                     ))}
@@ -120,7 +120,7 @@ export default function FormModal({
                     type={field.type || "text"}
                     {...register(field.name)}
                     placeholder={field.placeholder}
-                    className="w-full px-4 py-3 bg-muted/30 border border-border rounded-xl focus:ring-2 focus:ring-accent focus:border-accent text-sm transition-all"
+                    className="w-full px-4 py-3 bg-muted/50 border border-border text-foreground rounded-xl focus:ring-2 focus:ring-accent focus:border-accent text-sm outline-none transition-all placeholder:text-muted-foreground/60"
                   />
                 )}
                 {errors[field.name] && (

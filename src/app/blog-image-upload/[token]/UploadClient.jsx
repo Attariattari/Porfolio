@@ -16,6 +16,9 @@ import {
   Linkedin,
   Facebook,
   FileText,
+  Send,
+  MessagesSquare,
+  Instagram,
 } from "lucide-react";
 
 async function writeToClipboard(text) {
@@ -37,6 +40,16 @@ async function writeToClipboard(text) {
   if (!copied) throw new Error("Clipboard access is unavailable.");
 }
 
+const PLATFORM_ICONS = {
+  linkedin: Linkedin,
+  facebook: Facebook,
+  x: Twitter,
+  whatsapp: Send,
+  reddit: MessagesSquare,
+  instagram: Instagram,
+  devto: FileText,
+};
+
 export default function UploadClient({ token, imagePrompt, negativePrompt }) {
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState("");
@@ -44,8 +57,8 @@ export default function UploadClient({ token, imagePrompt, negativePrompt }) {
   const [message, setMessage] = useState("");
   const [copied, setCopied] = useState(false);
   const [uploadData, setUploadData] = useState(null);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [activeSocialTab, setActiveSocialTab] = useState("linkedin"); // linkedin, twitter, devto
+  const [showSuccessModal, setShowSuccessModal] = useState(true);
+  const [activeSocialTab, setActiveSocialTab] = useState("linkedin");
   const [copiedPlatform, setCopiedPlatform] = useState("");
 
   const copyTimerRef = useRef(null);
@@ -108,7 +121,7 @@ export default function UploadClient({ token, imagePrompt, negativePrompt }) {
       setStatus("success");
       setUploadData(data);
       setShowSuccessModal(true);
-      setMessage("Image uploaded successfully! Choose an option below.");
+      setMessage("Image uploaded successfully!");
     } catch (error) {
       setStatus("error");
       setMessage(error.message || "Image upload failed. Please try again.");
@@ -128,35 +141,36 @@ export default function UploadClient({ token, imagePrompt, negativePrompt }) {
   return (
     <div className="space-y-6">
       <form onSubmit={submit} className="space-y-5">
-        <div className="rounded-2xl border border-border bg-muted/50 p-4">
+        {/* Dynamic Website Theme Card Container */}
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-lg backdrop-blur-md">
           <div className="flex items-center justify-between gap-3">
             <p className="text-xs font-black uppercase tracking-[0.25em] text-accent">
-              Image Prompt
+              ✨ Image Prompt
             </p>
             <button
               type="button"
               onClick={copyPrompt}
-              aria-label={copied ? "Prompt copied" : "Copy image prompt"}
-              className="inline-flex min-w-24 items-center justify-center gap-2 rounded-xl border border-border bg-card px-3 py-2 text-xs font-bold text-card-foreground transition-colors hover:border-accent/50 hover:bg-accent/10"
+              className="inline-flex items-center gap-2 rounded-xl border border-accent/30 bg-accent/10 px-3.5 py-1.5 text-xs font-bold text-accent transition-all hover:bg-accent/20"
             >
-              {copied ? <Check className="h-4 w-4 text-accent" /> : <Copy className="h-4 w-4" />}
-              {copied ? "Copied" : "Copy"}
+              {copied ? <Check className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
+              {copied ? "Copied" : "Copy Prompt"}
             </button>
           </div>
-          <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-foreground">
+          <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-card-foreground font-mono bg-muted/50 p-3.5 rounded-xl border border-border">
             {imagePrompt}
           </p>
           {negativePrompt ? (
-            <p className="mt-3 text-xs leading-6 text-muted-foreground">
+            <p className="mt-3 text-xs text-muted-foreground">
               Negative: {negativePrompt}
             </p>
           ) : null}
         </div>
 
-        <label className="block cursor-pointer rounded-2xl border border-dashed border-border bg-card p-6 text-center transition-colors hover:border-accent/60 hover:bg-accent/5">
+        {/* Dynamic Theme Upload Zone */}
+        <label className="block cursor-pointer rounded-2xl border border-dashed border-border bg-card p-8 text-center transition-all hover:border-accent/60 hover:bg-accent/5">
           <Upload className="mx-auto h-8 w-8 text-accent" />
           <span className="mt-3 block text-sm font-bold text-card-foreground">
-            Choose JPG, PNG, or WEBP image
+            Choose JPG, PNG, or WEBP Cover Image
           </span>
           <span className="mt-1 block text-xs text-muted-foreground">Max size 8MB</span>
           <input
@@ -168,7 +182,7 @@ export default function UploadClient({ token, imagePrompt, negativePrompt }) {
         </label>
 
         {preview ? (
-          <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-border">
+          <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-border shadow-2xl">
             <Image
               src={preview}
               alt="Muhyo Tech selected blog cover preview"
@@ -182,17 +196,17 @@ export default function UploadClient({ token, imagePrompt, negativePrompt }) {
         <button
           type="submit"
           disabled={status === "uploading" || status === "success"}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-accent px-5 py-4 text-sm font-black uppercase tracking-[0.2em] text-accent-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-accent px-5 py-4 text-sm font-black uppercase tracking-[0.2em] text-accent-foreground shadow-xl transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {status === "success" ? <CheckCircle2 className="h-5 w-5" /> : <Upload className="h-5 w-5" />}
           {status === "uploading"
             ? "Uploading Image..."
             : status === "success"
             ? "Upload Complete"
-            : "Save Blog Image"}
+            : "Save Cover Photo & Publish"}
         </button>
 
-        {message ? (
+        {message && status !== "success" ? (
           <div aria-live="polite" className="flex items-center gap-2 rounded-xl border border-border bg-muted/60 p-3 text-sm text-foreground">
             {status === "error" ? <AlertCircle className="h-4 w-4 text-destructive" /> : <CheckCircle2 className="h-4 w-4 text-accent" />}
             {message}
@@ -200,7 +214,7 @@ export default function UploadClient({ token, imagePrompt, negativePrompt }) {
         ) : null}
       </form>
 
-      {/* Glassmorphic Success Options Card */}
+      {/* Dynamic Website Theme Success Card */}
       {status === "success" && uploadData && (
         <div className="mt-8 overflow-hidden rounded-3xl border border-accent/40 bg-card p-6 shadow-2xl space-y-6 animate-in fade-in zoom-in-95">
           <div className="flex items-center gap-3 border-b border-border pb-4">
@@ -212,13 +226,13 @@ export default function UploadClient({ token, imagePrompt, negativePrompt }) {
                 Workflow Complete
               </span>
               <h2 className="text-lg font-bold text-card-foreground">
-                Image Saved & Blogger Post Triggered!
+                Image Saved & Blogger Auto-Published!
               </h2>
             </div>
           </div>
 
           <p className="text-xs text-muted-foreground">
-            What would you like to do next for <strong>"{uploadData.blogTitle}"</strong>?
+            Select an action for <strong>"{uploadData.blogTitle}"</strong>:
           </p>
 
           {/* 2 Big Action Option Buttons */}
@@ -230,17 +244,17 @@ export default function UploadClient({ token, imagePrompt, negativePrompt }) {
               className="group flex flex-col items-center justify-center p-5 rounded-2xl border border-border bg-muted/40 hover:bg-accent/10 hover:border-accent/50 transition-all text-center space-y-2"
             >
               <Globe className="h-7 w-7 text-accent group-hover:scale-110 transition-transform" />
-              <span className="text-sm font-bold text-card-foreground">1. Open Website Blog</span>
-              <span className="text-[11px] text-muted-foreground">View live article on muhyotech.com</span>
+              <span className="text-sm font-bold text-card-foreground">1. Open Live Website Blog</span>
+              <span className="text-[11px] text-muted-foreground">View article on muhyotech.com</span>
             </a>
 
             <button
               type="button"
               onClick={() => setShowSuccessModal(!showSuccessModal)}
-              className="group flex flex-col items-center justify-center p-5 rounded-2xl border border-cyan-500/30 bg-cyan-500/10 hover:bg-cyan-500/20 transition-all text-center space-y-2"
+              className="group flex flex-col items-center justify-center p-5 rounded-2xl border border-accent/30 bg-accent/10 hover:bg-accent/20 transition-all text-center space-y-2"
             >
-              <Share2 className="h-7 w-7 text-cyan-400 group-hover:scale-110 transition-transform" />
-              <span className="text-sm font-bold text-cyan-300">2. Open AI Social Share Kit</span>
+              <Share2 className="h-7 w-7 text-accent group-hover:scale-110 transition-transform" />
+              <span className="text-sm font-bold text-accent">2. Open AI Social Share Kit</span>
               <span className="text-[11px] text-muted-foreground">1-Click Twitter, LinkedIn & Dev.to posts</span>
             </button>
           </div>
@@ -252,21 +266,25 @@ export default function UploadClient({ token, imagePrompt, negativePrompt }) {
                 <div className="flex items-center gap-2 text-xs font-bold text-accent uppercase tracking-wider">
                   <Sparkles className="h-4 w-4" /> AI Generated Social Posts
                 </div>
-                <div className="flex items-center gap-1 flex-wrap">
-                  {["linkedin", "facebook", "x", "whatsapp", "reddit", "instagram", "devto"].map((tab) => (
-                    <button
-                      key={tab}
-                      type="button"
-                      onClick={() => setActiveSocialTab(tab)}
-                      className={`px-2.5 py-1.5 rounded-lg text-xs font-bold capitalize transition-all ${
-                        activeSocialTab === tab
-                          ? "bg-accent text-accent-foreground"
-                          : "text-muted-foreground hover:text-foreground"
-                      }`}
-                    >
-                      {tab === "x" ? "X / Twitter" : tab}
-                    </button>
-                  ))}
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {["linkedin", "facebook", "x", "whatsapp", "reddit", "instagram", "devto"].map((tab) => {
+                    const IconComp = PLATFORM_ICONS[tab] || Share2;
+                    return (
+                      <button
+                        key={tab}
+                        type="button"
+                        onClick={() => setActiveSocialTab(tab)}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold capitalize transition-all ${
+                          activeSocialTab === tab
+                            ? "bg-accent text-accent-foreground border border-accent shadow-md"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent"
+                        }`}
+                      >
+                        <IconComp className="h-3.5 w-3.5" />
+                        {tab === "x" ? "X" : tab === "devto" ? "Dev.to" : tab}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -274,7 +292,7 @@ export default function UploadClient({ token, imagePrompt, negativePrompt }) {
               <div className="relative rounded-2xl border border-border bg-background p-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold capitalize text-accent">
-                    {activeSocialTab} Share Post
+                    {activeSocialTab === "x" ? "X / Twitter" : activeSocialTab} Share Post
                   </span>
                   <button
                     type="button"
@@ -286,21 +304,21 @@ export default function UploadClient({ token, imagePrompt, negativePrompt }) {
                           ""
                       )
                     }
-                    className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg bg-accent/10 text-accent border border-accent/20 hover:bg-accent/20 transition-all"
+                    className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-xl bg-accent/10 text-accent border border-accent/30 hover:bg-accent/20 transition-all"
                   >
                     {copiedPlatform === activeSocialTab ? (
                       <>
-                        <Check className="h-3.5 w-3.5" /> Copied!
+                        <Check className="h-3.5 w-3.5 text-emerald-400" /> Copied to Clipboard!
                       </>
                     ) : (
                       <>
-                        <Copy className="h-3.5 w-3.5" /> Copy Post
+                        <Copy className="h-3.5 w-3.5" /> Copy {activeSocialTab} Post
                       </>
                     )}
                   </button>
                 </div>
 
-                <div className="text-xs leading-relaxed text-muted-foreground font-mono bg-muted/30 p-3 rounded-xl max-h-48 overflow-y-auto whitespace-pre-wrap">
+                <div className="text-xs leading-relaxed text-foreground font-mono bg-muted/30 p-4 rounded-xl max-h-56 overflow-y-auto whitespace-pre-wrap border border-border">
                   {typeof uploadData.socialKit[activeSocialTab] === "object"
                     ? uploadData.socialKit[activeSocialTab]?.postText
                     : uploadData.socialKit[activeSocialTab] || "Generating post..."}
