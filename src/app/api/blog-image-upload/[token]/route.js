@@ -18,6 +18,7 @@ import { triggerFeaturedUpdate } from "@/lib/ai/featuredEngine";
 import { ensureBlogImageAlt } from "@/lib/blogImageAlt";
 import { scheduleInternalLinkAudit } from "@/lib/ai/blog/internalLinkingEngine";
 import { triggerBloggerPublishIfReady } from "@/lib/ai/blog/bloggerAutomationHook";
+import { generateAndSaveSocialKit } from "@/lib/ai/blog/generateSocialKit";
 
 function isSuperAdmin(session) {
   return session?.role === "super-admin" || session?.role === "root-super-admin";
@@ -134,17 +135,17 @@ export async function POST(request, { params }) {
       console.error("[Blogger Upload Trigger Error]:", err.message)
     );
 
+    // Generate or fetch AI Social Share Kit for 1-click sharing
+    const socialKitResult = await generateAndSaveSocialKit(updatedBlog._id).catch(() => null);
+
     return NextResponse.json({
       success: true,
       message: "Blog image uploaded successfully.",
       imageUrl: uploaded.url,
       redirectUrl: `/blog/${encodeURIComponent(updatedBlog.slug)}`,
+      blogSlug: updatedBlog.slug,
+      blogTitle: updatedBlog.title,
+      socialKit: socialKitResult?.socialKit || null,
     });
-  } catch (error) {
-    console.error("[BlogImageUpload] Safe upload failure:", error.message);
-    return NextResponse.json(
-      { success: false, code: "UPLOAD_FAILED", message: "Image upload failed. Please try again." },
-      { status: 500 },
-    );
   }
 }

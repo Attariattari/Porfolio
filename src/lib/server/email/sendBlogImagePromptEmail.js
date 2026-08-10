@@ -28,8 +28,6 @@ function getAppUrl(baseUrl = "") {
     process.env.NEXT_PUBLIC_BASE_URL ||
     process.env.NEXT_PUBLIC_SITE_URL;
 
-  // Email links must point at the public custom domain. Vercel preview URLs can
-  // be deployment-protected and would show a Vercel login screen to recipients.
   if (
     explicitUrl &&
     !isLocalUrl(explicitUrl) &&
@@ -70,7 +68,7 @@ export async function sendBlogImagePromptEmail({
       <div style="max-width:720px;margin:0 auto;background:#111827;border:1px solid #263244;border-radius:18px;padding:28px">
         <p style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#34d399;margin:0 0 12px">Muhyo Tech Automation</p>
         <h1 style="font-size:26px;line-height:1.2;margin:0 0 10px">Professional Blog Image Prompt Ready</h1>
-        <p style="color:#a9b6ca;line-height:1.7">The AI blog was generated successfully, but the image generation needs your review or manual upload. A professional image prompt has been prepared based on the blog content.</p>
+        <p style="color:#a9b6ca;line-height:1.7">The AI blog was generated successfully. A professional image prompt has been prepared. Upload an image to trigger automated Blogger publishing & Social Share Kit access.</p>
 
         <h2 style="font-size:18px;margin:26px 0 8px">${escapeHtml(blog.title)}</h2>
         <p style="color:#a9b6ca;line-height:1.7">${escapeHtml(blog.summary || "")}</p>
@@ -92,7 +90,7 @@ export async function sendBlogImagePromptEmail({
         </div>
 
         <div style="margin-top:26px">
-          <a href="${uploadUrl}" target="_blank" style="display:inline-block;background:#34d399;color:#031014;text-decoration:none;font-weight:700;padding:14px 20px;border-radius:12px;margin-right:10px">Upload Blog Image</a>
+          <a href="${uploadUrl}" target="_blank" style="display:inline-block;background:#34d399;color:#031014;text-decoration:none;font-weight:700;padding:14px 22px;border-radius:12px;margin-right:10px;margin-bottom:10px">📸 Upload Image & Open Social Kit</a>
           <a href="${reviewUrl}" target="_blank" style="display:inline-block;background:#1f2937;color:#e5eefc;text-decoration:none;font-weight:700;padding:14px 20px;border-radius:12px;border:1px solid #334155">Review Blog in Admin</a>
         </div>
 
@@ -105,7 +103,7 @@ export async function sendBlogImagePromptEmail({
     to,
     subject: `AI Blog Image Needed: ${blog.title}`,
     html,
-    text: `AI Blog Image Needed: ${blog.title}\n\n${blog.summary || ""}\n\nFull Image Generation Prompt:\n${imagePrompt.prompt}\n\nVisual Direction:\n${imagePrompt.visualDirection || ""}\n\nNegative Prompt:\n${imagePrompt.negativePrompt || ""}\n\nUpload: ${uploadUrl}`,
+    text: `AI Blog Image Needed: ${blog.title}\n\n${blog.summary || ""}\n\nFull Image Generation Prompt:\n${imagePrompt.prompt}\n\nUpload: ${uploadUrl}`,
     fromName: "Muhyo Tech Automation",
   });
 }

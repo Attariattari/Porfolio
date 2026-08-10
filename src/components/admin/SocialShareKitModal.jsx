@@ -19,9 +19,10 @@ const platforms = [
   { key: "whatsapp", label: "WhatsApp", Icon: Send, tone: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20" },
   { key: "reddit", label: "Reddit", Icon: MessagesSquare, tone: "text-orange-500 bg-orange-500/10 border-orange-500/20" },
   { key: "instagram", label: "Instagram", Icon: Instagram, tone: "text-pink-500 bg-pink-500/10 border-pink-500/20" },
+  { key: "devto", label: "Dev.to", Icon: FileText, tone: "text-purple-500 bg-purple-500/10 border-purple-500/20" },
 ];
 
-const emptyPosts = { linkedin: "", facebook: "", x: "", whatsapp: "", reddit: "", instagram: "" };
+const emptyPosts = { linkedin: "", facebook: "", x: "", whatsapp: "", reddit: "", instagram: "", devto: "" };
 
 export default function SocialShareKitModal({ blog, isOpen, onClose, onUpdated }) {
   const [active, setActive] = useState("linkedin");
@@ -56,8 +57,12 @@ export default function SocialShareKitModal({ blog, isOpen, onClose, onUpdated }
     if (active === "linkedin") return `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(blogUrl)}`;
     if (active === "facebook") return `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(blogUrl)}`;
     if (active === "x") return `https://twitter.com/intent/tweet?text=${encodeURIComponent(posts.x)}`;
-    if (active === "whatsapp") return `https://wa.me/?text=${encodeURIComponent(posts.whatsapp)}`;
+    if (active === "whatsapp") {
+      const text = encodeURIComponent(posts.whatsapp || blogUrl);
+      return `https://api.whatsapp.com/send?text=${text}`;
+    }
     if (active === "reddit") return `https://www.reddit.com/submit?url=${encodeURIComponent(blogUrl)}&title=${encodeURIComponent(blog.title)}`;
+    if (active === "devto") return `https://dev.to/new`;
     return "https://www.instagram.com/";
   };
 

@@ -4,7 +4,7 @@ import { generateGeminiResponse } from "@/lib/geminiService";
 import { SITE_URL } from "@/lib/config";
 import { cacheManager } from "@/lib/cache";
 
-const SOCIAL_PLATFORMS = ["linkedin", "facebook", "x", "whatsapp", "reddit", "instagram"];
+const SOCIAL_PLATFORMS = ["linkedin", "facebook", "x", "whatsapp", "reddit", "instagram", "devto"];
 
 const cleanText = (value = "") => String(value)
   .replace(/<[^>]+>/g, " ")
@@ -71,9 +71,9 @@ function validateShareReadyKit(kit, blog) {
   const titleFingerprint = cleanText(blog.title).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
   const unsafeStyle = /\bever wonder\b|\bdid you know\b|\bin today'?s digital world\b|\bkey takeaways\b|\bsearch engines? (?:will )?reward\b|\bboost(?:ing)? (?:your )?(?:rankings?|ctr)\b|\bguaranteed?\b|\b100%\b|\bskyrocket\b|\bgame[- ]changer\b|\blet'?s talk\b|\bclick here\b|\bunlock(?:ing)? the power\b|\brevolutioni[sz]e\b|\bdelve\b/i;
   const hardWording = /\b(?:utili[sz]e|leverage|facilitate|synergy|paradigm|multifaceted|holistic|cutting[- ]edge|state[- ]of[- ]the[- ]art|seamless(?:ly)?|robust|transformative|groundbreaking|unprecedented|intricacies|aforementioned|in order to|it is important to note|navigate the complexities|ever[- ]evolving landscape)\b/i;
-  const limits = { linkedin: [650, 1800], facebook: [500, 1400], x: [270, 280], whatsapp: [220, 650], reddit: [650, 2000], instagram: [550, 1600] };
-  const wordLimits = { linkedin: [100, 260], facebook: [80, 210], x: [25, 60], whatsapp: [35, 110], reddit: [100, 300], instagram: [90, 240] };
-  const hashtagLimits = { linkedin: [3, 5], facebook: [0, 3], x: [0, 2], whatsapp: [0, 0], reddit: [0, 0], instagram: [3, 8] };
+  const limits = { linkedin: [650, 1800], facebook: [500, 1400], x: [270, 280], whatsapp: [220, 650], reddit: [650, 2000], instagram: [550, 1600], devto: [650, 2200] };
+  const wordLimits = { linkedin: [100, 260], facebook: [80, 210], x: [25, 60], whatsapp: [35, 110], reddit: [100, 300], instagram: [90, 240], devto: [100, 350] };
+  const hashtagLimits = { linkedin: [3, 5], facebook: [0, 3], x: [0, 2], whatsapp: [0, 0], reddit: [0, 0], instagram: [3, 8], devto: [2, 5] };
   const hooks = [];
 
   for (const [platform, value] of Object.entries(kit)) {
@@ -126,6 +126,7 @@ function createFallbackKit(blog, { validate = true } = {}) {
   const whatsappHook = capitalizeFirstLetter(`A new practical guide explains the key choices behind ${topic}.`);
   const redditHook = capitalizeFirstLetter(`${topic} raises a useful question about how web projects are planned and built.`);
   const instagramHook = capitalizeFirstLetter(`Better ${topic} starts with clear choices people can understand.`);
+  const devtoHook = capitalizeFirstLetter(`Deep technical architectural choices behind ${topic} in production.`);
   const tags = hashtags(blog);
   const linkedin = `${linkedinHook}\n\n${sourceSummary}\n\nThe article, “${title},” connects this lesson to the choices teams make while planning and building a web project. It explains the practical value without hiding the tradeoffs or filling the post with hard technical language.\n\nThe full guide gives the remaining context, examples, and steps.\n\nRead the practical guide: ${url}\n\n${tags}`.trim();
   const facebook = `${facebookHook}\n\n${sourceSummary}\n\nMuhyo Tech's article, “${title},” explains why this issue deserves attention and how clearer build choices can help. The post gives the main lesson, while the full article provides the context and practical details needed to use it well.\n\nRead the complete article: ${url}\n\n${hashtags(blog, 3)}`.trim();
@@ -138,7 +139,8 @@ function createFallbackKit(blog, { validate = true } = {}) {
   const whatsapp = `${whatsappHook}\n\n${sourceSummary.slice(0, 230)}\n\nThe article explains what matters, why it matters, and how the idea fits a real web project.\n\n${title}\n${url}`;
   const reddit = `${redditHook}\n\n${sourceSummary}\n\nMuhyo Tech's article, “${title},” looks at the problem, the choices behind it, and the practical effect those choices can have on a web project. This summary shares the central lesson without making sales claims or pretending there is one answer for every project.\n\nThe full article includes the context and details that cannot fit into one post.\n\nRead it here: ${url}`;
   const instagram = `${instagramHook}\n\n${sourceSummary}\n\nThe Muhyo Tech guide, “${title},” explains the central lesson in simple terms. It shows why the topic matters and which practical choices need attention, without turning the caption into the full article.\n\nRead the guide for the complete context and steps: ${url}\n\n${hashtags(blog, 6)}`;
-  const kit = { linkedin, facebook, x, whatsapp, reddit, instagram };
+  const devto = `${devtoHook}\n\n${sourceSummary}\n\nIn our detailed engineering write-up, “${title},” we break down the exact trade-offs, architecture patterns, and production lessons. We cover the rationale behind each decision without fluff or marketing jargon.\n\nCheck out the master guide on Muhyo Tech: ${url}\n\n${hashtags(blog, 4)}`;
+  const kit = { linkedin, facebook, x, whatsapp, reddit, instagram, devto };
   if (validate) validateShareReadyKit(kit, blog);
   return { ...kit, source: "fallback" };
 }
