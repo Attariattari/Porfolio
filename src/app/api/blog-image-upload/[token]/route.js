@@ -17,6 +17,7 @@ import { revalidatePath } from "next/cache";
 import { triggerFeaturedUpdate } from "@/lib/ai/featuredEngine";
 import { ensureBlogImageAlt } from "@/lib/blogImageAlt";
 import { scheduleInternalLinkAudit } from "@/lib/ai/blog/internalLinkingEngine";
+import { triggerBloggerPublishIfReady } from "@/lib/ai/blog/bloggerAutomationHook";
 
 function isSuperAdmin(session) {
   return session?.role === "super-admin" || session?.role === "root-super-admin";
@@ -127,6 +128,11 @@ export async function POST(request, { params }) {
       blogId: updatedBlog._id.toString(),
     });
     await scheduleInternalLinkAudit(updatedBlog._id);
+
+    // Trigger Blogger publish check if supporting post was waiting for image
+    triggerBloggerPublishIfReady(updatedBlog._id).catch((err) =>
+      console.error("[Blogger Upload Trigger Error]:", err.message)
+    );
 
     return NextResponse.json({
       success: true,

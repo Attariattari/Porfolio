@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import { Blog } from "@/models/Portfolio";
+import { BloggerPost } from "@/models/BloggerPost";
 import { auditAndFixBlogContent } from "@/lib/ai/blog/blogAuditEngine";
+import { triggerBloggerPublishIfReady } from "@/lib/ai/blog/bloggerAutomationHook";
 import { revalidatePath } from "next/cache";
 
 // GET /api/admin/blog-audit/[id] -> Fast fetch of saved audit & backup comparison WITHOUT calling AI
@@ -157,6 +159,22 @@ export async function PUT(req, { params }) {
     blog.auditedAt = new Date();
 
     await blog.save();
+
+    // Safe Sync: Update BloggerPost parent info & check if Blogger post is ready
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://muhyotech.com";
+      await BloggerPost.updateMany(
+        { parentBlogId: blog._id },
+        {
+          parentBlogTitle: blog.title,
+          parentBlogSlug: blog.slug,
+          parentBlogUrl: `${baseUrl}/blog/${blog.slug}`,
+        }
+      );
+      triggerBloggerPublishIfReady(blog._id).catch(() => {});
+    } catch (bErr) {
+      console.error("[Blogger Sync Safe Warning]:", bErr.message);
+    }
 
     revalidatePath("/blog");
     revalidatePath(`/blog/${blog.slug}`);

@@ -186,6 +186,7 @@ export default function AdminSidebar() {
           "Projects",
           "Services",
           "Blog",
+          "Blogger Engine",
           "AI Blog Optimizer",
           "Editorial Planner",
           "Internal Links",

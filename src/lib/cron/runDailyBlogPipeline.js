@@ -1,6 +1,7 @@
 import dbConnect from "@/lib/dbConnect";
 import { Blog } from "@/models/Portfolio";
 import { BlogImageUploadLink } from "@/models/BlogImageUploadLink";
+import { processDailyBloggerBacklog } from "../ai/blog/bloggerBacklogEngine.js";
 import {
   finalizeBlogPipeline,
   runBlogAutomationPipeline,
@@ -167,6 +168,11 @@ export async function runDailyBlogPipeline({
   const reportedNextEligibleAt = dailyBlog
     ? getNextAutomationAt({ settings, lastGeneratedAt: dailyBlog.generatedAt || dailyBlog.createdAt })
     : nextEligibleAt;
+
+  // Safe non-blocking execution of Daily Blogger Backlog Drip Engine (1 old blog per day)
+  processDailyBloggerBacklog({ baseUrl }).catch((bErr) =>
+    console.error("[Blogger Drip Engine Cron Safe Catch]:", bErr.message)
+  );
 
   return {
     success: !failed,

@@ -10,11 +10,10 @@ import {
 import { generateBlogImage } from "./generateBlogImage";
 import { createBlogImageUploadLink } from "@/lib/server/blogImageUploadToken";
 import { sendBlogImagePromptEmail } from "@/lib/server/email/sendBlogImagePromptEmail";
+import { triggerBloggerPublishIfReady } from "./bloggerAutomationHook";
 import { triggerFeaturedUpdate } from "@/lib/ai/featuredEngine";
 import { ensureBlogImageAlt } from "@/lib/blogImageAlt";
 import { scheduleInternalLinkAudit } from "./internalLinkingEngine";
-
-function safeErrorMessage(error) {
   if (!error) return "Image generation failed.";
   return String(error.message || error).slice(0, 180);
 }
@@ -120,6 +119,11 @@ export async function ensureBlogImage(blogId, options = {}) {
         await triggerFeaturedUpdate(blog);
         await scheduleInternalLinkAudit(blog._id);
       }
+
+      // Safe trigger for Google Blogger supporting post publish check
+      triggerBloggerPublishIfReady(blog._id).catch((err) =>
+        console.error("[Blogger Hook] Safe trigger failure:", err.message)
+      );
 
       return { success: true, status: "generated", blog };
     }

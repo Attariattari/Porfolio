@@ -27,6 +27,7 @@ export const ADMIN_NAVIGATION_LINKS = [
   { name: "Projects", href: "/admin/projects", icon: "FolderKanban" },
   { name: "Skills", href: "/admin/skills", icon: "Braces" },
   { name: "Blog", href: "/admin/blogs", icon: "Newspaper" },
+  { name: "Blogger Engine", href: "/admin/blogger", icon: "Newspaper" },
   { name: "AI Blog Optimizer", href: "/admin/blog-optimizer", icon: "Wand2" },
   { name: "Editorial Planner", href: "/admin/blog-topics", icon: "ListChecks" },
   { name: "Internal Links", href: "/admin/internal-links", icon: "Link2" },
