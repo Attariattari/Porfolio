@@ -17,6 +17,7 @@ import { format } from "date-fns";
 import { Sparkles, CheckCircle2, Mail, RefreshCcw, Copy, BookOpen, Search, Pencil, Trash2, ExternalLink, Star, Plus, Download, Upload, Share2, Clock3, Save, X } from "lucide-react";
 import AIBlogProgress from "@/components/admin/AIBlogProgress";
 import SocialShareKitModal from "@/components/admin/SocialShareKitModal";
+import BloggerPostModal from "@/components/admin/BloggerPostModal";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ListChecks } from "lucide-react";
@@ -64,6 +65,9 @@ export default function BlogsPage() {
   const [automationSettingsLoading, setAutomationSettingsLoading] = useState(true);
   const [automationSettingsSaving, setAutomationSettingsSaving] = useState(false);
   const [importing, setImporting] = useState(false);
+
+  const [selectedBloggerBlog, setSelectedBloggerBlog] = useState(null);
+  const [isBloggerModalOpen, setIsBloggerModalOpen] = useState(false);
 
   const isAnyFilterActive = Boolean(blogSearch || blogDateFilter || blogFeaturedFilter !== "all" || blogSortDirection !== "ascending");
 
@@ -160,36 +164,13 @@ export default function BlogsPage() {
     });
   };
 
-  const handleGenerateBloggerForBlog = async (blog) => {
+  const handleGenerateBloggerForBlog = (blog) => {
     if (!blog._id || blog._isFromDataJs) {
       toast.error("Template articles cannot be linked to Blogger. Save to database first.");
       return;
     }
-
-    toast.loading(`Generating 900-1200 word supporting post for "${blog.title.substring(0, 35)}..."`, { id: "blogger-gen-toast" });
-
-    try {
-      const res = await fetch("/api/admin/blogger", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ parentBlogId: blog._id }),
-      });
-      const json = await res.json();
-
-      if (json.success) {
-        toast.success(`Supporting Blogger Post Created! (QC Score: ${json.data.qualityScore || 9.5}/10)`, {
-          id: "blogger-gen-toast",
-          action: {
-            label: "Open Blogger Engine",
-            onClick: () => router.push("/admin/blogger"),
-          },
-        });
-      } else {
-        toast.error("Blogger Generation Failed: " + json.error, { id: "blogger-gen-toast" });
-      }
-    } catch (e) {
-      toast.error("Network error generating Blogger post", { id: "blogger-gen-toast" });
-    }
+    setSelectedBloggerBlog(blog);
+    setIsBloggerModalOpen(true);
   };
 
   const columns = [
@@ -886,6 +867,15 @@ export default function BlogsPage() {
         blog={selectedSocialBlog}
         onClose={() => setSelectedSocialBlog(null)}
         onUpdated={() => fetchBlogs({ force: true })}
+      />
+
+      <BloggerPostModal
+        isOpen={isBloggerModalOpen}
+        onClose={() => {
+          setIsBloggerModalOpen(false);
+          setSelectedBloggerBlog(null);
+        }}
+        parentBlog={selectedBloggerBlog}
       />
     </div>
   );
