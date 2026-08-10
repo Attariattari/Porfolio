@@ -14,6 +14,8 @@ import { triggerBloggerPublishIfReady } from "./bloggerAutomationHook";
 import { triggerFeaturedUpdate } from "@/lib/ai/featuredEngine";
 import { ensureBlogImageAlt } from "@/lib/blogImageAlt";
 import { scheduleInternalLinkAudit } from "./internalLinkingEngine";
+
+function safeErrorMessage(error) {
   if (!error) return "Image generation failed.";
   return String(error.message || error).slice(0, 180);
 }
