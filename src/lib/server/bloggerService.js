@@ -105,23 +105,46 @@ export async function publishToGoogleBlogger({
 }
 
 export function checkBloggerConfigStatus() {
-  const hasClientId = Boolean(
-    process.env.GOOGLE_BLOGGER_CLIENT_ID || process.env.GOOGLE_CLIENT_ID
-  );
-  const hasClientSecret = Boolean(
-    process.env.GOOGLE_BLOGGER_CLIENT_SECRET || process.env.GOOGLE_CLIENT_SECRET
-  );
+  const hasClientId = Boolean(process.env.GOOGLE_BLOGGER_CLIENT_ID || process.env.GOOGLE_CLIENT_ID);
+  const hasClientSecret = Boolean(process.env.GOOGLE_BLOGGER_CLIENT_SECRET || process.env.GOOGLE_CLIENT_SECRET);
   const hasRefreshToken = Boolean(process.env.GOOGLE_BLOGGER_REFRESH_TOKEN);
   const hasBlogId = Boolean(process.env.GOOGLE_BLOGGER_BLOG_ID);
 
-  const configured = Boolean(
-    hasClientId && hasClientSecret && hasRefreshToken && hasBlogId
-  );
-
   return {
-    configured,
-    blogId: process.env.GOOGLE_BLOGGER_BLOG_ID || null,
+    configured: Boolean(hasClientId && hasClientSecret && hasRefreshToken && hasBlogId),
+    hasBlogId,
     hasClientId,
+    hasClientSecret,
     hasRefreshToken,
+    autoPublishEnabled: process.env.ENABLE_AUTO_BLOGGER_POST === "true",
   };
+}
+
+export async function checkIfBloggerPostExists(bloggerPostId) {
+  try {
+    const blogId = process.env.GOOGLE_BLOGGER_BLOG_ID;
+    if (!blogId || !bloggerPostId) return { exists: false };
+
+    const accessToken = await getBloggerAccessToken();
+    const response = await fetch(
+      `https://www.googleapis.com/blogger/v3/blogs/${blogId}/posts/${bloggerPostId}`,
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
+
+    if (response.status === 404) {
+      return { exists: false, reason: "DELETED_ON_BLOGGER" };
+    }
+
+    const data = await response.json();
+    if (data.status === "DELETED") {
+      return { exists: false, reason: "DELETED_ON_BLOGGER" };
+    }
+
+    return { exists: response.ok, postData: data };
+  } catch (error) {
+    console.error("[checkIfBloggerPostExists Error]:", error.message);
+    return { exists: false, error: error.message };
+  }
 }

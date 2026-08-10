@@ -3,7 +3,7 @@ import dbConnect from "@/lib/dbConnect";
 import { BloggerPost } from "@/models/BloggerPost";
 import { Blog } from "@/models/Portfolio";
 import { generateBloggerSupportingBlog } from "@/lib/ai/blog/generateBloggerSupportingBlog";
-import { checkBloggerConfigStatus } from "@/lib/server/bloggerService";
+import { checkBloggerConfigStatus, checkIfBloggerPostExists } from "@/lib/server/bloggerService";
 import {
   getUnsyncedOldBlogsCount,
   processDailyBloggerBacklog,
@@ -23,6 +23,23 @@ export async function GET(request) {
     const posts = await BloggerPost.find(query)
       .sort({ createdAt: -1 })
       .lean();
+
+    // Auto Sync Verification: Check if any published posts were deleted directly on Blogger.com
+    for (const post of posts) {
+      if (post.publishStatus === "published" && post.bloggerPostId) {
+        checkIfBloggerPostExists(post.bloggerPostId).then(async (checkRes) => {
+          if (!checkRes.exists && checkRes.reason === "DELETED_ON_BLOGGER") {
+            console.log(`[Blogger Auto-Sync] Post "${post.title}" was deleted on Blogger. Reverting status...`);
+            await BloggerPost.findByIdAndUpdate(post._id, {
+              publishStatus: "pending_review",
+              bloggerPostId: null,
+              bloggerUrl: null,
+              errorLog: "Post was deleted directly on Google Blogger dashboard.",
+            });
+          }
+        }).catch(() => {});
+      }
+    }
 
     const configStatus = checkBloggerConfigStatus();
     const backlogStatus = await getUnsyncedOldBlogsCount();
