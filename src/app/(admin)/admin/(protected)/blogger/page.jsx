@@ -98,6 +98,17 @@ export default function BloggerAdminPage() {
   };
 
   const handlePublish = async (postId, isDraft = false) => {
+    const targetPost = posts.find((p) => p._id === postId);
+    const hasImageInContent = targetPost?.content && targetPost.content.includes("<img");
+
+    if (!hasImageInContent) {
+      toast.error(
+        "🖼️ Cover Picture Required: Please generate or upload a featured image for this blog first before publishing to Blogger.",
+        { duration: 6000 }
+      );
+      return;
+    }
+
     setIsPublishing(true);
     toast.loading(`Publishing to Google Blogger API v3 (${isDraft ? "Draft" : "Live"})...`, { id: "pub-toast" });
 

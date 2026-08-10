@@ -41,6 +41,31 @@ export async function PATCH(request, { params }) {
 
     // Action: Publish to Google Blogger API
     if (body.action === "publish") {
+      // Strict Image Validation Check
+      const hasImage = post.content && post.content.includes("<img");
+      if (!hasImage) {
+        const parentBlog = await Blog.findById(post.parentBlogId);
+        const parentImageUrl = parentBlog?.featuredImage?.url || parentBlog?.image;
+
+        if (parentImageUrl) {
+          post.content = `
+            <div style="margin-bottom: 24px; text-align: center;">
+              <img src="${parentImageUrl}" alt="${post.title}" style="width: 100%; max-height: 480px; object-fit: cover; border-radius: 12px;" />
+            </div>
+            ${post.content}
+          `;
+          await post.save();
+        } else {
+          return NextResponse.json(
+            {
+              success: false,
+              error: "🖼️ Cover Picture Missing! Please generate or upload a featured image for this blog first before publishing to Blogger.",
+            },
+            { status: 400 }
+          );
+        }
+      }
+
       const publishRes = await publishToGoogleBlogger({
         title: post.title,
         content: post.content,

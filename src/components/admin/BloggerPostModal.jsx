@@ -102,6 +102,19 @@ export default function BloggerPostModal({ isOpen, onClose, parentBlog }) {
 
   const handlePublishToBlogger = async (isDraft = false) => {
     if (!bloggerPost?._id) return;
+
+    // Strict Image Validation Check
+    const hasImageInContent = editContent && editContent.includes("<img");
+    const hasParentImage = parentBlog?.image || parentBlog?.featuredImage?.url;
+
+    if (!hasImageInContent && !hasParentImage) {
+      toast.error(
+        "🖼️ Cover Picture Required: Please generate or upload a featured image for this blog first before publishing to Blogger.",
+        { duration: 6000 }
+      );
+      return;
+    }
+
     setPublishing(true);
 
     try {
