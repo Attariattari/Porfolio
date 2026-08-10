@@ -4,19 +4,46 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const keyCooldowns = new Map();
 let preferredKeyIndex = 0;
 
+/**
+ * DYNAMIC ENTERPRISE GEMINI KEY DISCOVERY ENGINE
+ * Automatically discovers, sanitizes, and deduplicates all Gemini API keys from process.env.
+ * Supports:
+ * - Comma-separated keys in GEMINI_API_KEYS (e.g. GEMINI_API_KEYS=key1,key2,key3...)
+ * - Any env variable starting with GEMINI_API_KEY (e.g. GEMINI_API_KEY_1 to GEMINI_API_KEY_100+)
+ * - Standard single GEMINI_API_KEY
+ */
 function getGeminiApiKeys() {
-    const configured = [
-        process.env.GEMINI_API_KEY_1,
-        process.env.GEMINI_API_KEY_2,
-        process.env.GEMINI_API_KEY_3,
-        process.env.GEMINI_API_KEY_4,
-        process.env.GEMINI_API_KEY_5,
-        process.env.GEMINI_API_KEY_6,
-        process.env.GEMINI_API_KEY,
-    ]
-        .map((key) => String(key || "").trim())
-        .filter(Boolean);
-    return [...new Set(configured)].map((key, index) => ({ key, index, label: `Key ${index + 1}` }));
+    const rawKeysSet = new Set();
+
+    // 1. Process comma-separated bulk string GEMINI_API_KEYS if present
+    if (process.env.GEMINI_API_KEYS) {
+        String(process.env.GEMINI_API_KEYS)
+            .split(",")
+            .map((k) => k.trim())
+            .filter(Boolean)
+            .forEach((k) => rawKeysSet.add(k));
+    }
+
+    // 2. Dynamically scan process.env for ANY key matching GEMINI_API_KEY pattern (unlimited)
+    Object.keys(process.env)
+        .filter((envKey) => /^GEMINI_API_KEY/i.test(envKey))
+        .forEach((envKey) => {
+            const val = String(process.env[envKey] || "").trim();
+            if (val) {
+                val.split(",")
+                    .map((k) => k.trim())
+                    .filter(Boolean)
+                    .forEach((k) => rawKeysSet.add(k));
+            }
+        });
+
+    const uniqueKeys = Array.from(rawKeysSet);
+
+    return uniqueKeys.map((key, index) => ({
+        key,
+        index,
+        label: `Key ${index + 1}`,
+    }));
 }
 
 function getOrderedApiKeys() {
