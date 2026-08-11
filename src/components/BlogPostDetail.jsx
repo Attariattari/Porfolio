@@ -1,11 +1,7 @@
-"use client";
-
-import { motion } from "framer-motion";
 import {
   Calendar,
   Clock,
   Tag,
-  Share2,
   Linkedin,
   Facebook,
   ArrowLeft,
@@ -19,6 +15,7 @@ import { getCloudinaryAspectSrc, getSafeImageSrc } from "@/lib/images/getSafeIma
 import { getBlogImageAlt } from "@/lib/blogImageAlt";
 import { ensureMuhyoTechAlt } from "@/lib/mediaAlt";
 import { SITE_URL } from "@/lib/config";
+import { CopyLinkButton, MotionDiv, MotionFigure } from "./BlogShareActions";
 
 function sanitizeBlogContentClasses(content = "") {
   return String(content).replace(/\sclass=(["'])(.*?)\1/gi, (attribute, quote, classNames) => {
@@ -72,17 +69,6 @@ export default function BlogPostDetail({
     },
   ];
 
-  const copyShareUrl = async () => {
-    const { toast } = await import("sonner");
-
-    try {
-      await navigator.clipboard.writeText(fullShareUrl);
-      toast.success("Blog link copied.");
-    } catch {
-      toast.error("Link copy nahi hua. Please manually copy karein.");
-    }
-  };
-
   return (
     <div className="min-h-screen pb-20 text-foreground transition-colors">
       {/* Article Header */}
@@ -98,7 +84,7 @@ export default function BlogPostDetail({
             </Link>
           </div>
 
-          <motion.div
+          <MotionDiv
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.75 }}
@@ -159,9 +145,9 @@ export default function BlogPostDetail({
                 </div>
               </Link>
             </div>
-          </motion.div>
+          </MotionDiv>
 
-          <motion.figure
+          <MotionFigure
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.08 }}
@@ -186,7 +172,7 @@ export default function BlogPostDetail({
                 <span className="h-2 w-2 rounded-full bg-accent shadow-[0_0_18px_rgba(20,184,166,0.9)]" />
               </div>
             </div>
-          </motion.figure>
+          </MotionFigure>
         </div>
       </header>
 
@@ -194,7 +180,7 @@ export default function BlogPostDetail({
       <SectionWrapper className="pt-12 md:pt-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 max-w-7xl mx-auto">
           {/* Main Content */}
-          <motion.div
+          <MotionDiv
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -284,13 +270,13 @@ export default function BlogPostDetail({
                 </Button>
               </Link>
             </div>
-          </motion.div>
+          </MotionDiv>
 
           {/* Sidebar */}
           <aside className="lg:sticky lg:top-6 lg:col-span-4 lg:h-fit lg:self-start">
             <div className="space-y-5">
               {/* Share Box - Premium Card */}
-              <motion.div
+              <MotionDiv
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 }}
@@ -331,31 +317,12 @@ export default function BlogPostDetail({
                     </a>
                   ))}
 
-                  <button
-                    type="button"
-                    onClick={copyShareUrl}
-                    className="group/copy flex w-full cursor-pointer items-center justify-between rounded-2xl border border-accent/25 bg-accent/10 p-4 text-accent transition-all duration-300 hover:-translate-y-0.5 hover:bg-accent hover:text-accent-foreground hover:shadow-xl hover:shadow-accent/10 lg:px-4 lg:py-3"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent/10 transition-colors group-hover/copy:bg-white/20 lg:h-9 lg:w-9">
-                        <Share2 className="w-4 h-4" />
-                      </div>
-                      <div className="text-left">
-                        <span className="block text-xs font-bold tracking-tight">
-                          Copy Link
-                        </span>
-                        <span className="mt-1 block text-[10px] font-medium text-current/65">
-                          Direct blog URL
-                        </span>
-                      </div>
-                    </div>
-                    <ArrowUpRight className="w-4 h-4 opacity-70 transition-all group-hover/copy:translate-x-0.5 group-hover/copy:-translate-y-0.5 group-hover/copy:opacity-100" />
-                  </button>
+                  <CopyLinkButton fullShareUrl={fullShareUrl} />
                 </div>
-              </motion.div>
+              </MotionDiv>
 
               {relatedBlogs.length > 0 && (
-                <motion.div
+                <MotionDiv
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.4 }}
@@ -399,7 +366,7 @@ export default function BlogPostDetail({
                       <ArrowRight className="w-4 h-4 -translate-x-2 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100" />
                     </Link>
                   </div>
-                </motion.div>
+                </MotionDiv>
               )}
             </div>
           </aside>
