@@ -101,6 +101,7 @@ export async function POST(request) {
       );
     }
 
+    console.log(`[Blogger API v2] Generating supporting blog for parent ID: ${parentBlogId}...`);
     const result = await generateBloggerSupportingBlog(parentBlogId);
 
     if (!result.success) {

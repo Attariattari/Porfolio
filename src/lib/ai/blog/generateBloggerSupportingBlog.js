@@ -86,6 +86,37 @@ async function runBloggerQualityReview(blogData) {
   }
 }
 
+function repairTruncatedJson(rawText) {
+  const cleaned = rawText
+    .replace(/```json/gi, "")
+    .replace(/```/g, "")
+    .trim();
+
+  try {
+    return JSON.parse(cleaned);
+  } catch (initialError) {
+    console.warn("[Blogger Generator] Standard JSON parse failed, attempting auto-repair...");
+    try {
+      let repaired = cleaned.replace(/\\+$/, "").replace(/,\s*$/, "");
+
+      // Count unescaped double quotes
+      const quoteMatches = repaired.match(/(?<!\\)"/g) || [];
+      if (quoteMatches.length % 2 !== 0) {
+        repaired += '"';
+      }
+
+      // Close open object brace
+      if (!repaired.trim().endsWith("}")) {
+        repaired += "\n}";
+      }
+
+      return JSON.parse(repaired);
+    } catch (repairError) {
+      throw new Error(`AI response truncated: ${initialError.message}`);
+    }
+  }
+}
+
 export async function generateBloggerSupportingBlog(parentBlogId, options = {}) {
   try {
     await dbConnect();
@@ -105,32 +136,40 @@ export async function generateBloggerSupportingBlog(parentBlogId, options = {}) 
     let qcReview = null;
 
     while (retryCount < 3) {
-      const promptText = SUPPORTING_EDITORIAL_PROMPT
-        .replace(/{{PARENT_TITLE}}/g, parentBlog.title)
-        .replace(/{{PARENT_SUMMARY}}/g, parentBlog.summary || "")
-        .replace(/{{PARENT_URL}}/g, parentUrl);
+      try {
+        const promptText = SUPPORTING_EDITORIAL_PROMPT
+          .replace(/{{PARENT_TITLE}}/g, parentBlog.title)
+          .replace(/{{PARENT_SUMMARY}}/g, parentBlog.summary || "")
+          .replace(/{{PARENT_URL}}/g, parentUrl);
 
-      const rawResponse = await generateGeminiResponse(promptText, {
-        temperature: 0.7,
-        responseMimeType: "application/json",
-      });
+        const rawResponse = await generateGeminiResponse(promptText, {
+          temperature: 0.7,
+          maxOutputTokens: 8192,
+          responseMimeType: "application/json",
+        });
 
-      const cleanedJson = rawResponse
-        .replace(/```json/gi, "")
-        .replace(/```/g, "")
-        .trim();
+        blogData = repairTruncatedJson(rawResponse);
 
-      blogData = JSON.parse(cleanedJson);
+        if (!blogData.title || !blogData.content) {
+          throw new Error("Parsed JSON missing essential title or content fields.");
+        }
 
-      // Run QC Audit (Reusing existing QC criteria: score >= 8.0)
-      qcReview = await runBloggerQualityReview(blogData);
-      console.log(`[Blogger QC] Attempt #${retryCount + 1} Score: ${qcReview.score}/10 | Passed: ${qcReview.passed}`);
+        // Run QC Audit (Reusing existing QC criteria: score >= 8.0)
+        qcReview = await runBloggerQualityReview(blogData);
+        console.log(`[Blogger QC] Attempt #${retryCount + 1} Score: ${qcReview.score}/10 | Passed: ${qcReview.passed}`);
 
-      if (qcReview.passed && qcReview.score >= 8.0) {
-        break;
+        if (qcReview.passed && qcReview.score >= 8.0) {
+          break;
+        }
+      } catch (attemptError) {
+        console.warn(`[Blogger Generator] Attempt #${retryCount + 1} failed: ${attemptError.message}`);
       }
 
       retryCount++;
+    }
+
+    if (!blogData || !blogData.content) {
+      throw new Error("Failed to generate a valid supporting blog post after 3 attempts due to response truncation. Please try again.");
     }
 
     // Attach Parent/Featured Cover Image at top of Blogger HTML for Blogger thumbnail parsing
