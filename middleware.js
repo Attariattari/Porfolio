@@ -24,7 +24,7 @@ export function middleware(request) {
       img-src 'self' data: https: http:;
       media-src 'self' https:;
       connect-src 'self' https: http: wss: ws: https://www.google-analytics.com https://analytics.google.com;
-      frame-src 'self' https://www.youtube.com;
+      frame-src 'self' https://www.youtube.com https://www.google.com;
       base-uri 'self';
       form-action 'self';
       frame-ancestors 'none';

@@ -41,7 +41,7 @@ const nextConfig = {
                     "img-src 'self' data: blob: https:",
                     "media-src 'self' https:",
                     "connect-src 'self' https: wss:",
-                    "frame-src 'self' https://www.youtube.com",
+                    "frame-src 'self' https://www.youtube.com https://www.google.com",
                     "base-uri 'self'",
                     "form-action 'self'",
                     "frame-ancestors 'none'",
