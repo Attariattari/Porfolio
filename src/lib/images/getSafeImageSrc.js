@@ -64,6 +64,7 @@ export function getCloudinaryAspectSrc(
   src,
   aspectRatio,
   fallbackSrc = DEFAULT_FALLBACK_IMAGE,
+  gravity,
 ) {
   const safeSrc = getSafeImageSrc(src, fallbackSrc);
 
@@ -73,9 +74,10 @@ export function getCloudinaryAspectSrc(
     if (!url.pathname.includes("/image/upload/")) return safeSrc;
     if (!/^\d+:\d+$/.test(aspectRatio)) return safeSrc;
 
+    const gParam = gravity ? `g_${gravity}` : aspectRatio === "1:1" ? "g_face" : "g_auto";
     url.pathname = url.pathname.replace(
       "/image/upload/",
-      `/image/upload/c_fill,g_center,ar_${aspectRatio}/`,
+      `/image/upload/c_fill,${gParam},ar_${aspectRatio}/`,
     );
     return url.toString();
   } catch {

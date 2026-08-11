@@ -132,28 +132,29 @@ export default function BlogPostDetail({
 
               <Link
                 href="/about"
-                className="flex items-center gap-4 lg:justify-end"
+                className="flex items-center gap-4 lg:justify-end group"
               >
-                <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full border-2 border-accent/30">
+                <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full border-2 border-accent/30 shadow-md transition-all duration-300 group-hover:scale-105 group-hover:border-accent">
                   <Image
                     src={getCloudinaryAspectSrc(
-                      "https://res.cloudinary.com/dg5gwixf1/image/upload/v1772736622/ChatGPT_Image_Mar_5_2026_11_36_42_AM_auw4uw.png",
+                      blog.authorImage || blog.authorAvatar || "https://res.cloudinary.com/dg5gwixf1/image/upload/v1772736622/ChatGPT_Image_Mar_5_2026_11_36_42_AM_auw4uw.png",
                       "1:1",
                       "/logo.png",
+                      "face",
                     )}
-                    alt={ensureMuhyoTechAlt("", `portrait of ${blog.author || "the author"}`)}
+                    alt={ensureMuhyoTechAlt("", `portrait of ${blog.author || "Pir Ghulam Muhyo Din"}`)}
                     width={48}
                     height={48}
                     sizes="48px"
-                    className="object-cover"
+                    className="h-full w-full object-cover object-center"
                   />
                 </div>
                 <div>
-                  <p className="text-xs font-bold tracking-normal text-foreground">
-                    {blog.author}
+                  <p className="text-xs font-bold tracking-normal text-foreground group-hover:text-accent transition-colors">
+                    {blog.author || "Pir Ghulam Muhyo Din"}
                   </p>
                   <p className="text-[10px] tracking-normal text-muted-foreground">
-                    {blog.authorRole}
+                    {blog.authorRole || "Founder"}
                   </p>
                 </div>
               </Link>
