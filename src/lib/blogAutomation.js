@@ -23,6 +23,7 @@ import {
 import { generateAndSaveSocialKit } from "./ai/blog/generateSocialKit.js";
 import { auditTrendDraft } from "./ai/blog/trendIntelligence.js";
 import { auditAndFixBlogContent } from "./ai/blog/blogAuditEngine.js";
+import { checkpointJobStage, renewJobLease } from "./cron/distributedLock.js";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -989,6 +990,7 @@ export async function runBlogAutomationPipeline(
       "Quality threshold was not met after four attempts.",
     ).catch(() => {});
     report("FAILED", {
+    report("FAILED", {
       message:
         "Maximum quality retries reached. Stopping to avoid degradation.",
     });
@@ -1001,10 +1003,24 @@ export async function runBlogAutomationPipeline(
   try {
     await dbConnect();
 
+    const jobId = automationContext?.jobExecution?._id || automationContext?.jobId;
+    const workerId = automationContext?.workerId;
+    const checkpoint = automationContext?.jobExecution?.checkpointData;
+
     // 0. Topic Selection / Persistence
     let selectedTopic = fixedTopic;
     let recentTitles = [];
     let recentBlogMeta = [];
+
+    if (!selectedTopic && checkpoint?.selectedTopic) {
+      selectedTopic = checkpoint.selectedTopic;
+      if (checkpoint.automationContext) {
+        automationContext = {
+          ...checkpoint.automationContext,
+          ...automationContext,
+        };
+      }
+    }
 
     if (!selectedTopic) {
       try {
@@ -1038,6 +1054,19 @@ export async function runBlogAutomationPipeline(
           report("PLANNED_TOPIC_SELECTED", {
             message: `Using editorial queue topic: ${topicPlan.title}`,
           });
+
+          if (jobId && workerId) {
+            await checkpointJobStage({
+              jobId,
+              workerId,
+              stage: "TOPIC_CLAIMED",
+              checkpointData: {
+                topicPlanId: topicPlan._id.toString(),
+                selectedTopic,
+                automationContext,
+              },
+            });
+          }
         } else {
           throw new Error("No Pillar-first editorial topic is currently available.");
         }
@@ -1053,19 +1082,34 @@ export async function runBlogAutomationPipeline(
       message: `${previousDraft ? "Refining existing draft" : "Drafting fresh content"} for: ${selectedTopic}`,
     });
 
-    // 1. GENERATE / REFINE
-    const blogData = await generateEditorialContent(
-      selectedTopic,
-      previousDraft ? previousDraft.feedback : "",
-      retryCount,
-      previousDraft,
-      recentTitles,
-      {
-        articleType: automationContext?.articleType || "supporting",
-        contentCategory: automationContext?.contentCategory || "core_web_engineering",
-        officialSources: automationContext?.trendPlan?.officialSources || [],
-      },
-    );
+    // 1. GENERATE / REFINE (Use checkpoint draft if resuming)
+    let blogData = null;
+    if (checkpoint?.blogDraft && !previousDraft) {
+      blogData = checkpoint.blogDraft;
+      console.log(`[Editorial-Pipeline] Resuming from checkpoint blogDraft for topic: ${blogData.title}`);
+    } else {
+      blogData = await generateEditorialContent(
+        selectedTopic,
+        previousDraft ? previousDraft.feedback : "",
+        retryCount,
+        previousDraft,
+        recentTitles,
+        {
+          articleType: automationContext?.articleType || "supporting",
+          contentCategory: automationContext?.contentCategory || "core_web_engineering",
+          officialSources: automationContext?.trendPlan?.officialSources || [],
+        },
+      );
+
+      if (jobId && workerId) {
+        await checkpointJobStage({
+          jobId,
+          workerId,
+          stage: "DRAFT_GENERATED",
+          checkpointData: { blogDraft: blogData },
+        });
+      }
+    }
 
     // 2. REVIEW
     report("REVIEWING", {
@@ -1092,6 +1136,15 @@ export async function runBlogAutomationPipeline(
         selectedTopic,
         automationContext,
       );
+    }
+
+    if (jobId && workerId) {
+      await checkpointJobStage({
+        jobId,
+        workerId,
+        stage: "QUALITY_APPROVED",
+        checkpointData: { qualityMetrics: review.metrics },
+      });
     }
 
     report("CONTENT_READY", {
@@ -1235,6 +1288,14 @@ export async function runBlogAutomationPipeline(
 
     try {
       await newBlog.save();
+      if (jobId && workerId) {
+        await checkpointJobStage({
+          jobId,
+          workerId,
+          stage: "BLOG_SAVED",
+          checkpointData: { blogId: newBlog._id.toString() },
+        });
+      }
     } catch (error) {
       if (error?.code === 11000 && automationContext?.automationSlot) {
         const existingSlotBlog = await Blog.findOne({

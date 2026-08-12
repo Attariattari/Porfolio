@@ -7,6 +7,12 @@ import {
   runBlogAutomationPipeline,
 } from "@/lib/blogAutomation";
 import { getBlogAutomationSettings, getNextAutomationAt } from "@/lib/blogAutomationSettings";
+import {
+  acquireJobSlot,
+  completeJobSlot,
+  failJobSlot,
+} from "./distributedLock.js";
+import { getWorkerId } from "./workerIdentity.js";
 
 function getUtcDay() {
   const start = new Date();
@@ -75,11 +81,13 @@ export async function runDailyBlogPipeline({
 } = {}) {
   await dbConnect();
 
+  const currentWorkerId = getWorkerId();
   const { start, slot } = getUtcDay();
   const settings = await getBlogAutomationSettings();
   const results = {
     slot,
     source,
+    workerId: currentWorkerId,
     settings,
     step1: null,
     step2: [],
@@ -104,19 +112,54 @@ export async function runDailyBlogPipeline({
   let dailyBlog = null;
 
   if (due) {
-    results.step1 = await runBlogAutomationPipeline(
-      0,
-      null,
-      null,
-      null,
-      {
-        automationSlot: nextSlot,
-        automationSource: `vercel-cron:${source}`,
-      },
-    );
+    const lock = await acquireJobSlot({ slot: nextSlot, source });
 
-    if (results.step1?.success && results.step1.blogId) {
-      dailyBlog = await Blog.findById(results.step1.blogId);
+    if (!lock.acquired) {
+      results.step1 = {
+        success: true,
+        skipped: true,
+        message: lock.completed
+          ? `Daily automation slot ${nextSlot} is already complete.`
+          : `Slot ${nextSlot} is currently owned by active worker ${lock.activeWorkerId || "another worker"}.`,
+        workerId: lock.activeWorkerId || null,
+      };
+    } else {
+      try {
+        results.step1 = await runBlogAutomationPipeline(
+          0,
+          null,
+          null,
+          null,
+          {
+            automationSlot: nextSlot,
+            automationSource: `vercel-cron:${source}`,
+            jobExecution: lock.job,
+            workerId: lock.workerId,
+          },
+        );
+
+        if (results.step1?.success && results.step1.blogId) {
+          dailyBlog = await Blog.findById(results.step1.blogId);
+          await completeJobSlot({
+            jobId: lock.job._id,
+            workerId: lock.workerId,
+            blogId: results.step1.blogId,
+          });
+        } else if (results.step1?.success === false) {
+          await failJobSlot({
+            jobId: lock.job._id,
+            workerId: lock.workerId,
+            reason: results.step1.error || results.step1.message || "Pipeline step 1 failed",
+          });
+        }
+      } catch (pipelineErr) {
+        await failJobSlot({
+          jobId: lock.job._id,
+          workerId: lock.workerId,
+          reason: pipelineErr.message,
+        });
+        throw pipelineErr;
+      }
     }
   } else {
     results.step1 = {

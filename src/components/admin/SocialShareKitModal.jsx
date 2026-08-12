@@ -48,6 +48,27 @@ export default function SocialShareKitModal({ blog, isOpen, onClose, onUpdated }
 
   if (!isOpen || !blog || typeof document === "undefined") return null;
 
+  const downloadCoverPhoto = async () => {
+    if (!imageUrl) return toast.error("No image available to download.");
+    const toastId = toast.loading("Downloading cover photo for Instagram...");
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = `${blog.slug || "muhyo-tech-blog"}-instagram-cover.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(blobUrl);
+      toast.success("Cover image downloaded! Ready for Instagram.", { id: toastId });
+    } catch {
+      window.open(imageUrl, "_blank");
+      toast.success("Opening cover image in new tab.", { id: toastId });
+    }
+  };
+
   const copyPost = async () => {
     await navigator.clipboard.writeText(posts[active]);
     toast.success(`${selectedPlatform.label} post copied.`);
@@ -63,11 +84,14 @@ export default function SocialShareKitModal({ blog, isOpen, onClose, onUpdated }
     }
     if (active === "reddit") return `https://www.reddit.com/submit?url=${encodeURIComponent(blogUrl)}&title=${encodeURIComponent(blog.title)}`;
     if (active === "devto") return `https://dev.to/new`;
-    return "https://www.instagram.com/";
+    return "https://www.instagram.com/create/select/";
   };
 
   const copyAndOpen = async () => {
     await copyPost();
+    if (active === "instagram") {
+      await downloadCoverPhoto();
+    }
     window.open(platformUrl(), "_blank", "noopener,noreferrer");
   };
 
@@ -82,7 +106,7 @@ export default function SocialShareKitModal({ blog, isOpen, onClose, onUpdated }
       });
       const result = await response.json();
       if (!response.ok || !result.success) throw new Error(result.error || "Could not generate social posts.");
-      setPosts({ ...emptyPosts, ...result.data });
+      setPosts((current) => ({ ...emptyPosts, ...current, ...(result.data || {}) }));
       toast.success(missingPlatforms.length ? "Missing platform posts prepared." : "Social kit regenerated.");
       await onUpdated?.();
     } catch (error) {
@@ -102,7 +126,7 @@ export default function SocialShareKitModal({ blog, isOpen, onClose, onUpdated }
       });
       const result = await response.json();
       if (!response.ok || !result.success) throw new Error(result.error || "Could not save social posts.");
-      setPosts({ ...emptyPosts, ...result.data });
+      setPosts((current) => ({ ...emptyPosts, ...current, ...(result.data || {}) }));
       toast.success("Social Share Kit saved.");
       await onUpdated?.();
     } catch (error) {
@@ -185,6 +209,26 @@ export default function SocialShareKitModal({ blog, isOpen, onClose, onUpdated }
                   <div><SectionLabel>Post editor</SectionLabel><h3 className="mt-1 text-sm font-black text-foreground">{selectedPlatform.label} copy</h3></div>
                   <span className={`rounded-lg border px-2 py-1 text-[9px] font-bold ${active === "x" && (posts.x.length < 270 || posts.x.length > 280) ? "border-status-danger/30 bg-status-danger/10 text-status-danger" : "border-border text-muted-foreground"}`}>{posts[active].length}{active === "x" ? "/280" : " characters"}</span>
                 </div>
+
+                {active === "instagram" && (
+                  <div className="mb-3 rounded-xl border border-pink-500/30 bg-pink-500/10 p-3 text-xs text-pink-300">
+                    <p className="font-bold flex items-center gap-1.5 text-pink-400">
+                      📸 Instagram 3-Step Pro Publisher:
+                    </p>
+                    <div className="mt-2 grid grid-cols-1 gap-2 text-[11px] sm:grid-cols-3">
+                      <div className="rounded-lg border border-pink-500/20 bg-background/50 p-2">
+                        <strong className="text-pink-300">1. Download Image:</strong> Click "Download Cover Image" below.
+                      </div>
+                      <div className="rounded-lg border border-pink-500/20 bg-background/50 p-2">
+                        <strong className="text-pink-300">2. Copy Caption:</strong> Copies formatted post text & hashtags.
+                      </div>
+                      <div className="rounded-lg border border-pink-500/20 bg-background/50 p-2">
+                        <strong className="text-pink-300">3. Create Post:</strong> Upload image & paste caption!
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <textarea value={posts[active]} onChange={(event) => setPosts((current) => ({ ...current, [active]: event.target.value }))} placeholder="Generate this platform post to begin editing." className="h-[42dvh] min-h-64 w-full flex-1 resize-none overflow-y-auto rounded-2xl border border-border bg-card p-4 text-sm leading-7 text-foreground shadow-inner outline-none placeholder:text-muted-foreground focus:border-accent focus:ring-4 focus:ring-accent/5 md:h-auto" />
               </div>
 
@@ -195,11 +239,20 @@ export default function SocialShareKitModal({ blog, isOpen, onClose, onUpdated }
                   <p className="max-h-72 overflow-y-auto whitespace-pre-wrap p-4 text-[11px] leading-5 text-muted-foreground">{posts[active] || "Your generated post preview will appear here."}</p>
                   {imageUrl && <div className="relative aspect-video border-t border-border/70"><Image src={getSafeImageSrc(imageUrl)} alt="" fill sizes="300px" className="object-cover" /></div>}
                 </div>
-                <p className="mt-3 rounded-xl border border-border bg-background p-3 text-[10px] leading-5 text-muted-foreground">Copy & Open copies the final text first. Instagram requires pasting the caption after the app opens.</p>
+                <p className="mt-3 rounded-xl border border-border bg-background p-3 text-[10px] leading-5 text-muted-foreground">
+                  {active === "instagram"
+                    ? "Instagram requires uploading an image file with your post. Click Download Cover Image to get the file, then paste caption."
+                    : "Copy & Open copies the final text first before redirecting to platform share screen."}
+                </p>
               </aside>
             </div>
 
             <footer className="flex shrink-0 flex-wrap items-center justify-end gap-2 border-t border-border/70 bg-card px-4 py-3 sm:px-5">
+              {imageUrl && (
+                <ActionButton onClick={downloadCoverPhoto} icon={Download}>
+                  Download Cover Image
+                </ActionButton>
+              )}
               <ActionButton onClick={copyPost} disabled={!posts[active]} icon={Copy}>Copy</ActionButton>
               <ActionButton onClick={nativeShare} disabled={!posts[active]} icon={Share2}>Share</ActionButton>
               <ActionButton onClick={save} disabled={saving || readyCount !== platforms.length} icon={saving ? Loader2 : Save} spinning={saving}>Save kit</ActionButton>

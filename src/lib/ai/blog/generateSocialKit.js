@@ -291,16 +291,11 @@ export async function generateAndSaveSocialKit(blogId, options = {}) {
 
   try {
     const kit = await buildSocialKit(blog, options);
-    const requestedPlatforms = Array.isArray(options.platforms)
-      ? [...new Set(options.platforms)].filter((platform) => SOCIAL_PLATFORMS.includes(platform))
-      : SOCIAL_PLATFORMS;
-    const platformsToSave = requestedPlatforms.length ? requestedPlatforms : SOCIAL_PLATFORMS;
-    const generatedPosts = Object.fromEntries(platformsToSave.map((platform) => [platform, kit[platform]]));
     const existingKit = blog.socialKit?.toObject?.() || blog.socialKit || {};
     blog.socialKit = {
       ...existingKit,
+      ...kit,
       status: "ready",
-      ...generatedPosts,
       imageUrl: imageUrl(blog),
       source: kit.source,
       generatedAt: new Date(),

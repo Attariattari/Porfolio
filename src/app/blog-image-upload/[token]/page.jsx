@@ -89,7 +89,7 @@ export default async function BlogImageUploadPage({ params }) {
         <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.25em] text-accent">
-              Secure Blog Image Upload
+              Secure Blog Image Upload & AI Social Kit
             </p>
             <h1 className="mt-3 text-3xl font-black tracking-tight">
               {blog.title}
@@ -108,8 +108,12 @@ export default async function BlogImageUploadPage({ params }) {
 
         <UploadClient
           token={token}
+          blogId={blog._id?.toString()}
+          blogTitle={blog.title}
+          blogSlug={blog.slug}
           imagePrompt={blog.imagePrompt || blog.image_prompt || ""}
           negativePrompt={blog.imageNegativePrompt || ""}
+          initialSocialKit={blog.socialKit || null}
         />
 
         <p className="mt-6 rounded-2xl border border-border bg-muted/50 p-4 text-xs leading-6 text-muted-foreground">
@@ -119,4 +123,3 @@ export default async function BlogImageUploadPage({ params }) {
     </main>
   );
 }
-
