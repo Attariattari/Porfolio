@@ -165,12 +165,6 @@ export default function BlogPostDetail({
                   sizes="(min-width: 1280px) 1184px, calc(100vw - 32px)"
                 />
               </div>
-              <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-4 border-t border-white/10 bg-black/34 px-5 py-4 backdrop-blur-xl">
-                <span className="text-[10px] font-black uppercase tracking-[0.22em] text-white/58">
-                  Featured Cover
-                </span>
-                <span className="h-2 w-2 rounded-full bg-accent shadow-[0_0_18px_rgba(20,184,166,0.9)]" />
-              </div>
             </div>
           </MotionFigure>
         </div>
