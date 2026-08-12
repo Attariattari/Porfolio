@@ -36,20 +36,30 @@ export async function GET(request) {
     });
 
     // Auto Sync Verification: Check if any published posts were deleted directly on Blogger.com
-    for (const post of posts) {
-      if (post.publishStatus === "published" && post.bloggerPostId) {
-        checkIfBloggerPostExists(post.bloggerPostId).then(async (checkRes) => {
-          if (!checkRes.exists && checkRes.reason === "DELETED_ON_BLOGGER") {
-            console.log(`[Blogger Auto-Sync] Post "${post.title}" was deleted on Blogger. Reverting status...`);
-            await BloggerPost.findByIdAndUpdate(post._id, {
-              publishStatus: "pending_review",
-              bloggerPostId: null,
-              bloggerUrl: null,
-              errorLog: "Post was deleted directly on Google Blogger dashboard.",
-            });
+    const publishedPosts = posts.filter((p) => p.publishStatus === "published" && p.bloggerPostId);
+    if (publishedPosts.length > 0) {
+      await Promise.all(
+        publishedPosts.map(async (post) => {
+          try {
+            const checkRes = await checkIfBloggerPostExists(post.bloggerPostId);
+            if (!checkRes.exists && checkRes.reason === "DELETED_ON_BLOGGER") {
+              console.log(`[Blogger Auto-Sync] Post "${post.title}" was deleted directly on Blogger. Reverting status...`);
+              await BloggerPost.findByIdAndUpdate(post._id, {
+                publishStatus: "pending_review",
+                bloggerPostId: null,
+                bloggerUrl: null,
+                errorLog: "⚠️ Post was deleted directly on Google Blogger dashboard.",
+              });
+              post.publishStatus = "pending_review";
+              post.bloggerPostId = null;
+              post.bloggerUrl = null;
+              post.errorLog = "⚠️ Post was deleted directly on Google Blogger dashboard.";
+            }
+          } catch (err) {
+            console.error(`[Blogger Auto-Sync Error] ${post.title}:`, err.message);
           }
-        }).catch(() => {});
-      }
+        })
+      );
     }
 
     const configStatus = checkBloggerConfigStatus();
