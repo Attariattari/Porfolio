@@ -21,6 +21,18 @@ async function authorize(request) {
   return { session };
 }
 
+export async function GET(request, { params }) {
+  const auth = await authorize(request);
+  if (auth.error) return auth.error;
+  try {
+    const { id } = await params;
+    const kit = await generateAndSaveSocialKit(id, { useAI: false });
+    return NextResponse.json({ success: true, data: serializeDoc(kit) });
+  } catch (error) {
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}
+
 export async function POST(request, { params }) {
   const auth = await authorize(request);
   if (auth.error) return auth.error;
@@ -41,9 +53,10 @@ export async function PATCH(request, { params }) {
     await dbConnect();
     const { id } = await params;
     const body = await request.json();
-    const posts = Object.fromEntries(["linkedin", "facebook", "x", "whatsapp", "reddit", "instagram"].map((key) => [key, String(body[key] || "").trim()]));
+    const allPlatforms = ["linkedin", "facebook", "x", "whatsapp", "reddit", "instagram", "devto"];
+    const posts = Object.fromEntries(allPlatforms.map((key) => [key, String(body[key] || "").trim()]));
     if (Object.values(posts).some((value) => !value)) {
-      return NextResponse.json({ success: false, error: "All six social posts are required." }, { status: 400 });
+      return NextResponse.json({ success: false, error: "All seven social posts are required." }, { status: 400 });
     }
     if (posts.x.length > 280) {
       return NextResponse.json({ success: false, error: "X post must be 280 characters or fewer." }, { status: 400 });

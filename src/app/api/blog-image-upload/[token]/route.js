@@ -20,8 +20,12 @@ import { scheduleInternalLinkAudit } from "@/lib/ai/blog/internalLinkingEngine";
 import { triggerBloggerPublishIfReady } from "@/lib/ai/blog/bloggerAutomationHook";
 import { generateAndSaveSocialKit } from "@/lib/ai/blog/generateSocialKit";
 
-function isSuperAdmin(session) {
-  return session?.role === "super-admin" || session?.role === "root-super-admin";
+function isAuthorizedAdmin(session) {
+  return (
+    session?.role === "admin" ||
+    session?.role === "super-admin" ||
+    session?.role === "root-super-admin"
+  );
 }
 
 export async function POST(request, { params }) {
@@ -43,9 +47,9 @@ export async function POST(request, { params }) {
   }
 
   const session = await getAuthSession();
-  if (!isSuperAdmin(session)) {
+  if (!isAuthorizedAdmin(session)) {
     return NextResponse.json(
-      { success: false, code: "SUPER_ADMIN_REQUIRED", message: "Super Admin login required." },
+      { success: false, code: "ADMIN_REQUIRED", message: "Admin login required." },
       { status: 403 },
     );
   }
@@ -61,10 +65,11 @@ export async function POST(request, { params }) {
 
   if (
     tokenResult.link.targetEmail &&
+    session.role !== "root-super-admin" &&
     session.email?.toLowerCase() !== tokenResult.link.targetEmail.toLowerCase()
   ) {
     return NextResponse.json(
-      { success: false, code: "EMAIL_MISMATCH", message: "This secure link belongs to another Super Admin email." },
+      { success: false, code: "EMAIL_MISMATCH", message: "This secure link belongs to another Admin email." },
       { status: 403 },
     );
   }

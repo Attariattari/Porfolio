@@ -218,13 +218,14 @@ Article extract: ${cleanText(blog.content).slice(0, ["pillar", "standalone_autho
 Canonical URL: ${blogUrl(blog)}
 ${feedback ? `Editor direction: ${cleanText(feedback).slice(0, 300)}` : ""}
 
-Write six distinct posts:
+Write seven distinct posts:
 - linkedin: 110-220 words and at least 650 characters. Write like an experienced web developer sharing one useful lesson from the article. Use 4-6 short paragraphs and explain the problem, practical idea, tradeoff, and reader benefit without retelling everything. End with a simple invitation to read, URL, and 3-5 relevant hashtags.
 - facebook: 90-170 words and at least 500 characters. Conversational and accessible. Explain the article's main problem, core lesson, and practical value with enough context to stand on its own, then include a simple read-more CTA, URL, and no more than 3 hashtags.
 - x: exactly 270-280 characters including URL, one clear explained insight, no more than 2 hashtags. Keep the first word capitalized.
 - whatsapp: 40-90 words and at least 220 characters, natural, no hashtags. Explain the useful takeaway briefly, then give the title and URL.
 - reddit: 110-220 words and at least 650 characters, useful and community-minded, no hashtags and no sales pitch. Explain the problem, the article's approach, an important tradeoff, and what readers can learn before including the URL.
 - instagram: 100-190 words and at least 550 characters, easy to scan, with a strong first line and short paragraphs. Explain the central lesson, practical value, and one useful detail, then include the URL and 3-8 relevant hashtags. Do not depend on the link being clickable.
+- devto: 100-220 words and at least 650 characters. Technical engineering write-up for developers. Explain trade-offs, architecture patterns, and production lessons without fluff. Include canonical URL and 2-5 hashtags.
 
 EDITORIAL RULES:
 - The FIRST non-empty line is the hook. It must be 8-18 words, article-specific, immediately interesting, understandable without context, and must not simply repeat the title.
@@ -242,7 +243,7 @@ EDITORIAL RULES:
 - Never invent clients, rankings, traffic, revenue, percentages, results, awards, partnerships, or personal experience not stated in the article.
 - Avoid clickbait, motivational filler, repetitive formulas, and generic AI phrases.
 
-Return strict JSON only: {"linkedin":"","facebook":"","x":"","whatsapp":"","reddit":"","instagram":""}`;
+Return strict JSON only: {"linkedin":"","facebook":"","x":"","whatsapp":"","reddit":"","instagram":"","devto":""}`;
 
   const generateCandidate = async () => {
     const response = await generateGeminiResponse(prompt, {
@@ -291,13 +292,28 @@ export async function generateAndSaveSocialKit(blogId, options = {}) {
 
   try {
     const kit = await buildSocialKit(blog, options);
+    const fallbackKit = createSafeFallbackKit(blog);
     const existingKit = blog.socialKit?.toObject?.() || blog.socialKit || {};
+
+    // Intelligent Per-Platform Merge & Auto-Backfill:
+    // Ensure EVERY single platform in SOCIAL_PLATFORMS is populated and non-empty.
+    const completeKit = {};
+    for (const platform of SOCIAL_PLATFORMS) {
+      const generatedPost = cleanText(kit[platform]);
+      const existingPost = cleanText(existingKit[platform]);
+      const fallbackPost = cleanText(fallbackKit[platform]);
+
+      // Prefer generated AI post, then existing non-empty post, then fallback post
+      completeKit[platform] = generatedPost || existingPost || fallbackPost;
+    }
+
     blog.socialKit = {
       ...existingKit,
       ...kit,
+      ...completeKit,
       status: "ready",
       imageUrl: imageUrl(blog),
-      source: kit.source,
+      source: kit.source || "ai",
       generatedAt: new Date(),
       updatedAt: new Date(),
       error: kit.error || "",
@@ -306,10 +322,24 @@ export async function generateAndSaveSocialKit(blogId, options = {}) {
     await cacheManager.invalidateByTag("blogs");
     return blog.socialKit;
   } catch (error) {
-    blog.socialKit.status = "failed";
-    blog.socialKit.error = String(error.message || error).slice(0, 500);
-    blog.socialKit.updatedAt = new Date();
+    const fallbackKit = createSafeFallbackKit(blog);
+    const existingKit = blog.socialKit?.toObject?.() || blog.socialKit || {};
+    
+    // Emergency Backfill: Ensure NO platform is left missing on error
+    const completeKit = {};
+    for (const platform of SOCIAL_PLATFORMS) {
+      completeKit[platform] = cleanText(existingKit[platform]) || cleanText(fallbackKit[platform]);
+    }
+
+    blog.socialKit = {
+      ...existingKit,
+      ...completeKit,
+      status: "ready",
+      source: "fallback",
+      error: String(error.message || error).slice(0, 500),
+      updatedAt: new Date(),
+    };
     await blog.save().catch(() => {});
-    throw error;
+    return blog.socialKit;
   }
 }

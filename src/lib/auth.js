@@ -28,11 +28,20 @@ function resolveSafeRole(user) {
 }
 
 export function getDefaultAuthRedirect(user, callbackUrl = "") {
-    if (callbackUrl && callbackUrl.startsWith("/") && !callbackUrl.startsWith("//")) {
-        const callbackPath = callbackUrl.split(/[?#]/, 1)[0].replace(/\/$/, "");
-        if (callbackPath !== "/admin/login" && callbackPath !== "/admin/signup") {
-            return callbackUrl;
-        }
+    let safeUrl = callbackUrl;
+    if (safeUrl) {
+        try {
+            if (typeof safeUrl === "string" && (safeUrl.startsWith("http://") || safeUrl.startsWith("https://"))) {
+                const parsed = new URL(safeUrl);
+                safeUrl = parsed.pathname + parsed.search + parsed.hash;
+            }
+            if (typeof safeUrl === "string" && safeUrl.startsWith("/") && !safeUrl.startsWith("//")) {
+                const callbackPath = safeUrl.split(/[?#]/, 1)[0].replace(/\/$/, "");
+                if (callbackPath !== "/admin/login" && callbackPath !== "/admin/signup") {
+                    return safeUrl;
+                }
+            }
+        } catch (e) {}
     }
     return "/admin/dashboard";
 }
@@ -553,7 +562,10 @@ export async function updateNotificationStatus(id, status) {
 }
 
 export async function getAuthSession() {
-    const token = (await cookies()).get("admin_auth_token")?.value;
+    const cookieStore = await cookies();
+    const token =
+        cookieStore.get("admin_auth_token")?.value ||
+        cookieStore.get("admin_token")?.value;
     if (!token) return null;
 
     // PATCH: Check token expiration BEFORE verification

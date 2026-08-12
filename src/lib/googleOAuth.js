@@ -27,7 +27,11 @@ export function getGoogleRedirectUri(request) {
 export function sanitizeInternalRedirect(value, fallback = "/admin/dashboard") {
   if (!value) return fallback;
   try {
-    const decoded = decodeURIComponent(value);
+    let decoded = decodeURIComponent(value);
+    if (decoded.startsWith("http://") || decoded.startsWith("https://")) {
+      const parsed = new URL(decoded);
+      decoded = parsed.pathname + parsed.search + parsed.hash;
+    }
     if (decoded.startsWith("/") && !decoded.startsWith("//")) return decoded;
   } catch (e) {}
   return fallback;

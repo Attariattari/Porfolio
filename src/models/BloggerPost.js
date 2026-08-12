@@ -32,13 +32,14 @@ const BloggerPostSchema = new mongoose.Schema(
     // Publishing Status & Blogger API Details
     publishStatus: {
       type: String,
-      enum: ["draft", "pending_review", "published", "failed"],
+      enum: ["draft", "pending_review", "publishing", "published", "failed"],
       default: "pending_review",
       index: true,
     },
     bloggerPostId: { type: String },
     bloggerUrl: { type: String },
     publishedAt: { type: Date },
+    publishingStartedAt: { type: Date },
     errorLog: { type: String },
 
     aiGenerated: { type: Boolean, default: true },

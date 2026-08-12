@@ -62,6 +62,12 @@ export async function triggerBloggerPublishIfReady(mainBlogId) {
       return await onMainBlogGenerated(mainBlogId);
     }
 
+    // PRE-CHECK: If already published or has bloggerPostId, bypass duplicate publish
+    if (bloggerPost.publishStatus === "published" || bloggerPost.bloggerPostId) {
+      console.log(`[Blogger Hook] Supporting post ${bloggerPost._id} is ALREADY published on Blogger (${bloggerPost.bloggerPostId || bloggerPost.bloggerUrl}). Bypassing duplicate publish.`);
+      return { success: true, bloggerPost, alreadyPublished: true };
+    }
+
     // Embed resolved image at top of Blogger content if not already present
     if (!bloggerPost.content.includes("<img")) {
       bloggerPost.content = `
@@ -74,28 +80,52 @@ export async function triggerBloggerPublishIfReady(mainBlogId) {
     }
 
     // Auto-Publish to Blogger if ENABLE_AUTO_BLOGGER_POST is true
-    if (process.env.ENABLE_AUTO_BLOGGER_POST === "true" && bloggerPost.publishStatus !== "published") {
-      console.log(`[Blogger Hook] Image resolved. Auto-publishing to Google Blogger API v3...`);
+    if (process.env.ENABLE_AUTO_BLOGGER_POST === "true") {
+      // 🔒 ATOMIC LOCK: Transition status to "publishing" in MongoDB
+      // Only ONE concurrent process will succeed; all others receive null and abort.
+      const lockedPost = await BloggerPost.findOneAndUpdate(
+        {
+          _id: bloggerPost._id,
+          publishStatus: { $nin: ["publishing", "published"] },
+          $or: [{ bloggerPostId: { $exists: false } }, { bloggerPostId: null }, { bloggerPostId: "" }],
+        },
+        {
+          $set: {
+            publishStatus: "publishing",
+            publishingStartedAt: new Date(),
+          },
+        },
+        { new: true }
+      );
+
+      if (!lockedPost) {
+        console.log(`[Blogger Hook] 🔒 Atomic lock active for ${bloggerPost._id}. Another worker is actively publishing or post is already published. Aborting duplicate call.`);
+        return { success: true, bloggerPost, lockedByOther: true };
+      }
+
+      console.log(`[Blogger Hook] Image resolved. Auto-publishing to Google Blogger API v3 (Lock Acquired)...`);
       
       const pubResult = await publishToGoogleBlogger({
-        title: bloggerPost.title,
-        content: bloggerPost.content,
-        tags: bloggerPost.tags,
-        canonicalUrl: bloggerPost.parentBlogUrl,
-        isDraft: false, // Auto live or draft based on setting
+        title: lockedPost.title,
+        content: lockedPost.content,
+        tags: lockedPost.tags,
+        canonicalUrl: lockedPost.parentBlogUrl,
+        isDraft: false,
       });
 
       if (pubResult.success) {
-        bloggerPost.publishStatus = "published";
-        bloggerPost.bloggerUrl = pubResult.bloggerUrl;
-        bloggerPost.bloggerPostId = pubResult.bloggerPostId;
-        bloggerPost.publishedAt = new Date();
-        await bloggerPost.save();
+        lockedPost.publishStatus = "published";
+        lockedPost.bloggerUrl = pubResult.bloggerUrl;
+        lockedPost.bloggerPostId = pubResult.bloggerPostId;
+        lockedPost.publishedAt = new Date();
+        await lockedPost.save();
         console.log(`[Blogger Hook] Successfully published to Blogger: ${pubResult.bloggerUrl}`);
+        return { success: true, bloggerPost: lockedPost };
       } else {
-        bloggerPost.publishStatus = "failed";
-        bloggerPost.errorLog = pubResult.error;
-        await bloggerPost.save();
+        lockedPost.publishStatus = "failed";
+        lockedPost.errorLog = pubResult.error;
+        await lockedPost.save();
+        return { success: false, error: pubResult.error, bloggerPost: lockedPost };
       }
     } else {
       console.log(`[Blogger Hook] Image attached. Supporting post ready in Admin Dashboard (/admin/blogger) for 1-Click Publish.`);

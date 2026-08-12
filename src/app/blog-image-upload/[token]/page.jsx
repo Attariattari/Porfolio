@@ -51,9 +51,9 @@ export default async function BlogImageUploadPage({ params }) {
 
   if (!session) {
     return (
-      <Panel icon={<Lock className="h-6 w-6" />} title="Super Admin Login Required">
+      <Panel icon={<Lock className="h-6 w-6" />} title="Admin Login Required">
         <p className="leading-7">
-          This upload page is connected to one blog only. Please log in as Super Admin to continue.
+          This upload page is connected to one blog only. Please log in as Admin to continue.
         </p>
         <Link
           href={`/admin/login?callbackUrl=${encodeURIComponent(callbackUrl)}`}
@@ -65,17 +65,20 @@ export default async function BlogImageUploadPage({ params }) {
     );
   }
 
-  const isSuperAdmin =
-    session.role === "super-admin" || session.role === "root-super-admin";
+  const isAuthorizedAdmin =
+    session.role === "admin" ||
+    session.role === "super-admin" ||
+    session.role === "root-super-admin";
   const emailMatches =
     !tokenResult.link.targetEmail ||
+    session.role === "root-super-admin" ||
     session.email?.toLowerCase() === tokenResult.link.targetEmail.toLowerCase();
 
-  if (!isSuperAdmin || !emailMatches) {
+  if (!isAuthorizedAdmin || !emailMatches) {
     return (
       <Panel icon={<ShieldCheck className="h-6 w-6" />} title="Access Restricted">
         <p className="leading-7">
-          This secure upload link can only be used by the Super Admin email it was issued to.
+          This secure upload link can only be used by authorized Admin personnel it was issued to.
         </p>
       </Panel>
     );

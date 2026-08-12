@@ -41,6 +41,15 @@ export async function PATCH(request, { params }) {
 
     // Action: Publish to Google Blogger API
     if (body.action === "publish") {
+      // PRE-CHECK: If already published or has bloggerPostId, bypass duplicate API call
+      if (post.publishStatus === "published" || post.bloggerPostId) {
+        return NextResponse.json({
+          success: true,
+          message: "This post is already published on Google Blogger!",
+          data: post,
+        });
+      }
+
       // Strict Image Validation Check
       const hasImage = post.content && post.content.includes("<img");
       if (!hasImage) {
@@ -66,35 +75,61 @@ export async function PATCH(request, { params }) {
         }
       }
 
+      // 🔒 ATOMIC LOCK: Transition status to "publishing" in MongoDB
+      const lockedPost = await BloggerPost.findOneAndUpdate(
+        {
+          _id: post._id,
+          publishStatus: { $nin: ["publishing", "published"] },
+          $or: [{ bloggerPostId: { $exists: false } }, { bloggerPostId: null }, { bloggerPostId: "" }],
+        },
+        {
+          $set: {
+            publishStatus: "publishing",
+            publishingStartedAt: new Date(),
+          },
+        },
+        { new: true }
+      );
+
+      if (!lockedPost) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "🔒 Publishing in progress by another worker or already published.",
+          },
+          { status: 409 }
+        );
+      }
+
       const publishRes = await publishToGoogleBlogger({
-        title: post.title,
-        content: post.content,
-        tags: post.tags,
-        canonicalUrl: post.parentBlogUrl,
+        title: lockedPost.title,
+        content: lockedPost.content,
+        tags: lockedPost.tags,
+        canonicalUrl: lockedPost.parentBlogUrl,
         isDraft: body.isDraft || false,
       });
 
       if (!publishRes.success) {
-        post.publishStatus = "failed";
-        post.errorLog = publishRes.error;
-        await post.save();
+        lockedPost.publishStatus = "failed";
+        lockedPost.errorLog = publishRes.error;
+        await lockedPost.save();
         return NextResponse.json(
           { success: false, error: publishRes.error },
           { status: 500 }
         );
       }
 
-      post.publishStatus = "published";
-      post.bloggerUrl = publishRes.bloggerUrl;
-      post.bloggerPostId = publishRes.bloggerPostId;
-      post.publishedAt = new Date();
-      post.errorLog = null;
-      await post.save();
+      lockedPost.publishStatus = "published";
+      lockedPost.bloggerUrl = publishRes.bloggerUrl;
+      lockedPost.bloggerPostId = publishRes.bloggerPostId;
+      lockedPost.publishedAt = new Date();
+      lockedPost.errorLog = null;
+      await lockedPost.save();
 
       return NextResponse.json({
         success: true,
         message: "Successfully published to Google Blogger!",
-        data: post,
+        data: lockedPost,
       });
     }
 

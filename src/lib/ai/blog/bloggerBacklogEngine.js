@@ -21,15 +21,20 @@ export async function getUnsyncedOldBlogsCount() {
       .select("_id title slug image featuredImage")
       .lean();
 
-    // Fetch all blog IDs that already have a published Blogger post
+    // Fetch all blog IDs that already have a published or in-progress Blogger post or existing bloggerPostId
     const publishedBloggerPosts = await BloggerPost.find({
-      publishStatus: "published",
+      $or: [
+        { publishStatus: { $in: ["published", "publishing"] } },
+        { bloggerPostId: { $ne: null, $ne: "" } },
+      ],
     })
       .select("parentBlogId")
       .lean();
 
     const syncedParentIds = new Set(
-      publishedBloggerPosts.map((bp) => bp.parentBlogId.toString())
+      publishedBloggerPosts
+        .filter((bp) => bp.parentBlogId)
+        .map((bp) => bp.parentBlogId.toString())
     );
 
     const unsyncedBlogs = publishedBlogs.filter(
@@ -84,9 +89,29 @@ export async function processDailyBloggerBacklog(options = {}) {
       bloggerPost = genResult.bloggerPost;
     }
 
-    // Ensure Cloudinary Cover Image is attached
+    // Pre-check if bloggerPost is already published or has bloggerPostId
+    if (bloggerPost.publishStatus === "published" || bloggerPost.bloggerPostId) {
+      console.log(`[Blogger Drip Engine] Selected blog "${targetBlog.title}" is ALREADY published on Blogger (${bloggerPost.bloggerPostId || bloggerPost.bloggerUrl}). Skipping duplicate publish.`);
+      return {
+        success: true,
+        message: `Blog "${targetBlog.title}" is already published on Blogger.`,
+        processedBlog: bloggerPost,
+        remainingCount: Math.max(0, unsyncedCount - 1),
+      };
+    }
+
+    // Strict Guard: Ensure Cover Image is resolved before publishing to Blogger
     const coverImageUrl = targetBlog.featuredImage?.url || targetBlog.image;
-    if (coverImageUrl && !bloggerPost.content.includes("<img")) {
+    if (!coverImageUrl) {
+      console.log(`[Blogger Drip Engine] Blog "${targetBlog.title}" has no resolved cover image. Postponing Blogger publish until image is uploaded.`);
+      return {
+        success: false,
+        reason: "Cover image not resolved yet",
+        message: `Blog "${targetBlog.title}" is waiting for cover image before publishing to Blogger.`,
+      };
+    }
+
+    if (!bloggerPost.content.includes("<img")) {
       bloggerPost.content = `
         <div style="margin-bottom: 24px; text-align: center;">
           <img src="${coverImageUrl}" alt="${bloggerPost.title}" style="width: 100%; max-height: 480px; object-fit: cover; border-radius: 12px;" />
@@ -96,32 +121,57 @@ export async function processDailyBloggerBacklog(options = {}) {
       await bloggerPost.save();
     }
 
+    // 🔒 ATOMIC LOCK: Transition status to "publishing" in MongoDB
+    const lockedPost = await BloggerPost.findOneAndUpdate(
+      {
+        _id: bloggerPost._id,
+        publishStatus: { $nin: ["publishing", "published"] },
+        $or: [{ bloggerPostId: { $exists: false } }, { bloggerPostId: null }, { bloggerPostId: "" }],
+      },
+      {
+        $set: {
+          publishStatus: "publishing",
+          publishingStartedAt: new Date(),
+        },
+      },
+      { new: true }
+    );
+
+    if (!lockedPost) {
+      console.log(`[Blogger Drip Engine] 🔒 Atomic lock active for "${targetBlog.title}". Another worker is actively publishing or post is already published. Aborting duplicate call.`);
+      return {
+        success: true,
+        message: `Blog "${targetBlog.title}" is currently being published by another worker.`,
+        remainingCount: Math.max(0, unsyncedCount - 1),
+      };
+    }
+
     // Publish to Google Blogger API v3 (Draft or Live based on option)
     const isDraftMode = options.isDraft === true;
-    console.log(`[Blogger Drip Engine] Publishing to Blogger API v3 (${isDraftMode ? "Draft" : "Live"})...`);
+    console.log(`[Blogger Drip Engine] Publishing to Blogger API v3 (${isDraftMode ? "Draft" : "Live"}) (Lock Acquired)...`);
 
     const pubResult = await publishToGoogleBlogger({
-      title: bloggerPost.title,
-      content: bloggerPost.content,
-      tags: bloggerPost.tags,
-      canonicalUrl: bloggerPost.parentBlogUrl,
+      title: lockedPost.title,
+      content: lockedPost.content,
+      tags: lockedPost.tags,
+      canonicalUrl: lockedPost.parentBlogUrl,
       isDraft: isDraftMode,
     });
 
     if (!pubResult.success) {
-      bloggerPost.publishStatus = "failed";
-      bloggerPost.errorLog = pubResult.error;
-      await bloggerPost.save();
+      lockedPost.publishStatus = "failed";
+      lockedPost.errorLog = pubResult.error;
+      await lockedPost.save();
       throw new Error(`Blogger API publish failed: ${pubResult.error}`);
     }
 
-    bloggerPost.publishStatus = "published";
-    bloggerPost.bloggerUrl = pubResult.bloggerUrl;
-    bloggerPost.bloggerPostId = pubResult.bloggerPostId;
-    bloggerPost.publishedAt = new Date();
-    await bloggerPost.save();
+    lockedPost.publishStatus = "published";
+    lockedPost.bloggerUrl = pubResult.bloggerUrl;
+    lockedPost.bloggerPostId = pubResult.bloggerPostId;
+    lockedPost.publishedAt = new Date();
+    await lockedPost.save();
 
-    console.log(`[Blogger Drip Engine] ✅ Successfully published 1 old blog to Blogger: "${bloggerPost.title}"`);
+    console.log(`[Blogger Drip Engine] ✅ Successfully published 1 old blog to Blogger: "${lockedPost.title}"`);
     console.log(`[Blogger Drip Engine] Live URL: ${pubResult.bloggerUrl}`);
 
     return {
