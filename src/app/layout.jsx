@@ -15,7 +15,7 @@ const inter = Inter({
 });
 
 const enableVercelAnalytics =
-  process.env.NEXT_PUBLIC_ENABLE_VERCEL_ANALYTICS === "true";
+  process.env.NEXT_PUBLIC_ENABLE_VERCEL_ANALYTICS !== "false";
 const configuredGoogleAnalyticsId = process.env.NEXT_PUBLIC_GA_ID || "";
 const googleAnalyticsId = /^G-[A-Z0-9]+$/.test(configuredGoogleAnalyticsId)
   ? configuredGoogleAnalyticsId
