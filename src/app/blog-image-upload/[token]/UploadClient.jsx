@@ -203,18 +203,20 @@ export default function UploadClient({
           📸 Upload Cover Image
         </button>
 
-        <button
-          type="button"
-          onClick={() => handleTabSwitch("socialKit")}
-          className={`flex-1 inline-flex items-center justify-center gap-2 rounded-xl py-3 text-xs font-black uppercase tracking-wider transition-all ${
-            activeTab === "socialKit"
-              ? "bg-accent text-accent-foreground shadow-md"
-              : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
-          }`}
-        >
-          <Sparkles className="h-4 w-4 text-emerald-400" />
-          🚀 AI Social Share Kit
-        </button>
+        {status === "success" && (
+          <button
+            type="button"
+            onClick={() => handleTabSwitch("socialKit")}
+            className={`flex-1 inline-flex items-center justify-center gap-2 rounded-xl py-3 text-xs font-black uppercase tracking-wider transition-all ${
+              activeTab === "socialKit"
+                ? "bg-accent text-accent-foreground shadow-md"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
+            }`}
+          >
+            <Sparkles className="h-4 w-4 text-emerald-400" />
+            🚀 AI Social Share Kit
+          </button>
+        )}
       </div>
 
       {/* SECTION 1: COVER IMAGE UPLOAD TAB */}
