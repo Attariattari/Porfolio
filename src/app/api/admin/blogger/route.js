@@ -20,9 +20,20 @@ export async function GET(request) {
       query.publishStatus = status;
     }
 
-    const posts = await BloggerPost.find(query)
+    const rawPosts = await BloggerPost.find(query)
+      .populate("parentBlogId", "image featuredImage title imageStatus")
       .sort({ createdAt: -1 })
       .lean();
+
+    const posts = rawPosts.map((post) => {
+      const parentImage = post.parentBlogId?.featuredImage?.url || post.parentBlogId?.image || null;
+      const contentImage = post.content?.match(/<img[^>]+src=["']([^"']+)["']/i)?.[1] || null;
+      return {
+        ...post,
+        coverImage: contentImage || parentImage || null,
+        hasCoverImage: Boolean(contentImage || parentImage),
+      };
+    });
 
     // Auto Sync Verification: Check if any published posts were deleted directly on Blogger.com
     for (const post of posts) {

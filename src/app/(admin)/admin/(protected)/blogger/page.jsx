@@ -18,6 +18,7 @@ import {
   Search,
   Plus,
   Zap,
+  ImageIcon,
 } from "lucide-react";
 import useAdminStore from "@/lib/store/adminStore";
 
@@ -344,6 +345,7 @@ export default function BloggerAdminPage() {
             <thead className="bg-muted/40 border-b border-border/60 text-muted-foreground font-semibold uppercase tracking-wider">
               <tr>
                 <th className="p-4">Status</th>
+                <th className="p-4">Cover Photo</th>
                 <th className="p-4">Supporting Post Title</th>
                 <th className="p-4">Parent Master Blog</th>
                 <th className="p-4">QC Score</th>
@@ -353,34 +355,68 @@ export default function BloggerAdminPage() {
             <tbody className="divide-y divide-border/40 text-foreground">
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="p-8 text-center text-muted-foreground">
+                  <td colSpan={6} className="p-8 text-center text-muted-foreground">
                     Loading supporting posts...
                   </td>
                 </tr>
               ) : filteredPosts.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="p-8 text-center text-muted-foreground">
+                  <td colSpan={6} className="p-8 text-center text-muted-foreground">
                     No supporting posts found. Click <strong>Generate Supporting Post</strong> to create one.
                   </td>
                 </tr>
               ) : (
-                filteredPosts.map((item) => (
-                  <tr key={item._id} className="hover:bg-accent/30 transition-colors">
-                    <td className="p-4">
-                      {item.publishStatus === "published" ? (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-green-500/10 text-green-400 border border-green-500/20">
-                          <CheckCircle2 className="w-3 h-3" /> Published
-                        </span>
-                      ) : item.publishStatus === "pending_review" ? (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                          Pending Review
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/10 text-red-400 border border-red-500/20">
-                          Failed
-                        </span>
-                      )}
-                    </td>
+                filteredPosts.map((item) => {
+                  const coverUrl =
+                    item.coverImage ||
+                    item.content?.match(/<img[^>]+src=["']([^"']+)["']/i)?.[1] ||
+                    item.parentBlogId?.featuredImage?.url ||
+                    item.parentBlogId?.image ||
+                    null;
+
+                  return (
+                    <tr key={item._id} className="hover:bg-accent/30 transition-colors">
+                      <td className="p-4">
+                        {item.publishStatus === "published" ? (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-green-500/10 text-green-400 border border-green-500/20">
+                            <CheckCircle2 className="w-3 h-3" /> Published
+                          </span>
+                        ) : item.publishStatus === "pending_review" ? (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                            Pending Review
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/10 text-red-400 border border-red-500/20">
+                            Failed
+                          </span>
+                        )}
+                      </td>
+
+                      <td className="p-4">
+                        {coverUrl ? (
+                          <div className="flex items-center gap-2">
+                            <div className="relative w-14 h-10 rounded-lg overflow-hidden border border-cyan-500/30 bg-slate-950 shrink-0 group">
+                              <img
+                                src={coverUrl}
+                                alt={item.title}
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                              />
+                            </div>
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-bold bg-green-500/10 text-green-400 border border-green-500/20">
+                              <CheckCircle2 className="w-2.5 h-2.5" /> Ready
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <div className="w-14 h-10 rounded-lg border border-dashed border-amber-500/40 bg-amber-500/5 flex flex-col items-center justify-center shrink-0">
+                              <ImageIcon className="w-4 h-4 text-amber-400/70" />
+                            </div>
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                              Waiting Pic
+                            </span>
+                          </div>
+                        )}
+                      </td>
 
                     <td className="p-4">
                       <div className="font-semibold text-sm line-clamp-1">{item.title}</div>
@@ -593,6 +629,45 @@ export default function BloggerAdminPage() {
 
               {/* Modal Content Body */}
               <div className="p-6 overflow-y-auto space-y-6 flex-1 text-xs">
+                {(() => {
+                  const coverUrl =
+                    selectedPost.coverImage ||
+                    selectedPost.content?.match(/<img[^>]+src=["']([^"']+)["']/i)?.[1] ||
+                    selectedPost.parentBlogId?.featuredImage?.url ||
+                    selectedPost.parentBlogId?.image ||
+                    null;
+
+                  return coverUrl ? (
+                    <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/5 p-3 flex items-center gap-4">
+                      <div className="relative w-24 h-16 rounded-lg overflow-hidden border border-cyan-500/40 bg-slate-950 shrink-0">
+                        <img src={coverUrl} alt="Cover Preview" className="w-full h-full object-cover" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-semibold text-cyan-300 flex items-center gap-1">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-green-400" /> Cover Photo Attached & Ready
+                        </div>
+                        <p className="text-[11px] text-muted-foreground mt-0.5">
+                          This featured image is linked and will automatically be included at the top of the Google Blogger post.
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center shrink-0">
+                        <ImageIcon className="w-5 h-5 text-amber-400" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-semibold text-amber-300">
+                          ⚠️ Cover Photo Missing / Waiting Resolution
+                        </div>
+                        <p className="text-[11px] text-muted-foreground mt-0.5">
+                          Image is being generated or waiting for manual upload via Super Admin email. Publishing will unlock as soon as the picture is uploaded.
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 <div>
                   <label className="block font-semibold mb-1">Title:</label>
                   <input
