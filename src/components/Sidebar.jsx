@@ -17,6 +17,7 @@ import {
   Sun,
   Moon,
   Circle,
+  ShieldCheck,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
@@ -34,7 +35,7 @@ const IconMap = {
 };
 
 const resolveIcon = (name, icon) => {
-  return IconMap[name] || IconMap[icon] || Home;
+  return IconMap[name] || IconMap[icon] || House;
 };
 
 const navLinks = [
@@ -93,8 +94,28 @@ export default function Sidebar({ data }) {
   const pathname = usePathname();
   const router = useRouter();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const about = data || portfolioData.about;
   const { theme, setTheme } = useTheme();
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/admin/me")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!active) return;
+        if (
+          data?.authenticated &&
+          (data.role === "super-admin" || data.role === "root-super-admin")
+        ) {
+          setIsSuperAdmin(true);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const changeTheme = (nextTheme) => {
     setTheme(nextTheme, { persistPreference: true });
@@ -289,6 +310,34 @@ export default function Sidebar({ data }) {
                   </Link>
                 );
               })}
+
+              {/* Super Admin Dashboard Direct Access Button Below Contact */}
+              {isSuperAdmin && (
+                <Link
+                  href="/admin/blogs"
+                  target="_self"
+                  prefetch={false}
+                  aria-label={isCollapsed ? "Open Admin Dashboard" : undefined}
+                  title={isCollapsed ? "Open Admin Dashboard" : undefined}
+                  className={`group/admin mt-2 relative flex items-center gap-3.5 p-3 rounded-2xl border border-accent/40 bg-accent/10 text-accent transition-all duration-300 hover:bg-accent/20 hover:border-accent shadow-sm ${
+                    isCollapsed ? "justify-center px-0" : ""
+                  }`}
+                >
+                  <div className="flex items-center justify-center p-2 rounded-xl bg-accent text-accent-foreground shadow-md transition-transform duration-300 group-hover/admin:scale-110">
+                    <ShieldCheck size={18} />
+                  </div>
+
+                  {!isCollapsed && (
+                    <span className="text-[12px] font-black tracking-tight transition-transform duration-300 group-hover/admin:translate-x-1 text-accent">
+                      Open Admin Dashboard
+                    </span>
+                  )}
+
+                  {!isCollapsed && (
+                    <Sparkles size={12} className="ml-auto text-accent animate-pulse" />
+                  )}
+                </Link>
+              )}
             </nav>
 
             {/* Footer Actions */}

@@ -11,6 +11,8 @@ import {
   Home,
   Mail,
   Moon,
+  ShieldCheck,
+  Sparkles,
   Sun,
   User,
 } from "lucide-react";
@@ -95,6 +97,7 @@ export default function ProfessionalSidebar({ data }) {
   const { theme, themeReady, setTheme } = useTheme();
   const settings = usePublicSettingsStore((state) => state.settings);
   const [collapsed, setCollapsed] = useState(false);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const about = data || {};
   const brandAccent = settings?.siteAccent || about.lastName || "Tech";
   const configuredTitle = settings?.siteTitle || about.firstName || "Muhyo";
@@ -104,6 +107,25 @@ export default function ProfessionalSidebar({ data }) {
   const firstName = brandTitle || "Muhyo";
   const lastName = brandAccent;
   const professionalTitle = about.title || "Full-Stack Engineer";
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/admin/me")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!active) return;
+        if (
+          data?.authenticated &&
+          (data.role === "super-admin" || data.role === "root-super-admin")
+        ) {
+          setIsSuperAdmin(true);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const changeTheme = (nextTheme) => {
     setTheme(nextTheme, { persistPreference: true });
@@ -309,6 +331,32 @@ export default function ProfessionalSidebar({ data }) {
                   </Link>
                 );
               })}
+
+              {/* Super Admin Dashboard Direct Access Button Below Contact */}
+              {isSuperAdmin && (
+                <Link
+                  href="/admin/blogs"
+                  prefetch={false}
+                  aria-label={collapsed ? "Open Admin Dashboard" : undefined}
+                  title={collapsed ? "Open Admin Dashboard" : undefined}
+                  className={`group/admin mt-2 relative flex h-12 items-center overflow-hidden rounded-2xl border border-accent/40 bg-accent/10 text-accent transition-all duration-200 hover:bg-accent/20 hover:border-accent shadow-sm active:scale-[0.98] ${
+                    collapsed ? "justify-center px-2" : "gap-3 px-3"
+                  }`}
+                >
+                  <span className="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-accent text-accent-foreground shadow-md transition-transform duration-200 group-hover/admin:scale-105">
+                    <ShieldCheck className="h-4 w-4" />
+                  </span>
+
+                  {!collapsed && (
+                    <span className="relative z-10 flex min-w-0 flex-1 items-center justify-between">
+                      <span className="truncate text-[12px] font-black tracking-tight text-accent">
+                        Open Admin Dashboard
+                      </span>
+                      <Sparkles className="h-3.5 w-3.5 text-accent animate-pulse" />
+                    </span>
+                  )}
+                </Link>
+              )}
             </nav>
 
             <div className="mt-auto pt-4">
