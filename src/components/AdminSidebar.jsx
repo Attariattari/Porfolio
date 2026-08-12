@@ -26,6 +26,7 @@ import {
   Wrench,
   Link2,
   Wand2,
+  ShieldCheck,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -33,7 +34,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ADMIN_NAVIGATION_LINKS } from "@/lib/constants";
 import { toast } from "sonner";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import useAdminStore from "@/lib/store/adminStore";
 import {
   useBookingStats,
@@ -72,6 +73,9 @@ export default function AdminSidebar() {
   const router = useRouter();
   const [session, setSession] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const profileMenuRef = useRef(null);
+
   const displayName = session?.name ? formatName(session.name) : "Admin";
   const isSuperAdmin = ["super-admin", "root-super-admin"].includes(session?.role);
 
@@ -120,7 +124,18 @@ export default function AdminSidebar() {
 
   useEffect(() => {
     setSidebarOpen(false);
+    setShowProfileMenu(false);
   }, [pathname, setSidebarOpen]);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
+        setShowProfileMenu(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -344,14 +359,83 @@ export default function AdminSidebar() {
           </nav>
 
           {/* User Profile & Logout Footer */}
-          <div className="shrink-0 border-t border-border/60 bg-muted/20 p-4">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3 overflow-hidden">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/20 text-accent font-bold text-xs border border-accent/30">
-                  {displayName.charAt(0).toUpperCase()}
+          <div className="shrink-0 border-t border-border/60 bg-muted/20 p-3 relative" ref={profileMenuRef}>
+            {/* Popover Logout Menu */}
+            <AnimatePresence>
+              {showProfileMenu && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  className={`absolute bottom-full mb-3 z-[100] rounded-2xl border border-border/80 bg-card/95 p-4 shadow-2xl backdrop-blur-2xl ${
+                    isCollapsed ? "left-2 w-64" : "left-3 right-3"
+                  }`}
+                >
+                  <div className="flex items-center gap-3 pb-3 border-b border-border/60">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent/20 border border-accent/30 overflow-hidden shadow-inner">
+                      {session?.avatar ? (
+                        <img
+                          src={session.avatar}
+                          alt={displayName}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <User className="h-5 w-5 text-accent" />
+                      )}
+                    </div>
+                    <div className="flex flex-col min-w-0 flex-1">
+                      <span className="text-xs font-black text-foreground truncate">
+                        {displayName}
+                      </span>
+                      <span className="text-[10px] text-muted-foreground truncate">
+                        {session?.email || "Admin Account"}
+                      </span>
+                      <span className="mt-1 inline-flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-widest text-accent bg-accent/10 px-2 py-0.5 rounded-full w-fit border border-accent/20">
+                        {session?.role === "root-super-admin"
+                          ? "Root Super Admin"
+                          : session?.role === "super-admin"
+                            ? "Super Admin"
+                            : session?.role || "Admin"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="pt-3">
+                    <button
+                      onClick={handleLogout}
+                      className="group/logout flex w-full items-center justify-center gap-2 rounded-xl bg-destructive/15 border border-destructive/20 p-2.5 text-xs font-bold text-destructive hover:bg-destructive hover:text-white transition-all shadow-sm active:scale-95"
+                    >
+                      <LogOut className="h-4 w-4 transition-transform group-hover/logout:-translate-x-0.5" />
+                      <span>Secure Logout</span>
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Clickable Profile Trigger Button */}
+            <button
+              type="button"
+              onClick={() => setShowProfileMenu((prev) => !prev)}
+              title={isCollapsed ? `${displayName} — Click for Account & Logout` : "Click for Account & Logout Options"}
+              className={`w-full flex items-center gap-3 p-1.5 rounded-xl hover:bg-accent/10 transition-colors ${
+                isCollapsed ? "justify-center" : "justify-between"
+              } ${showProfileMenu ? "bg-accent/10 border border-accent/30" : "border border-transparent"}`}
+            >
+              <div className={`flex items-center gap-3 overflow-hidden ${isCollapsed ? "justify-center" : ""}`}>
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/20 border border-accent/30 overflow-hidden shadow-sm transition-transform hover:scale-105">
+                  {session?.avatar ? (
+                    <img
+                      src={session.avatar}
+                      alt={displayName}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <User className="h-4 w-4 text-accent" />
+                  )}
                 </div>
                 {!isCollapsed && (
-                  <div className="flex flex-col overflow-hidden">
+                  <div className="flex flex-col text-left overflow-hidden">
                     <span className="text-xs font-bold text-foreground truncate">
                       {displayName}
                     </span>
@@ -363,15 +447,11 @@ export default function AdminSidebar() {
               </div>
 
               {!isCollapsed && (
-                <button
-                  onClick={handleLogout}
-                  title="Logout"
-                  className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-xl transition-colors"
-                >
+                <div className="p-1.5 text-muted-foreground hover:text-destructive rounded-lg">
                   <LogOut className="h-4 w-4" />
-                </button>
+                </div>
               )}
-            </div>
+            </button>
           </div>
         </div>
       </motion.div>

@@ -308,31 +308,96 @@ export default function Topbar() {
 
         <div className="h-8 w-px bg-border mx-2" />
 
-        <div className="flex items-center gap-3 pl-2">
-          <div className="hidden sm:flex flex-col items-end">
-            <span className="text-sm font-bold text-foreground tracking-tight leading-none mb-1">
-              {displayName}
-              {isSuperAdmin && <span className="text-accent"> (Super Admin)</span>}
-            </span>
-            <span className="max-w-64 truncate text-[10px] font-medium text-muted-foreground">
-              {session?.email || "Synchronizing..."}
-            </span>
-          </div>
-          <div className="group h-10 w-10 rounded-xl bg-accent p-0.5 shadow-xl shadow-accent/20 transition-transform hover:scale-105">
-            <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-[10px] bg-background">
-              {session?.avatar ? (
-                <Image
-                  src={session.avatar}
-                  alt={`Muhyo Tech administrator ${displayName}`}
-                  width={36}
-                  height={36}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <User className="h-5 w-5 text-accent" />
-              )}
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setShowProfileMenu((prev) => !prev)}
+            className="flex items-center gap-3 pl-2 group/profile focus:outline-none"
+            title="Click for Account & Logout Options"
+          >
+            <div className="hidden sm:flex flex-col items-end">
+              <span className="text-sm font-bold text-foreground tracking-tight leading-none mb-1 group-hover/profile:text-accent transition-colors">
+                {displayName}
+                {isSuperAdmin && <span className="text-accent"> (Super Admin)</span>}
+              </span>
+              <span className="max-w-64 truncate text-[10px] font-medium text-muted-foreground">
+                {session?.email || "Synchronizing..."}
+              </span>
             </div>
-          </div>
+            <div className="h-10 w-10 rounded-xl bg-accent p-0.5 shadow-xl shadow-accent/20 transition-transform group-hover/profile:scale-105">
+              <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-[10px] bg-background">
+                {session?.avatar ? (
+                  <img
+                    src={session.avatar}
+                    alt={displayName}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <User className="h-5 w-5 text-accent" />
+                )}
+              </div>
+            </div>
+          </button>
+
+          <AnimatePresence>
+            {showProfileMenu && (
+              <motion.div
+                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                className="absolute right-0 top-full mt-3 w-64 z-50 rounded-2xl border border-border/80 bg-card/95 p-4 shadow-2xl backdrop-blur-2xl"
+              >
+                <div className="flex items-center gap-3 pb-3 border-b border-border/60">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent/20 border border-accent/30 overflow-hidden shadow-inner">
+                    {session?.avatar ? (
+                      <img
+                        src={session.avatar}
+                        alt={displayName}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <User className="h-5 w-5 text-accent" />
+                    )}
+                  </div>
+                  <div className="flex flex-col min-w-0 flex-1 text-left">
+                    <span className="text-xs font-black text-foreground truncate">
+                      {displayName}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground truncate">
+                      {session?.email || "Admin Account"}
+                    </span>
+                    <span className="mt-1 inline-flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-widest text-accent bg-accent/10 px-2 py-0.5 rounded-full w-fit border border-accent/20">
+                      {session?.role === "root-super-admin"
+                        ? "Root Super Admin"
+                        : session?.role === "super-admin"
+                          ? "Super Admin"
+                          : session?.role || "Admin"}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="pt-3">
+                  <button
+                    onClick={async () => {
+                      try {
+                        const res = await fetch("/api/admin/logout", { method: "POST" });
+                        if (res.ok) {
+                          toast.success("Secure Logout successful.");
+                          window.location.href = "/admin/login";
+                        }
+                      } catch {
+                        toast.error("Logout failed.");
+                      }
+                    }}
+                    className="group/logout flex w-full items-center justify-center gap-2 rounded-xl bg-destructive/15 border border-destructive/20 p-2.5 text-xs font-bold text-destructive hover:bg-destructive hover:text-white transition-all shadow-sm active:scale-95"
+                  >
+                    <LogOut className="h-4 w-4 transition-transform group-hover/logout:-translate-x-0.5" />
+                    <span>Secure Logout</span>
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </nav>
