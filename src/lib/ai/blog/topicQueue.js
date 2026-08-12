@@ -449,7 +449,7 @@ export async function reconcileUsedTopicPlans() {
 }
 
 async function recoverStaleTopics() {
-  const cutoff = new Date(Date.now() - 30 * 60 * 1000);
+  const cutoff = new Date(Date.now() - 3 * 60 * 1000);
   const { linkedTopicIds } = await reconcileUsedTopicPlans();
   
   // Stale topics that were interrupted >30 mins ago or missing processingStartedAt
@@ -602,12 +602,8 @@ async function takeClusterTopic(source = "ai", { allowNewPillar = true } = {}) {
     source,
     articleType: "pillar",
     status: "planned",
-    $or: [{ cooldownUntil: null }, { cooldownUntil: { $lte: new Date() } }],
   }).sort({ priority: -1, createdAt: 1 }).limit(30);
   for (const candidate of plannedPillars) {
-    const decision = await evaluateTopicCooldown(candidate.toObject());
-    await recordCooldownDecision(candidate._id, decision);
-    if (!decision.eligible) continue;
     const pillar = await takeTopic({ _id: candidate._id, status: "planned" }, { priority: -1, createdAt: 1 });
     if (pillar) return addParentPillarContext(pillar, null);
   }

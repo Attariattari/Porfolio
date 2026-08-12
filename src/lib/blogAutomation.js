@@ -990,7 +990,6 @@ export async function runBlogAutomationPipeline(
       "Quality threshold was not met after four attempts.",
     ).catch(() => {});
     report("FAILED", {
-    report("FAILED", {
       message:
         "Maximum quality retries reached. Stopping to avoid degradation.",
     });
