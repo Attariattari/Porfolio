@@ -336,6 +336,7 @@ export default function ProfessionalSidebar({ data }) {
               {isSuperAdmin && (
                 <Link
                   href="/admin/blogs"
+                  target="_blank"
                   prefetch={false}
                   aria-label={collapsed ? "Open Admin Dashboard" : undefined}
                   title={collapsed ? "Open Admin Dashboard" : undefined}
