@@ -13,6 +13,7 @@ import { formatName } from "@/lib/utils";
 import { useTheme } from "@/components/ThemeProvider";
 export default function Topbar() {
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [session, setSession] = useState(null);
   const {
     notifications,
@@ -27,6 +28,7 @@ export default function Topbar() {
     setTheme(nextTheme, { persistPreference: true });
   };
   const dropdownRef = useRef(null);
+  const profileRef = useRef(null);
   const displayName = session?.name
     ? formatName(session.name)
     : "Admin";
@@ -74,6 +76,9 @@ export default function Topbar() {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowNotifications(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setShowProfileMenu(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -305,7 +310,7 @@ export default function Topbar() {
 
         <div className="h-8 w-px bg-border mx-2" />
 
-        <div className="relative">
+        <div className="relative" ref={profileRef}>
           <button
             type="button"
             onClick={() => setShowProfileMenu((prev) => !prev)}
