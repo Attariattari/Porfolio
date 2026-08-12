@@ -37,6 +37,81 @@ async function getBloggerAccessToken() {
   return data.access_token;
 }
 
+const PUBLIC_LIVE_DOMAIN = "https://www.muhyotech.com";
+
+export function getBloggerLiveBaseUrl() {
+  const configured = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || process.env.APP_URL;
+  if (configured && !configured.includes("localhost") && !configured.includes("127.0.0.1")) {
+    return configured.replace(/\/$/, "");
+  }
+  return PUBLIC_LIVE_DOMAIN;
+}
+
+export function sanitizeBloggerContentLinks(content = "") {
+  if (!content) return content;
+  const liveBaseUrl = getBloggerLiveBaseUrl();
+
+  let sanitized = content;
+  sanitized = sanitized.replace(/https?:\/\/(?:localhost|127\.0\.0\.1)(?::\d+)?/gi, liveBaseUrl);
+  sanitized = sanitized.replace(/(href=["'])\/(blog\/[^"']+)(["'])/gi, `$1${liveBaseUrl}/$2$3`);
+
+  return sanitized;
+}
+
+export function sanitizeBloggerUrl(url = "") {
+  if (!url) return `${getBloggerLiveBaseUrl()}/blog`;
+  const liveBaseUrl = getBloggerLiveBaseUrl();
+  return url.replace(/https?:\/\/(?:localhost|127\.0\.0\.1)(?::\d+)?/gi, liveBaseUrl);
+}
+
+export async function updateGoogleBloggerPost(bloggerPostId, { title, content, tags = [], canonicalUrl }) {
+  try {
+    const blogId = process.env.GOOGLE_BLOGGER_BLOG_ID;
+    if (!blogId || !bloggerPostId) return { success: false, error: "Missing blogId or bloggerPostId" };
+
+    const accessToken = await getBloggerAccessToken();
+    const liveCanonicalUrl = sanitizeBloggerUrl(canonicalUrl);
+    let formattedContent = sanitizeBloggerContentLinks(content);
+
+    if (liveCanonicalUrl && !formattedContent.includes(liveCanonicalUrl)) {
+      formattedContent += `
+        <br/><hr/>
+        <p style="font-size: 0.9em; color: #666;">
+          <em>Originally published at <a href="${liveCanonicalUrl}" target="_blank" rel="noopener noreferrer">${liveCanonicalUrl}</a></em>
+        </p>
+      `;
+    }
+
+    const response = await fetch(
+      `https://www.googleapis.com/blogger/v3/blogs/${blogId}/posts/${bloggerPostId}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          kind: "blogger#post",
+          title: title,
+          content: formattedContent,
+          labels: tags.length > 0 ? tags : ["Technology", "Engineering"],
+        }),
+      }
+    );
+
+    const postData = await response.json();
+    if (!response.ok) {
+      throw new Error(`Google Blogger API update error: ${postData.error?.message || JSON.stringify(postData)}`);
+    }
+
+    console.log(`[Blogger API] Live Post ${bloggerPostId} updated on Google Blogger dashboard.`);
+    return { success: true, postData };
+  } catch (error) {
+    console.error("[updateGoogleBloggerPost Error]:", error.message);
+    return { success: false, error: error.message };
+  }
+}
+
 export async function publishToGoogleBlogger({
   title,
   content,
@@ -52,13 +127,15 @@ export async function publishToGoogleBlogger({
 
     const accessToken = await getBloggerAccessToken();
 
-    // Ensure canonical attribution link is present
-    let formattedContent = content;
-    if (canonicalUrl && !formattedContent.includes(canonicalUrl)) {
+    // Ensure canonical attribution link is present and strictly uses live production domain
+    const liveCanonicalUrl = sanitizeBloggerUrl(canonicalUrl);
+    let formattedContent = sanitizeBloggerContentLinks(content);
+
+    if (liveCanonicalUrl && !formattedContent.includes(liveCanonicalUrl)) {
       formattedContent += `
         <br/><hr/>
         <p style="font-size: 0.9em; color: #666;">
-          <em>Originally published at <a href="${canonicalUrl}" target="_blank" rel="noopener noreferrer">${canonicalUrl}</a></em>
+          <em>Originally published at <a href="${liveCanonicalUrl}" target="_blank" rel="noopener noreferrer">${liveCanonicalUrl}</a></em>
         </p>
       `;
     }

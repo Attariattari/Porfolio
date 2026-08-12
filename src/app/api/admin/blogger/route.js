@@ -3,7 +3,13 @@ import dbConnect from "@/lib/dbConnect";
 import { BloggerPost } from "@/models/BloggerPost";
 import { Blog } from "@/models/Portfolio";
 import { generateBloggerSupportingBlog } from "@/lib/ai/blog/generateBloggerSupportingBlog";
-import { checkBloggerConfigStatus, checkIfBloggerPostExists } from "@/lib/server/bloggerService";
+import {
+  checkBloggerConfigStatus,
+  checkIfBloggerPostExists,
+  sanitizeBloggerContentLinks,
+  sanitizeBloggerUrl,
+  updateGoogleBloggerPost,
+} from "@/lib/server/bloggerService";
 import {
   getUnsyncedOldBlogsCount,
   processDailyBloggerBacklog,
@@ -14,6 +20,35 @@ export async function GET(request) {
     await dbConnect();
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
+
+    // 🔒 AUTO-CLEAN & AUTO-UPDATE EXISTING POSTS WITH LOCALHOST URLS
+    const postsNeedingSanitization = await BloggerPost.find({
+      $or: [
+        { content: { $regex: "localhost|127\\.0\\.0\\.1", $options: "i" } },
+        { parentBlogUrl: { $regex: "localhost|127\\.0\\.0\\.1", $options: "i" } },
+      ],
+    });
+
+    if (postsNeedingSanitization.length > 0) {
+      console.log(`[Blogger URL Sanitizer] Found ${postsNeedingSanitization.length} existing posts with localhost URLs. Auto-cleaning...`);
+      for (const p of postsNeedingSanitization) {
+        const cleanContent = sanitizeBloggerContentLinks(p.content);
+        const cleanParentUrl = sanitizeBloggerUrl(p.parentBlogUrl);
+
+        p.content = cleanContent;
+        p.parentBlogUrl = cleanParentUrl;
+        await p.save();
+
+        if (p.publishStatus === "published" && p.bloggerPostId) {
+          updateGoogleBloggerPost(p.bloggerPostId, {
+            title: p.title,
+            content: cleanContent,
+            tags: p.tags,
+            canonicalUrl: cleanParentUrl,
+          }).catch((err) => console.error(`[Blogger URL Sanitizer Update Error] ${p.title}:`, err.message));
+        }
+      }
+    }
 
     const query = {};
     if (status && status !== "all") {

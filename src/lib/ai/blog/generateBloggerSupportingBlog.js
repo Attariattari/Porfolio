@@ -2,6 +2,11 @@ import dbConnect from "../../dbConnect.js";
 import { Blog } from "../../../models/Portfolio.js";
 import { BloggerPost } from "../../../models/BloggerPost.js";
 import { generateGeminiResponse } from "../../geminiService.js";
+import {
+  getBloggerLiveBaseUrl,
+  sanitizeBloggerContentLinks,
+  sanitizeBloggerUrl,
+} from "../../server/bloggerService.js";
 
 /**
  * Generates a 900-1200 word standalone supporting article for Google Blogger.
@@ -126,8 +131,8 @@ export async function generateBloggerSupportingBlog(parentBlogId, options = {}) 
       throw new Error(`Parent blog with ID ${parentBlogId} not found.`);
     }
 
-    const baseUrl = options.baseUrl || process.env.NEXT_PUBLIC_SITE_URL || "https://muhyotech.com";
-    const parentUrl = `${baseUrl}/blog/${parentBlog.slug}`;
+    const liveBaseUrl = getBloggerLiveBaseUrl();
+    const parentUrl = sanitizeBloggerUrl(`${liveBaseUrl}/blog/${parentBlog.slug}`);
 
     console.log(`[Blogger Generator] Generating supporting post for parent: "${parentBlog.title}"...`);
 
@@ -172,14 +177,16 @@ export async function generateBloggerSupportingBlog(parentBlogId, options = {}) 
       throw new Error("Failed to generate a valid supporting blog post after 3 attempts due to response truncation. Please try again.");
     }
 
+    let finalContent = sanitizeBloggerContentLinks(blogData.content);
+
     // Attach Parent/Featured Cover Image at top of Blogger HTML for Blogger thumbnail parsing
     const coverImageUrl = parentBlog.featuredImage?.url || parentBlog.image;
-    if (coverImageUrl && !blogData.content.includes("<img")) {
-      blogData.content = `
+    if (coverImageUrl && !finalContent.includes("<img")) {
+      finalContent = `
         <div style="margin-bottom: 24px; text-align: center;">
           <img src="${coverImageUrl}" alt="${blogData.title}" style="width: 100%; max-height: 480px; object-fit: cover; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);" />
         </div>
-        ${blogData.content}
+        ${finalContent}
       `;
     }
 
@@ -193,7 +200,7 @@ export async function generateBloggerSupportingBlog(parentBlogId, options = {}) 
     const newBloggerPost = new BloggerPost({
       title: blogData.title,
       slug: slug,
-      content: blogData.content,
+      content: finalContent,
       summary: blogData.summary,
       tags: blogData.tags || ["Technology", "Engineering"],
 

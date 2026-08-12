@@ -2,7 +2,11 @@ import dbConnect from "../../dbConnect.js";
 import { Blog } from "../../../models/Portfolio.js";
 import { BloggerPost } from "../../../models/BloggerPost.js";
 import { generateBloggerSupportingBlog } from "./generateBloggerSupportingBlog.js";
-import { publishToGoogleBlogger } from "../../server/bloggerService.js";
+import {
+  publishToGoogleBlogger,
+  sanitizeBloggerContentLinks,
+  sanitizeBloggerUrl,
+} from "../../server/bloggerService.js";
 
 /**
  * Automates the 2-stage Blogger Publishing Flow:
@@ -68,6 +72,10 @@ export async function triggerBloggerPublishIfReady(mainBlogId) {
       return { success: true, bloggerPost, alreadyPublished: true };
     }
 
+    // Sanitize URLs to live domain
+    bloggerPost.parentBlogUrl = sanitizeBloggerUrl(bloggerPost.parentBlogUrl);
+    bloggerPost.content = sanitizeBloggerContentLinks(bloggerPost.content);
+
     // Embed resolved image at top of Blogger content if not already present
     if (!bloggerPost.content.includes("<img")) {
       bloggerPost.content = `
@@ -76,8 +84,8 @@ export async function triggerBloggerPublishIfReady(mainBlogId) {
         </div>
         ${bloggerPost.content}
       `;
-      await bloggerPost.save();
     }
+    await bloggerPost.save();
 
     // Auto-Publish to Blogger if ENABLE_AUTO_BLOGGER_POST is true
     if (process.env.ENABLE_AUTO_BLOGGER_POST === "true") {
