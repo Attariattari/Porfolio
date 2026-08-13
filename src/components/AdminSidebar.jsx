@@ -28,6 +28,7 @@ import {
   CalendarDays,
   FileBadge2,
   Settings,
+  Inbox,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -68,6 +69,7 @@ const ICON_MAP = {
   BellRing,
   UsersRound,
   Settings,
+  Inbox,
 };
 
 export default function AdminSidebar() {

@@ -44,7 +44,7 @@ export const ADMIN_NAVIGATION_LINKS = [
   {
     name: "System Mails",
     href: "/admin/mails",
-    icon: "MailCheck",
+    icon: "Inbox",
     role: "super-admin",
   },
   {
