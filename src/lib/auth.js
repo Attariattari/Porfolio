@@ -31,6 +31,11 @@ export function getDefaultAuthRedirect(user, callbackUrl = "") {
     let safeUrl = callbackUrl;
     if (safeUrl) {
         try {
+            if (typeof safeUrl === "string") {
+                try {
+                    safeUrl = decodeURIComponent(safeUrl);
+                } catch (e) {}
+            }
             if (typeof safeUrl === "string" && (safeUrl.startsWith("http://") || safeUrl.startsWith("https://"))) {
                 const parsed = new URL(safeUrl);
                 safeUrl = parsed.pathname + parsed.search + parsed.hash;

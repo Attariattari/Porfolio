@@ -268,8 +268,10 @@ export default function AuthContainer({
 
   const handleGoogleAuth = () => {
     setLoading(true);
-    const safeCallback = callbackUrl?.startsWith("/") && !callbackUrl.startsWith("//")
-      ? callbackUrl
+    let decoded = callbackUrl || "";
+    try { decoded = decodeURIComponent(decoded); } catch (e) {}
+    const safeCallback = decoded.startsWith("/") && !decoded.startsWith("//")
+      ? decoded
       : "/admin/dashboard";
     window.location.href = `/api/auth/google?callbackUrl=${encodeURIComponent(safeCallback)}`;
   };
