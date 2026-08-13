@@ -116,7 +116,8 @@ export default async function BlogImageUploadPage({ params }) {
           blogSlug={blog.slug}
           imagePrompt={blog.imagePrompt || blog.image_prompt || ""}
           negativePrompt={blog.imageNegativePrompt || ""}
-          initialSocialKit={blog.socialKit || null}
+          initialImage={blog.featuredImage?.url || blog.image || ""}
+          isAlreadyUploaded={tokenResult.isUsed || Boolean(blog.featuredImage?.url || blog.image)}
         />
 
         <p className="mt-6 rounded-2xl border border-border bg-muted/50 p-4 text-xs leading-6 text-muted-foreground">

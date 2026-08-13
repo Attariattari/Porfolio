@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import {
   Upload,
   Copy,
@@ -12,7 +11,7 @@ import {
   ExternalLink,
   Sparkles,
   Loader2,
-  ImageIcon,
+  RefreshCw,
 } from "lucide-react";
 
 async function writeToClipboard(text) {
@@ -39,24 +38,31 @@ export default function UploadClient({
   blogSlug,
   imagePrompt,
   negativePrompt,
+  initialImage = "",
+  isAlreadyUploaded = false,
 }) {
-  const router = useRouter();
   const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState("");
-  const [status, setStatus] = useState("idle"); // 'idle' | 'uploading' | 'success' | 'error'
+  const [preview, setPreview] = useState(initialImage || "");
+  const [status, setStatus] = useState(isAlreadyUploaded || initialImage ? "success" : "idle"); // 'idle' | 'uploading' | 'success' | 'error'
   const [message, setMessage] = useState("");
   const [copiedPrompt, setCopiedPrompt] = useState(false);
   const [uploadData, setUploadData] = useState(null);
+  const [isReplacing, setIsReplacing] = useState(false);
 
   const copyTimerRef = useRef(null);
 
-  useEffect(() => () => { if (preview) URL.revokeObjectURL(preview); }, [preview]);
-  useEffect(() => () => { window.clearTimeout(copyTimerRef.current); }, []);
+  useEffect(() => () => {
+    if (preview && preview.startsWith("blob:")) URL.revokeObjectURL(preview);
+  }, [preview]);
+
+  useEffect(() => () => {
+    window.clearTimeout(copyTimerRef.current);
+  }, []);
 
   const onFileChange = (event) => {
     const selected = event.target.files?.[0];
     setFile(selected || null);
-    setPreview(selected ? URL.createObjectURL(selected) : "");
+    setPreview(selected ? URL.createObjectURL(selected) : initialImage || "");
     setStatus("idle");
     setMessage("");
   };
@@ -95,7 +101,9 @@ export default function UploadClient({
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.message || "Image upload failed.");
       setStatus("success");
+      setIsReplacing(false);
       setUploadData(data);
+      if (data.imageUrl) setPreview(data.imageUrl);
       setMessage("Image uploaded & blog published successfully!");
     } catch (error) {
       setStatus("error");
@@ -105,8 +113,8 @@ export default function UploadClient({
 
   const blogUrl = uploadData?.redirectUrl || (blogSlug ? `/blog/${blogSlug}` : null);
 
-  // ─── SUCCESS STATE: Show only 2 action buttons ───────────────────────────
-  if (status === "success") {
+  // ─── SUCCESS STATE: Show only 2 action buttons + option to replace ────────
+  if (status === "success" && !isReplacing) {
     return (
       <div className="flex flex-col items-center gap-6 animate-in fade-in duration-300">
         {/* Success Banner */}
@@ -114,7 +122,9 @@ export default function UploadClient({
           <div className="grid h-16 w-16 place-items-center rounded-2xl bg-emerald-500/20">
             <CheckCircle2 className="h-8 w-8 text-emerald-400" />
           </div>
-          <p className="text-lg font-black text-emerald-300">Image Uploaded & Blog Published!</p>
+          <p className="text-lg font-black text-emerald-300">
+            {isAlreadyUploaded ? "Blog Cover Image is Published & Live!" : "Image Uploaded & Blog Published!"}
+          </p>
           <p className="text-sm text-emerald-200/70 max-w-sm">
             Your blog cover photo is live. Choose what you would like to do next.
           </p>
@@ -127,7 +137,7 @@ export default function UploadClient({
           </div>
         )}
 
-        {/* 2 Action Buttons */}
+        {/* 2 Main Action Buttons */}
         <div className="flex w-full flex-col gap-3 sm:flex-row">
           {/* View Blog */}
           {blogUrl && (
@@ -151,6 +161,15 @@ export default function UploadClient({
             Open Social Kit
           </a>
         </div>
+
+        {/* Option to replace image if needed */}
+        <button
+          type="button"
+          onClick={() => setIsReplacing(true)}
+          className="inline-flex items-center gap-2 text-xs font-bold text-muted-foreground hover:text-foreground transition-all pt-2"
+        >
+          <RefreshCw className="h-3.5 w-3.5" /> Replace Cover Photo
+        </button>
       </div>
     );
   }
@@ -202,17 +221,28 @@ export default function UploadClient({
         </div>
       ) : null}
 
-      <button
-        type="submit"
-        disabled={status === "uploading"}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-accent px-5 py-4 text-sm font-black uppercase tracking-[0.2em] text-accent-foreground shadow-xl transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-      >
-        {status === "uploading" ? (
-          <><Loader2 className="h-5 w-5 animate-spin" /> Uploading Image...</>
-        ) : (
-          <><Upload className="h-5 w-5" /> Save Cover Photo & Publish</>
+      <div className="flex gap-3">
+        {isReplacing && (
+          <button
+            type="button"
+            onClick={() => { setIsReplacing(false); setStatus("success"); }}
+            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-border bg-card px-5 py-4 text-sm font-bold text-foreground"
+          >
+            Cancel
+          </button>
         )}
-      </button>
+        <button
+          type="submit"
+          disabled={status === "uploading"}
+          className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-accent px-5 py-4 text-sm font-black uppercase tracking-[0.2em] text-accent-foreground shadow-xl transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {status === "uploading" ? (
+            <><Loader2 className="h-5 w-5 animate-spin" /> Uploading Image...</>
+          ) : (
+            <><Upload className="h-5 w-5" /> Save Cover Photo & Publish</>
+          )}
+        </button>
+      </div>
 
       {message ? (
         <div aria-live="polite" className="flex items-center gap-2 rounded-xl border border-border bg-muted/60 p-3 text-sm text-foreground">

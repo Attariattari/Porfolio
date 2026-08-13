@@ -53,31 +53,32 @@ export async function validateBlogImageUploadToken(rawToken) {
 
   if (!link) return { valid: false, code: "INVALID_TOKEN" };
 
-  if (link.status === "used") return { valid: false, code: "USED", link };
   if (link.status === "revoked") return { valid: false, code: "REVOKED", link };
 
-  if (link.expiresAt.getTime() <= Date.now()) {
+  if (link.expiresAt && link.expiresAt.getTime() <= Date.now()) {
     if (link.status !== "expired") {
       link.status = "expired";
-      await link.save();
+      await link.save().catch(() => {});
     }
     return { valid: false, code: "EXPIRED", link };
-  }
-
-  if (link.status !== "active") {
-    return { valid: false, code: "INVALID_STATUS", link };
   }
 
   const blog = await Blog.findById(link.blogId).lean();
   if (!blog) return { valid: false, code: "BLOG_NOT_FOUND", link };
 
-  return { valid: true, link, blog };
+  // Always return valid = true for valid tokens so authorized admins can access the upload & social kit page
+  return {
+    valid: true,
+    isUsed: link.status === "used",
+    code: link.status === "used" ? "USED" : "ACTIVE",
+    link,
+    blog,
+  };
 }
 
 export async function markBlogImageUploadLinkUsed(link, usedBy) {
   link.status = "used";
   link.usedAt = new Date();
   link.usedBy = usedBy;
-  await link.save();
+  await link.save().catch(() => {});
 }
-
