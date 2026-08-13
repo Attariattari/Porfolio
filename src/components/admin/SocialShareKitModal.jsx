@@ -34,9 +34,14 @@ export default function SocialShareKitModal({ blog, isOpen, onClose, onUpdated }
 
   useEffect(() => {
     if (!isOpen) return;
-    setPosts({ ...emptyPosts, ...(blog?.socialKit || {}) });
+    // Re-sync when the blog or its socialKit changes (covers onUpdated re-fetch)
+    const kit = blog?.socialKit || {};
+    const platformPosts = Object.fromEntries(
+      Object.keys(emptyPosts).map((key) => [key, String(kit[key] || "")])
+    );
+    setPosts({ ...emptyPosts, ...platformPosts });
     setFeedback("");
-  }, [blog?._id, isOpen]);
+  }, [blog?._id, blog?.socialKit?.updatedAt, isOpen]);
 
   const selectedPlatform = platforms.find(({ key }) => key === active) || platforms[0];
   const SelectedIcon = selectedPlatform.Icon;
@@ -98,16 +103,20 @@ export default function SocialShareKitModal({ blog, isOpen, onClose, onUpdated }
   const generate = async () => {
     setGenerating(true);
     try {
-      const requestedPlatforms = missingPlatforms.length ? missingPlatforms : platforms.map(({ key }) => key);
       const response = await fetch(`/api/admin/blogs/${blog._id}/social-kit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ feedback, platforms: requestedPlatforms }),
+        body: JSON.stringify({ feedback }),
       });
       const result = await response.json();
       if (!response.ok || !result.success) throw new Error(result.error || "Could not generate social posts.");
-      setPosts((current) => ({ ...emptyPosts, ...current, ...(result.data || {}) }));
-      toast.success(missingPlatforms.length ? "Missing platform posts prepared." : "Social kit regenerated.");
+      // Immediately apply only the 7 platform posts to local state for real-time display
+      const freshKit = result.data || {};
+      const freshPosts = Object.fromEntries(
+        Object.keys(emptyPosts).map((key) => [key, String(freshKit[key] || "")])
+      );
+      setPosts((current) => ({ ...current, ...freshPosts }));
+      toast.success("Social kit generated successfully.");
       await onUpdated?.();
     } catch (error) {
       toast.error(error.message);
@@ -126,7 +135,12 @@ export default function SocialShareKitModal({ blog, isOpen, onClose, onUpdated }
       });
       const result = await response.json();
       if (!response.ok || !result.success) throw new Error(result.error || "Could not save social posts.");
-      setPosts((current) => ({ ...emptyPosts, ...current, ...(result.data || {}) }));
+      // Apply saved kit immediately to local state
+      const savedKit = result.data || {};
+      const savedPosts = Object.fromEntries(
+        Object.keys(emptyPosts).map((key) => [key, String(savedKit[key] || "")])
+      );
+      setPosts((current) => ({ ...current, ...savedPosts }));
       toast.success("Social Share Kit saved.");
       await onUpdated?.();
     } catch (error) {
