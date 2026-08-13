@@ -178,7 +178,7 @@ export default function AdminSidebar() {
     ) {
       // Hide these for Admin/User
       if (
-        ["Subscribers", "Notifications", "Users", "Settings"].includes(
+        ["Subscribers", "Notifications", "Users", "Settings", "System Mails"].includes(
           link.name,
         )
       )
@@ -216,7 +216,7 @@ export default function AdminSidebar() {
     {
       label: "Communication",
       links: filteredLinks.filter((l) =>
-        ["Messages", "Bookings", "Subscribers"].includes(l.name),
+        ["Messages", "Bookings", "Subscribers", "System Mails"].includes(l.name),
       ),
     },
     {
