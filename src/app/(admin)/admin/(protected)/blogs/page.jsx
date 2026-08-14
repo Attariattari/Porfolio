@@ -791,7 +791,7 @@ export default function BlogsPage() {
                 ? autoGenerateImages
                   ? "border-amber-300 bg-amber-400 text-slate-950 shadow-amber-500/20 hover:bg-amber-300 hover:text-black"
                   : "border-emerald-400 bg-emerald-500 text-slate-950 shadow-emerald-500/25 hover:bg-emerald-400 hover:text-black hover:border-emerald-300"
-                : "border-violet-400/35 bg-violet-500/20 text-violet-200 shadow-violet-500/15 hover:border-violet-400/60 hover:bg-violet-500/30 hover:text-white"
+                : "border-violet-500 bg-violet-600 text-white font-extrabold shadow-violet-600/30 hover:bg-violet-500 hover:border-violet-400"
             }`}
           >
             {hasPendingImage && !autoGenerateImages ? (
