@@ -15,6 +15,9 @@ import {
   Plus,
   Trash2,
   Globe,
+  Phone,
+  MessageSquare,
+  ExternalLink,
 } from "lucide-react";
 import useAdminStore from "@/lib/store/adminStore";
 import { normalizeSocialProfileUrl } from "@/lib/socialProfileUrl";
@@ -35,7 +38,6 @@ const WhatsAppIcon = (props) => (
   </svg>
 );
 
-// Fixed Icon Mapping
 const PLATFORM_ICONS = {
   whatsapp: WhatsAppIcon,
   linkedin: Linkedin,
@@ -63,20 +65,69 @@ const ALLOWED_PLATFORMS = [
   "instagram",
 ];
 
+function parseWhatsAppUrl(rawUrl = "") {
+  if (!rawUrl) return { phone: "", message: "" };
+
+  try {
+    if (rawUrl.includes("wa.me/") || rawUrl.includes("whatsapp.com/")) {
+      const parsed = new URL(rawUrl.startsWith("http") ? rawUrl : `https://${rawUrl}`);
+      let phone = parsed.pathname.replace(/^\//, "").split("/")[0] || "";
+
+      if (!phone && parsed.searchParams.has("phone")) {
+        phone = parsed.searchParams.get("phone") || "";
+      }
+      phone = phone.replace(/[^0-9]/g, "");
+
+      let message = parsed.searchParams.get("text") || "";
+      try {
+        message = decodeURIComponent(message);
+      } catch (e) {
+        // fallback to raw message
+      }
+      return { phone, message };
+    }
+  } catch (e) {
+    // ignore parse error
+  }
+
+  const cleanPhone = rawUrl.replace(/[^0-9]/g, "");
+  return { phone: cleanPhone, message: "" };
+}
+
+function buildWhatsAppUrl(phone = "", message = "") {
+  const cleanPhone = (phone || "").replace(/[^0-9]/g, "");
+  if (!cleanPhone) return "";
+
+  const trimmedMsg = (message || "").trim();
+  if (trimmedMsg) {
+    return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(trimmedMsg)}`;
+  }
+  return `https://wa.me/${cleanPhone}`;
+}
+
 // Validation schema
 const socialLinkSchema = z.object({
   platform: z.enum(ALLOWED_PLATFORMS),
-  url: z.string().trim().min(1, "Username or URL is required"),
+  url: z.string().optional(),
+  whatsappPhone: z.string().optional(),
+  whatsappMessage: z.string().optional(),
 }).superRefine((link, context) => {
-  if (link.platform !== "whatsapp") return;
-
-  const parsedUrl = z.string().url().safeParse(link.url);
-  if (!parsedUrl.success) {
-    context.addIssue({
-      code: "custom",
-      path: ["url"],
-      message: "Enter the complete WhatsApp URL",
-    });
+  if (link.platform === "whatsapp") {
+    if (!link.whatsappPhone && !link.url) {
+      context.addIssue({
+        code: "custom",
+        path: ["whatsappPhone"],
+        message: "WhatsApp phone number is required",
+      });
+    }
+  } else {
+    if (!link.url || !link.url.trim()) {
+      context.addIssue({
+        code: "custom",
+        path: ["url"],
+        message: "Username or URL is required",
+      });
+    }
   }
 });
 
@@ -86,8 +137,16 @@ const socialLinksSchema = z.object({
 
 const SectionHeader = ({ icon: Icon, title, desc }) => (
   <div className="mb-6 flex items-start gap-3 border-b border-white/[0.07] pb-5">
-    <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-cyan-400/10 text-cyan-300"><Icon className="size-4" /></span>
-    <div><p className="text-[9px] font-bold uppercase tracking-[.18em] text-slate-600">Profile connections</p><h2 className="mt-1 text-sm font-semibold text-slate-100">{title}</h2><p className="mt-1 text-xs leading-5 text-slate-500">{desc}</p></div>
+    <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-cyan-400/10 text-cyan-300">
+      <Icon className="size-4" />
+    </span>
+    <div>
+      <p className="text-[9px] font-bold uppercase tracking-[.18em] text-slate-600">
+        Profile connections
+      </p>
+      <h2 className="mt-1 text-sm font-semibold text-slate-100">{title}</h2>
+      <p className="mt-1 text-xs leading-5 text-slate-500">{desc}</p>
+    </div>
   </div>
 );
 
@@ -124,24 +183,52 @@ export default function SocialLinksForm() {
     let linksArray = [];
 
     if (Array.isArray(socialLinks) && socialLinks.length > 0) {
-      linksArray = socialLinks.map((link) => ({
-        platform: link.platform?.toLowerCase() || "",
-        url: link.url || "",
-      })).filter((link) => link.platform && link.url);
+      linksArray = socialLinks.map((link) => {
+        const platform = link.platform?.toLowerCase() || "";
+        const url = link.url || "";
+        if (platform === "whatsapp") {
+          const { phone, message } = parseWhatsAppUrl(url);
+          return {
+            platform,
+            url: buildWhatsAppUrl(phone, message),
+            whatsappPhone: phone,
+            whatsappMessage: message,
+          };
+        }
+        return { platform, url };
+      }).filter((link) => link.platform && (link.url || link.whatsappPhone));
     } else if (typeof socialLinks === "object" && socialLinks !== null && Object.keys(socialLinks).length > 0) {
       linksArray = Object.entries(socialLinks)
         .filter(([key]) => ALLOWED_PLATFORMS.includes(key.toLowerCase()))
-        .map(([key, value]) => ({
-          platform: key.toLowerCase(),
-          url: typeof value === "string" ? value : value?.url || "",
-        }))
-        .filter((link) => link.url !== "");
+        .map(([key, value]) => {
+          const platform = key.toLowerCase();
+          const url = typeof value === "string" ? value : value?.url || "";
+          if (platform === "whatsapp") {
+            const { phone, message } = parseWhatsAppUrl(url);
+            return {
+              platform,
+              url: buildWhatsAppUrl(phone, message),
+              whatsappPhone: phone,
+              whatsappMessage: message,
+            };
+          }
+          return { platform, url };
+        })
+        .filter((link) => link.url || link.whatsappPhone);
     }
 
     // Default fallback if database returned empty links
     if (linksArray.length === 0) {
+      const defaultWhatsapp = "https://wa.me/923224458481?text=Hi%20Ghulam%20Muhyo%20Din!%20I%20came%20across%20your%20portfolio%20and%20would%20love%20to%20connect.%20Are%20you%20available%20to%20discuss%20a%20potential%20project%20or%20collaboration%3F";
+      const { phone, message } = parseWhatsAppUrl(defaultWhatsapp);
+
       linksArray = [
-        { platform: "whatsapp", url: "https://wa.me/923224458481?text=Hi%20Ghulam%20Muhyo%20Din!%20I%20came%20across%20your%20portfolio%20and%20would%20love%20to%20connect.%20Are%20you%20available%20to%20discuss%20a%20potential%20project%20or%20collaboration%3F" },
+        {
+          platform: "whatsapp",
+          url: defaultWhatsapp,
+          whatsappPhone: phone,
+          whatsappMessage: message,
+        },
         { platform: "linkedin", url: "https://www.linkedin.com/in/ghulam-muhyo-din-web-designer" },
         { platform: "twitter", url: "https://x.com/GhulamMuhyo" },
         { platform: "facebook", url: "https://www.facebook.com/MuhammadMuhyoDinAttari" },
@@ -156,16 +243,38 @@ export default function SocialLinksForm() {
   const onSubmit = async (data) => {
     setIsSaving(true);
     try {
-      const normalizedLinks = data.links.map((link) => ({
-        ...link,
-        url: normalizeSocialProfileUrl(link.platform, link.url),
-      }));
+      const normalizedLinks = data.links.map((link) => {
+        if (link.platform === "whatsapp") {
+          const finalUrl = buildWhatsAppUrl(link.whatsappPhone, link.whatsappMessage);
+          return {
+            platform: "whatsapp",
+            url: finalUrl,
+          };
+        }
+        return {
+          ...link,
+          url: normalizeSocialProfileUrl(link.platform, link.url),
+        };
+      });
 
-      // Save updated links
+      // Save updated links to MongoDB
       const res = await updateSocialLinks(normalizedLinks);
 
       if (res.success) {
-        reset({ links: normalizedLinks });
+        // Re-parse and reset form
+        const updatedParsed = normalizedLinks.map((link) => {
+          if (link.platform === "whatsapp") {
+            const { phone, message } = parseWhatsAppUrl(link.url);
+            return {
+              platform: "whatsapp",
+              url: link.url,
+              whatsappPhone: phone,
+              whatsappMessage: message,
+            };
+          }
+          return link;
+        });
+        reset({ links: updatedParsed });
         toast.success("Social links synchronized with database!");
       } else {
         toast.error("Failed to save social links");
@@ -230,51 +339,135 @@ export default function SocialLinksForm() {
               const Icon = PLATFORM_ICONS[platformKey] || Globe;
               const fieldName = `links.${index}.url`;
               const platformName = `links.${index}.platform`;
+              const phoneName = `links.${index}.whatsappPhone`;
+              const messageName = `links.${index}.whatsappMessage`;
+
+              const isWhatsApp = platformKey === "whatsapp";
+
+              const currentPhone = currentLinks[index]?.whatsappPhone || "";
+              const currentMsg = currentLinks[index]?.whatsappMessage || "";
+              const liveGeneratedUrl = isWhatsApp
+                ? buildWhatsAppUrl(currentPhone, currentMsg)
+                : currentLinks[index]?.url || "";
 
               return (
                 <div
                   key={field.id}
-                  className="group flex items-center gap-4 rounded-2xl border border-white/[0.07] bg-white/[0.025] p-4 transition hover:border-cyan-400/20 hover:bg-cyan-400/[0.025]"
+                  className="group rounded-2xl border border-white/[0.07] bg-white/[0.025] p-5 transition hover:border-cyan-400/20 hover:bg-cyan-400/[0.025]"
                 >
                   <input type="hidden" {...register(platformName)} defaultValue={platformKey} />
-                  <div className="grid size-11 shrink-0 place-items-center rounded-xl bg-cyan-400/10 text-cyan-300">
-                    <Icon className="w-5 h-5" />
+                  <input type="hidden" {...register(fieldName)} value={liveGeneratedUrl} />
+
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="grid size-11 shrink-0 place-items-center rounded-xl bg-cyan-400/10 text-cyan-300">
+                        <Icon className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <label className="text-[10px] font-bold uppercase tracking-[.18em] text-cyan-300">
+                          {PLATFORM_LABELS[platformKey] || platformKey}
+                        </label>
+                        <p className="text-xs text-slate-400">
+                          {isWhatsApp
+                            ? "Configure your direct WhatsApp contact number and default greeting message"
+                            : `Manage your public ${PLATFORM_LABELS[platformKey]} profile link`}
+                        </p>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => remove(index)}
+                      className="p-2.5 rounded-xl text-muted-foreground/30 hover:text-red-400 hover:bg-red-400/10 transition-all"
+                      title="Remove link"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
 
-                  <div className="flex-1 space-y-1">
-                    <label className="text-[9px] font-bold uppercase tracking-[.15em] text-slate-600">
-                      {PLATFORM_LABELS[platformKey] || platformKey}
-                    </label>
-                    <input
-                      type={platformKey === "whatsapp" ? "url" : "text"}
-                      inputMode={platformKey === "whatsapp" ? "url" : "text"}
-                      {...register(fieldName)}
-                      onBlur={(event) => {
-                        const normalizedUrl = normalizeSocialProfileUrl(
-                          platformKey,
-                          event.target.value,
-                        );
-                        setValue(fieldName, normalizedUrl, {
-                          shouldDirty: true,
-                          shouldValidate: true,
-                        });
-                      }}
-                      placeholder={
-                        platformKey === "whatsapp"
-                          ? "Enter complete WhatsApp URL"
-                          : `Enter ${PLATFORM_LABELS[platformKey] || platformKey} username or URL`
-                      }
-                      className="mt-1 w-full border-none bg-transparent p-0 text-sm font-medium text-slate-200 outline-none placeholder:text-slate-700"
-                    />
-                  </div>
+                  {/* Standard Platform Input */}
+                  {!isWhatsApp && (
+                    <div className="mt-4">
+                      <input
+                        type="text"
+                        {...register(fieldName)}
+                        onBlur={(event) => {
+                          const normalizedUrl = normalizeSocialProfileUrl(
+                            platformKey,
+                            event.target.value,
+                          );
+                          setValue(fieldName, normalizedUrl, {
+                            shouldDirty: true,
+                            shouldValidate: true,
+                          });
+                        }}
+                        placeholder={`Enter ${PLATFORM_LABELS[platformKey] || platformKey} username or URL`}
+                        className="w-full rounded-xl border border-white/10 bg-slate-950/60 px-4 py-2.5 text-sm font-medium text-slate-200 outline-none focus:border-cyan-400/50 placeholder:text-slate-600"
+                      />
+                    </div>
+                  )}
 
-                  <button
-                    type="button"
-                    onClick={() => remove(index)}
-                    className="p-2.5 rounded-xl text-muted-foreground/30 hover:text-red-400 hover:bg-red-400/10 transition-all"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  {/* Dual WhatsApp Inputs */}
+                  {isWhatsApp && (
+                    <div className="mt-4 space-y-3">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {/* Phone Field */}
+                        <div className="space-y-1">
+                          <label className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-[.15em] text-slate-400">
+                            <Phone className="w-3 h-3 text-emerald-400" /> WhatsApp Number
+                          </label>
+                          <input
+                            type="tel"
+                            inputMode="tel"
+                            {...register(phoneName)}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setValue(phoneName, val, { shouldDirty: true });
+                              setValue(
+                                fieldName,
+                                buildWhatsAppUrl(val, currentMsg),
+                                { shouldDirty: true }
+                              );
+                            }}
+                            placeholder="e.g. 923224458481"
+                            className="w-full rounded-xl border border-white/10 bg-slate-950/60 px-4 py-2.5 text-sm font-mono font-medium text-emerald-300 outline-none focus:border-emerald-500/50 placeholder:text-slate-600"
+                          />
+                        </div>
+
+                        {/* Welcome Message Field */}
+                        <div className="space-y-1">
+                          <label className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-[.15em] text-slate-400">
+                            <MessageSquare className="w-3 h-3 text-cyan-400" /> Default Welcome Message
+                          </label>
+                          <input
+                            type="text"
+                            {...register(messageName)}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setValue(messageName, val, { shouldDirty: true });
+                              setValue(
+                                fieldName,
+                                buildWhatsAppUrl(currentPhone, val),
+                                { shouldDirty: true }
+                              );
+                            }}
+                            placeholder="e.g. Hi Ghulam Muhyo Din! I came across your portfolio..."
+                            className="w-full rounded-xl border border-white/10 bg-slate-950/60 px-4 py-2.5 text-sm font-medium text-slate-200 outline-none focus:border-cyan-400/50 placeholder:text-slate-600"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Live Generated URL Badge */}
+                      {liveGeneratedUrl && (
+                        <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-950/40 border border-white/5 text-xs text-slate-400">
+                          <ExternalLink className="w-3.5 h-3.5 shrink-0 text-emerald-400" />
+                          <span className="font-mono text-[11px] truncate text-slate-300">
+                            {liveGeneratedUrl}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -291,7 +484,18 @@ export default function SocialLinksForm() {
                       <button
                         key={platform}
                         type="button"
-                        onClick={() => append({ platform, url: "" })}
+                        onClick={() => {
+                          if (platform === "whatsapp") {
+                            append({
+                              platform: "whatsapp",
+                              url: "https://wa.me/923224458481",
+                              whatsappPhone: "923224458481",
+                              whatsappMessage: "Hi Ghulam Muhyo Din!",
+                            });
+                          } else {
+                            append({ platform, url: "" });
+                          }
+                        }}
                         className="group flex items-center gap-2 rounded-xl border border-white/[0.07] bg-white/[0.025] px-4 py-2.5 text-xs font-semibold text-slate-400 transition hover:border-cyan-400/25 hover:text-cyan-300"
                       >
                         <Icon className="w-4 h-4 text-muted-foreground/50 group-hover:text-accent" />
