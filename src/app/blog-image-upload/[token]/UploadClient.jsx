@@ -118,14 +118,14 @@ export default function UploadClient({
     return (
       <div className="flex flex-col items-center gap-6 animate-in fade-in duration-300">
         {/* Success Banner */}
-        <div className="flex flex-col items-center gap-3 rounded-3xl border border-emerald-500/40 bg-emerald-500/15 dark:bg-emerald-950/40 px-8 py-8 text-center w-full shadow-lg shadow-emerald-500/5">
-          <div className="grid h-16 w-16 place-items-center rounded-2xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 ring-1 ring-emerald-500/30 shadow-inner">
-            <CheckCircle2 className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
+        <div className="flex flex-col items-center gap-3 rounded-3xl border border-border bg-card px-8 py-8 text-center w-full shadow-xl">
+          <div className="grid h-16 w-16 place-items-center rounded-2xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-500 shadow-inner">
+            <CheckCircle2 className="h-8 w-8 text-emerald-500" />
           </div>
-          <p className="text-xl font-extrabold text-emerald-900 dark:text-emerald-200">
+          <p className="text-xl font-black text-card-foreground">
             {isAlreadyUploaded ? "Blog Cover Image is Published & Live!" : "Image Uploaded & Blog Published!"}
           </p>
-          <p className="text-sm font-medium text-emerald-800/90 dark:text-emerald-200/80 max-w-sm">
+          <p className="text-sm font-medium text-muted-foreground max-w-sm">
             Your blog cover photo is live. Choose what you would like to do next.
           </p>
         </div>
