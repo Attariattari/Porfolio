@@ -342,9 +342,9 @@ export default function Sidebar({ data }) {
 
             {/* Footer Actions */}
             <div className="mt-auto px-4 pt-4 space-y-3">
-              <div className={isCollapsed ? "flex justify-center" : ""}>
+              <div className={isCollapsed ? "flex justify-center items-center" : ""}>
                 {isCollapsed ? (
-                  <div className="flex flex-col gap-1 rounded-2xl border border-border/60 bg-background/65 p-1">
+                  <div className="w-fit mx-auto flex flex-col items-center justify-center gap-1 rounded-2xl border border-border/60 bg-background/65 p-1">
                     {themeOptions.map((option) => {
                       const Icon = option.icon;
                       const isActive = theme === option.id;

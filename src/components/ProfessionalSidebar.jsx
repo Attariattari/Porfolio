@@ -46,7 +46,7 @@ function ThemeSwitcher({ theme, onChange, collapsed = false, compact = false }) 
     <div
       className={`flex border border-border/60 bg-background/55 p-1 shadow-sm ${
         collapsed
-          ? "flex-col gap-1 rounded-2xl"
+          ? "w-fit mx-auto flex-col items-center justify-center gap-1 rounded-2xl"
           : compact
             ? "gap-0.5 rounded-xl"
             : "gap-1 rounded-2xl"
@@ -68,7 +68,7 @@ function ThemeSwitcher({ theme, onChange, collapsed = false, compact = false }) 
             title={option.label}
             className={`relative flex items-center justify-center rounded-xl border transition-[background-color,color,border-color,transform] duration-200 active:scale-95 ${
               collapsed
-                ? "h-9 w-9"
+                ? "h-9 w-9 shrink-0"
                 : compact
                   ? "h-7 w-7"
                   : "h-9 flex-1"
@@ -398,7 +398,7 @@ export default function ProfessionalSidebar({ data }) {
 
           <div
             className={`shrink-0 border-t border-border/50 bg-background/20 ${
-              collapsed ? "px-3 py-4" : "px-4 py-3.5"
+              collapsed ? "flex justify-center items-center px-2 py-4" : "px-4 py-3.5"
             }`}
           >
             {collapsed ? (
