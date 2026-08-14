@@ -338,328 +338,152 @@ export default function BloggerAdminPage() {
         </div>
       </div>
 
-      {/* Main Data Container: Mobile Card View + Desktop Table View */}
-      <div className="rounded-xl border border-border/60 bg-card/40 backdrop-blur-md overflow-hidden shadow-xl">
-        {/* Mobile View: Cards Layout (< 768px) */}
-        <div className="block md:hidden divide-y divide-border/50">
-          {loading ? (
-            <div className="p-8 text-center text-xs text-muted-foreground">
-              Loading supporting posts...
-            </div>
-          ) : filteredPosts.length === 0 ? (
-            <div className="p-8 text-center text-xs text-muted-foreground">
-              No supporting posts found. Click <strong>Generate Supporting Post</strong> to create one.
-            </div>
-          ) : (
-            filteredPosts.map((item) => {
+      {/* Main Data Container: Rich Visual Cards Grid */}
+      <div>
+        {loading ? (
+          <div className="p-12 text-center text-xs text-muted-foreground bg-card/40 rounded-2xl border border-border/60">
+            Loading supporting posts...
+          </div>
+        ) : filteredPosts.length === 0 ? (
+          <div className="p-12 text-center text-xs text-muted-foreground bg-card/40 rounded-2xl border border-border/60">
+            No supporting posts found. Click <strong>Generate Supporting Post</strong> to create one.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+            {filteredPosts.map((item) => {
               const coverUrl =
                 item.coverImage ||
                 item.content?.match(/<img[^>]+src=["']([^"']+)["']/i)?.[1] ||
                 item.parentBlogId?.featuredImage?.url ||
                 item.parentBlogId?.image ||
-                null;
+                "/blog-preview.png";
 
               return (
-                <div key={item._id} className="p-5 space-y-4 bg-card/20">
-                  {/* Status */}
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-70">
-                      Status
-                    </span>
-                    <div>
+                <div
+                  key={item._id}
+                  className="group relative flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card/50 backdrop-blur-md transition-all duration-300 hover:border-cyan-500/40 hover:shadow-xl hover:shadow-cyan-500/5"
+                >
+                  {/* Top Cover Image Banner with Badges */}
+                  <div className="relative aspect-[16/9] w-full overflow-hidden bg-slate-950">
+                    <img
+                      src={coverUrl}
+                      alt={item.title}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+                    {/* Top-Left Publish Status Badge */}
+                    <div className="absolute left-3 top-3">
                       {item.publishStatus === "published" ? (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-green-500/10 text-green-400 border border-green-500/20">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500 text-slate-950 shadow-md">
                           <CheckCircle2 className="w-3 h-3" /> Published
                         </span>
                       ) : item.publishStatus === "pending_review" ? (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500 text-slate-950 shadow-md">
                           Pending Review
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/10 text-red-400 border border-red-500/20">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-500 text-white shadow-md">
                           Failed
                         </span>
                       )}
                     </div>
-                  </div>
 
-                  {/* Cover Photo */}
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-70">
-                      Cover Photo
-                    </span>
-                    <div>
-                      {coverUrl ? (
-                        <div className="flex items-center gap-2">
-                          <div className="relative w-16 h-10 rounded-lg overflow-hidden border border-cyan-500/30 bg-slate-950 shrink-0">
-                            <img src={coverUrl} alt={item.title} className="w-full h-full object-cover" />
-                          </div>
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-bold bg-green-500/10 text-green-400 border border-green-500/20">
-                            <CheckCircle2 className="w-2.5 h-2.5" /> Ready
-                          </span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          <div className="w-16 h-10 rounded-lg border border-dashed border-amber-500/40 bg-amber-500/5 flex items-center justify-center shrink-0">
-                            <ImageIcon className="w-4 h-4 text-amber-400/70" />
-                          </div>
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                            Waiting Pic
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Supporting Post Title */}
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-70">
-                      Supporting Post Title
-                    </span>
-                    <div>
-                      <div className="font-bold text-sm tracking-tight text-foreground">{item.title}</div>
-                      <div className="text-muted-foreground text-xs line-clamp-2 mt-1">{item.summary}</div>
-                    </div>
-                  </div>
-
-                  {/* Parent Master Blog */}
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-70">
-                      Parent Master Blog
-                    </span>
-                    <div>
-                      <div className="text-cyan-400 font-semibold text-xs flex items-center gap-1">
-                        <Layers className="w-3.5 h-3.5 shrink-0" />
-                        <span>{item.parentBlogTitle}</span>
-                      </div>
-                      <a
-                        href={item.parentBlogUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-[10px] text-muted-foreground hover:underline flex items-center gap-1 mt-0.5"
-                      >
-                        Main Website Link <ExternalLink className="w-2.5 h-2.5" />
-                      </a>
-                    </div>
-                  </div>
-
-                  {/* QC Score */}
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-70">
-                      QC Score
-                    </span>
-                    <div>
-                      <span className="px-2.5 py-1 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 font-mono text-xs font-bold inline-block">
+                    {/* Top-Right QC Score Badge */}
+                    <div className="absolute right-3 top-3">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-black/70 text-cyan-300 border border-cyan-500/30 backdrop-blur-md shadow-md">
                         {item.qualityScore || 8.5}/10 QC
                       </span>
                     </div>
                   </div>
 
-                  {/* Actions */}
-                  <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-border/50">
-                    <button
-                      onClick={() => openPreviewModal(item)}
-                      className="flex-1 min-w-[120px] p-2.5 rounded-xl bg-card border border-border text-foreground hover:bg-accent transition-all flex items-center justify-center gap-1.5 text-[10px] font-black uppercase tracking-widest"
-                    >
-                      <Eye className="w-3.5 h-3.5 text-cyan-400" /> Preview / Edit
-                    </button>
+                  {/* Card Content Body */}
+                  <div className="flex flex-1 flex-col p-5 space-y-4">
+                    {/* Parent Blog Category / Master Link */}
+                    <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-cyan-400">
+                      <div className="flex items-center gap-1.5 truncate max-w-[200px]">
+                        <Layers className="w-3.5 h-3.5 shrink-0 text-cyan-400" />
+                        <span className="truncate">{item.parentBlogTitle || "Master Pillar Blog"}</span>
+                      </div>
+                      {item.parentBlogUrl && (
+                        <a
+                          href={item.parentBlogUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-muted-foreground hover:text-cyan-300 transition-colors inline-flex items-center gap-1 shrink-0"
+                          title="View Master Blog"
+                        >
+                          Master <ExternalLink className="w-3 h-3" />
+                        </a>
+                      )}
+                    </div>
 
-                    <button
-                      onClick={() => handlePublish(item._id, false)}
-                      disabled={isPublishing || item.publishStatus === "published"}
-                      className={`flex-1 min-w-[100px] p-2.5 rounded-xl border transition-all flex items-center justify-center gap-1.5 text-[10px] font-black uppercase tracking-widest ${
-                        item.publishStatus === "published"
-                          ? "opacity-50 cursor-not-allowed border-border text-muted-foreground"
-                          : "bg-green-500/10 hover:bg-green-500/20 border-green-500/30 text-green-400"
-                      }`}
-                    >
-                      <Send className="w-3.5 h-3.5" /> Publish
-                    </button>
+                    {/* Title & Summary */}
+                    <div className="space-y-1.5">
+                      <h3 className="text-base font-bold leading-snug tracking-tight text-foreground line-clamp-2 group-hover:text-cyan-300 transition-colors">
+                        {item.title}
+                      </h3>
+                      <p className="text-xs leading-relaxed text-muted-foreground line-clamp-2">
+                        {item.summary}
+                      </p>
+                    </div>
 
-                    {item.bloggerUrl && (
-                      <a
-                        href={item.bloggerUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="p-2.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 text-blue-400 flex items-center justify-center"
-                        title="View Live on Blogger"
+                    {/* Spacer */}
+                    <div className="mt-auto pt-2" />
+
+                    {/* Main Action Buttons */}
+                    <div className="grid grid-cols-2 gap-2 pt-3 border-t border-border/40">
+                      <button
+                        onClick={() => openPreviewModal(item)}
+                        className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-card border border-border/80 text-foreground hover:bg-accent hover:border-cyan-500/30 text-xs font-bold transition-all shadow-sm"
                       >
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
-                    )}
+                        <Eye className="w-3.5 h-3.5 text-cyan-400" />
+                        <span>Edit Post</span>
+                      </button>
 
-                    <button
-                      onClick={() => handleDelete(item._id)}
-                      className="p-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 transition-all flex items-center justify-center"
-                      title="Delete"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                      <button
+                        onClick={() => handlePublish(item._id, false)}
+                        disabled={isPublishing || item.publishStatus === "published"}
+                        className={`flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border text-xs font-bold transition-all ${
+                          item.publishStatus === "published"
+                            ? "opacity-50 cursor-not-allowed border-border text-muted-foreground bg-card/30"
+                            : "bg-emerald-500/15 hover:bg-emerald-500/25 border-emerald-500/40 text-emerald-300 shadow-sm"
+                        }`}
+                      >
+                        <Send className="w-3.5 h-3.5" />
+                        <span>{item.publishStatus === "published" ? "Live" : "Blogger"}</span>
+                      </button>
+                    </div>
+
+                    {/* Footer Row: Blogger Link & Delete */}
+                    <div className="flex items-center justify-between pt-1">
+                      {item.bloggerUrl ? (
+                        <a
+                          href={item.bloggerUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-[10px] font-bold text-blue-400 hover:underline inline-flex items-center gap-1"
+                        >
+                          <ExternalLink className="w-3 h-3" /> View Live on Blogger
+                        </a>
+                      ) : (
+                        <span className="text-[10px] text-muted-foreground/60 italic">Draft Article</span>
+                      )}
+
+                      <button
+                        onClick={() => handleDelete(item._id)}
+                        className="p-1.5 rounded-lg text-muted-foreground hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                        title="Delete Supporting Post"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               );
-            })
-          )}
-        </div>
-
-        {/* Desktop View: Table Layout (>= 768px) */}
-        <div className="hidden md:block overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-muted/40 border-b border-border/60 text-muted-foreground font-semibold uppercase tracking-wider">
-              <tr>
-                <th className="p-4">Status</th>
-                <th className="p-4">Cover Photo</th>
-                <th className="p-4">Supporting Post Title</th>
-                <th className="p-4">Parent Master Blog</th>
-                <th className="p-4">QC Score</th>
-                <th className="p-4">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border/40 text-foreground">
-              {loading ? (
-                <tr>
-                  <td colSpan={6} className="p-8 text-center text-muted-foreground">
-                    Loading supporting posts...
-                  </td>
-                </tr>
-              ) : filteredPosts.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="p-8 text-center text-muted-foreground">
-                    No supporting posts found. Click <strong>Generate Supporting Post</strong> to create one.
-                  </td>
-                </tr>
-              ) : (
-                filteredPosts.map((item) => {
-                  const coverUrl =
-                    item.coverImage ||
-                    item.content?.match(/<img[^>]+src=["']([^"']+)["']/i)?.[1] ||
-                    item.parentBlogId?.featuredImage?.url ||
-                    item.parentBlogId?.image ||
-                    null;
-
-                  return (
-                    <tr key={item._id} className="hover:bg-accent/30 transition-colors">
-                      <td className="p-4">
-                        {item.publishStatus === "published" ? (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-green-500/10 text-green-400 border border-green-500/20">
-                            <CheckCircle2 className="w-3 h-3" /> Published
-                          </span>
-                        ) : item.publishStatus === "pending_review" ? (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                            Pending Review
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/10 text-red-400 border border-red-500/20">
-                            Failed
-                          </span>
-                        )}
-                      </td>
-
-                      <td className="p-4">
-                        {coverUrl ? (
-                          <div className="flex items-center gap-2">
-                            <div className="relative w-14 h-10 rounded-lg overflow-hidden border border-cyan-500/30 bg-slate-950 shrink-0 group">
-                              <img
-                                src={coverUrl}
-                                alt={item.title}
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                              />
-                            </div>
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-bold bg-green-500/10 text-green-400 border border-green-500/20">
-                              <CheckCircle2 className="w-2.5 h-2.5" /> Ready
-                            </span>
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-2">
-                            <div className="w-14 h-10 rounded-lg border border-dashed border-amber-500/40 bg-amber-500/5 flex flex-col items-center justify-center shrink-0">
-                              <ImageIcon className="w-4 h-4 text-amber-400/70" />
-                            </div>
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                              Waiting Pic
-                            </span>
-                          </div>
-                        )}
-                      </td>
-
-                    <td className="p-4">
-                      <div className="font-semibold text-sm line-clamp-1">{item.title}</div>
-                      <div className="text-muted-foreground text-[11px] line-clamp-1 mt-0.5">
-                        {item.summary}
-                      </div>
-                    </td>
-
-                    <td className="p-4">
-                      <div className="text-cyan-400 font-medium line-clamp-1 flex items-center gap-1">
-                        <Layers className="w-3 h-3 shrink-0" />
-                        {item.parentBlogTitle}
-                      </div>
-                      <a
-                        href={item.parentBlogUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-[10px] text-muted-foreground hover:underline flex items-center gap-1 mt-0.5"
-                      >
-                        Main Website Link <ExternalLink className="w-2.5 h-2.5" />
-                      </a>
-                    </td>
-
-                    <td className="p-4">
-                      <span className="px-2 py-1 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 font-mono font-bold">
-                        {item.qualityScore || 8.5}/10 QC
-                      </span>
-                    </td>
-
-                    <td className="p-4">
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => openPreviewModal(item)}
-                          className="p-1.5 rounded-lg bg-card hover:bg-accent border border-border text-foreground transition-all"
-                          title="Preview / Edit"
-                        >
-                          <Eye className="w-4 h-4 text-cyan-400" />
-                        </button>
-
-                        <button
-                          onClick={() => handlePublish(item._id, false)}
-                          disabled={isPublishing || item.publishStatus === "published"}
-                          className={`p-1.5 rounded-lg border transition-all ${
-                            item.publishStatus === "published"
-                              ? "opacity-50 cursor-not-allowed border-border text-muted-foreground"
-                              : "bg-green-500/10 hover:bg-green-500/20 border-green-500/30 text-green-400"
-                          }`}
-                          title="Publish Live to Google Blogger"
-                        >
-                          <Send className="w-4 h-4" />
-                        </button>
-
-                        {item.bloggerUrl && (
-                          <a
-                            href={item.bloggerUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="p-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 text-blue-400"
-                            title="View Live on Blogger"
-                          >
-                            <ExternalLink className="w-4 h-4" />
-                          </a>
-                        )}
-
-                        <button
-                          onClick={() => handleDelete(item._id)}
-                          className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 transition-all"
-                          title="Delete"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-            </tbody>
-          </table>
-        </div>
+            })}
+          </div>
+        )}
       </div>
 
       {/* Modal 1: Generate Supporting Post */}
