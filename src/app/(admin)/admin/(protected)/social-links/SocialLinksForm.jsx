@@ -420,15 +420,6 @@ export default function SocialLinksForm() {
                             type="tel"
                             inputMode="tel"
                             {...register(phoneName)}
-                            onChange={(e) => {
-                              const val = e.target.value;
-                              setValue(phoneName, val, { shouldDirty: true });
-                              setValue(
-                                fieldName,
-                                buildWhatsAppUrl(val, currentMsg),
-                                { shouldDirty: true }
-                              );
-                            }}
                             placeholder="e.g. 923224458481"
                             className="w-full rounded-xl border border-white/10 bg-slate-950/60 px-4 py-2.5 text-sm font-mono font-medium text-emerald-300 outline-none focus:border-emerald-500/50 placeholder:text-slate-600"
                           />
@@ -442,15 +433,6 @@ export default function SocialLinksForm() {
                           <input
                             type="text"
                             {...register(messageName)}
-                            onChange={(e) => {
-                              const val = e.target.value;
-                              setValue(messageName, val, { shouldDirty: true });
-                              setValue(
-                                fieldName,
-                                buildWhatsAppUrl(currentPhone, val),
-                                { shouldDirty: true }
-                              );
-                            }}
                             placeholder="e.g. Hi Ghulam Muhyo Din! I came across your portfolio..."
                             className="w-full rounded-xl border border-white/10 bg-slate-950/60 px-4 py-2.5 text-sm font-medium text-slate-200 outline-none focus:border-cyan-400/50 placeholder:text-slate-600"
                           />
