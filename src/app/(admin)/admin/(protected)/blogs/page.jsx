@@ -789,9 +789,9 @@ export default function BlogsPage() {
             className={`group flex h-11 items-center justify-center gap-2 rounded-xl border px-5 text-xs font-bold shadow-lg transition-all duration-200 hover:-translate-y-0.5 disabled:opacity-50 ${
               hasPendingImage
                 ? autoGenerateImages
-                  ? "border-amber-400/40 bg-amber-400/20 text-amber-200 shadow-amber-500/10 hover:border-amber-400/60 hover:bg-amber-400/30"
-                  : "border-emerald-400/40 bg-emerald-400/20 text-emerald-200 shadow-emerald-500/10 hover:border-emerald-400/60 hover:bg-emerald-400/30"
-                : "border-violet-400/35 bg-violet-500/20 text-violet-200 shadow-violet-500/15 hover:border-violet-400/60 hover:bg-violet-500/30 hover:text-white"
+                  ? "border-amber-400/40 bg-amber-400/20 text-amber-900 dark:text-amber-200 shadow-amber-500/10 hover:border-amber-400/60 hover:bg-amber-400/30"
+                  : "border-emerald-500/50 bg-emerald-500/25 text-emerald-950 dark:text-emerald-100 font-extrabold shadow-emerald-500/20 hover:border-emerald-400 hover:bg-emerald-500/40"
+                : "border-violet-400/35 bg-violet-500/20 text-violet-900 dark:text-violet-200 shadow-violet-500/15 hover:border-violet-400/60 hover:bg-violet-500/30 hover:text-white"
             }`}
           >
             {hasPendingImage && !autoGenerateImages ? (
@@ -970,8 +970,8 @@ export default function BlogsPage() {
               Daily Quota Complete
             </div>
           ) : timeLeft.isDue ? (
-            <div className="flex items-center gap-2 rounded-xl border border-emerald-400/40 bg-emerald-400/15 px-4 py-2.5 text-xs font-bold text-emerald-200 shadow-lg shadow-emerald-500/10 animate-pulse">
-              <Sparkles className="size-4 text-emerald-300" />
+            <div className="flex items-center gap-2 rounded-xl border border-emerald-500/50 bg-emerald-500/25 px-4 py-2.5 text-xs font-extrabold text-emerald-950 dark:text-emerald-100 shadow-lg shadow-emerald-500/15 animate-pulse">
+              <Sparkles className="size-4 text-emerald-600 dark:text-emerald-300" />
               Eligible Now (Vercel Cron)
             </div>
           ) : (
