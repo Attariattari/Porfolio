@@ -50,6 +50,42 @@ export async function GET(request) {
       }
     }
 
+    // 🔒 AUTO-DEDUPLICATE HISTORICAL DUPLICATE BLOGGER POSTS
+    try {
+      const parentPostGroups = await BloggerPost.aggregate([
+        { $match: { parentBlogId: { $exists: true, $ne: null } } },
+        { $group: { _id: "$parentBlogId", count: { $sum: 1 }, docs: { $push: "$$ROOT" } } },
+        { $match: { count: { $gt: 1 } } },
+      ]);
+
+      if (parentPostGroups.length > 0) {
+        console.log(`[Blogger Deduplicator] Found ${parentPostGroups.length} parent blogs with historical duplicate posts. Cleaning up...`);
+        for (const group of parentPostGroups) {
+          const docs = group.docs;
+          // Sort to pick the best post to KEEP:
+          // 1. Published / has bloggerPostId
+          // 2. Highest qualityScore
+          // 3. Newest createdAt
+          docs.sort((a, b) => {
+            const aPub = a.publishStatus === "published" || Boolean(a.bloggerPostId);
+            const bPub = b.publishStatus === "published" || Boolean(b.bloggerPostId);
+            if (aPub && !bPub) return -1;
+            if (!aPub && bPub) return 1;
+            return new Date(b.createdAt) - new Date(a.createdAt);
+          });
+
+          const keepDoc = docs[0];
+          const removeDocs = docs.slice(1);
+          const removeIds = removeDocs.map((d) => d._id);
+
+          await BloggerPost.deleteMany({ _id: { $in: removeIds } });
+          console.log(`[Blogger Deduplicator] Kept post ${keepDoc._id} ("${keepDoc.title}"). Removed ${removeIds.length} duplicate post(s) for parent ${group._id}.`);
+        }
+      }
+    } catch (dedupErr) {
+      console.error("[Blogger Deduplicator Error]:", dedupErr.message);
+    }
+
     const query = {};
     if (status && status !== "all") {
       query.publishStatus = status;

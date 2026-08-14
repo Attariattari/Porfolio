@@ -13,6 +13,7 @@ const BloggerPostSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Blog",
       required: true,
+      unique: true,
       index: true,
     },
     parentBlogTitle: { type: String, required: true },
@@ -32,7 +33,7 @@ const BloggerPostSchema = new mongoose.Schema(
     // Publishing Status & Blogger API Details
     publishStatus: {
       type: String,
-      enum: ["draft", "pending_review", "publishing", "published", "failed"],
+      enum: ["draft", "pending_review", "generating", "publishing", "published", "failed"],
       default: "pending_review",
       index: true,
     },

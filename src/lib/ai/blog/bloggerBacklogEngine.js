@@ -21,18 +21,15 @@ export async function getUnsyncedOldBlogsCount() {
       .select("_id title slug image featuredImage")
       .lean();
 
-    // Fetch all blog IDs that already have a published or in-progress Blogger post or existing bloggerPostId
-    const publishedBloggerPosts = await BloggerPost.find({
-      $or: [
-        { publishStatus: { $in: ["published", "publishing"] } },
-        { bloggerPostId: { $ne: null, $ne: "" } },
-      ],
+    // Fetch all blog IDs that already have a Blogger post record (published, publishing, pending_review, generating, draft, etc.)
+    const existingBloggerPosts = await BloggerPost.find({
+      parentBlogId: { $exists: true, $ne: null },
     })
       .select("parentBlogId")
       .lean();
 
     const syncedParentIds = new Set(
-      publishedBloggerPosts
+      existingBloggerPosts
         .filter((bp) => bp.parentBlogId)
         .map((bp) => bp.parentBlogId.toString())
     );

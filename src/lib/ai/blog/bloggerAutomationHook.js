@@ -66,6 +66,12 @@ export async function triggerBloggerPublishIfReady(mainBlogId) {
       return await onMainBlogGenerated(mainBlogId);
     }
 
+    // PRE-CHECK: If post is currently generating in AI pipeline, wait until finished
+    if (bloggerPost.publishStatus === "generating") {
+      console.log(`[Blogger Hook] Supporting post ${bloggerPost._id} is currently GENERATING. Postponing publish until completed.`);
+      return { success: true, bloggerPost, currentlyGenerating: true };
+    }
+
     // PRE-CHECK: If already published or has bloggerPostId, bypass duplicate publish
     if (bloggerPost.publishStatus === "published" || bloggerPost.bloggerPostId) {
       console.log(`[Blogger Hook] Supporting post ${bloggerPost._id} is ALREADY published on Blogger (${bloggerPost.bloggerPostId || bloggerPost.bloggerUrl}). Bypassing duplicate publish.`);
@@ -94,7 +100,7 @@ export async function triggerBloggerPublishIfReady(mainBlogId) {
       const lockedPost = await BloggerPost.findOneAndUpdate(
         {
           _id: bloggerPost._id,
-          publishStatus: { $nin: ["publishing", "published"] },
+          publishStatus: { $nin: ["publishing", "published", "generating"] },
           $or: [{ bloggerPostId: { $exists: false } }, { bloggerPostId: null }, { bloggerPostId: "" }],
         },
         {

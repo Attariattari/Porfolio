@@ -123,6 +123,7 @@ function repairTruncatedJson(rawText) {
 }
 
 export async function generateBloggerSupportingBlog(parentBlogId, options = {}) {
+  let reservedPost = null;
   try {
     await dbConnect();
 
@@ -133,6 +134,73 @@ export async function generateBloggerSupportingBlog(parentBlogId, options = {}) 
 
     const liveBaseUrl = getBloggerLiveBaseUrl();
     const parentUrl = sanitizeBloggerUrl(`${liveBaseUrl}/blog/${parentBlog.slug}`);
+
+    // 🔒 1. PRE-CHECK: If a Blogger post already exists for this parent blog
+    const existingPost = await BloggerPost.findOne({ parentBlogId: parentBlog._id });
+    if (existingPost) {
+      // If it is in active 'generating' status, check if lock is fresh (< 5 mins)
+      if (existingPost.publishStatus === "generating") {
+        const fiveMinsAgo = new Date(Date.now() - 5 * 60 * 1000);
+        if (existingPost.updatedAt && existingPost.updatedAt < fiveMinsAgo) {
+          console.warn(`[Blogger Generator] Found stale 'generating' lock for parent ${parentBlogId}. Re-acquiring lock.`);
+          reservedPost = existingPost;
+        } else {
+          console.log(`[Blogger Generator] 🔒 Generation currently in progress for parent "${parentBlog.title}". Skipping duplicate execution.`);
+          return {
+            success: true,
+            alreadyExists: true,
+            bloggerPost: existingPost,
+            message: "Generation is already in progress by another process.",
+          };
+        }
+      } else {
+        console.log(`[Blogger Generator] 🛑 Supporting post ALREADY exists for parent "${parentBlog.title}" (Status: ${existingPost.publishStatus}, ID: ${existingPost._id}). Duplicate generation blocked.`);
+        return {
+          success: true,
+          alreadyExists: true,
+          bloggerPost: existingPost,
+          message: `Blogger post already exists for this parent blog with status: ${existingPost.publishStatus}`,
+        };
+      }
+    }
+
+    // 🔒 2. ATOMIC DB RESERVATION LOCK:
+    // Create or update a placeholder document with status "generating" before invoking Gemini AI.
+    // In multi-Vercel environments, if 2 workers run concurrently, the unique index on parentBlogId will reject the 2nd worker at DB level.
+    if (!reservedPost) {
+      try {
+        reservedPost = await BloggerPost.create({
+          title: `[Generating] Supporting Post for ${parentBlog.title}`,
+          slug: `generating-${parentBlog._id}-${Date.now()}`,
+          content: "<p>AI content generation in progress...</p>",
+          summary: "Generating AI content for Blogger...",
+          tags: ["Technology"],
+          parentBlogId: parentBlog._id,
+          parentBlogTitle: parentBlog.title,
+          parentBlogSlug: parentBlog.slug,
+          parentBlogUrl: parentUrl,
+          publishStatus: "generating",
+          aiGenerated: true,
+        });
+        console.log(`[Blogger Generator] 🔒 Atomic lock acquired for parent "${parentBlog.title}" (Reservation ID: ${reservedPost._id})`);
+      } catch (dbErr) {
+        if (dbErr.code === 11000 || dbErr.message?.includes("duplicate key")) {
+          console.log(`[Blogger Generator] 🔒 Atomic DB Lock caught duplicate creation attempt for parent "${parentBlog.title}". Returning existing post.`);
+          const existing = await BloggerPost.findOne({ parentBlogId: parentBlog._id });
+          return {
+            success: true,
+            alreadyExists: true,
+            bloggerPost: existing,
+            message: "Duplicate generation attempt blocked by atomic database lock.",
+          };
+        }
+        throw dbErr;
+      }
+    } else {
+      reservedPost.publishStatus = "generating";
+      reservedPost.title = `[Generating] Supporting Post for ${parentBlog.title}`;
+      await reservedPost.save();
+    }
 
     console.log(`[Blogger Generator] Generating supporting post for parent: "${parentBlog.title}"...`);
 
@@ -196,36 +264,35 @@ export async function generateBloggerSupportingBlog(parentBlogId, options = {}) 
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
 
-    // Create & Save BloggerPost in MongoDB
-    const newBloggerPost = new BloggerPost({
-      title: blogData.title,
-      slug: slug,
-      content: finalContent,
-      summary: blogData.summary,
-      tags: blogData.tags || ["Technology", "Engineering"],
+    // Finalize the reserved BloggerPost document in MongoDB
+    reservedPost.title = blogData.title;
+    reservedPost.slug = slug;
+    reservedPost.content = finalContent;
+    reservedPost.summary = blogData.summary;
+    reservedPost.tags = blogData.tags || ["Technology", "Engineering"];
+    reservedPost.qualityStatus = qcReview.passed ? "passed" : "rejected";
+    reservedPost.qualityScore = qcReview.score || 8.0;
+    reservedPost.qualityFeedback = qcReview.feedback || "";
+    reservedPost.publishStatus = "pending_review";
+    reservedPost.aiGenerated = true;
 
-      parentBlogId: parentBlog._id,
-      parentBlogTitle: parentBlog.title,
-      parentBlogSlug: parentBlog.slug,
-      parentBlogUrl: parentUrl,
-
-      qualityStatus: qcReview.passed ? "passed" : "rejected",
-      qualityScore: qcReview.score || 8.0,
-      qualityFeedback: qcReview.feedback || "",
-
-      publishStatus: "pending_review",
-      aiGenerated: true,
-    });
-
-    await newBloggerPost.save();
-    console.log(`[Blogger Generator] Saved new supporting post: ${newBloggerPost._id}`);
+    await reservedPost.save();
+    console.log(`[Blogger Generator] ✅ Successfully saved supporting post: ${reservedPost._id}`);
 
     return {
       success: true,
-      bloggerPost: newBloggerPost,
+      bloggerPost: reservedPost,
     };
   } catch (error) {
     console.error("[Blogger Generator Error]:", error.message);
+    if (reservedPost && reservedPost.publishStatus === "generating") {
+      try {
+        await BloggerPost.deleteOne({ _id: reservedPost._id });
+        console.log(`[Blogger Generator] Cleaned up failed reservation lock: ${reservedPost._id}`);
+      } catch (cleanupErr) {
+        console.error("[Blogger Generator] Lock cleanup error:", cleanupErr.message);
+      }
+    }
     return {
       success: false,
       error: error.message,
