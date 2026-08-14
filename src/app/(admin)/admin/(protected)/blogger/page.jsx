@@ -231,45 +231,45 @@ export default function BloggerAdminPage() {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-8">
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6 sm:space-y-8">
       {/* Top Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border/40 pb-6">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-border/40 pb-6">
         <div>
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+            <div className="p-2.5 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shrink-0">
               <Newspaper className="w-6 h-6" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">Google Blogger Engine</h1>
-              <p className="text-sm text-muted-foreground">
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Google Blogger Engine</h1>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
                 Generate & publish 900-1200 word supporting articles to Google Blogger to drive high-intent referral traffic.
               </p>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 sm:gap-3 w-full lg:w-auto">
           <button
             onClick={() => fetchBloggerPosts()}
-            className="p-2.5 rounded-lg border border-border bg-card/50 hover:bg-accent text-foreground transition-all"
+            className="p-2.5 rounded-lg border border-border bg-card/50 hover:bg-accent text-foreground transition-all shrink-0"
             title="Refresh list"
           >
             <RefreshCcw className="w-4 h-4" />
           </button>
           <button
             onClick={handleRunDripNow}
-            className="flex items-center gap-2 px-3.5 py-2.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 font-medium transition-all text-sm"
+            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 font-medium transition-all text-xs sm:text-sm"
             title="Process 1 un-synced old blog today"
           >
-            <Zap className="w-4 h-4 text-amber-400" />
-            Run Daily Drip (1 Old Blog)
+            <Zap className="w-4 h-4 text-amber-400 shrink-0" />
+            <span>Run Daily Drip</span>
           </button>
           <button
             onClick={() => setIsGenerateModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-medium shadow-lg shadow-cyan-500/25 transition-all text-sm"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-medium shadow-lg shadow-cyan-500/25 transition-all text-xs sm:text-sm"
           >
-            <Sparkles className="w-4 h-4" />
-            Generate Supporting Post
+            <Sparkles className="w-4 h-4 shrink-0" />
+            <span>Generate Supporting Post</span>
           </button>
         </div>
       </div>
@@ -280,7 +280,7 @@ export default function BloggerAdminPage() {
           <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
           <div>
             <span className="font-semibold text-amber-200">Google Blogger API Not Fully Configured in .env.local</span>
-            <p className="mt-1 text-amber-400/90">
+            <p className="mt-1 text-amber-400/90 leading-relaxed">
               Add <code className="bg-amber-950/60 px-1 py-0.5 rounded">GOOGLE_BLOGGER_CLIENT_ID</code>, <code className="bg-amber-950/60 px-1 py-0.5 rounded">GOOGLE_BLOGGER_CLIENT_SECRET</code>, <code className="bg-amber-950/60 px-1 py-0.5 rounded">GOOGLE_BLOGGER_REFRESH_TOKEN</code>, and <code className="bg-amber-950/60 px-1 py-0.5 rounded">GOOGLE_BLOGGER_BLOG_ID</code> to enable automated 1-Click Publishing to Blogger. You can still generate, review, and edit supporting articles.
             </p>
           </div>
@@ -288,27 +288,27 @@ export default function BloggerAdminPage() {
       )}
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="p-4 rounded-xl border border-border/60 bg-card/40 backdrop-blur-md">
-          <div className="text-xs font-medium text-muted-foreground">Total Supporting Posts</div>
-          <div className="text-2xl font-bold mt-1">{stats.total}</div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="p-3.5 sm:p-4 rounded-xl border border-border/60 bg-card/40 backdrop-blur-md">
+          <div className="text-[11px] sm:text-xs font-medium text-muted-foreground">Total Supporting Posts</div>
+          <div className="text-xl sm:text-2xl font-bold mt-1">{stats.total}</div>
         </div>
-        <div className="p-4 rounded-xl border border-green-500/20 bg-green-500/5 backdrop-blur-md">
-          <div className="text-xs font-medium text-green-400">Published on Blogger</div>
-          <div className="text-2xl font-bold mt-1 text-green-400">{stats.published}</div>
+        <div className="p-3.5 sm:p-4 rounded-xl border border-green-500/20 bg-green-500/5 backdrop-blur-md">
+          <div className="text-[11px] sm:text-xs font-medium text-green-400">Published on Blogger</div>
+          <div className="text-xl sm:text-2xl font-bold mt-1 text-green-400">{stats.published}</div>
         </div>
-        <div className="p-4 rounded-xl border border-amber-500/20 bg-amber-500/5 backdrop-blur-md">
-          <div className="text-xs font-medium text-amber-400">Pending Review</div>
-          <div className="text-2xl font-bold mt-1 text-amber-400">{stats.pending}</div>
+        <div className="p-3.5 sm:p-4 rounded-xl border border-amber-500/20 bg-amber-500/5 backdrop-blur-md">
+          <div className="text-[11px] sm:text-xs font-medium text-amber-400">Pending Review</div>
+          <div className="text-xl sm:text-2xl font-bold mt-1 text-amber-400">{stats.pending}</div>
         </div>
-        <div className="p-4 rounded-xl border border-cyan-500/20 bg-cyan-500/5 backdrop-blur-md">
-          <div className="text-xs font-medium text-cyan-400">Avg QC Score</div>
-          <div className="text-2xl font-bold mt-1 text-cyan-400">{stats.avgScore} / 10</div>
+        <div className="p-3.5 sm:p-4 rounded-xl border border-cyan-500/20 bg-cyan-500/5 backdrop-blur-md">
+          <div className="text-[11px] sm:text-xs font-medium text-cyan-400">Avg QC Score</div>
+          <div className="text-xl sm:text-2xl font-bold mt-1 text-cyan-400">{stats.avgScore} / 10</div>
         </div>
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="relative w-full md:w-80">
           <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input
@@ -320,13 +320,13 @@ export default function BloggerAdminPage() {
           />
         </div>
 
-        <div className="flex items-center gap-2 text-xs">
-          <span className="text-muted-foreground">Filter:</span>
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs">
+          <span className="text-muted-foreground font-medium mr-1">Filter:</span>
           {["all", "pending_review", "published", "failed"].map((st) => (
             <button
               key={st}
               onClick={() => setStatusFilter(st)}
-              className={`px-3 py-1.5 rounded-lg border capitalize transition-all ${
+              className={`px-2.5 sm:px-3 py-1.5 rounded-lg border capitalize text-xs transition-all ${
                 statusFilter === st
                   ? "bg-cyan-500/20 border-cyan-500/40 text-cyan-300 font-semibold"
                   : "border-border/60 bg-card/40 text-muted-foreground hover:bg-accent"
@@ -338,9 +338,125 @@ export default function BloggerAdminPage() {
         </div>
       </div>
 
-      {/* Main Data Table */}
+      {/* Main Data Container: Mobile Card View + Desktop Table View */}
       <div className="rounded-xl border border-border/60 bg-card/40 backdrop-blur-md overflow-hidden shadow-xl">
-        <div className="overflow-x-auto">
+        {/* Mobile View: Cards Layout (< 768px) */}
+        <div className="block md:hidden divide-y divide-border/40">
+          {loading ? (
+            <div className="p-6 text-center text-xs text-muted-foreground">
+              Loading supporting posts...
+            </div>
+          ) : filteredPosts.length === 0 ? (
+            <div className="p-6 text-center text-xs text-muted-foreground">
+              No supporting posts found. Click <strong>Generate Supporting Post</strong> to create one.
+            </div>
+          ) : (
+            filteredPosts.map((item) => {
+              const coverUrl =
+                item.coverImage ||
+                item.content?.match(/<img[^>]+src=["']([^"']+)["']/i)?.[1] ||
+                item.parentBlogId?.featuredImage?.url ||
+                item.parentBlogId?.image ||
+                null;
+
+              return (
+                <div key={item._id} className="p-4 space-y-3 bg-card/20">
+                  {/* Status & QC Row */}
+                  <div className="flex items-center justify-between gap-2">
+                    {item.publishStatus === "published" ? (
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-green-500/10 text-green-400 border border-green-500/20">
+                        <CheckCircle2 className="w-3 h-3" /> Published
+                      </span>
+                    ) : item.publishStatus === "pending_review" ? (
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                        Pending Review
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/10 text-red-400 border border-red-500/20">
+                        Failed
+                      </span>
+                    )}
+
+                    <span className="px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 font-mono text-[10px] font-bold">
+                      {item.qualityScore || 8.5}/10 QC
+                    </span>
+                  </div>
+
+                  {/* Title & Summary */}
+                  <div>
+                    <div className="font-semibold text-sm text-foreground leading-snug">{item.title}</div>
+                    <div className="text-muted-foreground text-xs line-clamp-2 mt-1">
+                      {item.summary}
+                    </div>
+                  </div>
+
+                  {/* Master Blog Link */}
+                  <div className="flex items-center justify-between text-xs pt-1 border-t border-border/30">
+                    <div className="text-cyan-400 font-medium line-clamp-1 flex items-center gap-1">
+                      <Layers className="w-3 h-3 shrink-0" />
+                      <span className="truncate">{item.parentBlogTitle}</span>
+                    </div>
+
+                    {coverUrl ? (
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-green-500/10 text-green-400 border border-green-500/20 shrink-0">
+                        <CheckCircle2 className="w-2.5 h-2.5" /> Pic Ready
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 shrink-0">
+                        Waiting Pic
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Actions Row */}
+                  <div className="flex items-center justify-end gap-2 pt-2 border-t border-border/30">
+                    <button
+                      onClick={() => openPreviewModal(item)}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-card hover:bg-accent border border-border text-foreground text-xs font-medium transition-all"
+                    >
+                      <Eye className="w-3.5 h-3.5 text-cyan-400" /> Preview / Edit
+                    </button>
+
+                    <button
+                      onClick={() => handlePublish(item._id, false)}
+                      disabled={isPublishing || item.publishStatus === "published"}
+                      className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${
+                        item.publishStatus === "published"
+                          ? "opacity-50 cursor-not-allowed border-border text-muted-foreground"
+                          : "bg-green-500/10 hover:bg-green-500/20 border-green-500/30 text-green-400"
+                      }`}
+                    >
+                      <Send className="w-3.5 h-3.5" /> Publish
+                    </button>
+
+                    {item.bloggerUrl && (
+                      <a
+                        href={item.bloggerUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="p-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 text-blue-400"
+                        title="View Live on Blogger"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    )}
+
+                    <button
+                      onClick={() => handleDelete(item._id)}
+                      className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-400/20 border border-red-500/30 text-red-400 transition-all"
+                      title="Delete"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+
+        {/* Desktop View: Table Layout (>= 768px) */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="bg-muted/40 border-b border-border/60 text-muted-foreground font-semibold uppercase tracking-wider">
               <tr>
@@ -502,20 +618,20 @@ export default function BloggerAdminPage() {
       {/* Modal 1: Generate Supporting Post */}
       <AnimatePresence>
         {isGenerateModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-lg p-6 rounded-2xl bg-card border border-border shadow-2xl space-y-6"
+              className="w-full max-w-lg p-5 sm:p-6 rounded-2xl bg-card border border-border shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto"
             >
               <div className="flex items-center justify-between border-b border-border pb-4">
-                <div className="flex items-center gap-2 text-cyan-400 font-semibold text-lg">
-                  <Sparkles className="w-5 h-5" /> Generate Supporting Article
+                <div className="flex items-center gap-2 text-cyan-400 font-semibold text-base sm:text-lg">
+                  <Sparkles className="w-5 h-5 shrink-0" /> Generate Supporting Article
                 </div>
                 <button
                   onClick={() => setIsGenerateModalOpen(false)}
-                  className="text-muted-foreground hover:text-foreground text-sm"
+                  className="text-muted-foreground hover:text-foreground text-sm p-1"
                 >
                   ✕
                 </button>
@@ -523,7 +639,7 @@ export default function BloggerAdminPage() {
 
               <div className="space-y-4 text-xs">
                 <div>
-                  <label className="block font-medium mb-1 text-foreground">
+                  <label className="block font-medium mb-1.5 text-foreground">
                     Select Parent Blog (Pillar Article):
                   </label>
                   <select
@@ -576,7 +692,7 @@ export default function BloggerAdminPage() {
       {/* Modal 2: Preview & Edit Modal */}
       <AnimatePresence>
         {isPreviewModalOpen && selectedPost && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -584,20 +700,20 @@ export default function BloggerAdminPage() {
               className="w-full max-w-4xl max-h-[90vh] flex flex-col rounded-2xl bg-card border border-border shadow-2xl overflow-hidden"
             >
               {/* Modal Top Header */}
-              <div className="p-4 border-b border-border flex items-center justify-between bg-muted/30">
+              <div className="p-3.5 sm:p-4 border-b border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-muted/30">
                 <div>
-                  <div className="text-xs text-cyan-400 font-mono">
+                  <div className="text-[11px] text-cyan-400 font-mono truncate">
                     Parent: {selectedPost.parentBlogTitle}
                   </div>
-                  <h2 className="text-base font-bold text-foreground mt-0.5">
+                  <h2 className="text-sm sm:text-base font-bold text-foreground mt-0.5 line-clamp-1">
                     {selectedPost.title}
                   </h2>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                   <button
                     onClick={handleSaveEdits}
-                    className="px-3 py-1.5 text-xs rounded-lg bg-accent border border-border text-foreground hover:bg-accent/80"
+                    className="px-2.5 py-1.5 text-xs rounded-lg bg-accent border border-border text-foreground hover:bg-accent/80 font-medium"
                   >
                     Save Edits
                   </button>
@@ -605,18 +721,18 @@ export default function BloggerAdminPage() {
                   <button
                     onClick={() => handlePublish(selectedPost._id, true)}
                     disabled={isPublishing}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 hover:bg-amber-500/30 disabled:opacity-50"
+                    className="flex items-center gap-1 px-2.5 py-1.5 text-xs rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 hover:bg-amber-500/30 disabled:opacity-50 font-medium"
                   >
-                    <Send className="w-3.5 h-3.5" /> Send Draft to Blogger
+                    <Send className="w-3 h-3" /> Draft
                   </button>
 
                   <button
                     onClick={() => handlePublish(selectedPost._id, false)}
                     disabled={isPublishing || selectedPost.publishStatus === "published"}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30 disabled:opacity-50"
+                    className="flex items-center gap-1 px-2.5 py-1.5 text-xs rounded-lg bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30 disabled:opacity-50 font-medium"
                   >
-                    <Send className="w-3.5 h-3.5" />
-                    {selectedPost.publishStatus === "published" ? "Published Live" : "Publish Live"}
+                    <Send className="w-3 h-3" />
+                    {selectedPost.publishStatus === "published" ? "Live" : "Publish Live"}
                   </button>
 
                   <button
@@ -629,7 +745,7 @@ export default function BloggerAdminPage() {
               </div>
 
               {/* Modal Content Body */}
-              <div className="p-6 overflow-y-auto space-y-6 flex-1 text-xs">
+              <div className="p-4 sm:p-6 overflow-y-auto space-y-5 flex-1 text-xs">
                 {(() => {
                   const coverUrl =
                     selectedPost.coverImage ||
@@ -639,29 +755,29 @@ export default function BloggerAdminPage() {
                     null;
 
                   return coverUrl ? (
-                    <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/5 p-3 flex items-center gap-4">
-                      <div className="relative w-24 h-16 rounded-lg overflow-hidden border border-cyan-500/40 bg-slate-950 shrink-0">
+                    <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/5 p-3 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                      <div className="relative w-full sm:w-24 h-20 sm:h-16 rounded-lg overflow-hidden border border-cyan-500/40 bg-slate-950 shrink-0">
                         <img src={coverUrl} alt="Cover Preview" className="w-full h-full object-cover" />
                       </div>
                       <div>
                         <div className="text-xs font-semibold text-cyan-300 flex items-center gap-1">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-green-400" /> Cover Photo Attached & Ready
+                          <CheckCircle2 className="w-3.5 h-3.5 text-green-400 shrink-0" /> Cover Photo Attached & Ready
                         </div>
-                        <p className="text-[11px] text-muted-foreground mt-0.5">
+                        <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
                           This featured image is linked and will automatically be included at the top of the Google Blogger post.
                         </p>
                       </div>
                     </div>
                   ) : (
-                    <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center shrink-0">
-                        <ImageIcon className="w-5 h-5 text-amber-400" />
+                    <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 flex items-start gap-3">
+                      <div className="w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center shrink-0">
+                        <ImageIcon className="w-4 h-4 text-amber-400" />
                       </div>
                       <div>
                         <div className="text-xs font-semibold text-amber-300">
                           ⚠️ Cover Photo Missing / Waiting Resolution
                         </div>
-                        <p className="text-[11px] text-muted-foreground mt-0.5">
+                        <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
                           Image is being generated or waiting for manual upload via Super Admin email. Publishing will unlock as soon as the picture is uploaded.
                         </p>
                       </div>
@@ -693,23 +809,23 @@ export default function BloggerAdminPage() {
                   <div className="flex items-center justify-between mb-2">
                     <label className="block font-semibold">HTML Content (900-1200 Words):</label>
                     <span className="text-[10px] text-cyan-400 font-mono">
-                      Quality Score: {selectedPost.qualityScore}/10 QC
+                      QC Score: {selectedPost.qualityScore}/10
                     </span>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <div>
                       <div className="text-[10px] text-muted-foreground mb-1">HTML Source Editor</div>
                       <textarea
                         value={editContent}
                         onChange={(e) => setEditContent(e.target.value)}
-                        rows={16}
+                        rows={12}
                         className="w-full p-3 rounded-lg bg-background border border-border font-mono text-[11px] leading-relaxed text-foreground"
                       />
                     </div>
                     <div>
                       <div className="text-[10px] text-muted-foreground mb-1">Live Render Preview</div>
                       <div
-                        className="p-4 rounded-lg bg-background border border-border max-h-[350px] overflow-y-auto prose prose-invert prose-sm text-xs leading-relaxed"
+                        className="p-4 rounded-lg bg-background border border-border max-h-[300px] overflow-y-auto prose prose-invert prose-sm text-xs leading-relaxed"
                         dangerouslySetInnerHTML={{ __html: editContent }}
                       />
                     </div>

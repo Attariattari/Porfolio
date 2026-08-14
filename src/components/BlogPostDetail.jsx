@@ -172,103 +172,10 @@ export default function BlogPostDetail({
 
       {/* Content Area */}
       <SectionWrapper className="pt-12 md:pt-20">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 max-w-7xl mx-auto">
-          {/* Main Content */}
-          <MotionDiv
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="lg:col-span-8"
-          >
-            <div
-              className="blog-content text-foreground
-                [&_h2]:text-3xl [&_h2]:font-bold [&_h2]:mt-12 [&_h2]:mb-6 [&_h2]:tracking-tight [&_h2]:text-foreground
-                [&_h3]:mt-9 [&_h3]:mb-4 [&_h3]:text-2xl [&_h3]:font-bold [&_h3]:text-foreground
-                [&_h4]:mt-7 [&_h4]:mb-3 [&_h4]:text-xl [&_h4]:font-bold [&_h4]:text-foreground
-                [&_p]:text-muted-foreground [&_p]:leading-relaxed [&_p]:text-lg [&_p]:mb-6
-                [&_blockquote]:border-l-4 [&_blockquote]:border-accent [&_blockquote]:pl-8 [&_blockquote]:py-4 [&_blockquote]:my-10 [&_blockquote]:bg-accent/5 [&_blockquote]:rounded-r-2xl [&_blockquote]:italic [&_blockquote]:text-xl [&_blockquote]:text-foreground
-                [&_ul]:list-disc [&_ul]:ml-6 [&_ul]:mb-8 [&_ul]:space-y-2
-                [&_ol]:list-decimal [&_ol]:ml-6 [&_ol]:mb-8 [&_ol]:space-y-2
-                [&_li]:text-muted-foreground [&_li]:pl-2
-                [&_strong]:font-bold [&_strong]:text-foreground
-                [&_a]:font-semibold [&_a]:text-accent [&_a]:underline [&_a]:underline-offset-4
-                [&_code]:rounded-md [&_code]:bg-muted [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:text-foreground
-                [&_pre]:overflow-x-auto [&_pre]:rounded-2xl [&_pre]:border [&_pre]:border-border [&_pre]:bg-muted [&_pre]:p-5 [&_pre]:text-foreground
-                [&_table]:my-10 [&_table]:block [&_table]:w-full [&_table]:overflow-x-auto [&_table]:rounded-xl [&_table]:border [&_table]:border-border [&_table]:text-left
-                [&_thead]:bg-muted [&_th]:whitespace-nowrap [&_th]:border-b [&_th]:border-border [&_th]:px-4 [&_th]:py-3 [&_th]:text-sm [&_th]:font-bold [&_th]:text-foreground
-                [&_td]:min-w-40 [&_td]:border-b [&_td]:border-border/60 [&_td]:px-4 [&_td]:py-3 [&_td]:text-sm [&_td]:leading-6 [&_td]:text-muted-foreground"
-              dangerouslySetInnerHTML={{ __html: sanitizeBlogContentClasses(blog.content) }}
-            />
-
-            {/* Tags */}
-            <div className="mt-16 border-t border-border/70 pt-8">
-              <div className="flex flex-wrap gap-3">
-                {(blog.tags || []).map((tag) => (
-                  <Link
-                    key={tag}
-                    href={`/blog?tag=${encodeURIComponent(tag)}`}
-                    className="cursor-pointer rounded-xl border border-border/70 bg-muted/60 px-4 py-2 text-xs font-bold text-muted-foreground transition-colors hover:border-accent/30 hover:bg-accent/10 hover:text-accent"
-                  >
-                    #{tag}
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            {relatedServices.length > 0 && (
-              <section className="mt-16 border-t border-border/70 pt-10">
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-accent">
-                  Put the insight into practice
-                </p>
-                <h2 className="mt-3 text-3xl font-bold tracking-tight text-foreground">
-                  Related Muhyo Tech services
-                </h2>
-                <p className="mt-4 max-w-3xl text-base leading-relaxed text-muted-foreground">
-                  These services connect the article&apos;s engineering topic to a
-                  practical website, application, performance, or business outcome.
-                </p>
-                <div className="mt-7 grid gap-4 md:grid-cols-3">
-                  {relatedServices.map((service) => (
-                    <Link
-                      key={service.slug}
-                      href={service.href}
-                      className="group rounded-2xl border border-border/60 bg-card/45 p-5 transition-colors hover:border-accent/40"
-                    >
-                      <h3 className="text-base font-bold leading-snug text-foreground group-hover:text-accent">
-                        {service.title}
-                      </h3>
-                      <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                        {service.description}
-                      </p>
-                      <span className="mt-5 inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-accent">
-                        Explore service <ArrowRight className="h-4 w-4" />
-                      </span>
-                    </Link>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* CTA Section */}
-            <div className="mt-20 p-8 md:p-12 rounded-3xl bg-gradient-to-br from-accent/10 to-blue-600/5 border border-accent/20 flex flex-col md:flex-row items-center justify-between gap-8">
-              <div className="text-left">
-                <h3 className="mb-4 text-2xl font-bold text-foreground">Enjoyed this post?</h3>
-                <p className="text-muted-foreground italic">
-                  Let&apos;s discuss how we can implement these technologies for your
-                  next project.
-                </p>
-              </div>
-              <Link href="/contact">
-                <Button className="whitespace-nowrap">
-                  Start your project
-                </Button>
-              </Link>
-            </div>
-          </MotionDiv>
-
-          {/* Sidebar */}
-          <aside className="lg:sticky lg:top-6 lg:col-span-4 lg:h-fit lg:self-start">
-            <div className="space-y-5">
+        <div className="max-w-6xl mx-auto relative clear-both">
+          {/* Sidebar - Floated to the right on large screens */}
+          <aside className="w-full lg:float-right lg:w-[380px] lg:ml-12 lg:mb-12 relative z-20">
+            <div className="space-y-6">
               {/* Share Box - Premium Card */}
               <MotionDiv
                 initial={{ opacity: 0, x: 20 }}
@@ -364,6 +271,102 @@ export default function BlogPostDetail({
               )}
             </div>
           </aside>
+
+          {/* Main Content Area */}
+          <MotionDiv
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="w-full"
+          >
+            <div
+              className="blog-content text-foreground
+                [&_h2]:text-3xl [&_h2]:font-bold [&_h2]:mt-12 [&_h2]:mb-6 [&_h2]:tracking-tight [&_h2]:text-foreground
+                [&_h3]:mt-9 [&_h3]:mb-4 [&_h3]:text-2xl [&_h3]:font-bold [&_h3]:text-foreground
+                [&_h4]:mt-7 [&_h4]:mb-3 [&_h4]:text-xl [&_h4]:font-bold [&_h4]:text-foreground
+                [&_p]:text-muted-foreground [&_p]:leading-relaxed [&_p]:text-lg [&_p]:mb-6
+                [&_blockquote]:border-l-4 [&_blockquote]:border-accent [&_blockquote]:pl-8 [&_blockquote]:py-4 [&_blockquote]:my-10 [&_blockquote]:bg-accent/5 [&_blockquote]:rounded-r-2xl [&_blockquote]:italic [&_blockquote]:text-xl [&_blockquote]:text-foreground
+                [&_ul]:list-disc [&_ul]:ml-6 [&_ul]:mb-8 [&_ul]:space-y-2
+                [&_ol]:list-decimal [&_ol]:ml-6 [&_ol]:mb-8 [&_ol]:space-y-2
+                [&_li]:text-muted-foreground [&_li]:pl-2
+                [&_strong]:font-bold [&_strong]:text-foreground
+                [&_a]:font-semibold [&_a]:text-accent [&_a]:underline [&_a]:underline-offset-4
+                [&_code]:rounded-md [&_code]:bg-muted [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:text-foreground
+                [&_pre]:overflow-x-auto [&_pre]:rounded-2xl [&_pre]:border [&_pre]:border-border [&_pre]:bg-muted [&_pre]:p-5 [&_pre]:text-foreground [&_pre]:my-8
+                [&_table]:my-10 [&_table]:block [&_table]:w-full [&_table]:overflow-x-auto [&_table]:rounded-xl [&_table]:border [&_table]:border-border [&_table]:text-left
+                [&_thead]:bg-muted [&_th]:whitespace-nowrap [&_th]:border-b [&_th]:border-border [&_th]:px-4 [&_th]:py-3 [&_th]:text-sm [&_th]:font-bold [&_th]:text-foreground
+                [&_td]:min-w-40 [&_td]:border-b [&_td]:border-border/60 [&_td]:px-4 [&_td]:py-3 [&_td]:text-sm [&_td]:leading-6 [&_td]:text-muted-foreground"
+              dangerouslySetInnerHTML={{ __html: sanitizeBlogContentClasses(blog.content) }}
+            />
+
+            {/* Clear float for tags and bottom sections */}
+            <div className="clear-both" />
+
+            {/* Tags */}
+            <div className="mt-16 border-t border-border/70 pt-8">
+              <div className="flex flex-wrap gap-3">
+                {(blog.tags || []).map((tag) => (
+                  <Link
+                    key={tag}
+                    href={`/blog?tag=${encodeURIComponent(tag)}`}
+                    className="cursor-pointer rounded-xl border border-border/70 bg-muted/60 px-4 py-2 text-xs font-bold text-muted-foreground transition-colors hover:border-accent/30 hover:bg-accent/10 hover:text-accent"
+                  >
+                    #{tag}
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {relatedServices.length > 0 && (
+              <section className="mt-16 border-t border-border/70 pt-10">
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-accent">
+                  Put the insight into practice
+                </p>
+                <h2 className="mt-3 text-3xl font-bold tracking-tight text-foreground">
+                  Related Muhyo Tech services
+                </h2>
+                <p className="mt-4 max-w-3xl text-base leading-relaxed text-muted-foreground">
+                  These services connect the article&apos;s engineering topic to a
+                  practical website, application, performance, or business outcome.
+                </p>
+                <div className="mt-7 grid gap-4 md:grid-cols-3">
+                  {relatedServices.map((service) => (
+                    <Link
+                      key={service.slug}
+                      href={service.href}
+                      className="group rounded-2xl border border-border/60 bg-card/45 p-5 transition-colors hover:border-accent/40"
+                    >
+                      <h3 className="text-base font-bold leading-snug text-foreground group-hover:text-accent">
+                        {service.title}
+                      </h3>
+                      <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                        {service.description}
+                      </p>
+                      <span className="mt-5 inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-accent">
+                        Explore service <ArrowRight className="h-4 w-4" />
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* CTA Section */}
+            <div className="mt-20 p-8 md:p-12 rounded-3xl bg-gradient-to-br from-accent/10 to-blue-600/5 border border-accent/20 flex flex-col md:flex-row items-center justify-between gap-8">
+              <div className="text-left">
+                <h3 className="mb-4 text-2xl font-bold text-foreground">Enjoyed this post?</h3>
+                <p className="text-muted-foreground italic">
+                  Let&apos;s discuss how we can implement these technologies for your
+                  next project.
+                </p>
+              </div>
+              <Link href="/contact">
+                <Button className="whitespace-nowrap">
+                  Start your project
+                </Button>
+              </Link>
+            </div>
+          </MotionDiv>
         </div>
       </SectionWrapper>
     </div>
