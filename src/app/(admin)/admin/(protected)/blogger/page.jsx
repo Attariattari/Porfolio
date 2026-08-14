@@ -341,13 +341,13 @@ export default function BloggerAdminPage() {
       {/* Main Data Container: Mobile Card View + Desktop Table View */}
       <div className="rounded-xl border border-border/60 bg-card/40 backdrop-blur-md overflow-hidden shadow-xl">
         {/* Mobile View: Cards Layout (< 768px) */}
-        <div className="block md:hidden divide-y divide-border/40">
+        <div className="block md:hidden divide-y divide-border/50">
           {loading ? (
-            <div className="p-6 text-center text-xs text-muted-foreground">
+            <div className="p-8 text-center text-xs text-muted-foreground">
               Loading supporting posts...
             </div>
           ) : filteredPosts.length === 0 ? (
-            <div className="p-6 text-center text-xs text-muted-foreground">
+            <div className="p-8 text-center text-xs text-muted-foreground">
               No supporting posts found. Click <strong>Generate Supporting Post</strong> to create one.
             </div>
           ) : (
@@ -360,59 +360,106 @@ export default function BloggerAdminPage() {
                 null;
 
               return (
-                <div key={item._id} className="p-4 space-y-3 bg-card/20">
-                  {/* Status & QC Row */}
-                  <div className="flex items-center justify-between gap-2">
-                    {item.publishStatus === "published" ? (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-green-500/10 text-green-400 border border-green-500/20">
-                        <CheckCircle2 className="w-3 h-3" /> Published
-                      </span>
-                    ) : item.publishStatus === "pending_review" ? (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                        Pending Review
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/10 text-red-400 border border-red-500/20">
-                        Failed
-                      </span>
-                    )}
-
-                    <span className="px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 font-mono text-[10px] font-bold">
-                      {item.qualityScore || 8.5}/10 QC
+                <div key={item._id} className="p-5 space-y-4 bg-card/20">
+                  {/* Status */}
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-70">
+                      Status
                     </span>
-                  </div>
-
-                  {/* Title & Summary */}
-                  <div>
-                    <div className="font-semibold text-sm text-foreground leading-snug">{item.title}</div>
-                    <div className="text-muted-foreground text-xs line-clamp-2 mt-1">
-                      {item.summary}
+                    <div>
+                      {item.publishStatus === "published" ? (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-green-500/10 text-green-400 border border-green-500/20">
+                          <CheckCircle2 className="w-3 h-3" /> Published
+                        </span>
+                      ) : item.publishStatus === "pending_review" ? (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                          Pending Review
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/10 text-red-400 border border-red-500/20">
+                          Failed
+                        </span>
+                      )}
                     </div>
                   </div>
 
-                  {/* Master Blog Link */}
-                  <div className="flex items-center justify-between text-xs pt-1 border-t border-border/30">
-                    <div className="text-cyan-400 font-medium line-clamp-1 flex items-center gap-1">
-                      <Layers className="w-3 h-3 shrink-0" />
-                      <span className="truncate">{item.parentBlogTitle}</span>
+                  {/* Cover Photo */}
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-70">
+                      Cover Photo
+                    </span>
+                    <div>
+                      {coverUrl ? (
+                        <div className="flex items-center gap-2">
+                          <div className="relative w-16 h-10 rounded-lg overflow-hidden border border-cyan-500/30 bg-slate-950 shrink-0">
+                            <img src={coverUrl} alt={item.title} className="w-full h-full object-cover" />
+                          </div>
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-bold bg-green-500/10 text-green-400 border border-green-500/20">
+                            <CheckCircle2 className="w-2.5 h-2.5" /> Ready
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <div className="w-16 h-10 rounded-lg border border-dashed border-amber-500/40 bg-amber-500/5 flex items-center justify-center shrink-0">
+                            <ImageIcon className="w-4 h-4 text-amber-400/70" />
+                          </div>
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                            Waiting Pic
+                          </span>
+                        </div>
+                      )}
                     </div>
-
-                    {coverUrl ? (
-                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-green-500/10 text-green-400 border border-green-500/20 shrink-0">
-                        <CheckCircle2 className="w-2.5 h-2.5" /> Pic Ready
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 shrink-0">
-                        Waiting Pic
-                      </span>
-                    )}
                   </div>
 
-                  {/* Actions Row */}
-                  <div className="flex items-center justify-end gap-2 pt-2 border-t border-border/30">
+                  {/* Supporting Post Title */}
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-70">
+                      Supporting Post Title
+                    </span>
+                    <div>
+                      <div className="font-bold text-sm tracking-tight text-foreground">{item.title}</div>
+                      <div className="text-muted-foreground text-xs line-clamp-2 mt-1">{item.summary}</div>
+                    </div>
+                  </div>
+
+                  {/* Parent Master Blog */}
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-70">
+                      Parent Master Blog
+                    </span>
+                    <div>
+                      <div className="text-cyan-400 font-semibold text-xs flex items-center gap-1">
+                        <Layers className="w-3.5 h-3.5 shrink-0" />
+                        <span>{item.parentBlogTitle}</span>
+                      </div>
+                      <a
+                        href={item.parentBlogUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-[10px] text-muted-foreground hover:underline flex items-center gap-1 mt-0.5"
+                      >
+                        Main Website Link <ExternalLink className="w-2.5 h-2.5" />
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* QC Score */}
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-70">
+                      QC Score
+                    </span>
+                    <div>
+                      <span className="px-2.5 py-1 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 font-mono text-xs font-bold inline-block">
+                        {item.qualityScore || 8.5}/10 QC
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-border/50">
                     <button
                       onClick={() => openPreviewModal(item)}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-card hover:bg-accent border border-border text-foreground text-xs font-medium transition-all"
+                      className="flex-1 min-w-[120px] p-2.5 rounded-xl bg-card border border-border text-foreground hover:bg-accent transition-all flex items-center justify-center gap-1.5 text-[10px] font-black uppercase tracking-widest"
                     >
                       <Eye className="w-3.5 h-3.5 text-cyan-400" /> Preview / Edit
                     </button>
@@ -420,7 +467,7 @@ export default function BloggerAdminPage() {
                     <button
                       onClick={() => handlePublish(item._id, false)}
                       disabled={isPublishing || item.publishStatus === "published"}
-                      className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${
+                      className={`flex-1 min-w-[100px] p-2.5 rounded-xl border transition-all flex items-center justify-center gap-1.5 text-[10px] font-black uppercase tracking-widest ${
                         item.publishStatus === "published"
                           ? "opacity-50 cursor-not-allowed border-border text-muted-foreground"
                           : "bg-green-500/10 hover:bg-green-500/20 border-green-500/30 text-green-400"
@@ -434,7 +481,7 @@ export default function BloggerAdminPage() {
                         href={item.bloggerUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="p-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 text-blue-400"
+                        className="p-2.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 text-blue-400 flex items-center justify-center"
                         title="View Live on Blogger"
                       >
                         <ExternalLink className="w-4 h-4" />
@@ -443,7 +490,7 @@ export default function BloggerAdminPage() {
 
                     <button
                       onClick={() => handleDelete(item._id)}
-                      className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-400/20 border border-red-500/30 text-red-400 transition-all"
+                      className="p-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 transition-all flex items-center justify-center"
                       title="Delete"
                     >
                       <Trash2 className="w-4 h-4" />
