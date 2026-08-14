@@ -114,6 +114,17 @@ export default function SocialLinksForm() {
     control,
     name: "links",
   });
+  } = useForm({
+    resolver: zodResolver(socialLinksSchema),
+    defaultValues: {
+      links: [],
+    },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "links",
+  });
 
   // Fetch social links from database on component mount
   useEffect(() => {
@@ -122,29 +133,36 @@ export default function SocialLinksForm() {
 
   // Update form when data is fetched
   useEffect(() => {
-    if (socialLinks) {
-        // If socialLinks is an object (old format), we need to handle it.
-        // If it's an array (new format), use it directly.
-        let linksArray = [];
-        if (Array.isArray(socialLinks)) {
-            linksArray = socialLinks;
-        } else if (typeof socialLinks === 'object' && Object.keys(socialLinks).length > 0) {
-            // Convert old object format to new array format for the form
-            linksArray = Object.entries(socialLinks)
-                .filter(([key]) => ALLOWED_PLATFORMS.includes(key))
-                .map(([key, value]) => ({
-                    platform: key,
-                    url: value.url || ""
-                }))
-                .filter(link => link.url !== "");
-        }
+    let linksArray = [];
 
-        // If still empty and isLoaded is true, we might be at fallback.
-        // But we want the user to see the current active data.
-        if (linksArray.length > 0) {
-            reset({ links: linksArray });
-        }
+    if (Array.isArray(socialLinks) && socialLinks.length > 0) {
+      linksArray = socialLinks.map((link) => ({
+        platform: link.platform?.toLowerCase() || "",
+        url: link.url || "",
+      })).filter((link) => link.platform && link.url);
+    } else if (typeof socialLinks === "object" && socialLinks !== null && Object.keys(socialLinks).length > 0) {
+      linksArray = Object.entries(socialLinks)
+        .filter(([key]) => ALLOWED_PLATFORMS.includes(key.toLowerCase()))
+        .map(([key, value]) => ({
+          platform: key.toLowerCase(),
+          url: typeof value === "string" ? value : value?.url || "",
+        }))
+        .filter((link) => link.url !== "");
     }
+
+    // Default fallback if database returned empty links
+    if (linksArray.length === 0) {
+      linksArray = [
+        { platform: "whatsapp", url: "https://wa.me/923224458481?text=Hi%20Ghulam%20Muhyo%20Din!%20I%20came%20across%20your%20portfolio%20and%20would%20love%20to%20connect.%20Are%20you%20available%20to%20discuss%20a%20potential%20project%20or%20collaboration%3F" },
+        { platform: "linkedin", url: "https://www.linkedin.com/in/ghulam-muhyo-din-web-designer" },
+        { platform: "twitter", url: "https://x.com/GhulamMuhyo" },
+        { platform: "facebook", url: "https://www.facebook.com/MuhammadMuhyoDinAttari" },
+        { platform: "github", url: "https://github.com/Attariattari" },
+        { platform: "instagram", url: "https://www.instagram.com/muhyotech" },
+      ];
+    }
+
+    reset({ links: linksArray });
   }, [socialLinks, reset]);
 
   const onSubmit = async (data) => {
@@ -191,30 +209,30 @@ export default function SocialLinksForm() {
 
           <div className="space-y-4 relative z-10">
             {fields.map((field, index) => {
-              const platformKey = currentLinks[index]?.platform || field.platform;
+              const platformKey = field.platform || currentLinks[index]?.platform || "github";
               const Icon = PLATFORM_ICONS[platformKey] || Globe;
               const fieldName = `links.${index}.url`;
-              const fieldRegistration = register(fieldName);
+              const platformName = `links.${index}.platform`;
 
               return (
                 <div
                   key={field.id}
                   className="group flex items-center gap-4 rounded-2xl border border-white/[0.07] bg-white/[0.025] p-4 transition hover:border-cyan-400/20 hover:bg-cyan-400/[0.025]"
                 >
+                  <input type="hidden" {...register(platformName)} defaultValue={platformKey} />
                   <div className="grid size-11 shrink-0 place-items-center rounded-xl bg-cyan-400/10 text-cyan-300">
                     <Icon className="w-5 h-5" />
                   </div>
 
                   <div className="flex-1 space-y-1">
                     <label className="text-[9px] font-bold uppercase tracking-[.15em] text-slate-600">
-                      {PLATFORM_LABELS[platformKey]}
+                      {PLATFORM_LABELS[platformKey] || platformKey}
                     </label>
                     <input
                       type={platformKey === "whatsapp" ? "url" : "text"}
                       inputMode={platformKey === "whatsapp" ? "url" : "text"}
-                      {...fieldRegistration}
+                      {...register(fieldName)}
                       onBlur={(event) => {
-                        fieldRegistration.onBlur(event);
                         const normalizedUrl = normalizeSocialProfileUrl(
                           platformKey,
                           event.target.value,
@@ -227,27 +245,10 @@ export default function SocialLinksForm() {
                       placeholder={
                         platformKey === "whatsapp"
                           ? "Enter complete WhatsApp URL"
-                          : `Enter ${PLATFORM_LABELS[platformKey]} username or URL`
+                          : `Enter ${PLATFORM_LABELS[platformKey] || platformKey} username or URL`
                       }
                       className="mt-1 w-full border-none bg-transparent p-0 text-sm font-medium text-slate-200 outline-none placeholder:text-slate-700"
                     />
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => remove(index)}
-                    className="p-2.5 rounded-xl text-muted-foreground/30 hover:text-red-400 hover:bg-red-400/10 transition-all"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              );
-            })}
-
-            {fields.length === 0 && isLoaded && (
-              <div className="text-center py-12 rounded-3xl border border-dashed border-border bg-card/40">
-                <p className="text-muted-foreground text-sm font-medium">No social links configured in DB. Fallback data from data.js is active.</p>
-              </div>
             )}
 
             {fields.length < 6 && availablePlatforms.length > 0 && (

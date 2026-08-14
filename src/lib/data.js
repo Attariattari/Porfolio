@@ -53,7 +53,7 @@ export const SOCIAL_LINKS = {
     twitter: {
         name: "X (Twitter)",
         icon: "X",
-        username: "GhulamMuhyo", // â† Editable
+        username: "GhulamMuhyo", // ← Editable
         get url() {
             return `https://x.com/${this.username}`;
         },
@@ -62,11 +62,20 @@ export const SOCIAL_LINKS = {
     facebook: {
         name: "Facebook",
         icon: "Facebook",
-        username: "muhyotech", // â† Editable
+        username: "muhyotech", // ← Editable
         get url() {
             return `https://www.facebook.com/${this.username}`;
         },
         color: "#1877f2",
+    },
+    instagram: {
+        name: "Instagram",
+        icon: "Instagram",
+        username: "muhyotech", // ← Editable
+        get url() {
+            return `https://www.instagram.com/${this.username}`;
+        },
+        color: "#E4405F",
     },
 };
 
