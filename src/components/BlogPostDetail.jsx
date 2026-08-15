@@ -70,7 +70,7 @@ export default function BlogPostDetail({
   ];
 
   return (
-    <div className="min-h-screen pb-20 text-foreground transition-colors">
+    <div className="min-h-screen text-foreground transition-colors">
       {/* Article Header */}
       <header className="relative overflow-hidden border-b border-border/70">
         <div className="absolute inset-0 " />
@@ -172,9 +172,10 @@ export default function BlogPostDetail({
 
       {/* Content Area */}
       <SectionWrapper className="pt-12 md:pt-20">
-        <div className="max-w-6xl mx-auto relative clear-both">
-          {/* Sidebar - Floated to the right on large screens */}
-          <aside className="w-full lg:float-right lg:w-[380px] lg:ml-12 lg:mb-12 relative z-20">
+        <div className="max-w-6xl mx-auto relative clear-both flex flex-col lg:block">
+          {/* Sidebar - Floated to the right on large screens (lg:float-right) */}
+          {/* On Mobile (< lg), flex flex-col makes order-2 place it below blog content (order-1) */}
+          <aside className="order-2 lg:order-none w-full lg:float-right lg:w-[380px] lg:ml-12 lg:mb-12 relative z-20 mt-10 lg:mt-0 mb-10 lg:mb-12">
             <div className="space-y-6">
               {/* Share Box - Premium Card */}
               <MotionDiv
@@ -277,7 +278,7 @@ export default function BlogPostDetail({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="w-full"
+            className="order-1 lg:order-none w-full"
           >
             <div
               className="blog-content text-foreground
@@ -303,7 +304,7 @@ export default function BlogPostDetail({
             <div className="clear-both" />
 
             {/* Tags */}
-            <div className="mt-16 border-t border-border/70 pt-8">
+            <div className="mt-12 lg:mt-16 border-t border-border/70 pt-8">
               <div className="flex flex-wrap gap-3">
                 {(blog.tags || []).map((tag) => (
                   <Link
@@ -316,9 +317,12 @@ export default function BlogPostDetail({
                 ))}
               </div>
             </div>
+          </MotionDiv>
 
+          {/* Bottom Sections (Services & CTA) */}
+          <div className="order-3 lg:order-none w-full clear-both">
             {relatedServices.length > 0 && (
-              <section className="mt-16 border-t border-border/70 pt-10">
+              <section className="mt-12 lg:mt-16 border-t border-border/70 pt-10">
                 <p className="text-[10px] font-black uppercase tracking-[0.22em] text-accent">
                   Put the insight into practice
                 </p>
@@ -352,7 +356,7 @@ export default function BlogPostDetail({
             )}
 
             {/* CTA Section */}
-            <div className="mt-20 p-8 md:p-12 rounded-3xl bg-gradient-to-br from-accent/10 to-blue-600/5 border border-accent/20 flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="mt-16 lg:mt-20 p-8 md:p-12 rounded-3xl bg-gradient-to-br from-accent/10 to-blue-600/5 border border-accent/20 flex flex-col md:flex-row items-center justify-between gap-8">
               <div className="text-left">
                 <h3 className="mb-4 text-2xl font-bold text-foreground">Enjoyed this post?</h3>
                 <p className="text-muted-foreground italic">
@@ -366,7 +370,7 @@ export default function BlogPostDetail({
                 </Button>
               </Link>
             </div>
-          </MotionDiv>
+          </div>
         </div>
       </SectionWrapper>
     </div>
