@@ -108,10 +108,19 @@ export function rankBlogsByMode(blogs = [], mode = "latest") {
         });
     }
 
-    return ranked.sort((a, b) =>
-        toTimestamp(b) - toTimestamp(a)
-        || (Number(a.order) || 999) - (Number(b.order) || 999),
-    );
+    return ranked.sort((a, b) => {
+        const featuredDifference = Number(Boolean(b.featured)) - Number(Boolean(a.featured));
+        if (featuredDifference !== 0) return featuredDifference;
+
+        if (a.featured && b.featured) {
+            const orderA = Number(a.featuredOrder || 999);
+            const orderB = Number(b.featuredOrder || 999);
+            if (orderA !== orderB) return orderA - orderB;
+        }
+
+        return toTimestamp(b) - toTimestamp(a)
+            || (Number(a.order) || 999) - (Number(b.order) || 999);
+    });
 }
 
 export function getTrendingBlogs(blogs = [], options = {}) {

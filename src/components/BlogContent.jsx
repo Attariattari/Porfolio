@@ -743,12 +743,7 @@ export default function BlogContent({
 
   const displayPosts = useMemo(() => {
     if (!filteredBlogs || filteredBlogs.length === 0) return [];
-    if (filteredBlogs.length <= 12) {
-      return rankBlogsByMode(filteredBlogs, activeTab);
-    }
-    const initialBatch = rankBlogsByMode(filteredBlogs.slice(0, 12), activeTab);
-    const appendedBatch = filteredBlogs.slice(12);
-    return [...initialBatch, ...appendedBatch];
+    return rankBlogsByMode(filteredBlogs, activeTab);
   }, [filteredBlogs, activeTab]);
 
   return (
