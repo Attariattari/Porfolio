@@ -3,7 +3,7 @@ import dbConnect from "@/lib/dbConnect";
 import { cacheManager } from "@/lib/cache";
 import { revalidatePath } from "next/cache";
 
-const FEATURED_LIMIT = 4;
+const FEATURED_LIMIT = 6;
 const FEATURED_THRESHOLD = 76;
 
 const plainText = (value = "") => String(value)
@@ -75,7 +75,7 @@ function selectFeatured(rankedBlogs) {
     for (const candidate of rankedBlogs) {
         if (!candidate.eligible || candidate.score < FEATURED_THRESHOLD) continue;
         const categoryCount = categoryCounts.get(candidate.category) || 0;
-        if (categoryCount >= 2) continue;
+        if (categoryCount >= 3) continue;
         if (candidate.clusterKey && usedClusters.has(candidate.clusterKey)) continue;
         selected.push(candidate);
         categoryCounts.set(candidate.category, categoryCount + 1);
