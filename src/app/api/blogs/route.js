@@ -33,7 +33,36 @@ export async function GET(request) {
       return response;
     }
 
+    const pageParam = searchParams.get("page");
+    const limitParam = searchParams.get("limit");
+
     const blogs = await BlogController.getAll(false, { includeContent });
+
+    if (pageParam || limitParam) {
+      const pageNum = Math.max(1, parseInt(pageParam || "1", 10));
+      const limitNum = Math.min(100, Math.max(1, parseInt(limitParam || "21", 10)));
+      const startIndex = (pageNum - 1) * limitNum;
+      const paginatedBlogs = blogs.slice(startIndex, startIndex + limitNum);
+      const totalPages = Math.ceil(blogs.length / limitNum) || 1;
+
+      const response = NextResponse.json({
+        success: true,
+        count: paginatedBlogs.length,
+        total: blogs.length,
+        page: pageNum,
+        limit: limitNum,
+        totalPages,
+        hasMore: pageNum < totalPages,
+        data: paginatedBlogs,
+      });
+
+      if (includeContent) {
+        response.headers.set("Cache-Control", "private, max-age=60, stale-while-revalidate=240");
+        response.headers.set("Vary", "Cookie");
+      }
+      return response;
+    }
+
     const response = NextResponse.json({ success: true, count: blogs.length, data: blogs });
 
     if (includeContent) {

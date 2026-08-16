@@ -1,4 +1,5 @@
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import "@/app/globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -63,7 +64,9 @@ export default function RootLayout({ children }) {
       <head>
         <OrganizationSchema />
         <link rel="dns-prefetch" href="//res.cloudinary.com" />
-        <script
+        <Script
+          id="theme-init"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               (function() {

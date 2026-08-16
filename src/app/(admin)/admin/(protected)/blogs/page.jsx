@@ -14,7 +14,7 @@ import ImageUploader from "@/components/admin/ImageUploader";
 import { Controller } from "react-hook-form";
 import { AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
-import { Sparkles, CheckCircle2, Mail, RefreshCcw, Copy, BookOpen, Search, Pencil, Trash2, ExternalLink, Star, Plus, Download, Upload, Share2, Clock3, Save, X } from "lucide-react";
+import { Sparkles, CheckCircle2, Mail, RefreshCcw, Copy, BookOpen, Search, Pencil, Trash2, ExternalLink, Star, Plus, Download, Upload, Share2, Clock3, Save, X, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
 import AIBlogProgress from "@/components/admin/AIBlogProgress";
 import SocialShareKitModal from "@/components/admin/SocialShareKitModal";
 import BloggerPostModal from "@/components/admin/BloggerPostModal";
@@ -58,9 +58,16 @@ export default function BlogsPage() {
   const [blogSearch, setBlogSearch] = useState("");
   const [blogDateFilter, setBlogDateFilter] = useState("");
   const [blogFeaturedFilter, setBlogFeaturedFilter] = useState("all");
+  const [blogStatusFilter, setBlogStatusFilter] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 21;
   const [openedSocialKitIds, setOpenedSocialKitIds] = useState(() => new Set());
   // Editorial wording follows the admin request: ascending = newest first.
   const [blogSortDirection, setBlogSortDirection] = useState("ascending");
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [blogSearch, blogDateFilter, blogFeaturedFilter, blogStatusFilter, blogSortDirection]);
   const [automationSettings, setAutomationSettings] = useState({ enabled: true, dailyQuantity: 1, intervalHours: 24 });
   const [automationSettingsLoading, setAutomationSettingsLoading] = useState(true);
   const [automationSettingsSaving, setAutomationSettingsSaving] = useState(false);
@@ -69,12 +76,13 @@ export default function BlogsPage() {
   const [selectedBloggerBlog, setSelectedBloggerBlog] = useState(null);
   const [isBloggerModalOpen, setIsBloggerModalOpen] = useState(false);
 
-  const isAnyFilterActive = Boolean(blogSearch || blogDateFilter || blogFeaturedFilter !== "all" || blogSortDirection !== "ascending");
+  const isAnyFilterActive = Boolean(blogSearch || blogDateFilter || blogFeaturedFilter !== "all" || blogStatusFilter !== "all" || blogSortDirection !== "ascending");
 
   const handleClearFilters = () => {
     setBlogSearch("");
     setBlogDateFilter("");
     setBlogFeaturedFilter("all");
+    setBlogStatusFilter("all");
     setBlogSortDirection("ascending");
   };
 
@@ -722,6 +730,14 @@ export default function BlogsPage() {
       if (blogFeaturedFilter === "non-featured") return !blog.featured;
       return true;
     })
+    .filter((blog) => {
+      if (blogStatusFilter === "all") return true;
+      const status = (blog.publishStatus || "draft").toLowerCase();
+      if (blogStatusFilter === "published") return status === "published";
+      if (blogStatusFilter === "pending") return status === "pending";
+      if (blogStatusFilter === "draft") return status === "draft";
+      return true;
+    })
     .sort((first, second) => {
       const newestFirst = new Date(second.createdAt || second.generatedAt || 0) - new Date(first.createdAt || first.generatedAt || 0);
       if (newestFirst !== 0) return blogSortDirection === "ascending" ? newestFirst : -newestFirst;
@@ -733,6 +749,21 @@ export default function BlogsPage() {
       }
       return 0;
     });
+
+  const totalItems = visibleBlogs.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / ITEMS_PER_PAGE));
+  const safeCurrentPage = Math.min(Math.max(1, currentPage), totalPages);
+  const startIndex = (safeCurrentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, totalItems);
+  const paginatedBlogs = visibleBlogs.slice(startIndex, endIndex);
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      document.getElementById("article-library-section")?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   const aiActionRenderer = columns.find((column) => column.key === "ai_actions")?.render;
 
 
@@ -814,9 +845,76 @@ export default function BlogsPage() {
         <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between"><div><div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.2em] text-violet-300"><Clock3 className="size-4" />AI publishing schedule</div><h2 className="mt-2 text-lg font-semibold text-white">Automated blog frequency</h2><p className="mt-1 max-w-2xl text-xs leading-5 text-slate-500">The scheduler writes one safe article per eligible run until the daily quantity is complete. Topic Intelligence keeps a seven-day queue reserve based on this demand.</p></div><div className="grid gap-3 sm:grid-cols-[140px_160px_auto_auto_auto] sm:items-end"><label><span className="mb-2 block text-[10px] font-semibold text-slate-400">Blogs per day</span><input type="number" min="1" max="12" step="1" disabled={automationSettingsLoading || automationSettingsSaving} value={automationSettings.dailyQuantity} onChange={(event) => setAutomationSettings((current) => ({ ...current, dailyQuantity: Number(event.target.value) }))} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-white outline-none focus:border-violet-400/40" /></label><label><span className="mb-2 block text-[10px] font-semibold text-slate-400">Interval hours</span><input type="number" min="1" max="168" step="1" disabled={automationSettingsLoading || automationSettingsSaving} value={automationSettings.intervalHours} onChange={(event) => setAutomationSettings((current) => ({ ...current, intervalHours: Number(event.target.value) }))} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-white outline-none focus:border-violet-400/40" /></label><label className="flex h-11 cursor-pointer items-center gap-2 rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-xs text-slate-300"><input type="checkbox" checked={automationSettings.enabled} disabled={automationSettingsLoading || automationSettingsSaving} onChange={(event) => setAutomationSettings((current) => ({ ...current, enabled: event.target.checked }))} className="size-4 accent-violet-400" />Enabled</label><button type="button" onClick={resetAutomationSettings} disabled={automationSettingsLoading || automationSettingsSaving} className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-white/[0.1] bg-slate-950/35 px-4 text-xs font-bold text-slate-300 transition hover:border-violet-400/30 hover:text-violet-300 disabled:opacity-50"><RefreshCcw className="size-4" />Reset default</button><button type="button" onClick={() => saveAutomationSettings()} disabled={automationSettingsLoading || automationSettingsSaving} className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-violet-400 px-4 text-xs font-bold text-slate-950 transition hover:bg-violet-300 disabled:opacity-50"><Save className="size-4" />{automationSettingsSaving ? "Saving..." : "Save schedule"}</button></div></div>
       </section>
 
-      <div className="grid overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0d1727] sm:grid-cols-4"><BlogMetric label="Total articles" value={blogs.length} /><BlogMetric label="Published" value={blogs.filter((item) => item.publishStatus === "published").length} /><BlogMetric label="Drafts" value={blogs.filter((item) => item.publishStatus === "draft").length} /><BlogMetric label="AI generated" value={blogs.filter((item) => item.aiGenerated).length} last /></div>
+      <div className="grid overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0d1727] grid-cols-2 sm:grid-cols-5"><BlogMetric label="Total articles" value={blogs.length} /><BlogMetric label="Published" value={blogs.filter((item) => item.publishStatus === "published").length} /><BlogMetric label="Pending" value={blogs.filter((item) => item.publishStatus === "pending").length} /><BlogMetric label="Drafts" value={blogs.filter((item) => item.publishStatus === "draft" || !item.publishStatus).length} /><BlogMetric label="AI generated" value={blogs.filter((item) => item.aiGenerated).length} last /></div>
 
-      <section data-columns={columns.length} data-reorder={Boolean(reorderBlogs)} className="overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#0d1727]"><div className="flex flex-col justify-between gap-4 border-b border-white/[0.07] p-4 xl:flex-row xl:items-center sm:p-5"><div><p className="text-sm font-semibold text-slate-200">Article library</p><p className="mt-1 text-xs text-slate-600">Manage manual and AI-assisted content in one place.</p></div><div className="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap xl:w-auto"><label className="relative w-full sm:min-w-64"><Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-600" /><input value={blogSearch} onChange={(event) => setBlogSearch(event.target.value)} placeholder="Search articles..." className="w-full rounded-xl border border-white/[0.08] bg-slate-950/35 py-3 pl-10 pr-4 text-sm outline-none placeholder:text-slate-700 focus:border-violet-400/40" /></label><label><span className="sr-only">Filter by featured</span><select value={blogFeaturedFilter} onChange={(event) => setBlogFeaturedFilter(event.target.value)} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40"><option value="all">All Articles</option><option value="featured">Featured ⭐</option><option value="non-featured">Non-Featured</option></select></label><label><span className="sr-only">Filter articles by date</span><input type="date" value={blogDateFilter} onChange={(event) => setBlogDateFilter(event.target.value)} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40" title="Show blogs published on this date" /></label><label><span className="sr-only">Sort articles</span><select value={blogSortDirection} onChange={(event) => setBlogSortDirection(event.target.value)} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40"><option value="ascending">Ascending (newest first)</option><option value="descending">Descending (oldest first)</option></select></label>{isAnyFilterActive && <button type="button" onClick={handleClearFilters} className="inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border border-rose-400/30 bg-rose-500/10 px-3.5 text-xs font-semibold text-rose-300 transition hover:bg-rose-500/20" title="Clear all active filters"><X className="size-3.5" />Clear filters</button>}</div></div><div className="grid gap-4 p-4 sm:p-5 md:grid-cols-2 xl:grid-cols-3">{visibleBlogs.map((blog) => <BlogCard key={blog._id || blog.slug || blog.title} blog={blog} aiActions={aiActionRenderer?.(blog)} onCreateBlogger={handleGenerateBloggerForBlog} onEdit={() => handleEdit(blog)} onView={() => handleView(blog)} onDelete={() => handleDelete(blog)} />)}</div>{visibleBlogs.length === 0 && <div className="grid min-h-72 place-items-center text-center"><div><BookOpen className="mx-auto size-9 text-slate-700" /><p className="mt-4 text-sm font-semibold text-slate-300">No matching articles</p><p className="mt-1 text-xs text-slate-600">Try another title, date, category or tag.</p></div></div>}</section>
+      <section id="article-library-section" data-columns={columns.length} data-reorder={Boolean(reorderBlogs)} className="overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#0d1727]"><div className="flex flex-col justify-between gap-4 border-b border-white/[0.07] p-4 xl:flex-row xl:items-center sm:p-5"><div className="space-y-3"><div><p className="text-sm font-semibold text-slate-200">Article library</p><p className="mt-1 text-xs text-slate-600">Manage manual and AI-assisted content in one place (21 articles per page).</p></div><div className="flex items-center gap-1.5 flex-wrap pt-1"><button type="button" onClick={() => setBlogStatusFilter("all")} className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${blogStatusFilter === "all" ? "bg-violet-500/20 text-violet-300 border border-violet-500/40 shadow-sm" : "bg-slate-950/35 text-slate-400 border border-white/[0.08] hover:text-slate-200"}`}>All ({blogs.length})</button><button type="button" onClick={() => setBlogStatusFilter("published")} className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${blogStatusFilter === "published" ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm" : "bg-slate-950/35 text-slate-400 border border-white/[0.08] hover:text-emerald-300"}`}><span className="size-2 rounded-full bg-emerald-400 animate-pulse"></span>Published ({blogs.filter((b) => b.publishStatus === "published").length})</button><button type="button" onClick={() => setBlogStatusFilter("pending")} className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${blogStatusFilter === "pending" ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm" : "bg-slate-950/35 text-slate-400 border border-white/[0.08] hover:text-amber-300"}`}><span className="size-2 rounded-full bg-amber-400"></span>Pending ({blogs.filter((b) => b.publishStatus === "pending").length})</button><button type="button" onClick={() => setBlogStatusFilter("draft")} className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${blogStatusFilter === "draft" ? "bg-slate-700/50 text-slate-200 border border-slate-500/50 shadow-sm" : "bg-slate-950/35 text-slate-400 border border-white/[0.08] hover:text-slate-200"}`}><span className="size-2 rounded-full bg-slate-400"></span>Drafts ({blogs.filter((b) => (b.publishStatus || "draft") === "draft" && b.publishStatus !== "published" && b.publishStatus !== "pending").length})</button></div></div><div className="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap xl:w-auto"><label className="relative w-full sm:min-w-64"><Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-600" /><input value={blogSearch} onChange={(event) => setBlogSearch(event.target.value)} placeholder="Search articles..." className="w-full rounded-xl border border-white/[0.08] bg-slate-950/35 py-3 pl-10 pr-4 text-sm outline-none placeholder:text-slate-700 focus:border-violet-400/40" /></label><label><span className="sr-only">Filter by status</span><select value={blogStatusFilter} onChange={(event) => setBlogStatusFilter(event.target.value)} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40"><option value="all">All Statuses</option><option value="published">Published 🟢</option><option value="pending">Pending 🟡</option><option value="draft">Draft ⚪</option></select></label><label><span className="sr-only">Filter by featured</span><select value={blogFeaturedFilter} onChange={(event) => setBlogFeaturedFilter(event.target.value)} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40"><option value="all">All Articles</option><option value="featured">Featured ⭐</option><option value="non-featured">Non-Featured</option></select></label><label><span className="sr-only">Filter articles by date</span><input type="date" value={blogDateFilter} onChange={(event) => setBlogDateFilter(event.target.value)} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40" title="Show blogs published on this date" /></label><label><span className="sr-only">Sort articles</span><select value={blogSortDirection} onChange={(event) => setBlogSortDirection(event.target.value)} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40"><option value="ascending">Ascending (newest first)</option><option value="descending">Descending (oldest first)</option></select></label>{isAnyFilterActive && <button type="button" onClick={handleClearFilters} className="inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border border-rose-400/30 bg-rose-500/10 px-3.5 text-xs font-semibold text-rose-300 transition hover:bg-rose-500/20" title="Clear all active filters"><X className="size-3.5" />Clear filters</button>}</div></div><div className="grid gap-4 p-4 sm:p-5 md:grid-cols-2 xl:grid-cols-3">{paginatedBlogs.map((blog) => <BlogCard key={blog._id || blog.slug || blog.title} blog={blog} aiActions={aiActionRenderer?.(blog)} onCreateBlogger={handleGenerateBloggerForBlog} onEdit={() => handleEdit(blog)} onView={() => handleView(blog)} onDelete={() => handleDelete(blog)} />)}</div>{visibleBlogs.length === 0 && <div className="grid min-h-72 place-items-center text-center"><div><BookOpen className="mx-auto size-9 text-slate-700" /><p className="mt-4 text-sm font-semibold text-slate-300">No matching articles</p><p className="mt-1 text-xs text-slate-600">Try another title, date, category or status filter.</p></div></div>}
+      {totalPages > 1 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/[0.07] px-6 py-4 bg-slate-950/20">
+          <div className="text-xs font-semibold text-slate-400">
+            Showing <span className="text-white font-bold">{totalItems > 0 ? startIndex + 1 : 0}</span> to <span className="text-white font-bold">{endIndex}</span> of <span className="text-white font-bold">{totalItems}</span> articles (Page {safeCurrentPage} of {totalPages})
+          </div>
+          <div className="flex items-center gap-1.5 flex-wrap justify-center">
+            <button
+              type="button"
+              onClick={() => handlePageChange(1)}
+              disabled={safeCurrentPage === 1}
+              className="px-2.5 py-1.5 rounded-lg border border-white/[0.08] bg-slate-950/40 text-xs font-semibold text-slate-300 transition hover:border-violet-400/40 hover:text-white disabled:opacity-40 disabled:hover:border-white/[0.08]"
+              title="First Page"
+            >
+              <ChevronsLeft className="size-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => handlePageChange(safeCurrentPage - 1)}
+              disabled={safeCurrentPage === 1}
+              className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-slate-950/40 text-xs font-semibold text-slate-300 transition hover:border-violet-400/40 hover:text-white flex items-center gap-1 disabled:opacity-40 disabled:hover:border-white/[0.08]"
+            >
+              <ChevronLeft className="size-4" /> Prev
+            </button>
+            <div className="flex items-center gap-1">
+              {Array.from({ length: totalPages }, (_, idx) => idx + 1)
+                .filter((p) => p === 1 || p === totalPages || Math.abs(p - safeCurrentPage) <= 2)
+                .map((p, i, arr) => {
+                  const showEllipsis = i > 0 && p - arr[i - 1] > 1;
+                  return (
+                    <div key={p} className="flex items-center gap-1">
+                      {showEllipsis && <span className="px-1 text-xs text-slate-600">...</span>}
+                      <button
+                        type="button"
+                        onClick={() => handlePageChange(p)}
+                        className={`size-8 rounded-lg text-xs font-bold transition-all ${
+                          p === safeCurrentPage
+                            ? "bg-violet-500 text-white shadow-md shadow-violet-500/25 ring-1 ring-violet-400/50"
+                            : "border border-white/[0.08] bg-slate-950/40 text-slate-400 hover:border-violet-400/30 hover:text-slate-200"
+                        }`}
+                      >
+                        {p}
+                      </button>
+                    </div>
+                  );
+                })}
+            </div>
+            <button
+              type="button"
+              onClick={() => handlePageChange(safeCurrentPage + 1)}
+              disabled={safeCurrentPage === totalPages}
+              className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-slate-950/40 text-xs font-semibold text-slate-300 transition hover:border-violet-400/40 hover:text-white flex items-center gap-1 disabled:opacity-40 disabled:hover:border-white/[0.08]"
+            >
+              Next <ChevronRight className="size-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => handlePageChange(totalPages)}
+              disabled={safeCurrentPage === totalPages}
+              className="px-2.5 py-1.5 rounded-lg border border-white/[0.08] bg-slate-950/40 text-xs font-semibold text-slate-300 transition hover:border-violet-400/40 hover:text-white disabled:opacity-40 disabled:hover:border-white/[0.08]"
+              title="Last Page"
+            >
+              <ChevronsRight className="size-4" />
+            </button>
+          </div>
+        </div>
+      )}
+      </section>
 
       <AnimatePresence>
         {false && isModalOpen && (
