@@ -320,15 +320,17 @@ const TrendingTabs = ({ activeTab, setActiveTab }) => {
   );
 };
 
-const ArticleCard = ({ blog, index, onImageClick }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 28 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: "-80px" }}
-    transition={{ delay: index * 0.05, duration: 0.55 }}
-    className="h-full group"
-  >
-    <article className="content-visibility-auto theme-surface-depth relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-border/60 bg-background/70 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-accent/40">
+const ArticleCard = ({ blog, index, onImageClick }) => {
+  const staggerIndex = index % 12;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ delay: staggerIndex * 0.04, duration: 0.45 }}
+      className="h-full group"
+    >
+      <article className="theme-surface-depth relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-border/60 bg-background/70 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-accent/40">
       <button
         type="button"
         onClick={() => onImageClick(index)}
@@ -394,6 +396,7 @@ const ArticleCard = ({ blog, index, onImageClick }) => (
     </article>
   </motion.div>
 );
+};
 
 const HomeArticleCard = ({ blog, index, onImageClick }) => {
   const image = getSafeImageSrc(blog.image || blog.featuredImage?.url, "/portfolio-hero.png");
@@ -738,7 +741,15 @@ export default function BlogContent({
     return matchesSearch && matchesCategory;
   });
 
-  const displayPosts = rankBlogsByMode(filteredBlogs, activeTab);
+  const displayPosts = useMemo(() => {
+    if (!filteredBlogs || filteredBlogs.length === 0) return [];
+    if (filteredBlogs.length <= 12) {
+      return rankBlogsByMode(filteredBlogs, activeTab);
+    }
+    const initialBatch = rankBlogsByMode(filteredBlogs.slice(0, 12), activeTab);
+    const appendedBatch = filteredBlogs.slice(12);
+    return [...initialBatch, ...appendedBatch];
+  }, [filteredBlogs, activeTab]);
 
   return (
     <div className="min-h-screen selection:bg-accent selection:text-accent-foreground">
@@ -771,56 +782,66 @@ export default function BlogContent({
       {/* 5. Blog Articles Grid */}
       <section className="pb-24 px-6 min-h-[600px]">
         <div className="max-w-7xl mx-auto">
-          <AnimatePresence mode="popLayout">
-            {displayPosts.length > 0 ? (
-              <motion.div
-                layout
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"
-              >
-                {displayPosts.map((blog, i) => (
-                  <ArticleCard
-                    key={blog.id || blog.slug || i}
-                    blog={blog}
-                    index={i}
-                    onImageClick={(idx) => {
-                      setLightboxImages(displayPosts.map((b) => b.image));
-                      setLightboxAlts(displayPosts.map(getBlogImageAlt));
-                      setLightboxIndex(idx);
-                    }}
-                  />
-                ))}
-              </motion.div>
-            ) : (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex flex-col items-center justify-center py-40 text-center"
-              >
-                <div className="w-24 h-24 rounded-[3rem] bg-card/40 border border-border/50 flex items-center justify-center mb-8">
-                  <Search className="w-10 h-10 text-muted-foreground/30" />
-                </div>
-                <h3 className="text-3xl font-bold mb-4 tracking-tight italic">
-                  No results found
-                </h3>
-                <p className="text-muted-foreground text-lg italic max-w-sm opacity-60">
-                  Try adjusting your search or category filters.
-                </p>
-                <Button
-                  onClick={() => {
-                    setSearchQuery("");
-                    setActiveCategory("All");
+          {displayPosts.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+              {displayPosts.map((blog, i) => (
+                <ArticleCard
+                  key={blog.id || blog._id || blog.slug || i}
+                  blog={blog}
+                  index={i}
+                  onImageClick={(idx) => {
+                    setLightboxImages(
+                      displayPosts.map(
+                        (b) => b.image || b.featuredImage?.url || "/portfolio-hero.png"
+                      )
+                    );
+                    setLightboxAlts(displayPosts.map(getBlogImageAlt));
+                    setLightboxIndex(idx);
                   }}
-                  className="mt-12"
-                >
-                  Reset Discovery
-                </Button>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                />
+              ))}
+            </div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex flex-col items-center justify-center py-40 text-center"
+            >
+              <div className="w-24 h-24 rounded-[3rem] bg-card/40 border border-border/50 flex items-center justify-center mb-8">
+                <Search className="w-10 h-10 text-muted-foreground/30" />
+              </div>
+              <h3 className="text-3xl font-bold mb-4 tracking-tight italic">
+                No results found
+              </h3>
+              <p className="text-muted-foreground text-lg italic max-w-sm opacity-60">
+                Try adjusting your search or category filters.
+              </p>
+              <Button
+                onClick={() => {
+                  setSearchQuery("");
+                  setActiveCategory("All");
+                }}
+                className="mt-12"
+              >
+                Reset Discovery
+              </Button>
+            </motion.div>
+          )}
           {hasMoreBlogs && (
             <div className="mt-14 flex justify-center">
-              <Button onClick={loadMoreBlogs} disabled={isLoadingMore}>
-                {isLoadingMore ? "Loading articles..." : "Load more articles"}
+              <Button
+                onClick={loadMoreBlogs}
+                disabled={isLoadingMore}
+                className="min-w-[180px]"
+              >
+                {isLoadingMore ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Loading...
+                  </span>
+                ) : (
+                  "Load more articles"
+                )}
               </Button>
             </div>
           )}
