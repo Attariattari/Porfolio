@@ -2,19 +2,20 @@
 
 import {
   ArrowUpRight,
+  Award,
+  BookOpen,
+  CalendarCheck,
   ChevronLeft,
   Circle,
-  Code2,
-  Cpu,
-  FileText,
-  FileUser,
-  Home,
-  Mail,
+  House,
+  IdCard,
+  Laptop,
+  Layers,
+  MessageSquare,
   Moon,
   ShieldCheck,
   Sparkles,
   Sun,
-  User,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -24,13 +25,13 @@ import { useTheme } from "@/components/ThemeProvider";
 import usePublicSettingsStore from "@/lib/store/publicSettingsStore";
 
 const navigation = [
-  { name: "Home", href: "/", icon: Home },
-  { name: "About", href: "/about", icon: User },
-  { name: "Services", href: "/services", icon: Cpu },
-  { name: "Projects", href: "/projects", icon: Code2 },
-  { name: "Blog", href: "/blog", icon: FileText },
-  { name: "Resume", href: "/resume", icon: FileUser },
-  { name: "Contact", href: "/contact", icon: Mail },
+  { name: "Home", href: "/", icon: House },
+  { name: "About", href: "/about", icon: IdCard },
+  { name: "Services", href: "/services", icon: Layers },
+  { name: "Projects", href: "/projects", icon: Laptop },
+  { name: "Blog", href: "/blog", icon: BookOpen },
+  { name: "Resume", href: "/resume", icon: Award },
+  { name: "Contact", href: "/contact", icon: MessageSquare },
 ];
 
 const themeOptions = [
@@ -374,7 +375,7 @@ export default function ProfessionalSidebar({ data }) {
                 }`}
               >
                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-accent-foreground/10">
-                  <Mail aria-hidden="true" className="h-4 w-4" />
+                  <CalendarCheck aria-hidden="true" className="h-4 w-4" />
                 </span>
                 {!collapsed && (
                   <span className="min-w-0 flex-1">

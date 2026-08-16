@@ -5,19 +5,19 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import {
   House,
-  UserRound,
-  BriefcaseBusiness,
-  Layers3,
-  Newspaper,
-  FileBadge2,
-  Send,
+  IdCard,
+  Layers,
+  Laptop,
+  BookOpen,
+  Award,
+  MessageSquare,
   ChevronLeft,
   ChevronRight,
-  Sparkles,
   Sun,
   Moon,
   Circle,
   ShieldCheck,
+  Sparkles,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
@@ -26,12 +26,13 @@ import { useTheme } from "@/components/ThemeProvider";
 
 const IconMap = {
   Home: House,
-  About: UserRound,
-  Services: BriefcaseBusiness,
-  Projects: Layers3,
-  Blogs: Newspaper,
-  Resume: FileBadge2,
-  Contact: Send,
+  About: IdCard,
+  Services: Layers,
+  Projects: Laptop,
+  Blogs: BookOpen,
+  Blog: BookOpen,
+  Resume: Award,
+  Contact: MessageSquare,
 };
 
 const resolveIcon = (name, icon) => {

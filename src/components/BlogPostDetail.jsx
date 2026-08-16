@@ -175,7 +175,7 @@ export default function BlogPostDetail({
         <div className="max-w-6xl mx-auto relative clear-both flex flex-col lg:block">
           {/* Sidebar - Floated to the right on large screens (lg:float-right) */}
           {/* On Mobile (< lg), flex flex-col makes order-2 place it below blog content (order-1) */}
-          <aside className="order-2 lg:order-none w-full lg:float-right lg:w-[380px] lg:ml-12 lg:mb-12 relative z-20 mt-10 lg:mt-0 mb-10 lg:mb-12">
+          <aside className="order-2 lg:order-none w-full lg:float-right lg:w-[380px] lg:ml-12 lg:mb-12 relative z-20 mt-10 lg:mt-0 lg:mb-12">
             <div className="space-y-6">
               {/* Share Box - Premium Card */}
               <MotionDiv
