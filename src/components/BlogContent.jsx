@@ -14,6 +14,7 @@ import {
   ArrowUpRight,
   CheckCircle2,
   Loader2,
+  Sparkles,
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -822,22 +823,61 @@ export default function BlogContent({
               </Button>
             </motion.div>
           )}
-          {hasMoreBlogs && (
-            <div className="mt-14 flex justify-center">
-              <Button
-                onClick={loadMoreBlogs}
-                disabled={isLoadingMore}
-                className="min-w-[180px]"
-              >
-                {isLoadingMore ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Loading...
+          {/* --- Theme-Adaptive Load More & Pagination Bar --- */}
+          {displayPosts.length > 0 && (
+            <div className="mt-16 pt-8 border-t border-border/40 flex flex-col items-center gap-6 text-center">
+              {/* Article Counter & Progress Bar */}
+              <div className="flex flex-col items-center gap-3">
+                <div className="flex items-center gap-3 text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+                  <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-accent/10 border border-accent/25 text-accent font-bold text-[11px] shadow-sm">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    Showing {displayPosts.length} of {initialTotal || loadedBlogs.length} Articles
                   </span>
-                ) : (
-                  "Load more articles"
-                )}
-              </Button>
+                  <span className="text-muted-foreground/40">&bull;</span>
+                  <span className="text-muted-foreground font-mono">
+                    {activeCategory === "All" ? "All Categories" : activeCategory}
+                  </span>
+                </div>
+
+                {/* Progress Bar Line */}
+                <div className="w-56 h-1.5 bg-muted/60 rounded-full overflow-hidden relative border border-border/40">
+                  <div
+                    className="h-full bg-accent rounded-full transition-all duration-500 shadow-sm shadow-accent/40"
+                    style={{
+                      width: `${Math.min(100, Math.max(10, (displayPosts.length / (initialTotal || loadedBlogs.length || 1)) * 100))}%`,
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Theme-Adaptive Load More Button or All Loaded Badge */}
+              {hasMoreBlogs ? (
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={loadMoreBlogs}
+                  disabled={isLoadingMore}
+                  className="group relative inline-flex items-center justify-center gap-3 px-10 py-4.5 rounded-full bg-accent text-accent-foreground font-black text-xs uppercase tracking-widest shadow-xl shadow-accent/20 hover:shadow-accent/35 transition-all duration-300 disabled:opacity-60 overflow-hidden active:scale-95 border border-accent/30"
+                >
+                  <div className="absolute inset-0 bg-foreground/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                  {isLoadingMore ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Fetching More Guides...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="relative z-10">Load More Articles</span>
+                      <ArrowRight className="w-4 h-4 relative z-10 transition-transform group-hover:translate-x-1.5" />
+                    </>
+                  )}
+                </motion.button>
+              ) : (
+                <div className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-card/80 border border-border text-xs font-bold text-muted-foreground backdrop-blur-md shadow-md">
+                  <CheckCircle2 className="w-4 h-4 text-accent" />
+                  <span>You&apos;ve explored all {displayPosts.length} articles!</span>
+                </div>
+              )}
             </div>
           )}
         </div>
