@@ -138,8 +138,20 @@ export async function generateBloggerSupportingBlog(parentBlogId, options = {}) 
     // 🔒 1. PRE-CHECK: If a Blogger post already exists for this parent blog
     const existingPost = await BloggerPost.findOne({ parentBlogId: parentBlog._id });
     if (existingPost) {
-      // If it is in active 'generating' status, check if lock is fresh (< 5 mins)
-      if (existingPost.publishStatus === "generating") {
+      const isQualityPassed =
+        typeof existingPost.qualityScore === "number"
+          ? existingPost.qualityScore >= 8.0
+          : existingPost.qualityStatus === "passed" || !existingPost.qualityStatus;
+
+      const isPublished =
+        existingPost.publishStatus === "published" || Boolean(existingPost.bloggerPostId);
+
+      if (options.force || (!isQualityPassed && !isPublished)) {
+        console.log(
+          `[Blogger Generator] 🔄 Re-generating supporting post for parent "${parentBlog.title}" (Quality Score: ${existingPost.qualityScore || 0}/10 < 8.0 threshold or force requested).`
+        );
+        reservedPost = existingPost;
+      } else if (existingPost.publishStatus === "generating") {
         const fiveMinsAgo = new Date(Date.now() - 5 * 60 * 1000);
         if (existingPost.updatedAt && existingPost.updatedAt < fiveMinsAgo) {
           console.warn(`[Blogger Generator] Found stale 'generating' lock for parent ${parentBlogId}. Re-acquiring lock.`);
@@ -154,7 +166,7 @@ export async function generateBloggerSupportingBlog(parentBlogId, options = {}) 
           };
         }
       } else {
-        console.log(`[Blogger Generator] 🛑 Supporting post ALREADY exists for parent "${parentBlog.title}" (Status: ${existingPost.publishStatus}, ID: ${existingPost._id}). Duplicate generation blocked.`);
+        console.log(`[Blogger Generator] 🛑 Supporting post ALREADY exists with QC Score >= 8.0 for parent "${parentBlog.title}" (Status: ${existingPost.publishStatus}, Score: ${existingPost.qualityScore}, ID: ${existingPost._id}). Duplicate generation blocked.`);
         return {
           success: true,
           alreadyExists: true,

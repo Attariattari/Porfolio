@@ -20,6 +20,7 @@ export async function GET(request) {
     await dbConnect();
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
+    const parentBlogId = searchParams.get("parentBlogId");
 
     // 🔒 AUTO-CLEAN & AUTO-UPDATE EXISTING POSTS WITH LOCALHOST URLS
     const postsNeedingSanitization = await BloggerPost.find({
@@ -89,6 +90,9 @@ export async function GET(request) {
     const query = {};
     if (status && status !== "all") {
       query.publishStatus = status;
+    }
+    if (parentBlogId) {
+      query.parentBlogId = parentBlogId;
     }
 
     const rawPosts = await BloggerPost.find(query)
@@ -176,7 +180,7 @@ export async function POST(request) {
       });
     }
 
-    const { parentBlogId } = body;
+    const { parentBlogId, force } = body;
 
     if (!parentBlogId) {
       return NextResponse.json(
@@ -194,7 +198,7 @@ export async function POST(request) {
     }
 
     console.log(`[Blogger API v2] Generating supporting blog for parent ID: ${parentBlogId}...`);
-    const result = await generateBloggerSupportingBlog(parentBlogId);
+    const result = await generateBloggerSupportingBlog(parentBlogId, { force: Boolean(force) });
 
     if (!result.success) {
       return NextResponse.json(

@@ -21,9 +21,14 @@ export async function getUnsyncedOldBlogsCount() {
       .select("_id title slug image featuredImage")
       .lean();
 
-    // Fetch all blog IDs that already have a Blogger post record (published, publishing, pending_review, generating, draft, etc.)
+    // Fetch all blog IDs that already have a valid, high-quality Blogger post record (QC score >= 8.0 or live published)
     const existingBloggerPosts = await BloggerPost.find({
       parentBlogId: { $exists: true, $ne: null },
+      $or: [
+        { qualityScore: { $gte: 8.0 } },
+        { publishStatus: "published" },
+        { bloggerPostId: { $exists: true, $ne: null } },
+      ],
     })
       .select("parentBlogId")
       .lean();

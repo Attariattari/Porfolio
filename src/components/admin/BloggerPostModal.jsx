@@ -44,26 +44,40 @@ export default function BloggerPostModal({ isOpen, onClose, parentBlog }) {
 
     try {
       // Check if supporting post already exists
-      const res = await fetch(`/api/admin/blogger`);
+      const res = await fetch(`/api/admin/blogger?parentBlogId=${parentBlog._id}`);
       const json = await res.json();
 
       if (json.success && Array.isArray(json.data)) {
-        const existing = json.data.find(
-          (p) => p.parentBlogId?.toString() === parentBlog._id.toString()
-        );
+        const existing = json.data.find((p) => {
+          const pParentId = p.parentBlogId?._id
+            ? p.parentBlogId._id.toString()
+            : p.parentBlogId?.toString();
+          return pParentId === parentBlog._id.toString();
+        });
 
         if (existing) {
-          setBloggerPost(existing);
-          setEditTitle(existing.title || "");
-          setEditSummary(existing.summary || "");
-          setEditContent(existing.content || "");
-          setLoading(false);
-          return;
+          const isQualityPassed =
+            typeof existing.qualityScore === "number"
+              ? existing.qualityScore >= 8.0
+              : existing.qualityStatus === "passed" || !existing.qualityStatus;
+
+          const isPublished =
+            existing.publishStatus === "published" || Boolean(existing.bloggerPostId);
+
+          // Only use existing post if Quality Score >= 8.0 or post is already published live
+          if (isQualityPassed || isPublished) {
+            setBloggerPost(existing);
+            setEditTitle(existing.title || "");
+            setEditSummary(existing.summary || "");
+            setEditContent(existing.content || "");
+            setLoading(false);
+            return;
+          }
         }
       }
 
       // If not existing, trigger generation automatically
-      await generateNewPost();
+      await generateNewPost(false);
     } catch (err) {
       console.error(err);
       toast.error("Failed to load Blogger post state.");
@@ -71,7 +85,7 @@ export default function BloggerPostModal({ isOpen, onClose, parentBlog }) {
     }
   };
 
-  const generateNewPost = async () => {
+  const generateNewPost = async (force = false) => {
     setGenerating(true);
     setLoading(true);
 
@@ -79,7 +93,7 @@ export default function BloggerPostModal({ isOpen, onClose, parentBlog }) {
       const res = await fetch("/api/admin/blogger", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ parentBlogId: parentBlog._id }),
+        body: JSON.stringify({ parentBlogId: parentBlog._id, force }),
       });
       const json = await res.json();
 
@@ -88,7 +102,11 @@ export default function BloggerPostModal({ isOpen, onClose, parentBlog }) {
         setEditTitle(json.data.title || "");
         setEditSummary(json.data.summary || "");
         setEditContent(json.data.content || "");
-        toast.success(`Supporting article created! (QC Score: ${json.data.qualityScore}/10)`);
+        toast.success(
+          json.alreadyExists
+            ? "Loaded existing Blogger post."
+            : `Supporting article created! (QC Score: ${json.data.qualityScore}/10)`
+        );
       } else {
         toast.error("AI Generation Failed: " + json.error);
       }
@@ -186,7 +204,7 @@ export default function BloggerPostModal({ isOpen, onClose, parentBlog }) {
                   )}
                 </div>
                 <h2 className="text-base sm:text-lg font-bold line-clamp-1 text-slate-100 mt-0.5">
-                  Supporting Post for: "{parentBlog.title}"
+                  Supporting Post for: &quot;{parentBlog.title}&quot;
                 </h2>
               </div>
             </div>
@@ -337,7 +355,7 @@ export default function BloggerPostModal({ isOpen, onClose, parentBlog }) {
           {bloggerPost && !loading && (
             <div className="flex items-center justify-between p-5 border-t border-white/10 bg-slate-900/80">
               <button
-                onClick={generateNewPost}
+                onClick={() => generateNewPost(true)}
                 disabled={generating || publishing}
                 className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-white/10 border border-white/10 disabled:opacity-50"
               >

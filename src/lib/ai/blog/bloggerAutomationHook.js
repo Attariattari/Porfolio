@@ -19,11 +19,21 @@ export async function onMainBlogGenerated(mainBlogId) {
     await dbConnect();
     console.log(`[Blogger Hook] Main blog created (${mainBlogId}). Generating Blogger Supporting Blog...`);
 
-    // Check if supporting post already exists
+    // Check if supporting post already exists with acceptable quality score (>= 8.0) or live published status
     const existing = await BloggerPost.findOne({ parentBlogId: mainBlogId });
     if (existing) {
-      console.log(`[Blogger Hook] Supporting post already exists (${existing._id}). Skipping duplicate generation.`);
-      return { success: true, bloggerPost: existing };
+      const isQualityPassed =
+        typeof existing.qualityScore === "number"
+          ? existing.qualityScore >= 8.0
+          : existing.qualityStatus === "passed" || !existing.qualityStatus;
+
+      const isPublished =
+        existing.publishStatus === "published" || Boolean(existing.bloggerPostId);
+
+      if (isQualityPassed || isPublished) {
+        console.log(`[Blogger Hook] Supporting post already exists (${existing._id}) with QC >= 8.0. Skipping duplicate generation.`);
+        return { success: true, bloggerPost: existing };
+      }
     }
 
     // Generate 900-1200 word supporting article with QC audit
