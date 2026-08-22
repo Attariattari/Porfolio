@@ -17,7 +17,7 @@ const CORE_STATIC_ASSETS = [
   "/",
   "/logo.png",
   "/logo.webp",
-  "/manifest.json",
+  "/admin-manifest.json",
   "/favicon.ico",
 ];
 
