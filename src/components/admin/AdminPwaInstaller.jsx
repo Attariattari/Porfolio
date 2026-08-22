@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Download, Smartphone, Share2, PlusSquare, X, CheckCircle, ShieldCheck, MoreVertical, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -9,10 +10,9 @@ import { toast } from "sonner";
  * AdminPwaInstaller Component
  * 
  * Super-Admin-Only Installation Controller:
- * - Completely hidden for regular users, guests, and public routes.
- * - Only visible to authenticated Super Administrators (role: super-admin or root-super-admin).
- * - Automatically hides when the app is already installed and running in standalone mode.
- * - 1-Click native install on Android/Chrome/Edge with smart fallback modal guide.
+ * - Visible ONLY for authenticated Super Administrators (role: super-admin or root-super-admin).
+ * - Automatically hidden in Standalone mode or when already installed.
+ * - Uses React Portal to mount the floating mobile banner cleanly to document.body.
  */
 export default function AdminPwaInstaller({ session: propSession, isSuperAdmin: propIsSuperAdmin = false }) {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -23,8 +23,11 @@ export default function AdminPwaInstaller({ session: propSession, isSuperAdmin: 
   const [isInstalled, setIsInstalled] = useState(false);
   const [internalSuperAdmin, setInternalSuperAdmin] = useState(propIsSuperAdmin);
   const [mobileDismissed, setMobileDismissed] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+
     // 1. Detect if running inside installed Standalone app
     const checkStandalone = () => {
       const inStandalone =
@@ -38,14 +41,14 @@ export default function AdminPwaInstaller({ session: propSession, isSuperAdmin: 
 
     checkStandalone();
 
-    // 2. Detect device operating system
+    // 2. Detect device OS
     const userAgent = typeof window !== "undefined" ? window.navigator.userAgent.toLowerCase() : "";
     const isIosDevice = /iphone|ipad|ipod/.test(userAgent);
     const isAndroidDevice = /android/.test(userAgent);
     setIsIos(isIosDevice);
     setIsAndroid(isAndroidDevice);
 
-    // 3. Fallback check for Super Admin if prop is delayed
+    // 3. Verify Super Admin authorization
     if (!propIsSuperAdmin) {
       fetch("/api/admin/me", { cache: "no-store" })
         .then((res) => (res.ok ? res.json() : null))
@@ -131,7 +134,7 @@ export default function AdminPwaInstaller({ session: propSession, isSuperAdmin: 
       }
     }
 
-    // If native prompt is not yet ready or iOS, open the guide modal
+    // Fallback: Open cross-platform guided setup modal
     setShowGuideModal(true);
   };
 
@@ -153,45 +156,56 @@ export default function AdminPwaInstaller({ session: propSession, isSuperAdmin: 
         <span className="hidden md:inline font-extrabold tracking-tight">Install App</span>
       </button>
 
-      {/* Mobile Floating Install Banner (Visible on all mobile screens) */}
-      {!mobileDismissed && (
-        <div className="fixed bottom-4 left-4 right-4 z-[9990] flex items-center justify-between gap-3 rounded-2xl border border-cyan-500/50 bg-[#090e1a]/95 p-3.5 shadow-[0_10px_35px_rgba(0,0,0,0.8)] backdrop-blur-2xl md:hidden">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
-              <Smartphone className="h-5 w-5" />
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-1.5">
-                <p className="text-xs font-black text-white truncate">Install Admin App</p>
-                <span className="rounded bg-cyan-500/20 px-1.5 py-0.2 text-[8px] font-black text-cyan-300">SUPER ADMIN</span>
+      {/* Mobile Floating Bottom Banner via Portal */}
+      {mounted &&
+        !mobileDismissed &&
+        createPortal(
+          <div className="fixed bottom-4 left-3 right-3 z-[99999] md:hidden">
+            <div className="flex items-center justify-between gap-2.5 rounded-2xl border border-cyan-500/40 bg-[#090e1a]/98 p-3 shadow-[0_15px_40px_rgba(0,0,0,0.85)] backdrop-blur-2xl">
+              <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-500/15 text-cyan-400 border border-cyan-500/30">
+                  <Smartphone className="h-5 w-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5">
+                    <p className="text-xs font-black text-white leading-tight">Admin Console</p>
+                    <span className="rounded bg-cyan-500/20 px-1 py-0.2 text-[8px] font-black text-cyan-300 uppercase">
+                      Super Admin
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-slate-400 leading-tight mt-0.5">
+                    1-Tap Home Screen App
+                  </p>
+                </div>
               </div>
-              <p className="text-[10px] text-slate-400 truncate">1-Tap Home Screen Launcher</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-1.5 shrink-0">
-            <button
-              type="button"
-              onClick={handleInstallClick}
-              className="rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-3.5 py-1.5 text-xs font-black text-white shadow-[0_0_15px_rgba(6,182,212,0.5)] transition-transform active:scale-95"
-            >
-              Install
-            </button>
-            <button
-              type="button"
-              onClick={() => setMobileDismissed(true)}
-              className="rounded-lg p-1.5 text-slate-400 hover:text-white"
-              aria-label="Dismiss banner"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-      )}
 
-      {/* Cross-Platform Installation Guide Modal */}
-      <AnimatePresence>
-        {showGuideModal && (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/85 px-4 backdrop-blur-md">
+              <div className="flex items-center gap-1.5 shrink-0">
+                <button
+                  type="button"
+                  onClick={handleInstallClick}
+                  className="rounded-xl bg-cyan-500 px-3.5 py-2 text-xs font-black text-slate-950 shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-transform active:scale-95"
+                >
+                  Install
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMobileDismissed(true)}
+                  className="rounded-lg p-1.5 text-slate-400 hover:text-white"
+                  aria-label="Dismiss banner"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
+
+      {/* Cross-Platform Installation Guide Modal via Portal */}
+      {mounted &&
+        showGuideModal &&
+        createPortal(
+          <div className="fixed inset-0 z-[999999] flex items-center justify-center bg-black/85 px-4 backdrop-blur-md">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -287,9 +301,9 @@ export default function AdminPwaInstaller({ session: propSession, isSuperAdmin: 
                 Got It
               </button>
             </motion.div>
-          </div>
+          </div>,
+          document.body
         )}
-      </AnimatePresence>
     </>
   );
 }
