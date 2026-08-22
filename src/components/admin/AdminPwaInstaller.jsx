@@ -65,6 +65,23 @@ export default function AdminPwaInstaller({ session, isSuperAdmin = false }) {
       toast.success("Muhyo Tech Admin Console installed successfully!");
     };
 
+    // Register Service Worker for Admin Scope in Production
+    const isLocalhost =
+      typeof window !== "undefined" &&
+      (window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1");
+
+    if (typeof window !== "undefined" && "serviceWorker" in navigator && !isLocalhost) {
+      navigator.serviceWorker
+        .register("/sw.js", { scope: "/admin" })
+        .then((reg) => {
+          console.log("[AdminPWA] Service Worker active on /admin:", reg.scope);
+        })
+        .catch((err) => {
+          console.warn("[AdminPWA] Service Worker registration skipped:", err);
+        });
+    }
+
     window.addEventListener("beforeinstallprompt", handleBeforeInstall);
     window.addEventListener("muhyo:pwa-prompt-available", handlePromptEvent);
     window.addEventListener("appinstalled", handleAppInstalled);
@@ -75,6 +92,8 @@ export default function AdminPwaInstaller({ session, isSuperAdmin = false }) {
       window.removeEventListener("appinstalled", handleAppInstalled);
     };
   }, []);
+
+  const [mobileDismissed, setMobileDismissed] = useState(false);
 
   // ONLY visible for authenticated Super Administrators
   if (!isSuperAdmin) return null;
@@ -102,8 +121,7 @@ export default function AdminPwaInstaller({ session, isSuperAdmin = false }) {
         console.warn("[AdminPwaInstaller] Install error:", err);
       }
     } else {
-      // Fallback message for desktop browsers or already promptable environments
-      toast.info("To install on desktop, click the Install icon in your browser URL address bar.");
+      setShowIosModal(true);
     }
   };
 
@@ -124,6 +142,38 @@ export default function AdminPwaInstaller({ session, isSuperAdmin = false }) {
         <Download className="h-3.5 w-3.5 transition-transform group-hover/pwa:-translate-y-0.5" />
         <span className="hidden md:inline font-extrabold tracking-tight">Install App</span>
       </button>
+
+      {/* Mobile Floating Install Banner for Super Admin */}
+      {!mobileDismissed && (
+        <div className="fixed bottom-4 left-4 right-4 z-[9990] flex items-center justify-between gap-3 rounded-2xl border border-accent/40 bg-card/95 p-3 shadow-2xl backdrop-blur-xl md:hidden">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent/20 text-accent">
+              <Smartphone className="h-5 w-5" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-black text-foreground truncate">Install Admin App</p>
+              <p className="text-[10px] text-muted-foreground truncate">Add to Home Screen for 1-tap access</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5 shrink-0">
+            <button
+              type="button"
+              onClick={handleInstallClick}
+              className="rounded-xl bg-accent px-3 py-1.5 text-xs font-black text-accent-foreground shadow-md transition-transform active:scale-95"
+            >
+              Install
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileDismissed(true)}
+              className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted"
+              aria-label="Dismiss banner"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* iOS Safari Step-by-Step Installation Modal */}
       <AnimatePresence>
