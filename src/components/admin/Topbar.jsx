@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { formatName } from "@/lib/utils";
 import { useTheme } from "@/components/ThemeProvider";
+import AdminPwaInstaller from "./AdminPwaInstaller";
 export default function Topbar() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -301,6 +302,8 @@ export default function Topbar() {
             )}
           </AnimatePresence>
         </div>
+
+        <AdminPwaInstaller session={session} isSuperAdmin={isSuperAdmin} />
 
         <Link
           href="/admin/settings"

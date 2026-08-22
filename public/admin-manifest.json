@@ -1,12 +1,13 @@
 {
-  "name": "Muhyo Tech - Premium Software Engineering",
-  "short_name": "Muhyo Tech",
-  "description": "Full-Stack Web Development, SaaS Dashboards & Digital Solutions",
-  "start_url": "/",
+  "name": "Muhyo Tech Admin Console",
+  "short_name": "Muhyo Admin",
+  "description": "Executive Management & Control Center for Muhyo Tech",
+  "start_url": "/admin/blogs",
+  "scope": "/admin",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#000000",
-  "orientation": "portrait-primary",
+  "background_color": "#090e1a",
+  "theme_color": "#090e1a",
+  "orientation": "any",
   "icons": [
     {
       "src": "/logo.png",

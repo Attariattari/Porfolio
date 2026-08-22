@@ -72,9 +72,19 @@ export default function PWAOfflineEngine() {
       return () => clearTimeout(timer);
     };
 
+    // 3. PWA Installation Isolation (Always prevent auto public banner)
+    const handleBeforeInstall = (e) => {
+      e.preventDefault();
+      window.__deferredPwaPrompt = e;
+      window.dispatchEvent(new CustomEvent("muhyo:pwa-prompt-available"));
+    };
+
     window.addEventListener("online", handleOnline);
+    window.addEventListener("beforeinstallprompt", handleBeforeInstall);
+
     return () => {
       window.removeEventListener("online", handleOnline);
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
     };
   }, []);
 

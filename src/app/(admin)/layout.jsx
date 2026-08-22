@@ -10,6 +10,7 @@ export const metadata = {
     template: "%s - Muhyo Tech Control Center",
   },
   description: "Secure dashboard for managing Muhyo Tech content.",
+  manifest: "/admin-manifest.json",
   robots: {
     index: false,
     follow: false,

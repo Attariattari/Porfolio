@@ -39,7 +39,6 @@ export const metadata = {
     shortcut: [{ url: "/logo.png", type: "image/png" }],
     apple: [{ url: "/logo.png", type: "image/png", sizes: "640x640" }],
   },
-  manifest: "/manifest.json",
   openGraph: {
     title: "Muhyo Tech - Premium Software Engineering & Digital Solutions",
     description:
