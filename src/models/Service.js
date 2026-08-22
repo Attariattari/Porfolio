@@ -80,6 +80,15 @@ const ServiceSchema = new mongoose.Schema(
     isFeatured: { type: Boolean, default: false, index: true },
     sortOrder: { type: Number, default: 0, index: true },
 
+    // Service Intelligence & Knowledge Base Layer
+    targetAudienceProfiles: [{ type: mongoose.Schema.Types.Mixed }],
+    buyerIntentTriggers: [{ type: String }],
+    commonObjections: [{ type: mongoose.Schema.Types.Mixed }],
+    conversionStrategy: { type: mongoose.Schema.Types.Mixed, default: {} },
+    serviceAuthorityScore: { type: Number, min: 0, max: 100, default: 75, index: true },
+    topicCoverageStats: { type: mongoose.Schema.Types.Mixed, default: {} },
+    classification: { type: mongoose.Schema.Types.Mixed, default: {} },
+
     // Legacy compatibility fields used by existing admin/public screens.
     description: { type: String },
     problemSolved: { type: String },

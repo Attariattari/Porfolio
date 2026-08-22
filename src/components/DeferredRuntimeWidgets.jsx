@@ -3,13 +3,10 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 
-const VisitorTracker = dynamic(() => import("./VisitorTracker"), {
-  ssr: false,
-});
-
-const NetworkListener = dynamic(() => import("./NetworkListener"), {
-  ssr: false,
-});
+const VisitorTracker = dynamic(
+  () => import("./VisitorTracker").catch(() => () => null),
+  { ssr: false }
+);
 
 export default function DeferredRuntimeWidgets() {
   const [enabled, setEnabled] = useState(false);
@@ -30,7 +27,6 @@ export default function DeferredRuntimeWidgets() {
 
   return (
     <>
-      <NetworkListener />
       <VisitorTracker />
     </>
   );

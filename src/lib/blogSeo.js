@@ -227,6 +227,21 @@ export function getBlogServiceLinks(blog = {}, limit = 3) {
   const explicit = Array.isArray(blog.relatedServiceSlugs)
     ? blog.relatedServiceSlugs.filter((slug) => SERVICE_CATALOG[slug])
     : [];
+
+  let matchedSlugs = [];
+  try {
+    const { matchBestServiceForProblem } = require("./ai/intelligence/services/serviceProblemMatcher.js");
+    const problemMatched = matchBestServiceForProblem(blog);
+    if (problemMatched.primaryService?.slug && SERVICE_CATALOG[problemMatched.primaryService.slug]) {
+      matchedSlugs.push(problemMatched.primaryService.slug);
+    }
+    if (problemMatched.secondaryService?.slug && SERVICE_CATALOG[problemMatched.secondaryService.slug]) {
+      matchedSlugs.push(problemMatched.secondaryService.slug);
+    }
+  } catch (err) {
+    // Graceful fallback to rule-based catalog
+  }
+
   const text = searchableBlogText(blog);
   const scored = TOPIC_SERVICE_RULES.map((rule) => ({
     slugs: rule.slugs,
@@ -236,7 +251,7 @@ export function getBlogServiceLinks(blog = {}, limit = 3) {
     .sort((a, b) => b.score - a.score)
     .flatMap((rule) => rule.slugs);
   const fallback = ["custom-website-development", "full-stack-web-app-development", "maintenance-support"];
-  const slugs = [...new Set([...explicit, ...scored, ...fallback])].slice(0, limit);
+  const slugs = [...new Set([...explicit, ...matchedSlugs, ...scored, ...fallback])].slice(0, limit);
 
   return slugs.map((slug) => ({
     slug,

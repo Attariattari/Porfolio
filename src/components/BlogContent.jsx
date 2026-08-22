@@ -621,6 +621,18 @@ export default function BlogContent({
   const categories = initialCategories;
 
   useEffect(() => {
+    const onCacheUpdate = (e) => {
+      if (e.detail?.collectionKey === "blogs" && Array.isArray(e.detail?.data)) {
+        if (!searchQuery && activeCategory === "All") {
+          setLoadedBlogs(e.detail.data);
+        }
+      }
+    };
+    window.addEventListener("muhyo:public-cache-update", onCacheUpdate);
+    return () => window.removeEventListener("muhyo:public-cache-update", onCacheUpdate);
+  }, [searchQuery, activeCategory]);
+
+  useEffect(() => {
     if (isHomePage) return undefined;
     if (!searchQuery && activeCategory === "All") {
       setLoadedBlogs(data || []);
@@ -653,6 +665,21 @@ export default function BlogContent({
       if (result.success) { setLoadedBlogs((current) => [...current, ...(result.data || [])]); setHasMoreBlogs(Boolean(result.hasMore)); }
     } finally { setIsLoadingMore(false); }
   };
+
+  const filteredBlogs = (loadedBlogs || []).filter((blog) => {
+    if (blog.publishStatus && blog.publishStatus !== "published") return false;
+    const matchesSearch =
+      blog.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      blog.summary.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory =
+      activeCategory === "All" || blog.category === activeCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  const displayPosts = useMemo(() => {
+    if (!filteredBlogs || filteredBlogs.length === 0) return [];
+    return rankBlogsByMode(filteredBlogs, activeTab);
+  }, [filteredBlogs, activeTab]);
 
   if (!data) return null;
 
@@ -732,20 +759,6 @@ export default function BlogContent({
   }
 
   // --- FULL BLOG PAGE BRANCH ---
-  const filteredBlogs = loadedBlogs.filter((blog) => {
-    if (blog.publishStatus && blog.publishStatus !== "published") return false;
-    const matchesSearch =
-      blog.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      blog.summary.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory =
-      activeCategory === "All" || blog.category === activeCategory;
-    return matchesSearch && matchesCategory;
-  });
-
-  const displayPosts = useMemo(() => {
-    if (!filteredBlogs || filteredBlogs.length === 0) return [];
-    return rankBlogsByMode(filteredBlogs, activeTab);
-  }, [filteredBlogs, activeTab]);
 
   return (
     <div className="min-h-screen selection:bg-accent selection:text-accent-foreground">

@@ -1,5 +1,4 @@
 import { Inter } from "next/font/google";
-import Script from "next/script";
 import "@/app/globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -40,6 +39,7 @@ export const metadata = {
     shortcut: [{ url: "/logo.png", type: "image/png" }],
     apple: [{ url: "/logo.png", type: "image/png", sizes: "640x640" }],
   },
+  manifest: "/manifest.json",
   openGraph: {
     title: "Muhyo Tech - Premium Software Engineering & Digital Solutions",
     description:
@@ -60,26 +60,27 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+    <html lang="en" className="dark scroll-smooth" data-theme="dark" style={{ colorScheme: "dark" }} suppressHydrationWarning>
       <head>
         <OrganizationSchema />
         <link rel="dns-prefetch" href="//res.cloudinary.com" />
-        <Script
-          id="theme-init"
-          strategy="beforeInteractive"
+        <script
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
                 try {
-                  const preferredTheme = localStorage.getItem('muhyo_theme_preference');
-                  const savedTheme = localStorage.getItem('muhyo_global_theme');
-                  const initialTheme = ['light', 'dark', 'black'].includes(preferredTheme)
+                  var root = document.documentElement;
+                  root.classList.add('preload-no-transition');
+
+                  // 1. Instant Theme Synchronization (Default: dark)
+                  var preferredTheme = localStorage.getItem('muhyo_theme_preference');
+                  var savedTheme = localStorage.getItem('muhyo_global_theme');
+                  var theme = ['light', 'dark', 'black'].includes(preferredTheme)
                     ? preferredTheme
-                    : savedTheme;
-                  const theme = ['light', 'dark', 'black'].includes(initialTheme)
-                    ? initialTheme
-                    : 'black';
-                  const root = document.documentElement;
+                    : ['light', 'dark', 'black'].includes(savedTheme)
+                      ? savedTheme
+                      : 'dark';
+                  
                   root.classList.remove('light', 'dark', 'black');
                   if (theme === 'black') {
                     root.classList.add('dark', 'black');
@@ -88,12 +89,44 @@ export default function RootLayout({ children }) {
                   }
                   root.dataset.theme = theme;
                   root.style.colorScheme = theme === 'light' ? 'light' : 'dark';
-                  localStorage.setItem('muhyo_global_theme', theme);
-                  localStorage.removeItem('theme');
 
-                  const isSidebarCollapsed = localStorage.getItem('muhyo:sidebar-collapsed') === 'true';
-                  document.documentElement.classList.toggle('sidebar-collapsed', isSidebarCollapsed);
-                  document.documentElement.classList.toggle('sidebar-expanded', !isSidebarCollapsed);
+                  // 2. Instant Public Website Sidebar Layout Synchronization
+                  var isWebCollapsed = localStorage.getItem('muhyo:sidebar-collapsed') === 'true';
+                  if (window.innerWidth >= 768) {
+                    if (isWebCollapsed) {
+                      root.classList.add('sidebar-collapsed');
+                      root.classList.remove('sidebar-expanded');
+                    } else {
+                      root.classList.add('sidebar-expanded');
+                      root.classList.remove('sidebar-collapsed');
+                    }
+                  }
+
+                  // 3. Instant Admin Desktop Sidebar Layout Synchronization
+                  var adminUi = localStorage.getItem('muhyo-admin-ui');
+                  var isAdminCollapsed = false;
+                  if (adminUi) {
+                    try {
+                      var parsed = JSON.parse(adminUi);
+                      isAdminCollapsed = Boolean(parsed && parsed.state && parsed.state.sidebarCollapsed);
+                    } catch (err) {}
+                  }
+                  if (window.innerWidth >= 1024) {
+                    if (isAdminCollapsed) {
+                      root.classList.add('admin-sidebar-collapsed');
+                      root.classList.remove('admin-sidebar-expanded');
+                    } else {
+                      root.classList.add('admin-sidebar-expanded');
+                      root.classList.remove('admin-sidebar-collapsed');
+                    }
+                  }
+
+                  // Lift preload transition suppression after initial paint
+                  window.requestAnimationFrame(function() {
+                    window.requestAnimationFrame(function() {
+                      root.classList.remove('preload-no-transition');
+                    });
+                  });
                 } catch (e) {}
               })();
             `,

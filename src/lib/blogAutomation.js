@@ -24,6 +24,15 @@ import { generateAndSaveSocialKit } from "./ai/blog/generateSocialKit.js";
 import { auditTrendDraft } from "./ai/blog/trendIntelligence.js";
 import { auditAndFixBlogContent } from "./ai/blog/blogAuditEngine.js";
 import { checkpointJobStage, renewJobLease } from "./cron/distributedLock.js";
+import { extractBlogIntelligenceContext, buildWriterContextFromTopicPlan } from "./ai/intelligence/blogIntelligenceBridge.js";
+import { conductResearchForTopic } from "./ai/intelligence/research/researchEngine.js";
+import { generateArticleBlueprint, formatBlueprintForWriter } from "./ai/blog/articleBlueprintEngine.js";
+import { buildContentGenerationContext } from "./ai/blog/contentGenerationContext.js";
+import { generateAdvancedArticleContent } from "./ai/blog/advancedContentGenerator.js";
+import { evaluateArticleSeoIntelligence } from "./ai/seo/advancedSeoEngine.js";
+import { runEeatAuditIntelligence } from "./ai/blog/eeatAuditOrchestrator.js";
+import { executePhase7Intelligence } from "./ai/blog/phase7Orchestrator.js";
+import { getBlogAutomationSettings } from "./blogAutomationSettings.js";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -466,12 +475,15 @@ async function generateEditorialContent(
     const targetWords = isPillar ? "2,000-3,500 words when the topic requires that depth" : isAuthority ? "1,800-3,000 words, or more only when the subject genuinely requires it" : "900-1,200 words";
     const minimumWords = isPillar ? 1800 : isAuthority ? 1600 : 700;
     const minimumSections = isAuthority ? 8 : 5;
+    const blueprintPromptContext = options.articleBlueprint ? formatBlueprintForWriter(options.articleBlueprint) : "";
     const prompt = `
     TASK: ${previousDraft ? "REFINE and IMPROVE" : "GENERATE"} a premium, human-written ${articleType} engineering blog post for Muhyo Tech.
     ARTICLE TYPE: ${articleType.toUpperCase()}
     PROFESSIONAL CATEGORY: ${contentCategory}
     CATEGORY-SPECIFIC DIRECTION: ${CATEGORY_WRITING_GUIDANCE[contentCategory] || CATEGORY_WRITING_GUIDANCE.core_web_engineering}
     TOPIC: ${topic || "Realistic Technical Problem Solving"}
+
+    ${blueprintPromptContext ? `\n${blueprintPromptContext}\n` : ""}
 
     BRAND AND WEBSITE REPRESENTATION:
     ${BRAND_POSITIONING}
@@ -1002,6 +1014,19 @@ export async function runBlogAutomationPipeline(
   try {
     await dbConnect();
 
+    // Check Master Database Automation Kill-Switch
+    const settings = await getBlogAutomationSettings();
+    if (!settings.enabled && !automationContext?.force && !fixedTopic) {
+      report("PAUSED", {
+        message: "AI Blog Automation is globally disabled in database settings.",
+      });
+      return {
+        success: false,
+        paused: true,
+        message: "AI Blog Generation is turned OFF in Master Settings.",
+      };
+    }
+
     const jobId = automationContext?.jobExecution?._id || automationContext?.jobId;
     const workerId = automationContext?.workerId;
     const checkpoint = automationContext?.jobExecution?.checkpointData;
@@ -1025,13 +1050,25 @@ export async function runBlogAutomationPipeline(
       try {
         const topicPlan = await acquireNextTopicPlan();
         if (topicPlan) {
+          const intelCtx = extractBlogIntelligenceContext(topicPlan);
           selectedTopic = formatTopicPlanForWriter(topicPlan);
           automationContext = {
+            ...intelCtx,
             ...(automationContext || {}),
             topicPlanId: topicPlan._id.toString(),
-            articleType: topicPlan.articleType || "supporting",
-            contentCategory: topicPlan.contentCategory || "core_web_engineering",
-            topicFamily: topicPlan.topicFamily || "",
+            articleType: topicPlan.articleType || intelCtx.articleType || "supporting",
+            contentCategory: topicPlan.contentCategory || intelCtx.contentCategory || "core_web_engineering",
+            topicFamily: topicPlan.topicFamily || intelCtx.topicFamily || "",
+            topicType: topicPlan.topicType || intelCtx.topicType || "supporting",
+            audienceProfile: intelCtx.audienceProfile,
+            industry: intelCtx.industry,
+            businessProblem: intelCtx.businessProblem,
+            solutionType: intelCtx.solutionType,
+            serviceIntent: intelCtx.serviceIntent,
+            geoContext: intelCtx.geoContext,
+            opportunityScore: intelCtx.opportunityScore,
+            scoreBreakdown: intelCtx.scoreBreakdown,
+            decisionSource: intelCtx.decisionSource,
             isTrend: Boolean(topicPlan.isTrend),
             trendPlan: topicPlan.isTrend ? {
               articleType: topicPlan.articleType,
@@ -1044,11 +1081,11 @@ export async function runBlogAutomationPipeline(
               lastReverifiedAt: topicPlan.lastReverifiedAt,
               expiresAt: topicPlan.expiresAt,
             } : null,
-            clusterKey: topicPlan.clusterKey || "",
-            clusterTitle: topicPlan.clusterTitle || topicPlan.pillar || "",
-            clusterOrder: Number(topicPlan.clusterOrder || 0),
-            parentTopicId: topicPlan.parentTopicId?.toString?.() || null,
-            parentPillarBlog: topicPlan.parentPillarBlog || null,
+            clusterKey: topicPlan.clusterKey || intelCtx.clusterKey || "",
+            clusterTitle: topicPlan.clusterTitle || intelCtx.clusterTitle || topicPlan.pillar || "",
+            clusterOrder: Number(topicPlan.clusterOrder || intelCtx.clusterOrder || 0),
+            parentTopicId: topicPlan.parentTopicId?.toString?.() || intelCtx.parentTopicId || null,
+            parentPillarBlog: topicPlan.parentPillarBlog || intelCtx.parentPillarBlog || null,
           };
           report("PLANNED_TOPIC_SELECTED", {
             message: `Using editorial queue topic: ${topicPlan.title}`,
@@ -1077,6 +1114,51 @@ export async function runBlogAutomationPipeline(
       }
     }
 
+    // Phase 2 Non-Blocking Research Step
+    let researchPackage = null;
+    if (!previousDraft && !checkpoint?.blogDraft) {
+      report("RESEARCHING", { message: "Conducting technical research & evidence gathering..." });
+      try {
+        researchPackage = await conductResearchForTopic(automationContext || { title: selectedTopic }, { timeoutMs: 6000 });
+        if (researchPackage && researchPackage.status !== "unavailable" && researchPackage.researchConfidence > 0) {
+          selectedTopic = buildWriterContextFromTopicPlan(automationContext || { title: selectedTopic }, researchPackage);
+          report("RESEARCH_COMPLETED", { message: `Research package ready. Confidence: ${researchPackage.researchConfidence}` });
+        } else {
+          report("RESEARCH_SKIPPED", { message: "Research unavailable; continuing with base editorial context." });
+        }
+      } catch (rErr) {
+        console.warn("[Editorial-Pipeline] Research safe catch:", rErr.message);
+        report("RESEARCH_SKIPPED", { message: "Research skipped safely after warning." });
+      }
+    }
+
+    // Phase 3 Non-Blocking Article Blueprint Engine Step
+    let articleBlueprint = null;
+    const isBlueprintEnabled = process.env.ARTICLE_BLUEPRINT_ENGINE_ENABLED === "true" || automationContext?.enableBlueprint === true;
+    if (isBlueprintEnabled && !previousDraft && !checkpoint?.blogDraft) {
+      report("BLUEPRINT_PLANNING", { message: "Generating structured Article Blueprint..." });
+      try {
+        articleBlueprint = await generateArticleBlueprint(
+          automationContext || { title: selectedTopic },
+          researchPackage,
+          { timeoutMs: 20000 }
+        );
+        if (articleBlueprint) {
+          report("BLUEPRINT_COMPLETED", {
+            message: `Article blueprint ready. ${articleBlueprint.structure?.length || 0} sections planned.`,
+          });
+        } else {
+          report("BLUEPRINT_SKIPPED", { message: "Blueprint engine returned null; continuing with existing writer context." });
+        }
+      } catch (bpErr) {
+        console.warn("[Editorial-Pipeline] Blueprint safe catch:", bpErr.message);
+        report("BLUEPRINT_SKIPPED", { message: "Blueprint skipped safely after warning." });
+      }
+    }
+
+    // Phase 4 Advanced Content Generation Engine Integration
+    const isAdvancedGenEnabled = process.env.ADVANCED_CONTENT_GENERATION_ENABLED === "true" || automationContext?.enableAdvancedGeneration === true;
+
     report(previousDraft ? "REFINING" : "GENERATING", {
       message: `${previousDraft ? "Refining existing draft" : "Drafting fresh content"} for: ${selectedTopic}`,
     });
@@ -1087,20 +1169,55 @@ export async function runBlogAutomationPipeline(
       blogData = checkpoint.blogDraft;
       console.log(`[Editorial-Pipeline] Resuming from checkpoint blogDraft for topic: ${blogData.title}`);
     } else {
-      blogData = await generateEditorialContent(
-        selectedTopic,
-        previousDraft ? previousDraft.feedback : "",
-        retryCount,
-        previousDraft,
-        recentTitles,
-        {
-          articleType: automationContext?.articleType || "supporting",
-          contentCategory: automationContext?.contentCategory || "core_web_engineering",
-          officialSources: automationContext?.trendPlan?.officialSources || [],
-        },
-      );
+      if (isAdvancedGenEnabled && !previousDraft) {
+        report("ADVANCED_GENERATING", { message: "Generating article via Advanced Content Generation Engine..." });
+        try {
+          const genCtx = buildContentGenerationContext({
+            topicPlan: automationContext?.topicPlanId ? automationContext : { title: selectedTopic },
+            researchPackage,
+            articleBlueprint,
+            recentTopics: recentTitles,
+            previousDraft,
+            retryFeedback: previousDraft ? previousDraft.feedback : "",
+            options: {
+              articleType: automationContext?.articleType || "supporting",
+              contentCategory: automationContext?.contentCategory || "core_web_engineering",
+              retryCount,
+            },
+          });
 
-      if (jobId && workerId) {
+          blogData = await generateAdvancedArticleContent(genCtx, { timeoutMs: 40000 });
+          if (blogData) {
+            report("ADVANCED_GENERATION_COMPLETED", { message: `Advanced article generated cleanly (${getBlogWordCount(blogData)} words).` });
+          } else {
+            report("ADVANCED_GENERATION_FALLBACK", { message: "Advanced generator returned null; falling back to baseline writer." });
+          }
+        } catch (advErr) {
+          console.warn("[Editorial-Pipeline] Advanced generator safe catch:", advErr.message);
+          report("ADVANCED_GENERATION_FALLBACK", { message: "Advanced generator fallback triggered after error." });
+          blogData = null;
+        }
+      }
+
+      // Baseline Fallback if Advanced Generator is disabled or returned null
+      if (!blogData) {
+        blogData = await generateEditorialContent(
+          selectedTopic,
+          previousDraft ? previousDraft.feedback : "",
+          retryCount,
+          previousDraft,
+          recentTitles,
+          {
+            articleType: automationContext?.articleType || "supporting",
+            contentCategory: automationContext?.contentCategory || "core_web_engineering",
+            officialSources: automationContext?.trendPlan?.officialSources || [],
+            researchPackage,
+            articleBlueprint,
+          },
+        );
+      }
+
+      if (jobId && workerId && blogData) {
         await checkpointJobStage({
           jobId,
           workerId,
@@ -1144,6 +1261,126 @@ export async function runBlogAutomationPipeline(
         stage: "QUALITY_APPROVED",
         checkpointData: { qualityMetrics: review.metrics },
       });
+    }
+
+    // Phase 5 Advanced SEO & Cannibalization Intelligence Engine Integration
+    const isSeoEngineEnabled = process.env.SEO_INTELLIGENCE_ENGINE_ENABLED === "true" || automationContext?.enableSeoIntelligence === true;
+    if (isSeoEngineEnabled) {
+      report("SEO_EVALUATION", { message: "Running Advanced SEO & Cannibalization Intelligence evaluation..." });
+      try {
+        const seoIntel = await evaluateArticleSeoIntelligence(blogData, {
+          topicPlan: automationContext,
+          recentBlogs: (recentTitles || []).map((t) => ({ title: t })),
+        });
+
+        if (seoIntel) {
+          blogData.seoIntelligence = seoIntel;
+          report("SEO_EVALUATION_COMPLETED", {
+            message: `SEO Score: ${seoIntel.score}/100 | Risk: ${seoIntel.cannibalizationRisk} | Decision: ${seoIntel.decision}`,
+          });
+
+          if (seoIntel.decision === "REVISE" && retryCount < 3) {
+            const seoFeedback = `SEO Intelligence Revision Request: ${seoIntel.detectedGaps.join("; ")}`;
+            report("SEO_REVISED_RETRY", { message: seoFeedback });
+            return runBlogAutomationPipeline(
+              retryCount + 1,
+              onProgress,
+              { ...blogData, feedback: seoFeedback },
+              selectedTopic,
+              automationContext,
+            );
+          }
+
+          if (seoIntel.decision === "BLOCK") {
+            report("SEO_BLOCKED", { message: `Article blocked due to critical duplicate/cannibalization risk: ${seoIntel.warnings.join("; ")}` });
+            await releaseTopicPlan(
+              automationContext?.topicPlanId,
+              `Article blocked by SEO Intelligence Engine: ${seoIntel.warnings.join("; ")}`,
+              { reject: true },
+            );
+            return runBlogAutomationPipeline(
+              retryCount + 1,
+              onProgress,
+              null,
+              null,
+              { ...(automationContext || {}), topicPlanId: null },
+            );
+          }
+        }
+      } catch (seoErr) {
+        console.warn("[Editorial-Pipeline] SEO Intelligence safe catch:", seoErr.message);
+        report("SEO_SKIPPED", { message: "SEO evaluation skipped safely after warning." });
+      }
+    }
+
+    // Phase 6 EEAT + Factual Accuracy + Editorial Intelligence Integration
+    const isEeatEngineEnabled = process.env.EEAT_INTELLIGENCE_ENGINE_ENABLED === "true" || automationContext?.enableEeatIntelligence === true;
+    if (isEeatEngineEnabled) {
+      report("EEAT_EVALUATION", { message: "Running EEAT & Factual Accuracy Intelligence evaluation..." });
+      try {
+        const eeatResult = await runEeatAuditIntelligence(blogData, {
+          researchPackage,
+          topicPlan: automationContext,
+        });
+
+        if (eeatResult) {
+          blogData.intelligenceAudit = eeatResult;
+          blogData.eeatAudit = eeatResult.eeat;
+          blogData.factAudit = eeatResult.factualAccuracy;
+          blogData.editorialAudit = eeatResult.editorial;
+
+          report("EEAT_EVALUATION_COMPLETED", {
+            message: `EEAT Score: ${eeatResult.overallScore}/10 | Fabrication Severity: ${eeatResult.fabricationRisk?.severity} | Decision: ${eeatResult.decision}`,
+          });
+
+          if (eeatResult.decision === "REVISION_REQUIRED" && retryCount < 3) {
+            const eeatFeedback = `EEAT & Editorial Revision Request: ${(eeatResult.revisionFeedback || []).join("; ")}`;
+            report("EEAT_REVISED_RETRY", { message: eeatFeedback });
+            return runBlogAutomationPipeline(
+              retryCount + 1,
+              onProgress,
+              { ...blogData, feedback: eeatFeedback },
+              selectedTopic,
+              automationContext,
+            );
+          }
+
+          if (eeatResult.decision === "BLOCK") {
+            report("EEAT_BLOCKED", { message: `Article blocked due to factual/fabrication issue: ${(eeatResult.revisionFeedback || []).join("; ")}` });
+            await releaseTopicPlan(
+              automationContext?.topicPlanId,
+              `Article blocked by EEAT Intelligence Engine: ${(eeatResult.revisionFeedback || []).join("; ")}`,
+              { reject: true },
+            );
+            return runBlogAutomationPipeline(
+              retryCount + 1,
+              onProgress,
+              null,
+              null,
+              { ...(automationContext || {}), topicPlanId: null },
+            );
+          }
+        }
+      } catch (eeatErr) {
+        console.warn("[Editorial-Pipeline] EEAT Intelligence safe catch:", eeatErr.message);
+        report("EEAT_SKIPPED", { message: "EEAT evaluation skipped safely after warning." });
+      }
+    }
+
+    // Phase 7 Media + Internal Linking + Conversion Intelligence Integration
+    const isPhase7Enabled = process.env.PHASE7_INTELLIGENCE_ENABLED === "true" || process.env.PHASE7_MEDIA_ENABLED === "true" || process.env.PHASE7_INTERNAL_LINKING_ENABLED === "true" || process.env.PHASE7_SERVICE_MATCHING_ENABLED === "true" || process.env.PHASE7_DYNAMIC_CTA_ENABLED === "true" || automationContext?.enablePhase7 === true;
+    if (isPhase7Enabled) {
+      report("PHASE7_EVALUATION", { message: "Running Phase 7 Media, Linking, Service, and Conversion Intelligence..." });
+      try {
+        blogData = await executePhase7Intelligence(blogData, {
+          publishedBlogs: (recentTitles || []).map((t) => ({ title: t, slug: t.toLowerCase().replace(/[^a-z0-9]+/g, "-") })),
+          topicPlan: automationContext,
+        });
+        report("PHASE7_COMPLETED", { message: `Phase 7 Intelligence applied cleanly (${blogData.mediaPlan?.length || 0} visuals planned, ${blogData.serviceMatches?.length || 0} services matched).` });
+      } catch (p7Err) {
+        console.warn("[Editorial-Pipeline] Phase 7 safe catch:", p7Err.message);
+        report("PHASE7_SKIPPED", { message: "Phase 7 evaluation skipped safely after warning." });
+      }
     }
 
     report("CONTENT_READY", {
@@ -1257,6 +1494,16 @@ export async function runBlogAutomationPipeline(
       articleType: automationContext?.articleType || "supporting",
       contentCategory: automationContext?.contentCategory || "core_web_engineering",
       topicFamily: automationContext?.topicFamily || "",
+      topicType: automationContext?.topicType || (automationContext?.articleType === "pillar" ? "technical_pillar" : automationContext?.articleType || "supporting"),
+      audienceProfile: automationContext?.audienceProfile || null,
+      industry: automationContext?.industry || null,
+      businessProblem: automationContext?.businessProblem || null,
+      solutionType: automationContext?.solutionType || null,
+      serviceIntent: automationContext?.serviceIntent || null,
+      geoContext: automationContext?.geoContext || { type: "global" },
+      opportunityScore: Number(automationContext?.opportunityScore || 50),
+      scoreBreakdown: automationContext?.scoreBreakdown || {},
+      decisionSource: automationContext?.decisionSource || "think10x_ai",
       isTrend: Boolean(automationContext?.isTrend),
       ...(automationContext?.isTrend ? { trendEvidence: automationContext.trendPlan } : {}),
       clusterKey: automationContext?.clusterKey || "",

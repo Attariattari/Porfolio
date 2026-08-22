@@ -7,6 +7,10 @@ import { sendNewsletterEmail } from "@/lib/newsletter";
 import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socketCore";
 import { cacheManager, withCache } from "@/lib/cache";
 import { ensureMuhyoTechAlt, getServiceMediaAlt } from "@/lib/mediaAlt";
+import { getServiceKnowledgeProfile } from "@/lib/ai/intelligence/services/serviceKnowledgeBase";
+import { classifyService } from "@/lib/ai/intelligence/services/serviceClassificationEngine";
+import { calculateServiceHealth } from "@/lib/ai/intelligence/services/servicePerformanceEngine";
+import { evaluateServiceTopicCoverage, getServiceSupportingBlogs } from "@/lib/ai/intelligence/services/serviceBlogAuthorityEngine";
 
 const QUOTE_NOTE =
   "Pricing depends on project requirements, features, timeline, and scope. Book a call to discuss your project and receive a custom quote.";
@@ -47,12 +51,13 @@ const toObjectArray = (value, fallbackDescription = "") => {
     .filter(Boolean);
 };
 
-export const normalizeServiceData = (service = {}) => {
+export const normalizeServiceData = (service = {}, options = {}) => {
   const slug = service.slug || slugify(service.title);
+  const knowledgeProfile = getServiceKnowledgeProfile(slug);
   const status = service.status || service.publishStatus || "published";
   const heroImage =
     service.heroImage || service.banner || service.image || service.images?.[0] || "";
-  const shortDescription = service.shortDescription || service.description || "";
+  const shortDescription = service.shortDescription || service.description || knowledgeProfile?.whatItIs || "";
   const technologies = service.technologies?.length
     ? service.technologies
     : toStringArray(service.techStack);
@@ -63,7 +68,7 @@ export const normalizeServiceData = (service = {}) => {
     ? toObjectArray(service.problemsSolved)
     : service.problemSolved
       ? [{ title: "Business challenge", description: service.problemSolved }]
-      : [];
+      : (knowledgeProfile?.problemsSolved || []).map((p) => ({ title: "Business Challenge Solved", description: p }));
   const processSteps = toObjectArray(service.processSteps).length
     ? service.processSteps.map((step, index) => ({
         step: step.step || index + 1,
@@ -124,6 +129,38 @@ export const normalizeServiceData = (service = {}) => {
     keywords: toStringArray(service.keywords),
     targetKeywords,
     localKeywords,
+    // Knowledge Base Enrichment
+    targetAudienceProfiles: service.targetAudienceProfiles?.length
+      ? service.targetAudienceProfiles
+      : knowledgeProfile?.whoNeedsIt || [],
+    buyerIntentTriggers: service.buyerIntentTriggers?.length
+      ? service.buyerIntentTriggers
+      : knowledgeProfile?.whenTheyNeedIt || [],
+    commonObjections: service.commonObjections?.length
+      ? service.commonObjections
+      : knowledgeProfile?.commonObjections || [],
+    conversionStrategy: service.conversionStrategy?.primaryCtaText
+      ? service.conversionStrategy
+      : knowledgeProfile?.conversionStrategy || {},
+    serviceAuthorityScore: Number(service.serviceAuthorityScore || 85),
+    // Phase 2 Classification Profile
+    classification: service.classification?.primaryCategory
+      ? service.classification
+      : classifyService(slug) || {},
+    // Service Intelligence Payload
+    intelligence: {
+      health: calculateServiceHealth(slug, options),
+      topicCoverage: evaluateServiceTopicCoverage(slug, options.blogs || []),
+      blogSupport: {
+        totalCount: getServiceSupportingBlogs(slug, options.blogs || []).length,
+        blogs: getServiceSupportingBlogs(slug, options.blogs || []).slice(0, 5),
+      },
+      conversion: {
+        conversionLevel: knowledgeProfile?.commercialIntent || "HIGH",
+        ctaStrategy: knowledgeProfile?.conversionStrategy?.primaryCtaText || "Direct Service Booking Bridge",
+        bookingTarget: `/book-call?service=${slug}`,
+      },
+    },
   };
 };
 

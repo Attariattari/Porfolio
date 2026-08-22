@@ -20,7 +20,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { useTheme } from "@/components/ThemeProvider";
 import usePublicSettingsStore from "@/lib/store/publicSettingsStore";
 
@@ -42,10 +42,45 @@ const themeOptions = [
 
 const SIDEBAR_STORAGE_KEY = "muhyo:sidebar-collapsed";
 
+let sidebarListeners = [];
+const getSidebarSnapshot = () => {
+  if (typeof window === "undefined") return false;
+  try {
+    return window.localStorage.getItem(SIDEBAR_STORAGE_KEY) === "true";
+  } catch {
+    return false;
+  }
+};
+const getServerSidebarSnapshot = () => false;
+
+const subscribeSidebar = (callback) => {
+  sidebarListeners.push(callback);
+  const onStorage = (e) => {
+    if (e.key === SIDEBAR_STORAGE_KEY) callback();
+  };
+  window.addEventListener("storage", onStorage);
+  return () => {
+    sidebarListeners = sidebarListeners.filter((l) => l !== callback);
+    window.removeEventListener("storage", onStorage);
+  };
+};
+
+const setSidebarStorage = (next) => {
+  try {
+    window.localStorage.setItem(SIDEBAR_STORAGE_KEY, String(next));
+  } catch {}
+  if (typeof window !== "undefined" && window.innerWidth >= 768) {
+    document.documentElement.classList.toggle("sidebar-collapsed", Boolean(next));
+    document.documentElement.classList.toggle("sidebar-expanded", !next);
+  }
+  sidebarListeners.forEach((l) => l());
+};
+
 function ThemeSwitcher({ theme, onChange, collapsed = false, compact = false }) {
   return (
     <div
-      className={`flex border border-border/60 bg-background/55 p-1 shadow-sm ${
+      suppressHydrationWarning
+      className={`sidebar-theme-switcher flex border border-border/60 bg-background/55 p-1 shadow-sm ${
         collapsed
           ? "w-fit mx-auto flex-col items-center justify-center gap-1 rounded-2xl"
           : compact
@@ -67,7 +102,8 @@ function ThemeSwitcher({ theme, onChange, collapsed = false, compact = false }) 
             aria-label={option.label}
             aria-pressed={active}
             title={option.label}
-            className={`relative flex items-center justify-center rounded-xl border transition-[background-color,color,border-color,transform] duration-200 active:scale-95 ${
+            suppressHydrationWarning
+            className={`sidebar-theme-btn relative flex items-center justify-center rounded-xl border transition-[background-color,color,border-color,transform] duration-200 active:scale-95 ${
               collapsed
                 ? "h-9 w-9 shrink-0"
                 : compact
@@ -97,9 +133,22 @@ export default function ProfessionalSidebar({ data }) {
   const router = useRouter();
   const { theme, themeReady, setTheme } = useTheme();
   const settings = usePublicSettingsStore((state) => state.settings);
-  const [collapsed, setCollapsed] = useState(false);
+  const collapsed = useSyncExternalStore(
+    subscribeSidebar,
+    getSidebarSnapshot,
+    getServerSidebarSnapshot,
+  );
+  const [allowTransitions, setAllowTransitions] = useState(false);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const about = data || {};
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setAllowTransitions(true);
+    }, 150);
+    return () => clearTimeout(timer);
+  }, []);
+
   const brandAccent = settings?.siteAccent || about.lastName || "Tech";
   const configuredTitle = settings?.siteTitle || about.firstName || "Muhyo";
   const brandTitle = configuredTitle.toLowerCase().endsWith(brandAccent.toLowerCase())
@@ -139,14 +188,6 @@ export default function ProfessionalSidebar({ data }) {
     if (href !== pathname) router.prefetch(href);
   };
 
-  useLayoutEffect(() => {
-    try {
-      setCollapsed(
-        window.localStorage.getItem(SIDEBAR_STORAGE_KEY) === "true",
-      );
-    } catch {}
-  }, []);
-
   useEffect(() => {
     const syncLayout = () => {
       const desktop = window.innerWidth >= 768;
@@ -166,13 +207,7 @@ export default function ProfessionalSidebar({ data }) {
   }, [collapsed]);
 
   const toggleSidebar = () => {
-    setCollapsed((current) => {
-      const next = !current;
-      try {
-        window.localStorage.setItem(SIDEBAR_STORAGE_KEY, String(next));
-      } catch {}
-      return next;
-    });
+    setSidebarStorage(!collapsed);
   };
 
   return (
@@ -205,7 +240,7 @@ export default function ProfessionalSidebar({ data }) {
           </span>
         </Link>
         <ThemeSwitcher
-          theme={themeReady ? theme : null}
+          theme={theme}
           onChange={changeTheme}
           compact
         />
@@ -213,7 +248,9 @@ export default function ProfessionalSidebar({ data }) {
 
       <div
         data-public-desktop-sidebar
-        className={`site-sidebar-shell fixed bottom-4 left-4 top-4 z-50 hidden transition-[width] duration-300 ease-out md:block ${
+        className={`site-sidebar-shell fixed bottom-4 left-4 top-4 z-50 hidden md:block ${
+          allowTransitions ? "transition-[width] duration-300 ease-out" : ""
+        } ${
           collapsed ? "w-20" : "w-64"
         }`}
       >
@@ -225,14 +262,14 @@ export default function ProfessionalSidebar({ data }) {
           <div className="pointer-events-none absolute -right-20 -top-20 h-44 w-44 rounded-full bg-accent/10 blur-3xl" />
 
           <div
-            className={`flex h-[92px] shrink-0 items-center border-b border-border/50 ${
+            className={`sidebar-brand-header flex h-[92px] shrink-0 items-center border-b border-border/50 ${
               collapsed ? "justify-center px-3" : "px-5"
             }`}
           >
             <Link
               href="/"
               prefetch={false}
-              className={`group flex min-w-0 items-center ${
+              className={`sidebar-brand-link group flex min-w-0 items-center ${
                 collapsed ? "justify-center" : "gap-3.5"
               }`}
               aria-label="Muhyo Tech home"
@@ -248,30 +285,26 @@ export default function ProfessionalSidebar({ data }) {
                 />
               </span>
 
-              {!collapsed && (
-                  <span className="min-w-0">
-                    <span className="block truncate text-[15px] font-black tracking-tight text-foreground">
-                      {firstName} <span className="text-accent">{lastName}</span>
-                    </span>
-                    <span className="mt-0.5 block truncate text-[9px] font-bold uppercase tracking-[0.14em] text-muted-foreground/75">
-                      {professionalTitle}
-                    </span>
-                  </span>
-              )}
+              <span className="sidebar-text-label min-w-0">
+                <span className="block truncate text-[15px] font-black tracking-tight text-foreground">
+                  {firstName} <span className="text-accent">{lastName}</span>
+                </span>
+                <span className="mt-0.5 block truncate text-[9px] font-bold uppercase tracking-[0.14em] text-muted-foreground/75">
+                  {professionalTitle}
+                </span>
+              </span>
             </Link>
           </div>
 
           <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden px-3 py-4 scrollbar-none">
-            {!collapsed && (
-                <div className="mb-2 flex items-center justify-between px-3">
-                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/65">
-                    Navigation
-                  </span>
-                  <span className="text-[9px] font-semibold text-muted-foreground/40">
-                    08 sections
-                  </span>
-                </div>
-            )}
+            <div className="sidebar-section-header mb-2 flex items-center justify-between px-3">
+              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/65">
+                Navigation
+              </span>
+              <span className="text-[9px] font-semibold text-muted-foreground/40">
+                08 sections
+              </span>
+            </div>
 
             <nav className="space-y-1" aria-label="Portfolio pages">
               {navigation.map((item, index) => {
@@ -286,9 +319,9 @@ export default function ProfessionalSidebar({ data }) {
                     onPointerEnter={() => prefetchOnIntent(item.href)}
                     onFocus={() => prefetchOnIntent(item.href)}
                     aria-current={active ? "page" : undefined}
-                    aria-label={collapsed ? item.name : undefined}
-                    title={collapsed ? item.name : undefined}
-                    className={`group/nav relative flex h-12 items-center overflow-hidden rounded-2xl transition-[background-color,color,transform] duration-200 active:scale-[0.98] ${
+                    aria-label={item.name}
+                    title={item.name}
+                    className={`sidebar-nav-item group/nav relative flex h-12 items-center overflow-hidden rounded-2xl transition-[background-color,color,transform] duration-200 active:scale-[0.98] ${
                       collapsed ? "justify-center px-2" : "gap-3 px-3"
                     } ${
                       active
@@ -298,7 +331,7 @@ export default function ProfessionalSidebar({ data }) {
                   >
                     {active && (
                       <span
-                        className="absolute inset-0 rounded-2xl border border-accent/20 bg-accent/10 shadow-[inset_3px_0_0_var(--color-accent)]"
+                        className="sidebar-nav-active-pill absolute inset-0 rounded-2xl border border-accent/20 bg-accent/10 shadow-[inset_3px_0_0_var(--color-accent)]"
                       />
                     )}
 
@@ -312,23 +345,20 @@ export default function ProfessionalSidebar({ data }) {
                       <Icon aria-hidden="true" className="h-4 w-4" />
                     </span>
 
-                    {!collapsed && (
-                        <span className="relative z-10 flex min-w-0 flex-1 items-center justify-between">
-                          <span className="truncate text-[13px] font-semibold tracking-tight">
-                            {item.name}
-                          </span>
-                          <span
-                            className={`text-[9px] font-bold tabular-nums ${
-                              active
-                                ? "text-accent"
-                                : "text-muted-foreground/35"
-                            }`}
-                          >
-                            {String(index + 1).padStart(2, "0")}
-                          </span>
-                        </span>
-                    )}
-
+                    <span className="sidebar-text-label relative z-10 flex min-w-0 flex-1 items-center justify-between">
+                      <span className="truncate text-[13px] font-semibold tracking-tight">
+                        {item.name}
+                      </span>
+                      <span
+                        className={`text-[9px] font-bold tabular-nums ${
+                          active
+                            ? "text-accent"
+                            : "text-muted-foreground/35"
+                        }`}
+                      >
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                    </span>
                   </Link>
                 );
               })}
@@ -339,9 +369,9 @@ export default function ProfessionalSidebar({ data }) {
                   href="/admin/blogs"
                   target="_blank"
                   prefetch={false}
-                  aria-label={collapsed ? "Open Admin Dashboard" : undefined}
-                  title={collapsed ? "Open Admin Dashboard" : undefined}
-                  className={`group/admin mt-2 relative flex h-12 items-center overflow-hidden rounded-2xl border border-accent/40 bg-accent/10 text-accent transition-all duration-200 hover:bg-accent/20 hover:border-accent shadow-sm active:scale-[0.98] ${
+                  aria-label="Open Admin Dashboard"
+                  title="Open Admin Dashboard"
+                  className={`sidebar-nav-item group/admin mt-2 relative flex h-12 items-center overflow-hidden rounded-2xl border border-accent/40 bg-accent/10 text-accent transition-all duration-200 hover:bg-accent/20 hover:border-accent shadow-sm active:scale-[0.98] ${
                     collapsed ? "justify-center px-2" : "gap-3 px-3"
                   }`}
                 >
@@ -349,14 +379,12 @@ export default function ProfessionalSidebar({ data }) {
                     <ShieldCheck className="h-4 w-4" />
                   </span>
 
-                  {!collapsed && (
-                    <span className="relative z-10 flex min-w-0 flex-1 items-center justify-between">
-                      <span className="truncate text-[12px] font-black tracking-tight text-accent">
-                        Open Admin Dashboard
-                      </span>
-                      <Sparkles className="h-3.5 w-3.5 text-accent animate-pulse" />
+                  <span className="sidebar-text-label relative z-10 flex min-w-0 flex-1 items-center justify-between">
+                    <span className="truncate text-[12px] font-black tracking-tight text-accent">
+                      Open Admin Dashboard
                     </span>
-                  )}
+                    <Sparkles className="h-3.5 w-3.5 text-accent animate-pulse" />
+                  </span>
                 </Link>
               )}
             </nav>
@@ -368,7 +396,7 @@ export default function ProfessionalSidebar({ data }) {
                 onPointerEnter={() => prefetchOnIntent("/book-a-call")}
                 onFocus={() => prefetchOnIntent("/book-a-call")}
                 aria-label="Book a project call"
-                className={`group/cta relative flex overflow-hidden rounded-2xl border border-accent/25 bg-accent text-accent-foreground shadow-[0_10px_30px_rgba(var(--accent-rgb),0.18)] transition-transform duration-200 hover:-translate-y-0.5 active:translate-y-0 ${
+                className={`sidebar-cta-btn group/cta relative flex overflow-hidden rounded-2xl border border-accent/25 bg-accent text-accent-foreground shadow-[0_10px_30px_rgba(var(--accent-rgb),0.18)] transition-transform duration-200 hover:-translate-y-0.5 active:translate-y-0 ${
                   collapsed
                     ? "h-11 items-center justify-center"
                     : "items-center gap-3 px-3.5 py-3"
@@ -377,51 +405,41 @@ export default function ProfessionalSidebar({ data }) {
                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-accent-foreground/10">
                   <CalendarCheck aria-hidden="true" className="h-4 w-4" />
                 </span>
-                {!collapsed && (
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-[11px] font-black uppercase tracking-[0.12em]">
-                      Start a project
-                    </span>
-                    <span className="mt-0.5 block text-[9px] font-medium text-accent-foreground/70">
-                      Book a discovery call
-                    </span>
+                <span className="sidebar-text-label min-w-0 flex-1">
+                  <span className="block text-[11px] font-black uppercase tracking-[0.12em]">
+                    Start a project
                   </span>
-                )}
-                {!collapsed && (
-                  <ArrowUpRight
-                    aria-hidden="true"
-                    className="h-4 w-4 transition-transform duration-200 group-hover/cta:translate-x-0.5 group-hover/cta:-translate-y-0.5"
-                  />
-                )}
+                  <span className="mt-0.5 block text-[9px] font-medium text-accent-foreground/70">
+                    Book a discovery call
+                  </span>
+                </span>
+                <ArrowUpRight
+                  aria-hidden="true"
+                  className="sidebar-text-label h-4 w-4 transition-transform duration-200 group-hover/cta:translate-x-0.5 group-hover/cta:-translate-y-0.5"
+                />
               </Link>
             </div>
           </div>
 
           <div
-            className={`shrink-0 border-t border-border/50 bg-background/20 ${
+            className={`sidebar-bottom-area shrink-0 border-t border-border/50 bg-background/20 ${
               collapsed ? "flex justify-center items-center px-2 py-4" : "px-4 py-3.5"
             }`}
           >
-            {collapsed ? (
-              <ThemeSwitcher
-                theme={themeReady ? theme : null}
-                onChange={changeTheme}
-                collapsed
-              />
-            ) : (
-              <div className="space-y-2.5">
-                <div className="flex items-center justify-between px-1">
-                  <span className="text-[9px] font-black uppercase tracking-[0.18em] text-muted-foreground/65">
-                    Appearance
-                  </span>
-                  <span className="flex items-center gap-1.5 text-[9px] font-semibold text-muted-foreground/55">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
-                    Available
-                  </span>
-                </div>
-                <ThemeSwitcher theme={themeReady ? theme : null} onChange={changeTheme} />
-              </div>
-            )}
+            <div className="sidebar-appearance-header flex items-center justify-between px-1 mb-2.5">
+              <span className="text-[9px] font-black uppercase tracking-[0.18em] text-muted-foreground/65">
+                Appearance
+              </span>
+              <span className="flex items-center gap-1.5 text-[9px] font-semibold text-muted-foreground/55">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+                Available
+              </span>
+            </div>
+            <ThemeSwitcher
+              theme={theme}
+              onChange={changeTheme}
+              collapsed={collapsed}
+            />
           </div>
         </aside>
 

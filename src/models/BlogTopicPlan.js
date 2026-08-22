@@ -11,7 +11,7 @@ const BlogTopicPlanSchema = new mongoose.Schema({
   clusterKey: { type: String, trim: true, index: true },
   clusterTitle: { type: String, trim: true },
   parentTopicId: { type: mongoose.Schema.Types.ObjectId, ref: "BlogTopicPlan", default: null, index: true },
-  clusterOrder: { type: Number, min: 0, max: 2, default: 0 },
+  clusterOrder: { type: Number, min: 0, max: 12, default: 0 },
   pillar: { type: String, required: true, trim: true, index: true },
   subtopic: { type: String, required: true, trim: true },
   problem: { type: String, required: true, trim: true },
@@ -63,11 +63,80 @@ const BlogTopicPlanSchema = new mongoose.Schema({
   usedAt: Date,
   usedByBlogId: { type: mongoose.Schema.Types.ObjectId, ref: "Blog" },
   failureReason: String,
+  
+  // Phase 2: Dynamic Topic Intelligence & Adaptive Cluster Fields (Optional / Backward-Compatible)
+  topicType: { type: String, trim: true, index: true },
+  audience: { type: String, trim: true, default: "Founders and developers" },
+  intent: { type: String, trim: true, default: "informational" },
+  industry: { type: mongoose.Schema.Types.Mixed, default: null },
+  businessProblem: { type: mongoose.Schema.Types.Mixed, default: null },
+  technology: [{ type: String }],
+  serviceRelevance: { type: Number, min: 0, max: 1, default: 0 },
+  serviceSlug: { type: String, trim: true },
+  clusterDepth: { type: Number, min: 0, max: 12, default: 2 },
+  clusterStrategy: { type: String, enum: ["dynamic_cluster", "standalone", "trend", "expansion"], default: "dynamic_cluster" },
+  opportunityScore: { type: Number, min: 0, max: 100, default: 50, index: true },
+  scoreBreakdown: { type: mongoose.Schema.Types.Mixed, default: {} },
+  searchSignals: { type: mongoose.Schema.Types.Mixed, default: { available: false, source: null } },
+  contentGap: { type: mongoose.Schema.Types.Mixed, default: null },
+  cannibalizationRisk: { type: Number, min: 0, max: 100, default: 0 },
+  clusterHealth: { type: mongoose.Schema.Types.Mixed, default: null },
+  expansionEligible: { type: Boolean, default: false, index: true },
+  expansionReason: { type: String, trim: true },
+  generationStrategy: { type: String, trim: true },
+  decisionSource: { type: String, enum: ["think10x_ai", "legacy_fallback", "manual"], default: "think10x_ai", index: true },
+  confidence: { type: Number, min: 0, max: 1, default: 0.9 },
+
+  // Phase 4: Industry + Business Problem + Service Intelligence Layer (Optional / Backward-Compatible)
+  audienceProfile: { type: mongoose.Schema.Types.Mixed, default: null },
+  solutionType: { type: String, trim: true, default: null },
+  serviceIntent: { type: mongoose.Schema.Types.Mixed, default: null },
+  geoContext: { type: mongoose.Schema.Types.Mixed, default: { type: "global" } },
+
+  // Phase 6: Dynamic Pillar + Cluster Intelligence (Optional / Backward-Compatible)
+  clusterMode: { type: String, enum: ["standalone", "dynamic", "fixed_legacy"], default: "dynamic", index: true },
+  desiredSupportingCount: { type: Number, min: 0, max: 12, default: 2 },
+  maxSupportingCount: { type: Number, min: 0, max: 12, default: 6 },
+  clusterConfidence: { type: Number, min: 0, max: 100, default: 80 },
+  clusterRationale: [{ type: String }],
+  clusterStatus: {
+    type: String,
+    enum: ["planned", "pillar_published", "partially_complete", "complete", "reopened"],
+    default: "planned",
+    index: true,
+  },
+  clusterExpansionPolicy: { type: String, enum: ["signal_driven", "static", "manual"], default: "signal_driven" },
+
+  // Phase 7: Think10X Topic Opportunity Scoring Engine Metadata
+  scoreConfidence: { type: Number, min: 0, max: 1, default: 0.5 },
+  scoreSources: [{ type: String }],
+  scoreReasons: [{ type: String }],
+  scoringVersion: { type: String, default: "1.0.0" },
+  scoringUpdatedAt: { type: Date, default: Date.now },
+
+  // Phase 8: Think10X Topic KillCritic Gate (Optional / Backward-Compatible)
+  topicCritic: {
+    status: { type: String, enum: ["un-evaluated", "evaluated", "failed"], default: "un-evaluated" },
+    decision: { type: String, enum: ["pass", "hold", "reject"], default: "pass", index: true },
+    score: { type: Number, min: 0, max: 100, default: 70 },
+    confidence: { type: Number, min: 0, max: 1, default: 0.5 },
+    reasonCodes: [{ type: String }],
+    strengths: [{ type: String }],
+    risks: [{ type: String }],
+    missingSignals: [{ type: String }],
+    recommendedAction: { type: String },
+    clusterDecision: {
+      type: { type: String, enum: ["standalone", "cluster"], default: "cluster" },
+      recommendedSupportingCount: { type: Number, default: 2 },
+    },
+    evaluatedAt: { type: Date },
+    criticVersion: { type: String, default: "1.0.0" },
+  },
 }, { timestamps: true });
 
 BlogTopicPlanSchema.index({ status: 1, scheduledFor: 1, priority: -1, createdAt: 1 });
 BlogTopicPlanSchema.index({ clusterKey: 1, articleType: 1, clusterOrder: 1 });
 BlogTopicPlanSchema.index({ isTrend: 1, trendStatus: 1, trendPriority: 1, priority: -1 });
-BlogTopicPlanSchema.index({ status: 1, articleType: 1, cooldownUntil: 1, priority: -1 });
-
 export const BlogTopicPlan = mongoose.models.BlogTopicPlan || mongoose.model("BlogTopicPlan", BlogTopicPlanSchema);
+export default BlogTopicPlan;
+

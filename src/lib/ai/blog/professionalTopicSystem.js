@@ -59,7 +59,7 @@ EXISTING OR QUEUED CONTENT TO AVOID:
 ${avoid || "None supplied."}
 
 Return strict JSON only:
-{"topics":[{"title":"","contentCategory":"software_architecture","topicFamily":"","pillar":"","subtopic":"","problem":"","solutionAngle":"","businessValue":"","audience":"","focusKeyword":"","searchIntent":"informational","format":"Decision framework","relatedServiceSlugs":[],"priority":70,"selectionReason":"","audienceRelevance":0,"practicalUsefulness":0,"expertiseFit":0,"searchOpportunity":0,"originalAngle":0,"coverageNeed":0,"serviceConnection":0}]}`,
+{"topics":[{"title":"","contentCategory":"software_architecture","topicFamily":"","pillar":"","subtopic":"","problem":"","solutionAngle":"","businessValue":"","audience":"","audienceProfile":{"type":"cto","label":"CTO"},"industry":null,"businessProblem":null,"solutionType":"architecture_decision","serviceIntent":{"relevant":false,"serviceKey":null,"confidence":0},"geoContext":{"type":"global"},"focusKeyword":"","searchIntent":"informational","format":"Decision framework","relatedServiceSlugs":[],"priority":70,"selectionReason":"","audienceRelevance":0,"practicalUsefulness":0,"expertiseFit":0,"searchOpportunity":0,"originalAngle":0,"coverageNeed":0,"serviceConnection":0}]}`,
   { temperature: 0.6, responseMimeType: "application/json", maxOutputTokens: 8000, thinkingBudget: 0, timeoutMs: 60000 });
   const parsed = JSON.parse(String(raw).replace(/```json/gi, "").replace(/```/g, "").trim());
   return (Array.isArray(parsed.topics) ? parsed.topics : [])

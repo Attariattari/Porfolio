@@ -10,14 +10,6 @@ if (dns && typeof dns.setServers === "function") {
   }
 }
 
-const MONGODB_URI = process.env.MONGODB_URI;
-
-if (!MONGODB_URI) {
-  throw new Error(
-    "Please define the MONGODB_URI environment variable inside .env.local",
-  );
-}
-
 /**
  * Global is used here to maintain a cached connection across hot reloads
  * in development. This prevents connections growing exponentially
@@ -73,23 +65,23 @@ function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function connectWithDnsFallback(opts) {
+async function connectWithDnsFallback(opts, mongoUri = process.env.MONGODB_URI) {
   const maxAttempts = 3;
   let directUri = null;
   let lastError;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
     try {
-      return await mongoose.connect(directUri || MONGODB_URI, opts);
+      return await mongoose.connect(directUri || mongoUri, opts);
     } catch (error) {
       lastError = error;
       if (!isTransientDnsError(error)) throw error;
 
       await mongoose.disconnect().catch(() => undefined);
 
-      if (!directUri && MONGODB_URI.startsWith("mongodb+srv://")) {
+      if (!directUri && mongoUri?.startsWith("mongodb+srv://")) {
         try {
-          directUri = await buildDirectMongoUri(MONGODB_URI);
+          directUri = await buildDirectMongoUri(mongoUri);
           console.warn(
             "[Mongoose/DNS] SRV lookup failed. Retrying MongoDB with direct shard hosts.",
           );
@@ -112,6 +104,13 @@ async function connectWithDnsFallback(opts) {
 }
 
 async function dbConnect() {
+  const MONGODB_URI = process.env.MONGODB_URI;
+  if (!MONGODB_URI) {
+    throw new Error(
+      "Please define the MONGODB_URI environment variable inside .env.local",
+    );
+  }
+
   if (cached.conn) {
     return cached.conn;
   }

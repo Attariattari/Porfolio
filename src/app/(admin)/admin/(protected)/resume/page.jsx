@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { AnimatePresence } from "framer-motion";
 import { User, Briefcase, GraduationCap, Pencil, Plus, Trash2, Code2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import AdminPageLoader from "@/components/admin/AdminPageLoader";
 
 const profileSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -44,7 +45,7 @@ const resumeSectionsSchema = z.object({
 
 export default function ResumePage() {
   const router = useRouter();
-  const { resumeData, fetchResume, updateResume } = useAdminStore();
+  const { resumeData, resumeCacheHydrated, fetchResume, updateResume } = useAdminStore();
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isExpModalOpen, setIsExpModalOpen] = useState(false);
   const [isSectionsModalOpen, setIsSectionsModalOpen] = useState(false);
@@ -219,6 +220,16 @@ export default function ResumePage() {
     id: i,
     index: i,
   }));
+
+  if (!resumeCacheHydrated && !resumeData?.name) {
+    return (
+      <AdminPageLoader
+        title="Loading Career Architecture"
+        message="Hydrating resume records, experience timeline, and academic credentials..."
+        badge="Resume Workspace"
+      />
+    );
+  }
 
   return (
     <div className="mx-auto max-w-[1500px] space-y-6 pb-20">

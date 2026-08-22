@@ -24,6 +24,7 @@ import ImageUploader from "@/components/admin/ImageUploader";
 import { uploadPendingImages } from "@/lib/uploadHelper";
 import useAdminStore from "@/lib/store/adminStore";
 import { aboutData } from "@/lib/data";
+import AdminPageLoader from "@/components/admin/AdminPageLoader";
 
 // Comprehensive validation schema
 const aboutSchema = z.object({
@@ -168,7 +169,7 @@ function RepeatableEditor({ title, items = [], fields, onChange, onAdd, onRemove
 // REMOVED: SocialLinkInput component - Social links now managed separately
 
 export default function AboutForm() {
-  const { about, updateAbout, addNotification, fetchAbout } = useAdminStore();
+  const { about, aboutCacheHydrated, updateAbout, addNotification, fetchAbout } = useAdminStore();
   const [isSaving, setIsSaving] = useState(false);
   const [sections, setSections] = useState(() => getStructuredSections());
   const searchParams = useSearchParams();
@@ -355,6 +356,16 @@ export default function AboutForm() {
       setIsSaving(false);
     }
   };
+
+  if (!aboutCacheHydrated && !about) {
+    return (
+      <AdminPageLoader
+        title="Loading Profile Workspace"
+        message="Hydrating biographical telemetry, company identity, and career credentials..."
+        badge="Profile Workspace"
+      />
+    );
+  }
 
   return (
     <div className={`mx-auto max-w-[1500px] space-y-6 pb-20 transition-all duration-1000 ${isHighlighted ? "ring-2 ring-sky-400/20" : ""}`}>

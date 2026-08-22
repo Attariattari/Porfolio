@@ -51,8 +51,10 @@ export async function PATCH(request) {
   const session = await authorize();
   if (!session) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
   const body = await request.json();
-  const dailyQuantity = Number(body.dailyQuantity);
-  const intervalHours = Number(body.intervalHours);
+  await dbConnect();
+  const currentSettings = await getBlogAutomationSettings();
+  const dailyQuantity = Number(body.dailyQuantity ?? currentSettings.dailyQuantity ?? 1);
+  const intervalHours = Number(body.intervalHours ?? currentSettings.intervalHours ?? 24);
   if (!Number.isInteger(dailyQuantity) || dailyQuantity < 1 || dailyQuantity > 12) {
     return NextResponse.json({ success: false, error: "Daily quantity must be a whole number from 1 to 12." }, { status: 400 });
   }

@@ -1,0 +1,119 @@
+"use client";
+
+import { useEffect, useState, useSyncExternalStore } from "react";
+import { WifiOff, Wifi, Sparkles } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+
+const subscribeOnline = (callback) => {
+  window.addEventListener("online", callback);
+  window.addEventListener("offline", callback);
+  return () => {
+    window.removeEventListener("online", callback);
+    window.removeEventListener("offline", callback);
+  };
+};
+
+const getOnlineSnapshot = () =>
+  typeof navigator !== "undefined" ? navigator.onLine : true;
+
+const getServerOnlineSnapshot = () => true;
+
+/**
+ * PWAOfflineEngine Component
+ * 
+ * - Registers Service Worker in Production for instant 0ms offline-first caching.
+ * - In Development, guarantees clean Webpack HMR by avoiding service worker chunk interference.
+ * - Listens for Network Online/Offline state changes using useSyncExternalStore.
+ */
+export default function PWAOfflineEngine() {
+  const isOnline = useSyncExternalStore(
+    subscribeOnline,
+    getOnlineSnapshot,
+    getServerOnlineSnapshot,
+  );
+  const isOffline = !isOnline;
+  const [justReconnected, setJustReconnected] = useState(false);
+
+  useEffect(() => {
+    const isLocalhost =
+      typeof window !== "undefined" &&
+      (window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1");
+
+    // 1. Service Worker Lifecycle Management
+    if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+      if (isLocalhost) {
+        // In local development: unregister previous service workers to ensure 100% clean Webpack HMR
+        navigator.serviceWorker.getRegistrations().then((registrations) => {
+          for (const registration of registrations) {
+            registration.unregister();
+          }
+        });
+      } else if (!window.location.pathname.startsWith("/admin")) {
+        // In production: register public service worker
+        navigator.serviceWorker
+          .register("/sw.js")
+          .then((reg) => {
+            console.log("[PWA] Service Worker active with scope:", reg.scope);
+          })
+          .catch((err) => {
+            console.warn("[PWA] Service Worker registration skipped:", err);
+          });
+      }
+    }
+
+    // 2. Reconnection Event Listener
+    const handleOnline = () => {
+      setJustReconnected(true);
+      window.dispatchEvent(new CustomEvent("muhyo:network-reconnected"));
+      const timer = setTimeout(() => {
+        setJustReconnected(false);
+      }, 3500);
+      return () => clearTimeout(timer);
+    };
+
+    window.addEventListener("online", handleOnline);
+    return () => {
+      window.removeEventListener("online", handleOnline);
+    };
+  }, []);
+
+  return (
+    <AnimatePresence>
+      {/* Offline Status Badge */}
+      {isOffline && (
+        <motion.div
+          initial={{ opacity: 0, y: 40, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 30, scale: 0.95 }}
+          transition={{ duration: 0.35, ease: "easeOut" }}
+          className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-[9990] flex items-center gap-2.5 px-4 py-2 rounded-full bg-card/90 border border-amber-500/30 text-amber-400 text-xs font-semibold shadow-2xl backdrop-blur-xl shadow-amber-500/10 pointer-events-none select-none"
+        >
+          <div className="relative flex items-center justify-center">
+            <span className="absolute w-2.5 h-2.5 rounded-full bg-amber-400 opacity-30 animate-ping" />
+            <WifiOff className="w-3.5 h-3.5 text-amber-400 relative z-10" />
+          </div>
+          <span>Offline Mode Active • Browsing from local cache</span>
+        </motion.div>
+      )}
+
+      {/* Just Reconnected Status Badge */}
+      {justReconnected && !isOffline && (
+        <motion.div
+          initial={{ opacity: 0, y: 40, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 30, scale: 0.95 }}
+          transition={{ duration: 0.35, ease: "easeOut" }}
+          className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-[9990] flex items-center gap-2.5 px-4 py-2 rounded-full bg-card/90 border border-emerald-500/30 text-emerald-400 text-xs font-semibold shadow-2xl backdrop-blur-xl shadow-emerald-500/10 pointer-events-none select-none"
+        >
+          <div className="relative flex items-center justify-center">
+            <span className="absolute w-2.5 h-2.5 rounded-full bg-emerald-400 opacity-30 animate-ping" />
+            <Wifi className="w-3.5 h-3.5 text-emerald-400 relative z-10" />
+          </div>
+          <span>Back Online • Synchronized</span>
+          <Sparkles className="w-3 h-3 text-emerald-400 animate-pulse" />
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}

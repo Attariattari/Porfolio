@@ -6,6 +6,9 @@ import { BlogTopicPlan } from "@/models/BlogTopicPlan";
 import { AUTHORITY_CATEGORY_KEYS, categoryDeficit, generateAuthorityCandidates, getRollingCategoryCoverage } from "./professionalTopicSystem";
 import { reverifyTrendPlan } from "./trendIntelligence";
 import { derivePrimaryTechnology, evaluateTopicCooldown, recordCooldownDecision } from "./topicCooldown";
+import { generateDynamicClusterPacks, getEngineMode, logTopicDecision, normalizeLegacyTopic } from "../intelligence/topicIntelligenceFacade";
+import { enrichTopicWithIntelligence } from "../intelligence/topicIntelligence";
+import { buildWriterContextFromTopicPlan } from "../intelligence/blogIntelligenceBridge";
 
 const PILLARS = [
   "Web Development",
@@ -62,6 +65,7 @@ function planAsBlog(plan) {
 
 function cleanPlan(plan, source = "ai") {
   const articleType = ["pillar", "supporting", "standalone_authority", "verified_trend"].includes(plan.articleType) ? plan.articleType : "supporting";
+  const enrichedIntel = enrichTopicWithIntelligence(plan);
   const cleaned = {
     title: String(plan.title || "").trim(),
     articleType,
@@ -70,7 +74,7 @@ function cleanPlan(plan, source = "ai") {
     primaryTechnology: derivePrimaryTechnology(plan),
     clusterKey: String(plan.clusterKey || "").trim(),
     clusterTitle: String(plan.clusterTitle || "").trim(),
-    clusterOrder: Math.min(2, Math.max(0, Number(plan.clusterOrder) || 0)),
+    clusterOrder: Math.min(12, Math.max(0, Number(plan.clusterOrder) || 0)),
     parentTopicId: plan.parentTopicId || null,
     pillar: String(plan.pillar || "Web Development").trim(),
     subtopic: String(plan.subtopic || "").trim(),
@@ -79,19 +83,49 @@ function cleanPlan(plan, source = "ai") {
     businessValue: String(plan.businessValue || "").trim(),
     audience: String(plan.audience || "Founders and developers").trim(),
     focusKeyword: String(plan.focusKeyword || "").trim(),
-    searchIntent: ["informational", "commercial", "transactional", "navigational"].includes(plan.searchIntent) ? plan.searchIntent : "informational",
+    searchIntent: ["informational", "commercial", "transactional", "navigational", "problem_solving", "pricing", "comparison"].includes(plan.searchIntent || plan.intent) ? (plan.searchIntent || plan.intent) : "informational",
     format: String(plan.format || "Problem-solution guide").trim(),
     relatedServiceSlugs: Array.isArray(plan.relatedServiceSlugs) ? [...new Set(plan.relatedServiceSlugs)].filter((slug) => ALLOWED_SERVICES.has(slug)).slice(0, 3) : [],
     priority: Math.min(100, Math.max(0, Number(plan.priority) || 50)),
-    professionalScore: Math.min(100, Math.max(0, Number(plan.professionalScore ?? plan.score) || 0)),
+    professionalScore: Math.min(100, Math.max(0, Number(plan.professionalScore ?? plan.score ?? plan.opportunityScore) || 0)),
     scoreBreakdown: plan.scoreBreakdown || plan.breakdown || {},
     selectionReason: String(plan.selectionReason || "").trim(),
     scheduledFor: plan.scheduledFor ? new Date(plan.scheduledFor) : null,
     notes: String(plan.notes || "").trim(),
     source,
     status: plan.status || (articleType === "pillar" ? "planned" : "ready"),
+
+    // Phase 2 & Phase 4 Intelligence Extensions
+    topicType: String(plan.topicType || (articleType === "pillar" ? "technical_pillar" : articleType)).trim(),
+    intent: String(plan.intent || plan.searchIntent || "informational").trim(),
+    industry: enrichedIntel.industry || plan.industry || null,
+    businessProblem: enrichedIntel.businessProblem || plan.businessProblem || null,
+    technology: Array.isArray(plan.technology) ? plan.technology : [derivePrimaryTechnology(plan)],
+    serviceRelevance: Math.min(1, Math.max(0, Number(enrichedIntel.serviceIntent?.confidence ?? plan.serviceRelevance) || 0)),
+    serviceSlug: String(enrichedIntel.serviceIntent?.serviceKey || plan.serviceSlug || "").trim(),
+    clusterDepth: Math.min(12, Math.max(0, Number(plan.clusterDepth) ?? (articleType === "pillar" ? 2 : 0))),
+    clusterStrategy: plan.clusterStrategy || "dynamic_cluster",
+    opportunityScore: Math.min(100, Math.max(0, Number(plan.opportunityScore ?? plan.priority) || 50)),
+    searchSignals: plan.searchSignals || { available: false, source: null },
+    contentGap: plan.contentGap || null,
+    cannibalizationRisk: Math.min(100, Math.max(0, Number(plan.cannibalizationRisk) || 0)),
+    clusterHealth: plan.clusterHealth || null,
+    expansionEligible: Boolean(plan.expansionEligible),
+    expansionReason: String(plan.expansionReason || "").trim(),
+    generationStrategy: String(plan.generationStrategy || "").trim(),
+    decisionSource: String(plan.decisionSource || "think10x_ai").trim(),
+    confidence: Math.min(1, Math.max(0, Number(plan.confidence) ?? 0.9)),
+
+    // Phase 4 Intelligence Structured Metadata
+    audienceProfile: enrichedIntel.audienceProfile || null,
+    solutionType: enrichedIntel.solutionType || null,
+    serviceIntent: enrichedIntel.serviceIntent || null,
+    geoContext: enrichedIntel.geoContext || { type: "global" },
   };
   cleaned.fingerprint = buildTopicFingerprint(cleaned);
+
+  console.log(`[TopicIntelligence] title="${cleaned.title}" audience=${cleaned.audienceProfile?.type || cleaned.audience} industry=${cleaned.industry?.key || cleaned.industry || 'null'} businessProblem=${cleaned.businessProblem?.key || cleaned.businessProblem || 'null'} service=${cleaned.serviceIntent?.serviceKey || 'null'} confidence=${cleaned.serviceIntent?.confidence || 0}`);
+
   return cleaned;
 }
 
@@ -145,7 +179,8 @@ function buildFallbackClusterPacks() {
 function flattenClusterPack(pack, source, status) {
   const pillar = cleanPlan({ ...pack.pillar, clusterKey: pack.clusterKey, clusterTitle: pack.clusterTitle, articleType: "pillar", clusterOrder: 0, status }, source);
   const supportingStatus = source === "ai" && status === "planned" ? "ready" : status;
-  const supporting = (pack.supporting || []).slice(0, 2).map((topic, index) => cleanPlan({ ...topic, clusterKey: pack.clusterKey, clusterTitle: pack.clusterTitle, articleType: "supporting", clusterOrder: index + 1, status: supportingStatus }, source));
+  const maxDepth = typeof pack.pillar?.clusterDepth === "number" ? pack.pillar.clusterDepth : 8;
+  const supporting = (pack.supporting || []).slice(0, Math.max(0, maxDepth)).map((topic, index) => cleanPlan({ ...topic, clusterKey: pack.clusterKey, clusterTitle: pack.clusterTitle, articleType: "supporting", clusterOrder: index + 1, status: supportingStatus }, source));
   return { pillar, supporting };
 }
 
@@ -161,7 +196,7 @@ async function insertClusterPacks(packs, source, status, existingBlogs, historic
     const all = [pack.pillar, ...pack.supporting];
     const normalizedClusterKey = normalize(pack.pillar.clusterKey);
     if (!normalizedClusterKey || knownClusterKeys.has(normalizedClusterKey)) continue;
-    if (all.length !== 3 || all.some((plan) => !plan.title || !plan.focusKeyword || !plan.problem || !plan.solutionAngle || normalize(plan.clusterKey) !== normalizedClusterKey)) continue;
+    if (all.length < 1 || all.some((plan) => !plan.title || !plan.focusKeyword || !plan.problem || !plan.solutionAngle || normalize(plan.clusterKey) !== normalizedClusterKey)) continue;
     const conflicts = all.some((plan, index) =>
       findNearDuplicateBlog(planAsBlog(plan), existingBlogs) ||
       findNearDuplicateBlog(planAsBlog(plan), acceptedPlans.map(planAsBlog)) ||
@@ -171,13 +206,20 @@ async function insertClusterPacks(packs, source, status, existingBlogs, historic
     let pillar = null;
     try {
       pillar = await BlogTopicPlan.create(pack.pillar);
-      const supporting = pack.supporting.map((plan) => ({ ...plan, parentTopicId: pillar._id }));
-      const insertedSupporting = await BlogTopicPlan.insertMany(supporting, { ordered: true });
-      insertedTopicIds.push(pillar._id, ...insertedSupporting.map((plan) => plan._id));
-      acceptedPlans.push(pack.pillar, ...supporting);
+      insertedTopicIds.push(pillar._id);
+      topics += 1;
+      acceptedPlans.push(pack.pillar);
+
+      if (pack.supporting.length > 0) {
+        const supporting = pack.supporting.map((plan) => ({ ...plan, parentTopicId: pillar._id }));
+        const insertedSupporting = await BlogTopicPlan.insertMany(supporting, { ordered: true });
+        insertedTopicIds.push(...insertedSupporting.map((plan) => plan._id));
+        acceptedPlans.push(...supporting);
+        topics += supporting.length;
+      }
+
       knownClusterKeys.add(normalizedClusterKey);
       clusters += 1;
-      topics += 3;
     } catch (error) {
       if (pillar?._id) {
         await BlogTopicPlan.deleteMany({
@@ -289,6 +331,29 @@ export async function appendAiClusters({ targetClusters = 5 } = {}) {
   ]);
 
   const avoid = [...blogs.map((item) => `${item.title} | ${item.focusKeyword || ""}`), ...queuedPlans.map((item) => `${item.title} | ${item.focusKeyword || ""}`)].join("\n");
+
+  // Try Think10X Intelligence Engine first if enabled
+  try {
+    const intelResult = await generateDynamicClusterPacks({ targetClusters, avoidText: avoid });
+    if (intelResult.success && intelResult.packs && intelResult.packs.length > 0) {
+      const result = await insertClusterPacks(intelResult.packs, "ai", "planned", blogs, queuedPlans, targetClusters);
+      if (result.clusters > 0) {
+        return {
+          success: true,
+          clusters: result.clusters,
+          topics: result.topics,
+          pillarCount: result.clusters,
+          supportingCount: result.topics - result.clusters,
+          mode: intelResult.mode,
+          source: "think10x_ai",
+        };
+      }
+    }
+  } catch (intelError) {
+    console.warn("[TopicQueue] Think10X Facade cluster refill warning. Engaging legacy fallback:", intelError.message);
+  }
+
+  // Fallback: Legacy Fixed 2-Supporting Cluster Generation Path
   const candidateTarget = targetClusters + 3;
   const prompt = `Create ${candidateTarget} unique topical-authority cluster candidates for Muhyo Tech. Muhyo Tech is a professional web engineering and software brand.
 
@@ -323,13 +388,13 @@ Return strict JSON: {"clusters":[{"clusterKey":"","clusterTitle":"","pillar":{"t
   }
 
   const result = await insertClusterPacks(aiPacks, "ai", "planned", blogs, queuedPlans, targetClusters);
-  if (result.clusters !== targetClusters || result.topics !== targetClusters * 3) {
-    if (result.insertedTopicIds.length) {
+  if (result.clusters === 0) {
+    if (result.insertedTopicIds && result.insertedTopicIds.length) {
       await BlogTopicPlan.deleteMany({ _id: { $in: result.insertedTopicIds }, status: { $ne: "used" } });
     }
-    throw new Error(`Gemini refill produced only ${result.clusters} duplicate-safe complete clusters; exactly ${targetClusters} are required. No partial refill was kept.`);
+    throw new Error(`Gemini refill produced 0 duplicate-safe clusters. No partial refill kept.`);
   }
-  return { success: true, clusters: result.clusters, topics: result.topics, pillarCount: result.clusters, supportingCount: result.topics - result.clusters };
+  return { success: true, clusters: result.clusters, topics: result.topics, pillarCount: result.clusters, supportingCount: result.topics - result.clusters, source: "legacy_fallback" };
 }
 async function countCompletedAiClusters() {
   const completed = await BlogTopicPlan.aggregate([
@@ -565,8 +630,11 @@ async function takeClusterTopic(source = "ai", { allowNewPillar = true } = {}) {
       .sort({ clusterOrder: 1 })
       .select("_id status clusterOrder")
       .lean();
-    const usedChildOrders = new Set(children.filter((child) => child.status === "used").map((child) => child.clusterOrder));
-    if (usedChildOrders.has(1) && usedChildOrders.has(2)) continue;
+    
+    const usedChildren = children.filter((child) => child.status === "used");
+    const desiredCount = typeof pillar.desiredSupportingCount === "number" ? pillar.desiredSupportingCount : 2;
+
+    if (usedChildren.length >= desiredCount || (desiredCount === 0 && children.length === 0)) continue;
 
     // Protection Rule 4: Verify parent blog actually exists in DB AND articleType is 'pillar'
     const parentBlog = await Blog.findOne({
@@ -580,9 +648,24 @@ async function takeClusterTopic(source = "ai", { allowNewPillar = true } = {}) {
       throw new Error(`Cluster ${pillar._id} is blocked because its used Pillar topic is not linked to an actual Pillar blog.`);
     }
 
+    const readyChild = children.find((c) => c.status === "ready");
+    if (readyChild) {
+      const supporting = await takeTopic(
+        {
+          _id: readyChild._id,
+          status: "ready",
+        },
+        { createdAt: 1 },
+      );
+      if (supporting) return addParentPillarContext(supporting, parentBlog);
+    }
+
+    const usedChildOrders = new Set(usedChildren.map((child) => child.clusterOrder));
+    if (usedChildOrders.has(1) && usedChildOrders.has(2)) continue;
+
     const nextChildOrder = usedChildOrders.has(1) ? 2 : 1;
 
-    const supporting = await takeTopic(
+    const legacySupporting = await takeTopic(
       {
         source,
         articleType: "supporting",
@@ -592,8 +675,13 @@ async function takeClusterTopic(source = "ai", { allowNewPillar = true } = {}) {
       },
       { createdAt: 1 },
     );
-    if (supporting) return addParentPillarContext(supporting, parentBlog);
-    throw new Error(`Current cluster is waiting for Supporting topic ${nextChildOrder}; the next Pillar will not be selected until this cluster is complete.`);
+    if (legacySupporting) return addParentPillarContext(legacySupporting, parentBlog);
+
+    // Dynamic child failure resilience: update status to partially_complete instead of blocking queue forever
+    await BlogTopicPlan.updateOne(
+      { _id: pillar._id },
+      { $set: { clusterStatus: "partially_complete" } }
+    ).catch(() => {});
   }
 
   if (!allowNewPillar) return null;
@@ -748,7 +836,7 @@ export async function acquireNextTopicPlan({ refill = true } = {}) {
   throw new Error("No duplicate-safe Pillar topic cluster is currently available in the queue.");
 }
 
-export const formatTopicPlanForWriter = (plan) => `Article type: ${plan.articleType || "supporting"}. Professional category: ${plan.contentCategory || "core_web_engineering"}. Content cluster: ${plan.clusterTitle || plan.pillar}. Title direction: ${plan.title}. Pillar: ${plan.pillar}. Specific subtopic: ${plan.subtopic}. Problem: ${plan.problem}. Engineering solution angle: ${plan.solutionAngle}. Business value: ${plan.businessValue}. Audience: ${plan.audience}. Primary search query: ${plan.focusKeyword}. Search intent: ${plan.searchIntent}. Article format: ${plan.format}. Relevant service slugs for contextual internal links: ${(plan.relatedServiceSlugs || []).join(", ") || "none"}.${plan.parentPillarBlog ? ` Parent pillar article: ${plan.parentPillarBlog.title} at /blog/${plan.parentPillarBlog.slug}. Link to it naturally.` : ""}${plan.isTrend ? ` This is a verified trend article. Use only these verified claims: ${(plan.verifiedClaims || []).join(" | ")}. Official sources: ${(plan.officialSources || []).map((source) => `${source.title}: ${source.url}`).join(" | ")}. Never add unsupported release facts.` : ""}`;
+export const formatTopicPlanForWriter = (plan) => buildWriterContextFromTopicPlan(plan);
 
 export async function markTopicPlanUsed(id, blogId) {
   if (!id) return null;

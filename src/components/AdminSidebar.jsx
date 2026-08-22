@@ -75,10 +75,18 @@ const ICON_MAP = {
 export default function AdminSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const [session, setSession] = useState(null);
+  const [allowTransitions, setAllowTransitions] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [session, setSession] = useState(null);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const profileMenuRef = useRef(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setAllowTransitions(true);
+    }, 150);
+    return () => clearTimeout(timer);
+  }, []);
 
   const displayName = session?.name ? formatName(session.name) : "Admin";
   const isSuperAdmin = ["super-admin", "root-super-admin"].includes(session?.role);
@@ -125,6 +133,14 @@ export default function AdminSidebar() {
       .then((res) => res.json())
       .then((data) => setSession(data));
   }, []);
+
+  useEffect(() => {
+    const desktop = window.innerWidth >= 1024;
+    if (desktop) {
+      document.documentElement.classList.toggle("admin-sidebar-collapsed", Boolean(sidebarCollapsed));
+      document.documentElement.classList.toggle("admin-sidebar-expanded", !sidebarCollapsed);
+    }
+  }, [sidebarCollapsed]);
 
   useEffect(() => {
     setSidebarOpen(false);
@@ -248,11 +264,12 @@ export default function AdminSidebar() {
       </AnimatePresence>
 
       <motion.div
+        initial={false}
         animate={{
           width: isMobile ? 288 : sidebarCollapsed ? 80 : 288,
           x: isMobile && !sidebarOpen ? -288 : 0,
         }}
-        transition={{ type: "spring", damping: 20, stiffness: 150 }}
+        transition={allowTransitions ? { type: "spring", damping: 22, stiffness: 180 } : { duration: 0 }}
         className="admin-sidebar-shell fixed left-0 top-0 z-[70] flex h-full flex-col border-r border-border/60 bg-background shadow-2xl"
       >
         {/* Desktop Collapse / Expand Toggle Button */}

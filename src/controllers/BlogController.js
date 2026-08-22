@@ -14,6 +14,71 @@ import { revalidatePath } from "next/cache";
 import { isLegacyBlogSlug, normalizeBlogServiceLinks } from "@/lib/blogSeo";
 import { scheduleInternalLinkAudit } from "@/lib/ai/blog/internalLinkingEngine";
 import { triggerBloggerPublishIfReady } from "@/lib/ai/blog/bloggerAutomationHook";
+import { matchTopicToServicesSync } from "@/lib/ai/intelligence/services/serviceTopicMatcherEngine";
+import { generateConversionStrategy } from "@/lib/ai/intelligence/conversionLinkingEngine";
+
+export function enrichBlogWithIntelligence(blog = {}) {
+  let intelligence = {
+    topic: {
+      linked: Boolean(blog.topicPlanId || blog.clusterKey),
+      topicTitle: blog.clusterTitle || blog.title,
+      searchIntent: blog.searchIntent || "informational",
+      articleType: blog.articleType || "pillar",
+      opportunityScore: blog.qualityScore || 80,
+    },
+    service: {
+      primaryService: null,
+      secondaryServices: [],
+      serviceCoverageStatus: "COVERED",
+    },
+    conversion: {
+      conversionLevel: "SOFT",
+      ctaStrategy: "Informational CTA",
+      bookingTarget: "/book-call",
+    },
+    authority: {
+      role: blog.articleType || "pillar",
+      clusterKey: blog.clusterKey || null,
+      clusterTitle: blog.clusterTitle || null,
+    },
+  };
+
+  try {
+    const matchResult = matchTopicToServicesSync({
+      title: blog.title,
+      focusKeyword: blog.focusKeyword,
+      relatedServiceSlugs: blog.relatedServiceSlugs,
+    });
+    if (matchResult && matchResult.primaryService) {
+      intelligence.service.primaryService = {
+        slug: matchResult.primaryService.slug,
+        title: matchResult.primaryService.title,
+        relevanceScore: matchResult.overallServiceRelevance || 80,
+      };
+      if (matchResult.rankedMatches && matchResult.rankedMatches.length > 1) {
+        intelligence.service.secondaryServices = matchResult.rankedMatches.slice(1, 3).map((m) => ({
+          slug: m.serviceSlug,
+          title: m.serviceTitle,
+          relevanceScore: m.score,
+        }));
+      }
+    }
+
+    const conversionStrategy = generateConversionStrategy(blog);
+    if (conversionStrategy) {
+      intelligence.conversion.conversionLevel = conversionStrategy.intentBand || "SOFT";
+      intelligence.conversion.ctaStrategy = conversionStrategy.recommendedAction || "Learn More";
+      intelligence.conversion.bookingTarget = conversionStrategy.bookingAction?.targetUrl || `/book-call?service=${intelligence.service.primaryService?.slug || ""}`;
+    }
+  } catch {
+    // Non-critical matching catch
+  }
+
+  return {
+    ...blog,
+    intelligence,
+  };
+}
 
 const isPublicBlog = (blog = {}) => {
     const status = blog.publishStatus ?? blog.status ?? "published";
@@ -160,7 +225,7 @@ export const BlogController = {
                         .lean();
 
                     if (dbBlogs.length > 0) {
-                        const serializedBlogs = serializeDoc(dbBlogs);
+                        const serializedBlogs = serializeDoc(dbBlogs).map(enrichBlogWithIntelligence);
                         return filterPublished
                             ? serializedBlogs.filter((blog) => !isLegacyBlogSlug(blog.slug))
                             : serializedBlogs;

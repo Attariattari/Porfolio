@@ -21,6 +21,7 @@ import {
   MessageSquare,
   ChevronRight,
 } from "lucide-react";
+import AdminPageLoader from "@/components/admin/AdminPageLoader";
 
 export default function MailDashboardClient({ userSession }) {
   const [activeTab, setActiveTab] = useState("emails"); // 'emails' | 'appeals'
@@ -165,6 +166,16 @@ export default function MailDashboardClient({ userSession }) {
         return <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"><Mail className="w-3 h-3" /> Notification</span>;
     }
   };
+
+  if (loading && emails.length === 0 && appeals.length === 0) {
+    return (
+      <AdminPageLoader
+        title="Loading System Communications"
+        message="Hydrating encrypted audit logs, system emails, and access appeals..."
+        badge="Super Admin Audit"
+      />
+    );
+  }
 
   return (
     <div className="space-y-6 text-slate-100">
@@ -415,8 +426,8 @@ export default function MailDashboardClient({ userSession }) {
                   </div>
 
                   <div className="bg-slate-950/50 p-4 rounded-xl border border-slate-800/80 space-y-1">
-                    <span className="text-xs font-semibold text-amber-500/90 uppercase tracking-wider">User's Appeal Message</span>
-                    <p className="text-slate-200 italic">"{appeal.accessAppeal?.message || "No appeal message provided"}"</p>
+                    <span className="text-xs font-semibold text-amber-500/90 uppercase tracking-wider">User&apos;s Appeal Message</span>
+                    <p className="text-slate-200 italic">&ldquo;{appeal.accessAppeal?.message || "No appeal message provided"}&rdquo;</p>
                   </div>
                 </div>
 

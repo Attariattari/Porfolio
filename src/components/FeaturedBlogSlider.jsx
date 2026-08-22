@@ -18,11 +18,8 @@ export default function FeaturedBlogSlider({ featuredBlogs, onImageClick }) {
   const [isPointerDown, setIsPointerDown] = useState(false);
   const pointerStart = useRef(null);
   const count = featuredBlogs?.length || 0;
+  const safeIndex = count ? Math.min(activeIndex, count - 1) : 0;
   const isPaused = isHovered || hasFocus || isPointerDown;
-
-  useEffect(() => {
-    setActiveIndex((current) => (count ? Math.min(current, count - 1) : 0));
-  }, [count]);
 
   useEffect(() => {
     if (count < 2 || isPaused) return undefined;
@@ -36,9 +33,9 @@ export default function FeaturedBlogSlider({ featuredBlogs, onImageClick }) {
   if (!count) return null;
 
   const showPrevious = () =>
-    setActiveIndex((current) => (current - 1 + count) % count);
+    setActiveIndex(() => (safeIndex - 1 + count) % count);
   const showNext = () =>
-    setActiveIndex((current) => (current + 1) % count);
+    setActiveIndex(() => (safeIndex + 1) % count);
 
   const finishSwipe = (clientX) => {
     if (pointerStart.current === null) return;
@@ -86,7 +83,7 @@ export default function FeaturedBlogSlider({ featuredBlogs, onImageClick }) {
     >
       <AnimatePresence initial={false} mode="popLayout">
         {featuredBlogs.map((blog, index) =>
-          index === activeIndex ? (
+          index === safeIndex ? (
             <motion.div
               key={blog.id || blog.slug}
               initial={{ opacity: 0, x: "18%", scale: 0.98 }}
@@ -177,9 +174,9 @@ export default function FeaturedBlogSlider({ featuredBlogs, onImageClick }) {
               type="button"
               onClick={() => setActiveIndex(index)}
               aria-label={`Show featured article ${index + 1}`}
-              aria-current={index === activeIndex ? "true" : undefined}
+              aria-current={index === safeIndex ? "true" : undefined}
               className={`h-2 rounded-full bg-accent transition-all duration-300 ${
-                index === activeIndex
+                index === safeIndex
                   ? "w-6 opacity-100"
                   : "w-2 opacity-20 hover:opacity-50"
               }`}

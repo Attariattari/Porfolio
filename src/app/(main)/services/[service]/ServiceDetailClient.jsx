@@ -57,6 +57,103 @@ const itemTitle = (item) =>
 const itemDescription = (item) =>
   typeof item === "string" ? "" : item?.description || "";
 
+const itemWhyItHappens = (item, serviceTitle = "") => {
+  if (typeof item === "object") {
+    if (item.whyItHappens) return item.whyItHappens;
+    if (item.cause) return item.cause;
+    if (item.rootCause) return item.rootCause;
+  }
+  const title = (itemTitle(item) || "").toLowerCase();
+  if (title.includes("brand") || title.includes("presence") || title.includes("outdated")) {
+    return "Using generic templates, outdated visual hierarchy, or legacy code that fails to convey authority.";
+  }
+  if (title.includes("mobile") || title.includes("responsive") || title.includes("device")) {
+    return "Rigid desktop-centric layouts, unoptimized touch targets, and viewport scaling issues on mobile.";
+  }
+  if (title.includes("lead") || title.includes("conversion") || title.includes("inquir") || title.includes("sales") || title.includes("flow")) {
+    return "Hidden or unclear call-to-actions, complex multi-step forms, and lack of social proof or trust badges.";
+  }
+  if (title.includes("content") || title.includes("management") || title.includes("cms") || title.includes("update")) {
+    return "No unified admin interface, requiring expensive developer intervention for even minor text/image edits.";
+  }
+  if (title.includes("speed") || title.includes("performance") || title.includes("vitals") || title.includes("slow")) {
+    return "Bloated JavaScript bundles, uncompressed heavy assets, and missing edge caching / server-side rendering.";
+  }
+  if (title.includes("seo") || title.includes("search") || title.includes("visibility") || title.includes("ranking")) {
+    return "Missing structured JSON-LD data, duplicate metadata tags, and poor semantic HTML heading hierarchy.";
+  }
+  if (title.includes("database") || title.includes("api") || title.includes("backend") || title.includes("security")) {
+    return "Un-indexed queries, missing rate limiting, lack of data validation, and fragile third-party integrations.";
+  }
+  if (title.includes("maintenance") || title.includes("crash") || title.includes("bug") || title.includes("downtime")) {
+    return "Unmaintained dependencies, lack of automated error logging, and absence of staging environments.";
+  }
+  return `Legacy architecture and un-optimized workflows limiting ${serviceTitle || "your business"} growth.`;
+};
+
+const itemHowWeSolveIt = (item, serviceTitle = "") => {
+  if (typeof item === "object") {
+    if (item.howWeSolveIt) return item.howWeSolveIt;
+    if (item.solution) return item.solution;
+    if (item.description) return item.description;
+  }
+  const title = (itemTitle(item) || "").toLowerCase();
+  if (title.includes("brand") || title.includes("presence") || title.includes("outdated")) {
+    return "We engineer a bespoke, modern interface with custom typography, clean dark/light themes, and premium micro-interactions.";
+  }
+  if (title.includes("mobile") || title.includes("responsive") || title.includes("device")) {
+    return "We build with mobile-first fluid layouts, thumb-friendly navigation, and adaptive image assets for every screen size.";
+  }
+  if (title.includes("lead") || title.includes("conversion") || title.includes("inquir") || title.includes("sales") || title.includes("flow")) {
+    return "We architect frictionless high-converting funnel pathways, strategic sticky CTAs, and instant form validations.";
+  }
+  if (title.includes("content") || title.includes("management") || title.includes("cms") || title.includes("update")) {
+    return "We deliver an intuitive, role-based admin panel where your team can manage content in seconds with 0 code.";
+  }
+  if (title.includes("speed") || title.includes("performance") || title.includes("vitals") || title.includes("slow")) {
+    return "We implement Next.js Server Components, WebP/AVIF media compression, and global CDN edge delivery for <1s load times.";
+  }
+  if (title.includes("seo") || title.includes("search") || title.includes("visibility") || title.includes("ranking")) {
+    return "We inject automated Schema.org rich snippets, dynamic OpenGraph previews, and search-optimized semantic structure.";
+  }
+  if (title.includes("database") || title.includes("api") || title.includes("backend") || title.includes("security")) {
+    return "We build robust REST/GraphQL endpoints with encrypted authentication, MongoDB indexing, and resilient webhooks.";
+  }
+  return `We implement an end-to-end custom engineering solution tailored specifically for ${serviceTitle || "your requirements"}.`;
+};
+
+const itemExpectedOutcome = (item, serviceTitle = "") => {
+  if (typeof item === "object") {
+    if (item.expectedOutcome) return item.expectedOutcome;
+    if (item.outcome) return item.outcome;
+    if (item.impact) return item.impact;
+    if (item.result) return item.result;
+  }
+  const title = (itemTitle(item) || "").toLowerCase();
+  if (title.includes("brand") || title.includes("presence") || title.includes("outdated")) {
+    return "Instant credibility with visitors, premium market positioning, and higher client trust.";
+  }
+  if (title.includes("mobile") || title.includes("responsive") || title.includes("device")) {
+    return "Flawless mobile user experience, 40%+ longer session duration, and drastically lower bounce rates.";
+  }
+  if (title.includes("lead") || title.includes("conversion") || title.includes("inquir") || title.includes("sales") || title.includes("flow")) {
+    return "Measurable 2x–3x lift in qualified business inquiries and customer consultation bookings.";
+  }
+  if (title.includes("content") || title.includes("management") || title.includes("cms") || title.includes("update")) {
+    return "100% independent content management with zero technical bottlenecks or recurring developer fees.";
+  }
+  if (title.includes("speed") || title.includes("performance") || title.includes("vitals") || title.includes("slow")) {
+    return "95+ Google PageSpeed score, instant 0ms transitions, and peak SEO ranking competitiveness.";
+  }
+  if (title.includes("seo") || title.includes("search") || title.includes("visibility") || title.includes("ranking")) {
+    return "Sustainable organic Google traffic growth and first-page rankings for key commercial queries.";
+  }
+  if (title.includes("database") || title.includes("api") || title.includes("backend") || title.includes("security")) {
+    return "99.9% system uptime, airtight data protection, and sub-100ms backend processing speeds.";
+  }
+  return `Measurable improvements in speed, lead conversion, operational efficiency, and overall ROI.`;
+};
+
 const normalizeFaq = (value) =>
   normalizeArray(value).filter((item) => item?.question && item?.answer);
 
@@ -349,6 +446,78 @@ export default function ServiceDetailClient({
                 </div>
               </Reveal>
             )}
+
+            {/* NEW SECTION 1: Who Needs This Service & Key Triggers */}
+            {(service.targetAudienceProfiles?.length > 0 || service.buyerIntentTriggers?.length > 0) && (
+              <Reveal>
+                <SectionHeader
+                  eyebrow="Target Audience & Intent"
+                  title="Who Needs This Service & When"
+                  description="Identify if your business goals, current setup, or growth stage align with this service."
+                />
+                <div className="space-y-6">
+                  {service.targetAudienceProfiles?.length > 0 && (
+                    <div className="rounded-2xl border border-border/60 bg-card/45 p-6 backdrop-blur-xl md:p-8 space-y-4">
+                      <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                        <Target className="h-5 w-5 text-accent" /> Ideal Business Profiles
+                      </h3>
+                      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                        {service.targetAudienceProfiles.map((aud, index) => (
+                          <div key={index} className="rounded-xl border border-border/60 bg-background/45 p-4 space-y-1.5">
+                            <span className="rounded bg-accent/15 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-accent">
+                              {aud.role || "Target Role"}
+                            </span>
+                            <p className="text-sm font-semibold text-foreground/90">{aud.label || aud}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {service.buyerIntentTriggers?.length > 0 && (
+                    <div className="rounded-2xl border border-border/60 bg-card/45 p-6 backdrop-blur-xl md:p-8 space-y-4">
+                      <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                        <Zap className="h-5 w-5 text-accent" /> Key Trigger Events
+                      </h3>
+                      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                        {service.buyerIntentTriggers.map((trigger, index) => (
+                          <div key={index} className="flex items-center gap-3 rounded-xl border border-border/60 bg-background/45 p-4">
+                            <CheckCircle2 className="h-5 w-5 shrink-0 text-accent" />
+                            <p className="text-sm font-medium text-foreground/80">{trigger}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </Reveal>
+            )}
+
+            {/* NEW SECTION 2: Common Buyer Objections & AI Clarifications */}
+            {service.commonObjections?.length > 0 && (
+              <Reveal>
+                <SectionHeader
+                  eyebrow="Decision Support"
+                  title="Common Doubts & Direct Answers"
+                  description="Addressing key technical and strategic questions before you book your consultation."
+                />
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  {service.commonObjections.map((obj, index) => (
+                    <div key={index} className="rounded-2xl border border-border/60 bg-card/45 p-6 space-y-3">
+                      <h4 className="text-base font-bold text-foreground flex items-start gap-2">
+                        <HelpCircle className="h-5 w-5 shrink-0 text-amber-400 mt-0.5" />
+                        {obj.objection || obj}
+                      </h4>
+                      {obj.response && (
+                        <p className="text-sm leading-relaxed text-muted-foreground pl-7 border-l-2 border-accent/30">
+                          {obj.response}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </Reveal>
+            )}
           </div>
 
           <aside className="lg:sticky lg:top-24 lg:h-fit">
@@ -400,24 +569,38 @@ export default function ServiceDetailClient({
                 eyebrow="Business problems"
                 title="Problems This Service Helps Solve"
               />
-              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+              <div className="space-y-4">
                 {problems.map((problem) => (
                   <div
                     key={itemTitle(problem)}
-                    className="flex items-center gap-4 rounded-xl border border-border/60 bg-card/45 p-4"
+                    className="rounded-2xl border border-border/60 bg-card/45 p-6 backdrop-blur-xl space-y-3"
                   >
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent">
-                      <Zap className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <span className="text-sm font-bold text-foreground/85">
-                        {itemTitle(problem)}
+                    <div className="flex items-center gap-2">
+                      <span className="rounded bg-rose-500/15 text-rose-300 border border-rose-500/30 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider">
+                        Business Challenge
                       </span>
-                      {itemDescription(problem) && (
-                        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                          {itemDescription(problem)}
-                        </p>
-                      )}
+                      <h4 className="text-base font-bold text-foreground">{itemTitle(problem)}</h4>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1 text-xs">
+                      <div className="rounded-xl border border-border/40 bg-background/50 p-3">
+                        <span className="font-bold text-muted-foreground uppercase text-[9px] block mb-1">Why It Happens</span>
+                        <span className="text-foreground/90 font-medium leading-relaxed">
+                          {itemWhyItHappens(problem, service.title)}
+                        </span>
+                      </div>
+                      <div className="rounded-xl border border-accent/20 bg-accent/5 p-3">
+                        <span className="font-bold text-accent uppercase text-[9px] block mb-1">How We Solve It</span>
+                        <span className="text-foreground/90 font-medium leading-relaxed">
+                          {itemHowWeSolveIt(problem, service.title)}
+                        </span>
+                      </div>
+                      <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3">
+                        <span className="font-bold text-emerald-400 uppercase text-[9px] block mb-1">Expected Outcome</span>
+                        <span className="text-foreground/90 font-medium leading-relaxed">
+                          {itemExpectedOutcome(problem, service.title)}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -692,6 +875,35 @@ export default function ServiceDetailClient({
                 ))}
               </div>
             </Reveal>
+
+            {service.intelligence?.blogSupport?.blogs?.length > 0 && (
+              <Reveal>
+                <SectionHeader
+                  eyebrow="Knowledge & Authority"
+                  title="Supporting Articles & Technical Guides"
+                  description="In-depth articles from the Muhyo Tech engineering library explaining concepts related to this service."
+                />
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  {service.intelligence.blogSupport.blogs.map((article) => (
+                    <Link
+                      key={article.slug || article._id}
+                      href={`/blog/${article.slug}`}
+                      className="group rounded-2xl border border-border/60 bg-card/45 p-5 transition-colors hover:border-accent/35"
+                    >
+                      <span className="rounded bg-accent/10 border border-accent/20 px-2 py-0.5 text-[8px] font-bold text-accent uppercase">
+                        {article.authorityRole || "TECHNICAL GUIDE"}
+                      </span>
+                      <h3 className="mt-2 text-base font-bold tracking-tight text-foreground group-hover:text-accent transition-colors">
+                        {article.title}
+                      </h3>
+                      <div className="mt-4 inline-flex items-center gap-2 text-xs font-bold text-accent">
+                        Read Guide <ArrowRight className="h-3.5 w-3.5" />
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </Reveal>
+            )}
 
             <Reveal>
               <div className="mb-6 flex items-center gap-3">

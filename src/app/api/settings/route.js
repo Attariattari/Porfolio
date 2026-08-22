@@ -18,7 +18,7 @@ const PUBLIC_THEME_CACHE_TTL = 5;
 const defaultSettings = {
     siteTitle: "Muhyo Tech",
     siteAccent: "Tech",
-    siteTheme: "black",
+    siteTheme: "dark",
     adminName: "Pir Ghulam Muhyo Din",
     email: "attariattari549@gmail.com",
     location: "Lahore, Pakistan",
@@ -101,7 +101,7 @@ export async function GET(request) {
             config = new SiteConfig({
                 siteTitle: "Muhyo Tech",
                 siteAccent: "Tech",
-                siteTheme: "black",
+                siteTheme: "dark",
                 adminName: "Pir Ghulam Muhyo Din",
                 email: "attariattari549@gmail.com",
                 location: "Lahore, Pakistan",

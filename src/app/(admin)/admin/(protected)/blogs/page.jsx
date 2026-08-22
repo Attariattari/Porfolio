@@ -14,13 +14,14 @@ import ImageUploader from "@/components/admin/ImageUploader";
 import { Controller } from "react-hook-form";
 import { AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
-import { Sparkles, CheckCircle2, Mail, RefreshCcw, Copy, BookOpen, Search, Pencil, Trash2, ExternalLink, Star, Plus, Download, Upload, Share2, Clock3, Save, X, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import { Sparkles, CheckCircle2, Mail, RefreshCcw, Copy, BookOpen, Search, Pencil, Trash2, ExternalLink, Star, Plus, Download, Upload, Share2, Clock3, Save, X, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, BrainCircuit, Target } from "lucide-react";
 import AIBlogProgress from "@/components/admin/AIBlogProgress";
 import SocialShareKitModal from "@/components/admin/SocialShareKitModal";
 import BloggerPostModal from "@/components/admin/BloggerPostModal";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ListChecks } from "lucide-react";
+import AdminPageLoader from "@/components/admin/AdminPageLoader";
 
 const blogSchema = z.object({
   title: z.string().min(10, "Title is too short for SEO"),
@@ -41,6 +42,7 @@ export default function BlogsPage() {
   const router = useRouter();
   const {
     blogs,
+    blogsCacheHydrated,
     blogsLastFetchedAt,
     fetchBlogs,
     addBlog,
@@ -75,6 +77,7 @@ export default function BlogsPage() {
 
   const [selectedBloggerBlog, setSelectedBloggerBlog] = useState(null);
   const [isBloggerModalOpen, setIsBloggerModalOpen] = useState(false);
+  const [inspectedBlog, setInspectedBlog] = useState(null);
 
   const isAnyFilterActive = Boolean(blogSearch || blogDateFilter || blogFeaturedFilter !== "all" || blogStatusFilter !== "all" || blogSortDirection !== "ascending");
 
@@ -514,6 +517,36 @@ export default function BlogsPage() {
     router.push("/admin/blogs/new");
   };
 
+  const handleMasterAutomationToggle = async () => {
+    const newEnabled = !automationSettings.enabled;
+    const newSettings = {
+      ...automationSettings,
+      enabled: newEnabled,
+    };
+    setAutomationSettings(newSettings);
+    setAutomationSettingsSaving(true);
+    try {
+      const response = await fetch("/api/admin/blog-automation-settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newSettings),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Failed to update AI Engine setting.");
+      setAutomationSettings(result.data);
+      if (newEnabled) {
+        toast.success("🟢 AI Blog Automation is now ACTIVE across all pipelines & crons.");
+      } else {
+        toast.warning("🛑 AI Blog Automation is STOPPED in Database (All background AI generation paused).");
+      }
+    } catch (error) {
+      setAutomationSettings(automationSettings);
+      toast.error(error.message || "Failed to update AI Engine switch.");
+    } finally {
+      setAutomationSettingsSaving(false);
+    }
+  };
+
   const saveAutomationSettings = async (settings = automationSettings) => {
     setAutomationSettingsSaving(true);
     try {
@@ -716,7 +749,7 @@ export default function BlogsPage() {
   const hasPendingImage = !!pendingImageBlog;
   const visibleBlogs = [...blogs]
     .filter((blog) =>
-      `${blog.title || ""} ${blog.category || ""} ${(blog.tags || []).join(" ")}`
+      `${blog.title || ""} ${blog.category || ""} ${(blog.tags || []).join(" ")} ${blog.intelligence?.service?.primaryService?.title || ""} ${blog.intelligence?.topic?.topicTitle || ""}`
         .toLowerCase()
         .includes(blogSearch.toLowerCase()),
     )
@@ -766,12 +799,22 @@ export default function BlogsPage() {
 
   const aiActionRenderer = columns.find((column) => column.key === "ai_actions")?.render;
 
+  if (!blogsCacheHydrated && blogs.length === 0) {
+    return (
+      <AdminPageLoader
+        title="Loading Article Workspace"
+        message="Hydrating articles, E-E-A-T credentials, and publishing schedules..."
+        badge="Editorial Workspace"
+      />
+    );
+  }
 
   return (
     <div className="mx-auto max-w-[1500px] space-y-6 pb-20">
       <header className="relative overflow-hidden rounded-[28px] border border-white/[0.08] bg-[#0d1727] p-6 sm:p-8"><div className="pointer-events-none absolute -right-20 -top-24 size-72 rounded-full bg-violet-400/[0.07] blur-3xl" /><div className="relative flex flex-col justify-between gap-6 xl:flex-row xl:items-center"><div className="flex items-start gap-4"><span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-violet-400/10 text-violet-300 ring-1 ring-inset ring-violet-400/15"><BookOpen className="size-5" /></span><div><p className="text-[10px] font-bold uppercase tracking-[.24em] text-violet-300">Editorial workspace</p><h1 className="mt-2 text-2xl font-semibold tracking-[-.035em] text-white sm:text-3xl">Blog management</h1><p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">Create, review and publish articles across your portfolio.</p></div></div>
 
-        <div className="grid items-stretch gap-2 sm:grid-cols-2 xl:flex xl:items-center"><Link href="/admin/blog-topics" className="group inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-background/45 px-4 text-xs font-semibold text-foreground shadow-sm transition hover:-translate-y-0.5 hover:border-accent/35 hover:bg-accent/5 hover:text-accent"><ListChecks className="size-4 transition group-hover:scale-105" />Editorial planner</Link><button onClick={handleExport} className="group inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-background/45 px-4 text-xs font-semibold text-muted-foreground shadow-sm transition hover:-translate-y-0.5 hover:border-accent/25 hover:bg-muted hover:text-foreground"><Download className="size-4 transition group-hover:-translate-y-0.5" />Export JSON</button><input type="file" id="import-blog-json" accept=".json" onChange={handleImportFileChange} className="hidden" /><button type="button" onClick={() => document.getElementById("import-blog-json")?.click()} disabled={importing} className="group inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-background/45 px-4 text-xs font-semibold text-muted-foreground shadow-sm transition hover:-translate-y-0.5 hover:border-accent/25 hover:bg-muted hover:text-foreground disabled:opacity-50"><Upload className="size-4 transition group-hover:-translate-y-0.5" />{importing ? "Importing..." : "Import JSON"}</button><button onClick={handleAdd} className="group inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-accent/25 bg-accent/10 px-4 text-xs font-semibold text-accent shadow-sm transition hover:-translate-y-0.5 hover:bg-accent/15"><Plus className="size-4 transition group-hover:rotate-90" />New article</button>
+        <div className="grid items-stretch gap-2 sm:grid-cols-2 xl:flex xl:items-center">
+          <Link href="/admin/blog-topics" className="group inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-background/45 px-4 text-xs font-semibold text-foreground shadow-sm transition hover:-translate-y-0.5 hover:border-accent/35 hover:bg-accent/5 hover:text-accent"><ListChecks className="size-4 transition group-hover:scale-105" />Editorial planner</Link><button onClick={handleExport} className="group inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-background/45 px-4 text-xs font-semibold text-muted-foreground shadow-sm transition hover:-translate-y-0.5 hover:border-accent/25 hover:bg-muted hover:text-foreground"><Download className="size-4 transition group-hover:-translate-y-0.5" />Export JSON</button><input type="file" id="import-blog-json" accept=".json" onChange={handleImportFileChange} className="hidden" /><button type="button" onClick={() => document.getElementById("import-blog-json")?.click()} disabled={importing} className="group inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-background/45 px-4 text-xs font-semibold text-muted-foreground shadow-sm transition hover:-translate-y-0.5 hover:border-accent/25 hover:bg-muted hover:text-foreground disabled:opacity-50"><Upload className="size-4 transition group-hover:-translate-y-0.5" />{importing ? "Importing..." : "Import JSON"}</button><button onClick={handleAdd} className="group inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-accent/25 bg-accent/10 px-4 text-xs font-semibold text-accent shadow-sm transition hover:-translate-y-0.5 hover:bg-accent/15"><Plus className="size-4 transition group-hover:rotate-90" />New article</button>
           <label
             className={`flex h-11 cursor-pointer select-none items-center justify-between gap-3 rounded-xl border px-3.5 text-xs font-semibold tracking-wide shadow-sm transition-all duration-200 ${
               autoGenerateImages
@@ -842,12 +885,129 @@ export default function BlogsPage() {
 
       <section className="rounded-[24px] border border-white/[0.08] bg-[#0d1727] p-5 sm:p-6">
         <BlogPublishCountdown settings={automationSettings} />
-        <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between"><div><div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.2em] text-violet-300"><Clock3 className="size-4" />AI publishing schedule</div><h2 className="mt-2 text-lg font-semibold text-white">Automated blog frequency</h2><p className="mt-1 max-w-2xl text-xs leading-5 text-slate-500">The scheduler writes one safe article per eligible run until the daily quantity is complete. Topic Intelligence keeps a seven-day queue reserve based on this demand.</p></div><div className="grid gap-3 sm:grid-cols-[140px_160px_auto_auto_auto] sm:items-end"><label><span className="mb-2 block text-[10px] font-semibold text-slate-400">Blogs per day</span><input type="number" min="1" max="12" step="1" disabled={automationSettingsLoading || automationSettingsSaving} value={automationSettings.dailyQuantity} onChange={(event) => setAutomationSettings((current) => ({ ...current, dailyQuantity: Number(event.target.value) }))} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-white outline-none focus:border-violet-400/40" /></label><label><span className="mb-2 block text-[10px] font-semibold text-slate-400">Interval hours</span><input type="number" min="1" max="168" step="1" disabled={automationSettingsLoading || automationSettingsSaving} value={automationSettings.intervalHours} onChange={(event) => setAutomationSettings((current) => ({ ...current, intervalHours: Number(event.target.value) }))} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-white outline-none focus:border-violet-400/40" /></label><label className="flex h-11 cursor-pointer items-center gap-2 rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-xs text-slate-300"><input type="checkbox" checked={automationSettings.enabled} disabled={automationSettingsLoading || automationSettingsSaving} onChange={(event) => setAutomationSettings((current) => ({ ...current, enabled: event.target.checked }))} className="size-4 accent-violet-400" />Enabled</label><button type="button" onClick={resetAutomationSettings} disabled={automationSettingsLoading || automationSettingsSaving} className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-white/[0.1] bg-slate-950/35 px-4 text-xs font-bold text-slate-300 transition hover:border-violet-400/30 hover:text-violet-300 disabled:opacity-50"><RefreshCcw className="size-4" />Reset default</button><button type="button" onClick={() => saveAutomationSettings()} disabled={automationSettingsLoading || automationSettingsSaving} className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-violet-400 px-4 text-xs font-bold text-slate-950 transition hover:bg-violet-300 disabled:opacity-50"><Save className="size-4" />{automationSettingsSaving ? "Saving..." : "Save schedule"}</button></div></div>
+        <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+          <div>
+            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.2em] text-violet-300">
+              <Clock3 className="size-4" />AI publishing schedule
+            </div>
+            <h2 className="mt-2 text-lg font-semibold text-white">Automated blog frequency</h2>
+            <p className="mt-1 max-w-2xl text-xs leading-5 text-slate-500">
+              The scheduler writes one safe article per eligible run until the daily quantity is complete. Topic Intelligence keeps a seven-day queue reserve based on this demand.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-end gap-3">
+            <label className="w-full sm:w-28">
+              <span className="mb-2 block text-[10px] font-semibold text-slate-400">Blogs per day</span>
+              <input
+                type="number"
+                min="1"
+                max="12"
+                step="1"
+                disabled={automationSettingsLoading || automationSettingsSaving}
+                value={automationSettings.dailyQuantity}
+                onChange={(event) =>
+                  setAutomationSettings((current) => ({
+                    ...current,
+                    dailyQuantity: Number(event.target.value),
+                  }))
+                }
+                className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-white outline-none focus:border-violet-400/40"
+              />
+            </label>
+            <label className="w-full sm:w-32">
+              <span className="mb-2 block text-[10px] font-semibold text-slate-400">Interval hours</span>
+              <input
+                type="number"
+                min="1"
+                max="168"
+                step="1"
+                disabled={automationSettingsLoading || automationSettingsSaving}
+                value={automationSettings.intervalHours}
+                onChange={(event) =>
+                  setAutomationSettings((current) => ({
+                    ...current,
+                    intervalHours: Number(event.target.value),
+                  }))
+                }
+                className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-white outline-none focus:border-violet-400/40"
+              />
+            </label>
+
+            {/* Master AI Engine Persistence Kill-Switch Button */}
+            <button
+              type="button"
+              disabled={automationSettingsLoading || automationSettingsSaving}
+              onClick={handleMasterAutomationToggle}
+              className={`group flex h-11 items-center justify-between gap-3 rounded-xl border px-4 text-xs font-bold tracking-wide shadow-sm transition-all duration-200 ${
+                automationSettings.enabled
+                  ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-300 shadow-emerald-500/10 hover:bg-emerald-500/25"
+                  : "border-rose-500/40 bg-rose-500/15 text-rose-300 shadow-rose-500/10 hover:bg-rose-500/25"
+              }`}
+              title={
+                automationSettings.enabled
+                  ? "AI Engine is ACTIVE in Database. Click to STOP all automated generation."
+                  : "AI Engine is PAUSED in Database. Click to START automated generation."
+              }
+            >
+              <div className="flex items-center gap-2">
+                <span className="relative flex size-2.5 items-center justify-center">
+                  <span
+                    className={`absolute inline-flex size-full rounded-full opacity-75 ${
+                      automationSettings.enabled
+                        ? "bg-emerald-400 animate-ping"
+                        : "bg-rose-400"
+                    }`}
+                  />
+                  <span
+                    className={`relative inline-flex size-2 rounded-full ${
+                      automationSettings.enabled ? "bg-emerald-400" : "bg-rose-400"
+                    }`}
+                  />
+                </span>
+                <BrainCircuit className="size-4" />
+                <span>
+                  AI Engine:{" "}
+                  <strong className="uppercase">
+                    {automationSettings.enabled ? "ACTIVE" : "PAUSED"}
+                  </strong>
+                </span>
+              </div>
+              <span
+                className={`relative h-5 w-10 rounded-full p-0.5 transition-colors duration-200 ${
+                  automationSettings.enabled ? "bg-emerald-500" : "bg-rose-600/70"
+                }`}
+              >
+                <span
+                  className={`block size-4 rounded-full bg-white shadow-md transition-transform duration-200 ease-out ${
+                    automationSettings.enabled ? "translate-x-5" : "translate-x-0"
+                  }`}
+                />
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={resetAutomationSettings}
+              disabled={automationSettingsLoading || automationSettingsSaving}
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-white/[0.1] bg-slate-950/35 px-4 text-xs font-bold text-slate-300 transition hover:border-violet-400/30 hover:text-violet-300 disabled:opacity-50"
+            >
+              <RefreshCcw className="size-4" />Reset default
+            </button>
+            <button
+              type="button"
+              onClick={() => saveAutomationSettings()}
+              disabled={automationSettingsLoading || automationSettingsSaving}
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-violet-400 px-4 text-xs font-bold text-slate-950 transition hover:bg-violet-300 disabled:opacity-50"
+            >
+              <Save className="size-4" />{automationSettingsSaving ? "Saving..." : "Save schedule"}
+            </button>
+          </div>
+        </div>
       </section>
 
       <div className="grid overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0d1727] grid-cols-2 sm:grid-cols-5"><BlogMetric label="Total articles" value={blogs.length} /><BlogMetric label="Published" value={blogs.filter((item) => item.publishStatus === "published").length} /><BlogMetric label="Pending" value={blogs.filter((item) => item.publishStatus === "pending").length} /><BlogMetric label="Drafts" value={blogs.filter((item) => item.publishStatus === "draft" || !item.publishStatus).length} /><BlogMetric label="AI generated" value={blogs.filter((item) => item.aiGenerated).length} last /></div>
 
-      <section id="article-library-section" data-columns={columns.length} data-reorder={Boolean(reorderBlogs)} className="overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#0d1727]"><div className="flex flex-col justify-between gap-4 border-b border-white/[0.07] p-4 xl:flex-row xl:items-center sm:p-5"><div className="space-y-3"><div><p className="text-sm font-semibold text-slate-200">Article library</p><p className="mt-1 text-xs text-slate-600">Manage manual and AI-assisted content in one place (21 articles per page).</p></div><div className="flex items-center gap-1.5 flex-wrap pt-1"><button type="button" onClick={() => setBlogStatusFilter("all")} className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${blogStatusFilter === "all" ? "bg-violet-500/20 text-violet-300 border border-violet-500/40 shadow-sm" : "bg-slate-950/35 text-slate-400 border border-white/[0.08] hover:text-slate-200"}`}>All ({blogs.length})</button><button type="button" onClick={() => setBlogStatusFilter("published")} className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${blogStatusFilter === "published" ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm" : "bg-slate-950/35 text-slate-400 border border-white/[0.08] hover:text-emerald-300"}`}><span className="size-2 rounded-full bg-emerald-400 animate-pulse"></span>Published ({blogs.filter((b) => b.publishStatus === "published").length})</button><button type="button" onClick={() => setBlogStatusFilter("pending")} className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${blogStatusFilter === "pending" ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm" : "bg-slate-950/35 text-slate-400 border border-white/[0.08] hover:text-amber-300"}`}><span className="size-2 rounded-full bg-amber-400"></span>Pending ({blogs.filter((b) => b.publishStatus === "pending").length})</button><button type="button" onClick={() => setBlogStatusFilter("draft")} className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${blogStatusFilter === "draft" ? "bg-slate-700/50 text-slate-200 border border-slate-500/50 shadow-sm" : "bg-slate-950/35 text-slate-400 border border-white/[0.08] hover:text-slate-200"}`}><span className="size-2 rounded-full bg-slate-400"></span>Drafts ({blogs.filter((b) => (b.publishStatus || "draft") === "draft" && b.publishStatus !== "published" && b.publishStatus !== "pending").length})</button></div></div><div className="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap xl:w-auto"><label className="relative w-full sm:min-w-64"><Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-600" /><input value={blogSearch} onChange={(event) => setBlogSearch(event.target.value)} placeholder="Search articles..." className="w-full rounded-xl border border-white/[0.08] bg-slate-950/35 py-3 pl-10 pr-4 text-sm outline-none placeholder:text-slate-700 focus:border-violet-400/40" /></label><label><span className="sr-only">Filter by status</span><select value={blogStatusFilter} onChange={(event) => setBlogStatusFilter(event.target.value)} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40"><option value="all">All Statuses</option><option value="published">Published 🟢</option><option value="pending">Pending 🟡</option><option value="draft">Draft ⚪</option></select></label><label><span className="sr-only">Filter by featured</span><select value={blogFeaturedFilter} onChange={(event) => setBlogFeaturedFilter(event.target.value)} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40"><option value="all">All Articles</option><option value="featured">Featured ⭐</option><option value="non-featured">Non-Featured</option></select></label><label><span className="sr-only">Filter articles by date</span><input type="date" value={blogDateFilter} onChange={(event) => setBlogDateFilter(event.target.value)} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40" title="Show blogs published on this date" /></label><label><span className="sr-only">Sort articles</span><select value={blogSortDirection} onChange={(event) => setBlogSortDirection(event.target.value)} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40"><option value="ascending">Ascending (newest first)</option><option value="descending">Descending (oldest first)</option></select></label>{isAnyFilterActive && <button type="button" onClick={handleClearFilters} className="inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border border-rose-400/30 bg-rose-500/10 px-3.5 text-xs font-semibold text-rose-300 transition hover:bg-rose-500/20" title="Clear all active filters"><X className="size-3.5" />Clear filters</button>}</div></div><div className="grid gap-4 p-4 sm:p-5 md:grid-cols-2 xl:grid-cols-3">{paginatedBlogs.map((blog) => <BlogCard key={blog._id || blog.slug || blog.title} blog={blog} aiActions={aiActionRenderer?.(blog)} onCreateBlogger={handleGenerateBloggerForBlog} onEdit={() => handleEdit(blog)} onView={() => handleView(blog)} onDelete={() => handleDelete(blog)} />)}</div>{visibleBlogs.length === 0 && <div className="grid min-h-72 place-items-center text-center"><div><BookOpen className="mx-auto size-9 text-slate-700" /><p className="mt-4 text-sm font-semibold text-slate-300">No matching articles</p><p className="mt-1 text-xs text-slate-600">Try another title, date, category or status filter.</p></div></div>}
+      <section id="article-library-section" data-columns={columns.length} data-reorder={Boolean(reorderBlogs)} className="overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#0d1727]"><div className="flex flex-col justify-between gap-4 border-b border-white/[0.07] p-4 xl:flex-row xl:items-center sm:p-5"><div className="space-y-3"><div><p className="text-sm font-semibold text-slate-200">Article library</p><p className="mt-1 text-xs text-slate-600">Manage manual and AI-assisted content in one place (21 articles per page).</p></div><div className="flex items-center gap-1.5 flex-wrap pt-1"><button type="button" onClick={() => setBlogStatusFilter("all")} className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${blogStatusFilter === "all" ? "bg-violet-500/20 text-violet-300 border border-violet-500/40 shadow-sm" : "bg-slate-950/35 text-slate-400 border border-white/[0.08] hover:text-slate-200"}`}>All ({blogs.length})</button><button type="button" onClick={() => setBlogStatusFilter("published")} className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${blogStatusFilter === "published" ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm" : "bg-slate-950/35 text-slate-400 border border-white/[0.08] hover:text-emerald-300"}`}><span className="size-2 rounded-full bg-emerald-400 animate-pulse"></span>Published ({blogs.filter((b) => b.publishStatus === "published").length})</button><button type="button" onClick={() => setBlogStatusFilter("pending")} className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${blogStatusFilter === "pending" ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm" : "bg-slate-950/35 text-slate-400 border border-white/[0.08] hover:text-amber-300"}`}><span className="size-2 rounded-full bg-amber-400"></span>Pending ({blogs.filter((b) => b.publishStatus === "pending").length})</button><button type="button" onClick={() => setBlogStatusFilter("draft")} className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${blogStatusFilter === "draft" ? "bg-slate-700/50 text-slate-200 border border-slate-500/50 shadow-sm" : "bg-slate-950/35 text-slate-400 border border-white/[0.08] hover:text-slate-200"}`}><span className="size-2 rounded-full bg-slate-400"></span>Drafts ({blogs.filter((b) => (b.publishStatus || "draft") === "draft" && b.publishStatus !== "published" && b.publishStatus !== "pending").length})</button></div></div><div className="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap xl:w-auto"><label className="relative w-full sm:min-w-64"><Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-600" /><input value={blogSearch} onChange={(event) => setBlogSearch(event.target.value)} placeholder="Search articles..." className="w-full rounded-xl border border-white/[0.08] bg-slate-950/35 py-3 pl-10 pr-4 text-sm outline-none placeholder:text-slate-700 focus:border-violet-400/40" /></label><label><span className="sr-only">Filter by status</span><select value={blogStatusFilter} onChange={(event) => setBlogStatusFilter(event.target.value)} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40"><option value="all">All Statuses</option><option value="published">Published 🟢</option><option value="pending">Pending 🟡</option><option value="draft">Draft ⚪</option></select></label><label><span className="sr-only">Filter by featured</span><select value={blogFeaturedFilter} onChange={(event) => setBlogFeaturedFilter(event.target.value)} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40"><option value="all">All Articles</option><option value="featured">Featured ⭐</option><option value="non-featured">Non-Featured</option></select></label><label><span className="sr-only">Filter articles by date</span><input type="date" value={blogDateFilter} onChange={(event) => setBlogDateFilter(event.target.value)} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40" title="Show blogs published on this date" /></label><label><span className="sr-only">Sort articles</span><select value={blogSortDirection} onChange={(event) => setBlogSortDirection(event.target.value)} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40"><option value="ascending">Ascending (newest first)</option><option value="descending">Descending (oldest first)</option></select></label>{isAnyFilterActive && <button type="button" onClick={handleClearFilters} className="inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border border-rose-400/30 bg-rose-500/10 px-3.5 text-xs font-semibold text-rose-300 transition hover:bg-rose-500/20" title="Clear all active filters"><X className="size-3.5" />Clear filters</button>}</div></div><div className="grid gap-4 p-4 sm:p-5 md:grid-cols-2 xl:grid-cols-3">{paginatedBlogs.map((blog) => <BlogCard key={blog._id || blog.slug || blog.title} blog={blog} aiActions={aiActionRenderer?.(blog)} onCreateBlogger={handleGenerateBloggerForBlog} onEdit={() => handleEdit(blog)} onView={() => handleView(blog)} onDelete={() => handleDelete(blog)} onInspect={() => setInspectedBlog(blog)} />)}</div>{visibleBlogs.length === 0 && <div className="grid min-h-72 place-items-center text-center"><div><BookOpen className="mx-auto size-9 text-slate-700" /><p className="mt-4 text-sm font-semibold text-slate-300">No matching articles</p><p className="mt-1 text-xs text-slate-600">Try another title, date, category or status filter.</p></div></div>}
       {totalPages > 1 && (
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/[0.07] px-6 py-4 bg-slate-950/20">
           <div className="text-xs font-semibold text-slate-400">
@@ -975,42 +1135,107 @@ export default function BlogsPage() {
         }}
         parentBlog={selectedBloggerBlog}
       />
+
+      {inspectedBlog && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-md" role="dialog" aria-modal="true">
+          <div className="relative w-full max-w-2xl overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#0d1727] shadow-2xl">
+            <div className="flex items-center justify-between border-b border-white/[0.07] p-6">
+              <div className="flex items-center gap-3">
+                <span className="grid size-10 place-items-center rounded-xl bg-violet-400/10 text-violet-300">
+                  <BrainCircuit className="size-5" />
+                </span>
+                <div>
+                  <p className="text-[9px] font-bold uppercase tracking-[.2em] text-violet-300">Blog Intelligence Inspection</p>
+                  <h2 className="text-lg font-semibold text-white">{inspectedBlog.title}</h2>
+                </div>
+              </div>
+              <button onClick={() => setInspectedBlog(null)} className="grid size-9 place-items-center rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white">
+                <X className="size-4" />
+              </button>
+            </div>
+            <div className="max-h-[70vh] overflow-y-auto p-6 space-y-5 text-slate-300">
+              <div className="rounded-xl border border-white/[0.08] bg-slate-950/40 p-4 space-y-2">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-violet-300 flex items-center gap-2">
+                  <Target className="size-3.5" /> Topic Intelligence
+                </h4>
+                <p className="text-xs"><strong className="text-white">Topic Connection:</strong> {inspectedBlog.intelligence?.topic?.linked ? `Linked (${inspectedBlog.intelligence.topic.topicTitle})` : "Standalone Article (No Plan Link)"}</p>
+                <p className="text-xs"><strong className="text-white">Search Intent:</strong> <span className="uppercase text-violet-300 font-semibold">{inspectedBlog.searchIntent || inspectedBlog.intelligence?.topic?.searchIntent || "Informational"}</span></p>
+                <p className="text-xs"><strong className="text-white">Topic Opportunity Score:</strong> <span className="font-bold text-emerald-400">{inspectedBlog.intelligence?.topic?.opportunityScore || inspectedBlog.qualityScore || 80}/100</span></p>
+              </div>
+
+              <div className="rounded-xl border border-white/[0.08] bg-slate-950/40 p-4 space-y-2">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-violet-300 flex items-center gap-2">
+                  <Sparkles className="size-3.5" /> Service Intelligence Match
+                </h4>
+                <p className="text-xs"><strong className="text-white">Primary Matched Service:</strong> {inspectedBlog.intelligence?.service?.primaryService ? `${inspectedBlog.intelligence.service.primaryService.title} (${inspectedBlog.intelligence.service.primaryService.relevanceScore}% Match)` : "No direct service match"}</p>
+                {inspectedBlog.intelligence?.service?.secondaryServices?.length > 0 && (
+                  <p className="text-xs"><strong className="text-white">Secondary Services:</strong> {inspectedBlog.intelligence.service.secondaryServices.map(s => `${s.title} (${s.relevanceScore}%)`).join(", ")}</p>
+                )}
+                <p className="text-xs"><strong className="text-white">Coverage Status:</strong> <span className="text-emerald-400 font-semibold">{inspectedBlog.intelligence?.service?.serviceCoverageStatus || "COVERED"}</span></p>
+              </div>
+
+              <div className="rounded-xl border border-white/[0.08] bg-slate-950/40 p-4 space-y-2">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-violet-300 flex items-center gap-2">
+                  <CheckCircle2 className="size-3.5" /> Conversion Intelligence
+                </h4>
+                <p className="text-xs"><strong className="text-white">Commercial Intent Level:</strong> <span className="rounded bg-emerald-500/20 px-2 py-0.5 font-bold text-emerald-300">{inspectedBlog.intelligence?.conversion?.conversionLevel || "SOFT"} INTENT</span></p>
+                <p className="text-xs"><strong className="text-white">CTA Strategy:</strong> {inspectedBlog.intelligence?.conversion?.ctaStrategy || "Informational Service Bridge"}</p>
+                <p className="text-xs"><strong className="text-white">Booking Action Route:</strong> <code className="text-violet-300 font-mono">{inspectedBlog.intelligence?.conversion?.bookingTarget || "/book-call"}</code></p>
+              </div>
+
+              <div className="rounded-xl border border-white/[0.08] bg-slate-950/40 p-4 space-y-2">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-violet-300 flex items-center gap-2">
+                  <BookOpen className="size-3.5" /> Content Authority & Quality
+                </h4>
+                <p className="text-xs"><strong className="text-white">Content Role:</strong> <span className="uppercase text-amber-300 font-semibold">{inspectedBlog.articleType || "PILLAR"}</span></p>
+                <p className="text-xs"><strong className="text-white">Quality Score:</strong> {inspectedBlog.qualityScore || 85}/100</p>
+                <p className="text-xs"><strong className="text-white">Focus Keyword:</strong> {inspectedBlog.focusKeyword || "N/A"}</p>
+              </div>
+            </div>
+            <div className="flex justify-end border-t border-white/[0.07] bg-slate-950/40 px-6 py-4">
+              <button onClick={() => setInspectedBlog(null)} className="rounded-xl bg-violet-400 px-5 py-2 text-xs font-bold text-slate-950 hover:bg-violet-300">
+                Close Inspection
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
-}function BlogPublishCountdown({ settings }) {
-  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0, isDue: false, isQuotaComplete: false });
+}const calculateTimeLeft = (settings) => {
+  if (settings?.enabled === false) {
+    return { hours: 0, minutes: 0, seconds: 0, isDue: false, isQuotaComplete: false };
+  }
+  const dailyQuantity = Math.max(1, Number(settings?.dailyQuantity || 1));
+  const generatedTodayCount = Number(settings?.generatedTodayCount || 0);
+  const now = Date.now();
+  const targetTime = settings?.nextEligibleAt ? new Date(settings.nextEligibleAt).getTime() : 0;
+  const isQuotaComplete = generatedTodayCount >= dailyQuantity;
+  const diff = targetTime - now;
+
+  if (isQuotaComplete) {
+    return { hours: 0, minutes: 0, seconds: 0, isDue: false, isQuotaComplete: true };
+  } else if (targetTime > 0 && diff <= 0) {
+    return { hours: 0, minutes: 0, seconds: 0, isDue: true, isQuotaComplete: false };
+  } else {
+    const hours = Math.floor(Math.max(0, diff) / (1000 * 60 * 60));
+    const minutes = Math.floor((Math.max(0, diff) % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((Math.max(0, diff) % (1000 * 60)) / 1000);
+    return { hours, minutes, seconds, isDue: false, isQuotaComplete: false };
+  }
+};
+
+function BlogPublishCountdown({ settings }) {
+  const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft(settings));
 
   useEffect(() => {
-    if (settings?.enabled === false) {
-      setTimeLeft({ hours: 0, minutes: 0, seconds: 0, isDue: false, isQuotaComplete: false });
-      return;
-    }
+    if (settings?.enabled === false) return;
 
-    const dailyQuantity = Math.max(1, Number(settings?.dailyQuantity || 1));
-    const generatedTodayCount = Number(settings?.generatedTodayCount || 0);
-
-    const updateTimer = () => {
-      const now = Date.now();
-      const targetTime = settings?.nextEligibleAt ? new Date(settings.nextEligibleAt).getTime() : 0;
-      const isQuotaComplete = generatedTodayCount >= dailyQuantity;
-      const diff = targetTime - now;
-
-      if (isQuotaComplete) {
-        setTimeLeft({ hours: 0, minutes: 0, seconds: 0, isDue: false, isQuotaComplete: true });
-      } else if (targetTime > 0 && diff <= 0) {
-        setTimeLeft({ hours: 0, minutes: 0, seconds: 0, isDue: true, isQuotaComplete: false });
-      } else {
-        const hours = Math.floor(Math.max(0, diff) / (1000 * 60 * 60));
-        const minutes = Math.floor((Math.max(0, diff) % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((Math.max(0, diff) % (1000 * 60)) / 1000);
-        setTimeLeft({ hours, minutes, seconds, isDue: false, isQuotaComplete: false });
-      }
-    };
-
-    updateTimer();
-    const interval = setInterval(updateTimer, 1000);
+    const interval = setInterval(() => {
+      setTimeLeft(calculateTimeLeft(settings));
+    }, 1000);
     return () => clearInterval(interval);
-  }, [settings?.nextEligibleAt, settings?.dailyQuantity, settings?.generatedTodayCount, settings?.enabled]);
+  }, [settings]);
 
   if (settings?.enabled === false) {
     return (
@@ -1050,7 +1275,7 @@ export default function BlogsPage() {
             </div>
             <p className="mt-1 text-xs text-slate-400">
               {timeLeft.isQuotaComplete ? (
-                <span className="font-semibold text-emerald-300">✓ Today's daily quota ({settings.generatedTodayCount || 0}/{settings.dailyQuantity}) complete</span>
+                <span className="font-semibold text-emerald-300">✓ Today&apos;s daily quota ({settings.generatedTodayCount || 0}/{settings.dailyQuantity}) complete</span>
               ) : timeLeft.isDue ? (
                 <span className="font-semibold text-emerald-300">⚡ Eligible for publication now (Will execute on next Vercel cron run)</span>
               ) : (
@@ -1111,9 +1336,11 @@ function BlogMetric({ label, value, last = false }) {
   );
 }
 
-  function BlogCard({ blog, aiActions, onCreateBlogger, onEdit, onView, onDelete }) {
+  function BlogCard({ blog, aiActions, onCreateBlogger, onEdit, onView, onDelete, onInspect }) {
     const image = getSafeImageSrc(blog.image || blog.featuredImage?.url || blog.images?.[0]);
     const status = blog._isFromDataJs ? "template" : blog.publishStatus || "draft";
     const date = blog.createdAt ? format(new Date(blog.createdAt), "MMM d, yyyy") : "Not published";
-    return <article className="group overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.025] transition hover:border-violet-400/20 hover:bg-violet-400/[0.025]"><div className="relative aspect-[16/9] overflow-hidden bg-slate-950/50"><Image src={image} alt={getBlogImageAlt(blog)} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition duration-500 group-hover:scale-[1.03]" /><div className="absolute inset-x-0 top-0 flex items-start justify-between p-3"><span className={`rounded-full border px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider backdrop-blur-md ${status === "published" ? "border-emerald-300/20 bg-emerald-400/15 text-emerald-200" : status === "pending" ? "border-amber-300/20 bg-amber-400/15 text-amber-200" : "border-white/10 bg-slate-950/60 text-slate-400"}`}>{status}</span>{blog.featured && <span className="grid size-8 place-items-center rounded-full bg-amber-300 text-slate-950"><Star className="size-3.5 fill-current" /></span>}</div></div><div className="p-5"><div className="flex items-center justify-between gap-3"><p className="text-[9px] font-bold uppercase tracking-[.16em] text-violet-300/70">{blog.category || "Article"}</p><p className="text-[9px] text-slate-600">{date}</p></div><h2 className="mt-2 line-clamp-2 min-h-10 text-base font-semibold leading-5 text-slate-100">{blog.title}</h2><p className="mt-3 line-clamp-2 min-h-10 text-xs leading-5 text-slate-500">{blog.summary || "No article summary added yet."}</p><div className="mt-4 flex min-h-7 flex-wrap items-center gap-1.5">{aiActions}</div><div className="mt-5 flex items-center gap-2 border-t border-white/[0.06] pt-4"><button onClick={onEdit} className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-violet-400/10 py-2.5 text-[10px] font-bold uppercase tracking-wider text-violet-300 hover:bg-violet-400/15"><Pencil className="size-3.5" />Edit article</button>{!blog._isFromDataJs && <button onClick={() => onCreateBlogger(blog)} className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-3 py-2.5 text-[10px] font-bold uppercase tracking-wider text-cyan-300 hover:bg-cyan-500/20 transition-all" title="Generate 900-1200 word supporting article for Google Blogger"><Sparkles className="size-3.5 text-cyan-400" />Blogger Post</button>}{!blog._isFromDataJs && <button onClick={onDelete} className="grid size-9 place-items-center rounded-lg text-slate-600 hover:bg-rose-400/10 hover:text-rose-300"><Trash2 className="size-3.5" /></button>}<button onClick={onView} className="grid size-9 place-items-center rounded-lg border border-white/[0.07] text-slate-500 hover:text-white"><ExternalLink className="size-3.5" /></button></div></div></article>;
+    const intel = blog.intelligence;
+
+    return <article className="group overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.025] transition hover:border-violet-400/20 hover:bg-violet-400/[0.025]"><div className="relative aspect-[16/9] overflow-hidden bg-slate-950/50"><Image src={image} alt={getBlogImageAlt(blog)} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition duration-500 group-hover:scale-[1.03]" /><div className="absolute inset-x-0 top-0 flex items-start justify-between p-3"><span className={`rounded-full border px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider backdrop-blur-md ${status === "published" ? "border-emerald-300/20 bg-emerald-400/15 text-emerald-200" : status === "pending" ? "border-amber-300/20 bg-amber-400/15 text-amber-200" : "border-white/10 bg-slate-950/60 text-slate-400"}`}>{status}</span>{blog.featured && <span className="grid size-8 place-items-center rounded-full bg-amber-300 text-slate-950"><Star className="size-3.5 fill-current" /></span>}</div></div><div className="p-5"><div className="flex items-center justify-between gap-3"><p className="text-[9px] font-bold uppercase tracking-[.16em] text-violet-300/70">{blog.category || "Article"}</p><p className="text-[9px] text-slate-600">{date}</p></div><h2 className="mt-2 line-clamp-2 min-h-10 text-base font-semibold leading-5 text-slate-100">{blog.title}</h2><div className="mt-3 flex flex-wrap items-center gap-1.5">{intel?.service?.primaryService && <span className="rounded border border-white/[0.08] bg-slate-950/50 px-2 py-0.5 text-[8px] font-semibold text-slate-300 truncate max-w-[200px]">⚡ {intel.service.primaryService.title} ({intel.service.primaryService.relevanceScore}%)</span>}{intel?.topic?.linked && <span className="rounded bg-violet-500/15 border border-violet-400/20 px-2 py-0.5 text-[8px] font-bold text-violet-300">📌 Topic Linked</span>}<span className="rounded bg-amber-500/10 border border-amber-400/20 px-2 py-0.5 text-[8px] font-bold text-amber-300 uppercase">👑 {blog.articleType || "pillar"}</span></div><p className="mt-3 line-clamp-2 min-h-10 text-xs leading-5 text-slate-500">{blog.summary || "No article summary added yet."}</p><div className="mt-4 flex min-h-7 flex-wrap items-center gap-1.5">{aiActions}</div><div className="mt-5 flex items-center gap-2 border-t border-white/[0.06] pt-4"><button onClick={onEdit} className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-violet-400/10 py-2.5 text-[10px] font-bold uppercase tracking-wider text-violet-300 hover:bg-violet-400/15"><Pencil className="size-3.5" />Edit article</button><button onClick={onInspect} className="inline-flex items-center justify-center gap-1 rounded-lg border border-violet-400/30 bg-violet-400/10 px-2.5 py-2.5 text-[10px] font-bold uppercase tracking-wider text-violet-300 hover:bg-violet-400/20 transition-all" title="Inspect Topic, Service & Conversion Intelligence"><BrainCircuit className="size-3.5 text-violet-300" />Inspect</button>{!blog._isFromDataJs && <button onClick={() => onCreateBlogger(blog)} className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-3 py-2.5 text-[10px] font-bold uppercase tracking-wider text-cyan-300 hover:bg-cyan-500/20 transition-all" title="Generate 900-1200 word supporting article for Google Blogger"><Sparkles className="size-3.5 text-cyan-400" />Blogger Post</button>}{!blog._isFromDataJs && <button onClick={onDelete} className="grid size-9 place-items-center rounded-lg text-slate-600 hover:bg-rose-400/10 hover:text-rose-300"><Trash2 className="size-3.5" /></button>}<button onClick={onView} className="grid size-9 place-items-center rounded-lg border border-white/[0.07] text-slate-500 hover:text-white"><ExternalLink className="size-3.5" /></button></div></div></article>;
   }

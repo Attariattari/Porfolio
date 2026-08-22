@@ -1,4 +1,4 @@
-import { generateGeminiResponse } from "@/lib/geminiService";
+import { generateGeminiResponse } from "../../geminiService.js";
 
 /**
  * Robust JSON Repair & Parsing Helper

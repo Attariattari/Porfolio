@@ -231,13 +231,13 @@ export default function SocialShareKitModal({ blog, isOpen, onClose, onUpdated }
                     </p>
                     <div className="mt-2 grid grid-cols-1 gap-2 text-[11px] sm:grid-cols-3">
                       <div className="rounded-lg border border-pink-500/20 bg-background/50 p-2">
-                        <strong className="text-pink-300">1. Download Image:</strong> Click "Download Cover Image" below.
+                        <strong className="text-pink-300">1. Download Image:</strong> Click &ldquo;Download Cover Image&rdquo; below.
                       </div>
                       <div className="rounded-lg border border-pink-500/20 bg-background/50 p-2">
-                        <strong className="text-pink-300">2. Copy Caption:</strong> Copies formatted post text & hashtags.
+                        <strong className="text-pink-300">2. Copy Caption:</strong> Copies formatted post text &amp; hashtags.
                       </div>
                       <div className="rounded-lg border border-pink-500/20 bg-background/50 p-2">
-                        <strong className="text-pink-300">3. Create Post:</strong> Upload image & paste caption!
+                        <strong className="text-pink-300">3. Create Post:</strong> Upload image &amp; paste caption!
                       </div>
                     </div>
                   </div>

@@ -11,6 +11,7 @@ import { Building2, Check, Circle, ExternalLink, Globe2, KeyRound, Loader2, Lock
 import useAdminStore from "@/lib/store/adminStore";
 import { useTheme } from "@/components/ThemeProvider";
 import SuperAdminTransferModal from "@/components/admin/SuperAdminTransferModal";
+import AdminPageLoader from "@/components/admin/AdminPageLoader";
 import { HOME_SEO_DESCRIPTION, HOME_SEO_LIMITS, HOME_SEO_TITLE, resolveHomeSeo } from "@/lib/homeSeo";
 
 const schema = z.object({
@@ -39,7 +40,7 @@ function Section({ number, icon: Icon, title, description, children, aside }) {
 }
 
 export default function SettingsPage() {
-  const { settings, updateSettings, fetchSettings, addNotification } = useAdminStore();
+  const { settings, settingsCacheHydrated, updateSettings, fetchSettings, addNotification } = useAdminStore();
   const { theme, setTheme } = useTheme();
   const searchParams = useSearchParams();
   const [saving, setSaving] = useState(false);
@@ -52,7 +53,7 @@ export default function SettingsPage() {
 
   const defaults = useMemo(() => {
     const seo = resolveHomeSeo(settings?.seo);
-    return { siteTitle: settings?.siteTitle ?? "Muhyo", siteAccent: settings?.siteAccent ?? "Tech", adminName: settings?.adminName ?? "Pir Ghulam Muhyo Din", email: settings?.email ?? "attariattari549@gmail.com", location: settings?.location ?? "Lahore, Pakistan", seoTitle: seo.title || HOME_SEO_TITLE, seoDescription: seo.description || HOME_SEO_DESCRIPTION, siteTheme: ["light", "dark", "black"].includes(settings?.siteTheme) ? settings.siteTheme : "black" };
+    return { siteTitle: settings?.siteTitle ?? "Muhyo", siteAccent: settings?.siteAccent ?? "Tech", adminName: settings?.adminName ?? "Pir Ghulam Muhyo Din", email: settings?.email ?? "attariattari549@gmail.com", location: settings?.location ?? "Lahore, Pakistan", seoTitle: seo.title || HOME_SEO_TITLE, seoDescription: seo.description || HOME_SEO_DESCRIPTION, siteTheme: ["light", "dark", "black"].includes(settings?.siteTheme) ? settings.siteTheme : "dark" };
   }, [settings]);
 
   const { register, handleSubmit, formState: { errors, isDirty }, reset, setValue, control } = useForm({ resolver: zodResolver(schema), defaultValues: defaults });
@@ -61,26 +62,52 @@ export default function SettingsPage() {
   const seoDescription = watched.seoDescription || "";
   useEffect(() => { if (settings && Object.keys(settings).length) reset(defaults); }, [settings, defaults, reset]);
 
-  const submit = async (data) => {
+  const submit = async (values) => {
     setSaving(true);
     try {
-      const payload = { siteTitle: data.siteTitle.trim(), siteAccent: data.siteAccent.trim(), adminName: data.adminName.trim(), email: data.email.trim(), location: data.location.trim(), seo: { title: data.seoTitle.trim(), description: data.seoDescription.trim() }, siteTheme: data.siteTheme };
-      const result = await Promise.race([updateSettings(payload), new Promise((_, reject) => window.setTimeout(() => reject(new Error("Save timed out. Please try again.")), 15000))]);
-      if (!result.success) return toast.error(result.error || "Settings could not be saved.");
-      reset(data);
-      addNotification({ title: "Website settings updated", message: "Brand, contact and search settings were successfully published.", type: "SYSTEM" });
-      toast.success("Website settings published.");
-    } catch (error) { toast.error(error.message || "Settings could not be saved."); } finally { setSaving(false); }
+      const payload = {
+        siteTitle: values.siteTitle,
+        siteAccent: values.siteAccent,
+        adminName: values.adminName,
+        email: values.email,
+        location: values.location,
+        siteTheme: values.siteTheme,
+        seo: {
+          title: values.seoTitle,
+          description: values.seoDescription,
+        },
+      };
+
+      const result = await updateSettings(payload);
+      if (!result.success) throw new Error(result.error || "Settings could not be saved");
+      reset(values);
+      addNotification({ title: "Settings published", message: "Global branding, identity and SEO are now live.", type: "SYSTEM" });
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const changeTheme = async (nextTheme) => {
-    if (themeSaving || (nextTheme === theme && nextTheme === defaults.siteTheme)) return;
     const previous = theme;
-    setTheme(nextTheme, { clearPreference: true }); setValue("siteTheme", nextTheme, { shouldDirty: false }); setThemeSaving(true);
+    setTheme(nextTheme, { persistPreference: true });
+    setValue("siteTheme", nextTheme, { shouldDirty: true });
+    setThemeSaving(true);
     try { const result = await updateSettings({ siteTheme: nextTheme }); if (!result.success) throw new Error(result.error || "Theme update failed"); addNotification({ title: "Website theme updated", message: `${nextTheme[0].toUpperCase()}${nextTheme.slice(1)} theme is now active across the website.`, type: "SYSTEM" }); }
     catch (error) { setTheme(previous, { clearPreference: true }); setValue("siteTheme", previous, { shouldDirty: false }); toast.error(error.message); }
     finally { setThemeSaving(false); }
   };
+
+  if (!settingsCacheHydrated && !settings?.siteTitle) {
+    return (
+      <AdminPageLoader
+        title="Loading Control Settings"
+        message="Hydrating system configurations, brand identity, and theme preferences..."
+        badge="Settings Workspace"
+      />
+    );
+  }
 
   const inputClass = "h-12 w-full rounded-xl border border-border bg-background px-4 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-accent focus:ring-4 focus:ring-accent/10";
   return <main className={`mx-auto max-w-7xl space-y-6 rounded-[2rem] pb-28 transition ${highlighted ? "ring-4 ring-accent/10" : ""}`}>

@@ -15,6 +15,7 @@ import { BookingTrendChart, ServiceDistributionChart, ContentActivityChart, Visi
 import BookingDetailModal from "../components/BookingDetailModal";
 import MessageDetailModal from "../components/MessageDetailModal";
 import SubscriberDetailModal from "../components/SubscriberDetailModal";
+import AdminPageLoader from "@/components/admin/AdminPageLoader";
 
 const fetchDashboardData = async (url) => {
   const response = await fetch(url, { cache: "no-store" });
@@ -125,6 +126,16 @@ export default function DashboardPage() {
     { label: "View inbox", note: "Reply to inquiries", href: "/admin/messages", Icon: Send },
   ];
   const firstName = session?.name?.trim()?.split(" ")[0] || "Admin";
+
+  if (statsLoading && chartsLoading && analyticsLoading && recentLoading) {
+    return (
+      <AdminPageLoader
+        title="Loading Workspace Dashboard"
+        message="Aggregating live analytics, bookings, and telemetry metrics..."
+        badge="Command Center"
+      />
+    );
+  }
 
   return <main className="mx-auto max-w-[1500px] space-y-7 pb-12">
     <section className="relative overflow-hidden rounded-[2.15rem] border border-border/70 bg-card shadow-xl shadow-overlay/5"><div className="pointer-events-none absolute -right-16 -top-24 h-80 w-80 rounded-full bg-accent/15 blur-3xl" /><div className="pointer-events-none absolute bottom-0 left-1/3 h-px w-2/3 bg-gradient-to-r from-transparent via-accent/40 to-transparent" />

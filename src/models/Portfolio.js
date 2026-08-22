@@ -3,7 +3,7 @@ import {
     HOME_SEO_DESCRIPTION,
     HOME_SEO_LIMITS,
     HOME_SEO_TITLE,
-} from "@/lib/homeSeo";
+} from "../lib/homeSeo.js";
 
 // 1. PROJECT SCHEMA
 const ProjectSchema = new mongoose.Schema({
@@ -129,6 +129,14 @@ const ServiceSchema = new mongoose.Schema({
     },
     images: [{ type: String }],
     imageAlts: [{ type: String }],
+    // Service Intelligence & Knowledge Base Layer
+    targetAudienceProfiles: [{ type: mongoose.Schema.Types.Mixed }],
+    buyerIntentTriggers: [{ type: String }],
+    commonObjections: [{ type: mongoose.Schema.Types.Mixed }],
+    conversionStrategy: { type: mongoose.Schema.Types.Mixed, default: {} },
+    serviceAuthorityScore: { type: Number, min: 0, max: 100, default: 75, index: true },
+    topicCoverageStats: { type: mongoose.Schema.Types.Mixed, default: {} },
+    classification: { type: mongoose.Schema.Types.Mixed, default: {} },
     createdAt: { type: Date, default: Date.now, index: true },
     updatedAt: { type: Date, default: Date.now },
 }, { strict: false });
@@ -195,7 +203,7 @@ const BlogSchema = new mongoose.Schema({
     trendEvidence: { type: mongoose.Schema.Types.Mixed },
     clusterKey: { type: String, index: true },
     clusterTitle: { type: String },
-    clusterOrder: { type: Number, min: 0, max: 2, default: 0 },
+    clusterOrder: { type: Number, min: 0, max: 12, default: 0 },
     parentPillarBlogId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Blog",
@@ -208,8 +216,18 @@ const BlogSchema = new mongoose.Schema({
         index: true,
         sparse: true,
     },
-    editorialCampaign: { type: String, index: true },
     internalLinksUpdatedAt: { type: Date },
+    topicType: { type: String, index: true },
+    audienceProfile: { type: mongoose.Schema.Types.Mixed, default: null },
+    industry: { type: mongoose.Schema.Types.Mixed, default: null },
+    businessProblem: { type: mongoose.Schema.Types.Mixed, default: null },
+    solutionType: { type: String, default: null },
+    serviceIntent: { type: mongoose.Schema.Types.Mixed, default: null },
+    geoContext: { type: mongoose.Schema.Types.Mixed, default: { type: "global" } },
+    opportunityScore: { type: Number, default: 0 },
+    scoreBreakdown: { type: mongoose.Schema.Types.Mixed, default: {} },
+    seoIntelligence: { type: mongoose.Schema.Types.Mixed, default: null },
+    decisionSource: { type: String, default: "think10x_ai" },
     image_prompt: { type: String },
     imagePrompt: { type: String },
     imageNegativePrompt: { type: String },
@@ -271,6 +289,14 @@ const BlogSchema = new mongoose.Schema({
         syntaxFixes: [{ type: String }],
     },
     auditedAt: { type: Date },
+    eeatAudit: { type: mongoose.Schema.Types.Mixed, default: null },
+    factAudit: { type: mongoose.Schema.Types.Mixed, default: null },
+    editorialAudit: { type: mongoose.Schema.Types.Mixed, default: null },
+    intelligenceAudit: { type: mongoose.Schema.Types.Mixed, default: null },
+    mediaPlan: [{ type: mongoose.Schema.Types.Mixed, default: [] }],
+    serviceMatches: [{ type: mongoose.Schema.Types.Mixed, default: [] }],
+    conversionStrategy: { type: mongoose.Schema.Types.Mixed, default: null },
+    internalLinkAudit: { type: mongoose.Schema.Types.Mixed, default: null },
     socialKit: {
         status: {
             type: String,
@@ -521,7 +547,7 @@ const SiteConfigSchema = new mongoose.Schema({
     siteTheme: {
         type: String,
         enum: ["light", "dark", "black"],
-        default: "black",
+        default: "dark",
         required: true,
     },
 

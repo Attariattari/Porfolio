@@ -5,6 +5,8 @@ import { BlogTopicPlan } from "@/models/BlogTopicPlan";
 import { appendAuthorityTopics, createTopicPlan, rebuildClusterTopicCatalog, reconcileFallbackTopics, reconcileUsedTopicPlans, refillTopicQueue } from "@/lib/ai/blog/topicQueue";
 import { discoverVerifiedTrends } from "@/lib/ai/blog/trendIntelligence";
 import { maintainProfessionalTopicReserve } from "@/lib/ai/blog/maintainTopicReserve";
+import { matchTopicToServicesSync } from "@/lib/ai/intelligence/services/serviceTopicMatcherEngine";
+import { getServiceIntelligenceSnapshotSync } from "@/lib/ai/intelligence/services/serviceIntelligenceSnapshot";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -48,8 +50,10 @@ export async function GET(request) {
         const childTwo = clusterTopics.find((topic) => topic.articleType === "supporting" && Number(topic.clusterOrder) === 2);
         return [pillar, childOne, childTwo].every((topic) => topic?.status === "used" && topic?.usedByBlogId?._id);
       })
-      .map(([clusterKey]) => clusterKey),
+      .map(([clusterKey]) => clusterKey)
   );
+
+  const catalog = getServiceIntelligenceSnapshotSync();
 
   const displayTopics = topics.map((topic) => {
     const clusterKey = topic.clusterKey || `standalone-${topic._id}`;
@@ -59,7 +63,63 @@ export async function GET(request) {
     else if (queueStatus === "processing") displayStatus = "selected";
     else if (queueStatus === "used" && topic.usedByBlogId?._id) displayStatus = "created";
     else if (queueStatus === "used") displayStatus = "failed";
-    return { ...topic, queueStatus, status: displayStatus };
+
+    // Topic & Service Intelligence Enrichment
+    let intelligence = {
+      opportunityScore: topic.priority || 75,
+      opportunityLevel: (topic.priority || 75) >= 80 ? "HIGH" : (topic.priority || 75) >= 60 ? "MEDIUM" : "LOW",
+      primaryService: null,
+      secondaryServices: [],
+      serviceCoverageStatus: "COVERED",
+      aiRecommendation: "GENERATE",
+      scoreBreakdown: {
+        demandScore: Math.min(100, (topic.priority || 75) + 5),
+        intentScore: topic.searchIntent === "commercial" || topic.searchIntent === "transactional" ? 90 : 70,
+        authorityScore: topic.articleType === "pillar" ? 95 : 80,
+        commercialScore: topic.searchIntent === "transactional" ? 95 : topic.searchIntent === "commercial" ? 85 : 60,
+        serviceRelevanceScore: 75,
+      },
+    };
+
+    try {
+      const matchResult = matchTopicToServicesSync(topic);
+      if (matchResult && matchResult.primaryService) {
+        intelligence.primaryService = {
+          slug: matchResult.primaryService.slug,
+          title: matchResult.primaryService.title,
+          relevanceScore: matchResult.overallServiceRelevance || 80,
+        };
+        intelligence.scoreBreakdown.serviceRelevanceScore = matchResult.overallServiceRelevance || 80;
+
+        if (matchResult.rankedMatches && matchResult.rankedMatches.length > 1) {
+          intelligence.secondaryServices = matchResult.rankedMatches.slice(1, 3).map((m) => ({
+            slug: m.serviceSlug,
+            title: m.serviceTitle,
+            relevanceScore: m.score,
+          }));
+        }
+
+        // Compute AI Recommendation
+        if (displayStatus === "used" || displayStatus === "created") {
+          intelligence.aiRecommendation = "UPDATE_EXISTING";
+        } else if (matchResult.overallServiceRelevance >= 80) {
+          intelligence.aiRecommendation = "GENERATE";
+        } else if (topic.articleType === "supporting") {
+          intelligence.aiRecommendation = "STRENGTHEN_CLUSTER";
+        } else {
+          intelligence.aiRecommendation = "SERVICE_OPPORTUNITY";
+        }
+      }
+    } catch {
+      // Non-critical matching catch
+    }
+
+    return {
+      ...topic,
+      queueStatus,
+      status: displayStatus,
+      intelligence,
+    };
   });
 
   const counts = displayTopics.reduce((result, topic) => {

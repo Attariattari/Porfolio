@@ -6,6 +6,14 @@ import { appendAiClusters, appendAuthorityTopics, rebuildClusterTopicCatalog } f
 export async function maintainProfessionalTopicReserve() {
   await dbConnect();
   const settings = await getBlogAutomationSettings();
+  if (!settings.enabled) {
+    return {
+      success: true,
+      skipped: true,
+      message: "AI Topic Reserve maintenance skipped: Blog Automation is disabled in Database settings.",
+      settings,
+    };
+  }
   const result = { settings, core: null, authority: null };
   const [allCorePillars, activeCorePillars] = await Promise.all([
     BlogTopicPlan.countDocuments({ source: "ai", articleType: "pillar" }),

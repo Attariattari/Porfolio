@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { AnimatePresence, motion } from "framer-motion";
 import { Braces, Code2, Pencil, Plus, Search, Trash2, TrendingUp } from "lucide-react";
 import { useRouter } from "next/navigation";
+import AdminPageLoader from "@/components/admin/AdminPageLoader";
 
 const skillSchema = z.object({
   name: z.string().min(2, "Skill name is required"),
@@ -18,7 +19,7 @@ const skillSchema = z.object({
 
 export default function SkillsPage() {
   const router = useRouter();
-  const { skills, fetchSkills, addSkill, updateSkill, deleteSkill } = useAdminStore();
+  const { skills, skillsCacheHydrated, fetchSkills, addSkill, updateSkill, deleteSkill } = useAdminStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [editingSkill, setEditingSkill] = useState(null);
@@ -125,6 +126,16 @@ export default function SkillsPage() {
   const averageLevel = skills.length
     ? Math.round(skills.reduce((total, skill) => total + Number(skill.level || 0), 0) / skills.length)
     : 0;
+
+  if (!skillsCacheHydrated && skills.length === 0) {
+    return (
+      <AdminPageLoader
+        title="Loading Skills & Capabilities"
+        message="Hydrating technical proficiencies and capability taxonomy..."
+        badge="Skills Workspace"
+      />
+    );
+  }
 
   return (
     <div className="mx-auto max-w-[1500px] space-y-6 pb-20">

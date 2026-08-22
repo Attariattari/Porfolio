@@ -8,6 +8,7 @@ import MessageDetailModal from "../components/MessageDetailModal";
 import { MessageSquare, Mail, CheckCircle2, Reply, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { AnimatePresence } from "framer-motion";
+import AdminPageLoader from "@/components/admin/AdminPageLoader";
 
 export default function MessagesPage() {
   const [selectedMessage, setSelectedMessage] = useState(null);
@@ -126,6 +127,16 @@ export default function MessagesPage() {
       toast.error(error);
     }
   }, [error]);
+
+  if (loading && statsLoading && (!messages || messages.length === 0)) {
+    return (
+      <AdminPageLoader
+        title="Loading Client Communications"
+        message="Hydrating encrypted inbox, inquiries, and reply telemetry..."
+        badge="Messages Workspace"
+      />
+    );
+  }
 
   return (
     <div className="mx-auto max-w-[1600px] space-y-6 pb-20">

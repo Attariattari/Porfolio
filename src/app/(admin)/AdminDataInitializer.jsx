@@ -1,80 +1,83 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import useAdminStore from "@/lib/store/adminStore";
 import { useSettingsSync } from "@/lib/hooks/useSettingsSync";
+import AdminPageLoader from "@/components/admin/AdminPageLoader";
 
 /**
- * Wrapper component - only renders when authenticated
- * This allows us to use hooks safely without conditional calls
+ * Wrapper component - only renders when authenticated and initial core telemetry is hydrated.
  */
-function AuthenticatedDataInitializer({ children, isAuthenticated, mounted }) {
-  const { syncAllData, fetchSettings } = useAdminStore();
+function AuthenticatedDataInitializer({ children }) {
+  const { syncAllData, isInitialSyncing } = useAdminStore();
+  const [dataReady, setDataReady] = useState(false);
 
-  // Always call useSettingsSync when component renders
-  // We only render this when authenticated, so it's safe
+  // Always keep settings synced
   useSettingsSync();
 
-  // Sync all data on mount and load debug tools
+  // Sync data on mount once with cache intelligence
   useEffect(() => {
-    // Load debug tools only in development
-    if (process.env.NODE_ENV === "development" && typeof window !== "undefined") {
-      try {
-        require("@/lib/settingsDebug");
-      } catch (error) {
-        console.warn("Debug tools not available");
-      }
-    }
+    let active = true;
 
     const initializeAdminData = async () => {
       try {
-        console.log("📍 Initializing admin data...");
         await syncAllData();
-        console.log("✅ Admin data synced successfully");
       } catch (error) {
         console.error("❌ Failed to sync admin data:", error);
-        // Fallback to settings sync
-        try {
-          await fetchSettings();
-          console.log("✅ Settings fetched (fallback)");
-        } catch (fallbackError) {
-          console.error("❌ Fallback failed:", fallbackError);
-        }
+      } finally {
+        if (active) setDataReady(true);
       }
     };
 
     initializeAdminData();
 
-    // Optional: Refresh data every 5 minutes
-    const refreshInterval = setInterval(() => {
-      console.log("🔄 Auto-refreshing settings...");
-      fetchSettings();
-    }, 5 * 60 * 1000);
+    // Fallback safety: never hang indefinitely on slow networks (max 3.2s)
+    const timer = setTimeout(() => {
+      if (active) setDataReady(true);
+    }, 3200);
 
-    return () => clearInterval(refreshInterval);
-  }, [syncAllData, fetchSettings]);
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [syncAllData]);
+
+  if (!dataReady && isInitialSyncing) {
+    return (
+      <AdminPageLoader
+        fullScreen
+        title="Loading Workspace Telemetry"
+        message="Hydrating encrypted database records & control metrics..."
+      />
+    );
+  }
 
   return <>{children}</>;
 }
 
 /**
- * Admin Data Initializer
- * Syncs all admin data on app load (only when authenticated)
+ * Admin Data Initializer & Loading Gate.
+ * Enforces zero-flash protection: renders a professional loader until the user's
+ * session and cache are verified, preventing unauthenticated content exposure.
  */
 export default function AdminDataInitializer({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
   const pathname = usePathname();
-  const isPublicAuthPage = pathname === "/admin/login" || pathname === "/admin/signup";
+  const router = useRouter();
 
-  // Check authentication on mount
+  const isPublicAuthPage =
+    pathname === "/admin/login" ||
+    pathname === "/admin/signup" ||
+    pathname.startsWith("/admin/security/change-passkey");
+
   useEffect(() => {
     let cancelled = false;
 
-    // Login and signup are intentionally public admin routes. Probing the
-    // session here only creates an expected 401 in the browser console.
+    // Public auth pages (login, signup, change-passkey) do not require blocking
     if (isPublicAuthPage) {
+      setIsChecking(false);
       return () => {
         cancelled = true;
       };
@@ -86,35 +89,65 @@ export default function AdminDataInitializer({ children }) {
           credentials: "include",
           cache: "no-store",
         });
-        if (!cancelled) {
-          setIsAuthenticated(response.ok);
-          console.log("[AdminDataInitializer] Authentication check:", response.ok);
+
+        if (cancelled) return;
+
+        if (response.ok) {
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+          // Redirect unauthenticated user to login immediately
+          router.replace("/admin/login");
         }
-      } catch {
-        if (!cancelled) setIsAuthenticated(false);
+      } catch (err) {
+        if (!cancelled) {
+          setIsAuthenticated(false);
+          router.replace("/admin/login");
+        }
       } finally {
-        if (!cancelled) setMounted(true);
+        if (!cancelled) {
+          setIsChecking(false);
+        }
       }
     };
 
     checkAuthentication();
+
     return () => {
       cancelled = true;
     };
-  }, [isPublicAuthPage]);
+  }, [isPublicAuthPage, pathname, router]);
 
-  // Don't render auth-dependent content until we've checked auth status
-  if (!mounted) {
+  // 1. If viewing public auth route (/admin/login or /admin/signup), render directly
+  if (isPublicAuthPage) {
     return <>{children}</>;
   }
 
-  // Only wrap with AuthenticatedDataInitializer if user is authenticated
+  // 2. While verifying session on protected routes, show luxury loader
+  if (isChecking) {
+    return (
+      <AdminPageLoader
+        fullScreen
+        title="Securing Workspace Telemetry"
+        message="Verifying encrypted session & workspace data..."
+      />
+    );
+  }
+
+  // 3. If unauthenticated after check, keep loader shown while router redirects
   if (!isAuthenticated) {
-    return <>{children}</>;
+    return (
+      <AdminPageLoader
+        fullScreen
+        title="Access Verification"
+        message="Session required. Redirecting to security login..."
+      />
+    );
   }
 
+  // 4. Authenticated & verified -> render protected dashboard content
   return (
-    <AuthenticatedDataInitializer isAuthenticated={isAuthenticated} mounted={mounted}>
+    <AuthenticatedDataInitializer>
       {children}
     </AuthenticatedDataInitializer>
   );

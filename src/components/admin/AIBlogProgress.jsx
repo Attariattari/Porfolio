@@ -108,7 +108,7 @@ export default function AIBlogProgress({
         setImagePreview(data.details?.url);
       }
 
-      if (data.status === "ERROR" || data.status === "FAILED") {
+      if (data.status === "ERROR" || data.status === "FAILED" || data.status === "PAUSED") {
         setError(data.details?.message || "An unexpected error occurred");
       }
 

@@ -263,11 +263,26 @@ const ServiceRow = ({ service, index, onImageClick }) => {
 
 export default function ServicesListClient({ displayData, galleryImages, galleryAlts, showViewAll }) {
   const [lightboxIndex, setLightboxIndex] = useState(null);
+  const [services, setServices] = useState(displayData || []);
+
+  React.useEffect(() => {
+    setServices(displayData || []);
+  }, [displayData]);
+
+  React.useEffect(() => {
+    const onCacheUpdate = (e) => {
+      if (e.detail?.collectionKey === "services" && Array.isArray(e.detail?.data)) {
+        setServices(showViewAll ? e.detail.data.slice(0, 3) : e.detail.data);
+      }
+    };
+    window.addEventListener("muhyo:public-cache-update", onCacheUpdate);
+    return () => window.removeEventListener("muhyo:public-cache-update", onCacheUpdate);
+  }, [showViewAll]);
 
   return (
     <>
       <div className="flex flex-col gap-6 lg:gap-12 relative z-10 w-full overflow-hidden lg:overflow-visible pb-10">
-        {displayData.map((service, index) => (
+        {services.map((service, index) => (
           <ServiceRow
             key={service._id || service.slug || service.id}
             service={service}

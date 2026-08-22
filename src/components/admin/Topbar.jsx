@@ -56,7 +56,8 @@ export default function Topbar() {
     };
 
     refreshAdminState();
-    const interval = setInterval(refreshAdminState, 5000);
+    // Gentle 60s background heartbeat (Real-time updates are handled instantly via Socket.io)
+    const interval = setInterval(refreshAdminState, 60000);
     return () => {
       cancelled = true;
       clearInterval(interval);

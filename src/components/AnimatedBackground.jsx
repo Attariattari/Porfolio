@@ -4,20 +4,17 @@ import { memo } from "react";
 import { useTheme } from "./ThemeProvider";
 
 const AnimatedBackgroundComponent = () => {
-  const { isBlack, isDark, themeReady } = useTheme();
-
-  // Server markup must never guess a theme. The inline head bootstrap has
-  // already set the correct CSS variables, so this neutral surface displays
-  // the saved theme while React synchronizes before its first painted frame.
-  if (!themeReady) {
-    return <div className="fixed inset-0 -z-50 bg-background pointer-events-none" />;
-  }
+  const { isBlack, isDark } = useTheme();
 
   return (
-    <div className="fixed inset-0 -z-50 overflow-hidden bg-background pointer-events-none">
+    <div
+      suppressHydrationWarning
+      className="fixed inset-0 -z-50 overflow-hidden bg-background pointer-events-none"
+    >
       {/* Base Gradient Background */}
       <div
-        className={`absolute inset-0 transition-colors duration-1000 ${
+        suppressHydrationWarning
+        className={`absolute inset-0 transition-colors duration-700 ${
           isBlack
             ? "black-atmosphere opacity-100"
             : isDark
@@ -27,8 +24,9 @@ const AnimatedBackgroundComponent = () => {
       />
 
       {/* Animated Glowing Orbs */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0" suppressHydrationWarning>
         <div
+          suppressHydrationWarning
           className={`absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full blur-[120px] ${
             isBlack
               ? "bg-cyan-400 opacity-[0.18]"
@@ -38,6 +36,7 @@ const AnimatedBackgroundComponent = () => {
           }`}
         />
         <div
+          suppressHydrationWarning
           className={`absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full blur-[140px] ${
             isBlack
               ? "bg-blue-500 opacity-[0.12]"
@@ -48,10 +47,16 @@ const AnimatedBackgroundComponent = () => {
         />
       </div>
 
-      {isBlack && <div className="black-tech-grid absolute inset-0" />}
+      <div
+        suppressHydrationWarning
+        className={`black-tech-grid absolute inset-0 transition-opacity duration-500 ${
+          isBlack ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+      />
 
       {/* Flowing SVG Lines */}
       <svg
+        suppressHydrationWarning
         className={`absolute inset-0 h-full w-full ${
           isBlack ? "opacity-[0.26]" : isDark ? "opacity-20" : "opacity-[0.38]"
         }`}
@@ -101,12 +106,12 @@ const AnimatedBackgroundComponent = () => {
           }
           strokeWidth={isDark ? "3" : "2.5"}
           pathLength="1"
-        >
-        </path>
+        />
       </svg>
 
       {/* Grid Pattern Overlay */}
       <div
+        suppressHydrationWarning
         className={`absolute inset-0 ${isBlack ? "opacity-[0.035]" : "opacity-[0.03]"} bg-[url('/noise.svg')] pointer-events-none bg-[length:200px_200px]`}
       />
     </div>

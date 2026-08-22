@@ -15,6 +15,7 @@ import { getProjectMediaAlt } from "@/lib/mediaAlt";
 import Link from "next/link";
 import { BriefcaseBusiness, ExternalLink, Pencil, Plus, Search, Star, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import AdminPageLoader from "@/components/admin/AdminPageLoader";
 
 const projectSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
@@ -75,8 +76,15 @@ const parseJsonField = (value, fallback) => {
 
 export default function ProjectsPage() {
   const router = useRouter();
-  const { projects, fetchProjects, addProject, updateProject, deleteProject, reorderProjects } =
-    useAdminStore();
+  const {
+    projects,
+    projectsCacheHydrated,
+    fetchProjects,
+    addProject,
+    updateProject,
+    deleteProject,
+    reorderProjects,
+  } = useAdminStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
@@ -557,6 +565,16 @@ export default function ProjectsPage() {
       .toLowerCase()
       .includes(projectSearch.toLowerCase()),
   );
+
+  if (!projectsCacheHydrated && projects.length === 0) {
+    return (
+      <AdminPageLoader
+        title="Loading Project Portfolio"
+        message="Hydrating case studies, technical stacks, and media..."
+        badge="Projects Workspace"
+      />
+    );
+  }
 
   return (
     <div className="mx-auto max-w-[1500px] space-y-6 pb-20">

@@ -13,15 +13,31 @@ const THEME_COLORS = {
   black: "#000000",
 };
 
-const normalizeTheme = (value) => (VALID_THEMES.includes(value) ? value : "black");
+const normalizeTheme = (value) => (VALID_THEMES.includes(value) ? value : "dark");
 
-const applyThemeToRoot = (value) => {
+const getClientTheme = (fallback = "dark") => {
+  if (typeof window === "undefined") return fallback;
+  try {
+    const preferredTheme = localStorage.getItem(THEME_PREFERENCE_KEY);
+    if (VALID_THEMES.includes(preferredTheme)) return preferredTheme;
+    const cachedTheme = localStorage.getItem(THEME_CACHE_KEY);
+    if (VALID_THEMES.includes(cachedTheme)) return cachedTheme;
+    const paintedTheme = document.documentElement?.dataset?.theme;
+    if (VALID_THEMES.includes(paintedTheme)) return paintedTheme;
+  } catch {}
+  return fallback;
+};
+
+const applyThemeToRoot = (value, isInitial = false) => {
   const theme = normalizeTheme(value);
+  if (typeof document === "undefined") return theme;
   const root = document.documentElement;
   const themeChanged = root.dataset.theme !== theme;
 
   if (themeChanged) {
-    root.classList.add("theme-switching");
+    if (!isInitial && !root.classList.contains("preload-no-transition")) {
+      root.classList.add("theme-switching");
+    }
     root.classList.remove("light", "dark", "black");
 
     if (theme === "black") root.classList.add("dark", "black");
@@ -30,9 +46,19 @@ const applyThemeToRoot = (value) => {
     root.dataset.theme = theme;
     root.style.colorScheme = theme === "light" ? "light" : "dark";
 
-    window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(() => root.classList.remove("theme-switching"));
-    });
+    if (!isInitial && !root.classList.contains("preload-no-transition")) {
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => root.classList.remove("theme-switching"));
+      });
+    }
+  } else {
+    // Ensure classes match even if dataset was already set
+    if (theme === "black" && !root.classList.contains("black")) {
+      root.classList.add("dark", "black");
+    } else if (theme !== "black" && !root.classList.contains(theme)) {
+      root.classList.add(theme);
+    }
+    root.style.colorScheme = theme === "light" ? "light" : "dark";
   }
 
   const themeColorMeta = document.querySelector('meta[name="theme-color"]');
@@ -40,27 +66,31 @@ const applyThemeToRoot = (value) => {
     themeColorMeta.setAttribute("content", THEME_COLORS[theme]);
   }
 
-  localStorage.setItem(THEME_CACHE_KEY, theme);
-  localStorage.removeItem("theme");
+  try {
+    localStorage.setItem(THEME_CACHE_KEY, theme);
+    localStorage.removeItem("theme");
+  } catch {}
   return theme;
 };
 
 const ThemeContext = createContext({
-  theme: "black",
+  theme: "dark",
   themeReady: false,
   setTheme: () => {},
   refreshTheme: async () => {},
   isDark: true,
-  isBlack: true,
+  isBlack: false,
 });
 
-export const ThemeProvider = ({ children }) => {
+export const ThemeProvider = ({ children, initialTheme = "dark" }) => {
   const refreshPromiseRef = useRef(null);
-  const [theme, setThemeState] = useState("black");
-  const [themeReady, setThemeReady] = useState(false);
+  const [theme, setThemeState] = useState(() => {
+    return getClientTheme(initialTheme);
+  });
+  const [themeReady, setThemeReady] = useState(typeof window !== "undefined");
 
-  const commitTheme = useCallback((value) => {
-    const nextTheme = applyThemeToRoot(value);
+  const commitTheme = useCallback((value, isInitial = false) => {
+    const nextTheme = applyThemeToRoot(value, isInitial);
     setThemeState((current) => (current === nextTheme ? current : nextTheme));
     return nextTheme;
   }, []);
@@ -94,7 +124,10 @@ export const ThemeProvider = ({ children }) => {
         const result = await response.json();
         if (String(result?.message || "").toLowerCase().includes("fallback")) return;
         const serverTheme = normalizeTheme(result?.data?.siteTheme);
-        commitTheme(serverTheme);
+        // Only apply server theme if user has no explicit preference saved
+        if (!localStorage.getItem(THEME_PREFERENCE_KEY)) {
+          commitTheme(serverTheme);
+        }
       } catch {
         // Retain the last confirmed global theme while temporarily offline.
       } finally {
@@ -108,10 +141,8 @@ export const ThemeProvider = ({ children }) => {
   // Synchronize React with that exact value before the browser paints the
   // hydrated app, so context-driven backgrounds never flash the default theme.
   useLayoutEffect(() => {
-    const preferredTheme = localStorage.getItem(THEME_PREFERENCE_KEY);
-    const cachedTheme = localStorage.getItem(THEME_CACHE_KEY);
-    const paintedTheme = document.documentElement.dataset.theme;
-    commitTheme(preferredTheme || cachedTheme || paintedTheme || "black");
+    const currentTheme = getClientTheme();
+    commitTheme(currentTheme, true);
     setThemeReady(true);
   }, [commitTheme]);
 

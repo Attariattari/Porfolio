@@ -95,27 +95,440 @@ const defaultProblems = [
     title: "Outdated digital presence",
     description:
       "Your current website or workflow does not create enough trust for modern visitors.",
+    whyItHappens: "Using generic templates, outdated visual hierarchy, or unoptimized legacy code.",
+    expectedOutcome: "Immediate improvement in brand authority, visitor trust, and perceived value.",
     icon: "AlertTriangle",
   },
   {
     title: "Poor mobile experience",
     description:
       "Visitors struggle to browse, read, or take action from mobile devices.",
+    whyItHappens: "Rigid desktop-centric layouts, unoptimized touch targets, and viewport scaling bugs.",
+    expectedOutcome: "Fluid, responsive touch UX across all smartphones with higher engagement.",
     icon: "Smartphone",
   },
   {
     title: "Weak lead flow",
     description:
       "Contact forms, calls to action, and conversion paths are unclear or unreliable.",
+    whyItHappens: "Friction-heavy forms, lack of clear value proposition, and buried contact buttons.",
+    expectedOutcome: "Measurable 2x–3x lift in qualified business inquiries and consultation requests.",
     icon: "MessageSquare",
   },
   {
     title: "Difficult content management",
     description:
       "Updating services, pages, projects, or business content takes too much manual effort.",
+    whyItHappens: "No unified admin interface, forcing reliance on manual developer code edits.",
+    expectedOutcome: "Full content independence for team members to update content in real-time.",
     icon: "ClipboardList",
   },
 ];
+
+const problemsBySlug = {
+  "custom-website-development": [
+    {
+      title: "Outdated brand presentation & low visitor trust",
+      description: "We engineer a bespoke, modern interface with custom typography, clean themes, and premium micro-interactions.",
+      whyItHappens: "Generic templates and cookie-cutter designs fail to convey credibility to modern discerning clients.",
+      expectedOutcome: "Premium market positioning that commands higher client trust and commercial confidence.",
+      icon: "ShieldCheck",
+    },
+    {
+      title: "High drop-off rates on mobile devices",
+      description: "We build with mobile-first fluid layouts, thumb-friendly navigation, and adaptive image assets.",
+      whyItHappens: "Non-responsive layouts and slow mobile rendering cause over 60% of mobile visitors to bounce.",
+      expectedOutcome: "Flawless mobile UX with 40%+ longer session duration across iOS and Android.",
+      icon: "Smartphone",
+    },
+    {
+      title: "Low lead conversion from passive visitors",
+      description: "We architect frictionless high-converting funnel pathways, strategic sticky CTAs, and instant form validations.",
+      whyItHappens: "Unclear value propositions and hidden contact options fail to guide visitors toward booking.",
+      expectedOutcome: "Measurable 35–50% increase in qualified consultation bookings and inquiry submissions.",
+      icon: "Target",
+    },
+    {
+      title: "Rigid CMS structure limiting business growth",
+      description: "We deliver a modular Next.js architecture that easily scales as you add new services, team members, or locations.",
+      whyItHappens: "Legacy page builders lock businesses into slow, un-maintainable codebases that break during updates.",
+      expectedOutcome: "Zero vendor lock-in with a future-proof, easily extensible code foundation.",
+      icon: "Layers",
+    },
+  ],
+
+  "mern-stack-web-development": [
+    {
+      title: "Disconnected software tools causing manual double-entry",
+      description: "We build a unified MERN stack portal connecting database models, user roles, and business workflows.",
+      whyItHappens: "Using multiple disconnected SaaS apps and spreadsheets creates data silos and human errors.",
+      expectedOutcome: "Centralized single source of truth saving 15+ operational hours per week.",
+      icon: "Database",
+    },
+    {
+      title: "Slow database queries on large operational datasets",
+      description: "We architect optimized MongoDB aggregation pipelines and compound indexes for sub-50ms data retrieval.",
+      whyItHappens: "Un-indexed queries and poorly structured schema relationships cause severe database bottlenecks.",
+      expectedOutcome: "Lightning-fast search, filter, and reporting performance even under high concurrency.",
+      icon: "Zap",
+    },
+    {
+      title: "Lack of secure role-based access for staff and clients",
+      description: "We implement encrypted JWT authentication, HTTP-only cookies, and granular RBAC permission middleware.",
+      whyItHappens: "Basic login systems expose sensitive data and lack multi-tier permission controls.",
+      expectedOutcome: "Airtight data security and strict compliance with organizational privacy standards.",
+      icon: "Lock",
+    },
+    {
+      title: "Fragile third-party API integrations and webhook losses",
+      description: "We build resilient Express.js REST/GraphQL endpoints with automated retries and webhook verification.",
+      whyItHappens: "Unmonitored API calls fail silently without logging, causing missing payments or lead records.",
+      expectedOutcome: "99.9% integration reliability with automated error logging and real-time alerts.",
+      icon: "RefreshCw",
+    },
+  ],
+
+  "nextjs-website-development": [
+    {
+      title: "Poor Google Core Web Vitals hurting SEO rankings",
+      description: "We implement Next.js App Router Server Components with automatic image optimization and zero client bloat.",
+      whyItHappens: "Heavy client-side JavaScript bundles delay Largest Contentful Paint (LCP) and First Input Delay.",
+      expectedOutcome: "95+ PageSpeed score, green Core Web Vitals, and enhanced Google search crawlability.",
+      icon: "Zap",
+    },
+    {
+      title: "Slow initial page loads on legacy React SPAs",
+      description: "We configure Incremental Static Regeneration (ISR) and Server-Side Rendering (SSR) for instant first render.",
+      whyItHappens: "Client-only React apps force users to wait for large JavaScript bundles before showing any content.",
+      expectedOutcome: "Sub-second 0ms perceived load times with pre-rendered HTML ready instantly.",
+      icon: "Flame",
+    },
+    {
+      title: "Missing structured metadata for search engine indexing",
+      description: "We inject dynamic OpenGraph tags, JSON-LD Schema.org rich snippets, and automated XML sitemaps.",
+      whyItHappens: "Search bots cannot easily parse client-rendered pages without explicit server-side metadata.",
+      expectedOutcome: "Rich snippet search results and higher organic search engine click-through rates.",
+      icon: "Search",
+    },
+    {
+      title: "Complex image delivery and bandwidth costs",
+      description: "We leverage Next.js Image optimization with automatic WebP/AVIF conversion and lazy loading.",
+      whyItHappens: "Uncompressed raw PNG/JPEG images consume excessive bandwidth and slow down page speed.",
+      expectedOutcome: "70%+ reduction in image file size with zero loss in visual sharpness.",
+      icon: "Image",
+    },
+  ],
+
+  "admin-dashboard-development": [
+    {
+      title: "Inefficient manual spreadsheets slowing down operations",
+      description: "We build intuitive CRUD interfaces with real-time filters, search, and bulk actions.",
+      whyItHappens: "Managing orders, messages, and inventory on loose spreadsheets causes data loss and confusion.",
+      expectedOutcome: "Streamlined operational workflow allowing tasks to be completed in 1 click.",
+      icon: "Table",
+    },
+    {
+      title: "No real-time analytics to track business KPIs",
+      description: "We integrate interactive charts, telemetry cards, and automated conversion metric tracking.",
+      whyItHappens: "Operating without live dashboards makes it impossible to identify sales drops or user bottlenecks.",
+      expectedOutcome: "Actionable executive visibility into daily revenue, active users, and lead conversion rates.",
+      icon: "BarChart3",
+    },
+    {
+      title: "Lack of granular permission controls for team members",
+      description: "We build multi-role permissions (Super Admin, Editor, Viewer) with secure audit logs.",
+      whyItHappens: "Sharing generic master credentials creates severe security and accidental deletion risks.",
+      expectedOutcome: "Complete administrative control with transparent audit trails for every modification.",
+      icon: "ShieldAlert",
+    },
+    {
+      title: "Clunky, slow content and service catalog updates",
+      description: "We develop custom rich-text editors and instant image uploaders powered by Cloudinary/S3.",
+      whyItHappens: "Updating website content without an admin panel requires waiting for external developers.",
+      expectedOutcome: "Total content independence to publish, edit, or remove pages within 30 seconds.",
+      icon: "Edit3",
+    },
+  ],
+
+  "e-commerce-website-development": [
+    {
+      title: "High shopping cart abandonment during checkout",
+      description: "We design a frictionless 1-page checkout flow with guest ordering and instant address validation.",
+      whyItHappens: "Complex multi-step checkout processes and unexpected fees cause over 70% of shoppers to abandon carts.",
+      expectedOutcome: "25–40% increase in completed checkouts and reduced order drop-off rate.",
+      icon: "ShoppingCart",
+    },
+    {
+      title: "Insecure payment gateway integrations risking failed orders",
+      description: "We integrate Stripe, PayPal, and local gateways with encrypted webhooks and instant SMS/Email receipts.",
+      whyItHappens: "Unstable payment gateway connections result in charged customers without created orders.",
+      expectedOutcome: "100% reliable transaction reconciliation and automated order fulfillment notifications.",
+      icon: "CreditCard",
+    },
+    {
+      title: "Cluttered mobile product catalog reducing sales conversions",
+      description: "We craft fast product filters, high-resolution zoomable galleries, and sticky Add-to-Cart buttons.",
+      whyItHappens: "Slow-loading product grids on mobile make browsing frustrating for potential buyers.",
+      expectedOutcome: "Higher average order value (AOV) and smoother mobile shopping experience.",
+      icon: "Smartphone",
+    },
+    {
+      title: "Inventory and order tracking desynchronization",
+      description: "We develop real-time stock management with low-stock alerts and automated status tracking.",
+      whyItHappens: "Manual inventory tracking leads to overselling out-of-stock items and customer complaints.",
+      expectedOutcome: "Automated inventory sync preventing stockouts and keeping customers informed.",
+      icon: "PackageCheck",
+    },
+  ],
+
+  "portfolio-website-development": [
+    {
+      title: "Weak personal brand credibility failing to attract premium clients",
+      description: "We design high-impact hero sections, custom typography, and verified social proof showcases.",
+      whyItHappens: "Generic portfolio themes look identical to thousands of other creators and fail to stand out.",
+      expectedOutcome: "Authoritative personal brand that justifies premium rates and commands client respect.",
+      icon: "Award",
+    },
+    {
+      title: "Unclear showcase of skills, case studies, and achievements",
+      description: "We architect detailed case study layouts with problem-solution breakdowns, metrics, and live demos.",
+      whyItHappens: "Simple screenshot galleries fail to explain the real business value and problem-solving ability.",
+      expectedOutcome: "Compelling project storytelling that proves your expertise to prospective clients.",
+      icon: "FolderCheck",
+    },
+    {
+      title: "Hidden contact pathways causing missed business opportunities",
+      description: "We integrate sticky consultation booking widgets, direct WhatsApp links, and instant inquiry forms.",
+      whyItHappens: "Burying contact details on a separate page creates unnecessary friction for busy recruiters and clients.",
+      expectedOutcome: "Direct, effortless communication channel increasing inbound collaboration inquiries.",
+      icon: "MessageCircle",
+    },
+    {
+      title: "Slow-loading media assets giving an amateur impression",
+      description: "We apply automated WebP conversion, responsive image sizing, and blur placeholder loading.",
+      whyItHappens: "Heavy uncompressed project screenshots cause sluggish page scrolling and visual layout shifts.",
+      expectedOutcome: "Silky smooth 60 FPS scrolling and instant project image previews.",
+      icon: "Zap",
+    },
+  ],
+
+  "landing-page-design": [
+    {
+      title: "Wasted ad spend on low-converting generic landing pages",
+      description: "We engineer high-converting sales funnels built specifically for Google Ads and Meta campaign traffic.",
+      whyItHappens: "Sending paid traffic to standard homepages dilutes message focus and creates high bounce rates.",
+      expectedOutcome: "Significantly lower Cost Per Acquisition (CPA) and higher return on marketing spend.",
+      icon: "TrendingUp",
+    },
+    {
+      title: "Confusing value proposition failing to hook visitors in 5 seconds",
+      description: "We craft crystal-clear headline hierarchy, trust badges, and prominent primary calls to action.",
+      whyItHappens: "Visitors leave immediately if they cannot instantly grasp what you offer and how it benefits them.",
+      expectedOutcome: "Immediate visitor engagement and higher scroll-through rate to conversion triggers.",
+      icon: "Eye",
+    },
+    {
+      title: "Overly long, friction-heavy lead capture forms",
+      description: "We build progressive multi-step forms with micro-commitments and instant autofill support.",
+      whyItHappens: "Asking for too much information upfront intimidates visitors and kills lead conversion.",
+      expectedOutcome: "40%+ increase in lead form completion and higher quality inbound prospect data.",
+      icon: "FormInput",
+    },
+    {
+      title: "Slow page load times causing paid click drop-offs",
+      description: "We optimize critical render path CSS, inline critical assets, and eliminate third-party render blockers.",
+      whyItHappens: "Every 1-second delay in landing page load time reduces conversions by up to 20%.",
+      expectedOutcome: "Under 800ms load time ensuring zero wasted ad budget from impatient visitors.",
+      icon: "Zap",
+    },
+  ],
+
+  "website-redesign": [
+    {
+      title: "Outdated visual aesthetic damaging brand reputation",
+      description: "We perform a complete UI/UX overhaul aligned with modern luxury digital standards and brand goals.",
+      whyItHappens: "Web design trends evolve rapidly; sites older than 3 years often look abandoned and un-trusted.",
+      expectedOutcome: "Fresh, commanding modern aesthetic that rejuvenates market perception and buyer trust.",
+      icon: "Sparkles",
+    },
+    {
+      title: "Broken mobile responsiveness and legacy code vulnerabilities",
+      description: "We rewrite the front-end with clean Next.js and Tailwind CSS for cross-device perfection.",
+      whyItHappens: "Legacy templates accumulate outdated jQuery plugins and security vulnerabilities over time.",
+      expectedOutcome: "100% responsive, secure, and modern codebase with zero legacy technical debt.",
+      icon: "Smartphone",
+    },
+    {
+      title: "Declining organic search rankings due to legacy structure",
+      description: "We preserve existing SEO equity with 301 redirects, updated sitemaps, and improved schema markup.",
+      whyItHappens: "Unplanned redesigns often break URL structures, resulting in devastating loss of organic traffic.",
+      expectedOutcome: "Seamless SEO migration with ranking improvements and zero broken backlink 404s.",
+      icon: "SearchCheck",
+    },
+    {
+      title: "Low conversion rates compared to modern industry competitors",
+      description: "We re-architect user journeys, improve CTA placement, and add conversion-focused social proof.",
+      whyItHappens: "Competitors with modern, faster websites capture leads that could have been yours.",
+      expectedOutcome: "Regained competitive advantage and a noticeable boost in online inquiries.",
+      icon: "Target",
+    },
+  ],
+
+  "api-integration": [
+    {
+      title: "Manual data copy-pasting between disconnected platforms",
+      description: "We develop automated REST/GraphQL middleware pipelines to sync data seamlessly across services.",
+      whyItHappens: "Operating separate tools without automation wastes hundreds of employee hours every month.",
+      expectedOutcome: "100% automated real-time data synchronization with zero manual human effort.",
+      icon: "Cpu",
+    },
+    {
+      title: "Silent webhook failures causing missing orders or leads",
+      description: "We build idempotent webhook receivers with retry queues, logging, and automated error notifications.",
+      whyItHappens: "Standard endpoints fail during high-traffic spikes without saving unhandled payload events.",
+      expectedOutcome: "Zero dropped transactions and complete auditability for every incoming API event.",
+      icon: "Webhook",
+    },
+    {
+      title: "Insecure API credentials and missing payload validation",
+      description: "We implement environment secret encryption, HMAC signature verification, and Zod input sanitization.",
+      whyItHappens: "Exposed API keys or un-sanitized inputs leave servers vulnerable to injection and abuse.",
+      expectedOutcome: "Bank-grade API security protecting confidential customer and business data.",
+      icon: "ShieldAlert",
+    },
+    {
+      title: "System outages when third-party APIs change or rate limit",
+      description: "We add exponential backoff retry algorithms, circuit breakers, and in-memory cache fallbacks.",
+      whyItHappens: "Hard dependencies on external APIs cause your entire app to crash when their servers go down.",
+      expectedOutcome: "High fault-tolerance keeping your website operational even during third-party downtime.",
+      icon: "Layers",
+    },
+  ],
+
+  "database-integration": [
+    {
+      title: "Unstructured database schemas causing data corruption",
+      description: "We architect typed Mongoose schemas with strict validations, unique constraints, and relationships.",
+      whyItHappens: "Ad-hoc database writes without validation lead to missing fields and broken application states.",
+      expectedOutcome: "100% data integrity, clean migrations, and predictable application state.",
+      icon: "Database",
+    },
+    {
+      title: "Sluggish performance on large search and filter queries",
+      description: "We create compound indexes, text search indexes, and optimized aggregation pipelines.",
+      whyItHappens: "Un-indexed collections force full collection scans on every request, slowing down the server.",
+      expectedOutcome: "Sub-20ms query response times even with tens of thousands of records.",
+      icon: "Zap",
+    },
+    {
+      title: "Lack of automated backups and disaster recovery",
+      description: "We configure automated daily MongoDB Atlas backups, point-in-time recovery, and replica sets.",
+      whyItHappens: "Running databases without automated backup policies risks total business data loss during failures.",
+      expectedOutcome: "Complete peace of mind with 1-click restore capability and 99.99% availability.",
+      icon: "ShieldCheck",
+    },
+    {
+      title: "Inability to scale database with growing traffic",
+      description: "We implement connection pooling, Redis caching for hot data, and lean query projections.",
+      whyItHappens: "Opening new database connections on every serverless invocation exhausts database limits.",
+      expectedOutcome: "Effortless scalability capable of handling thousands of concurrent users.",
+      icon: "TrendingUp",
+    },
+  ],
+
+  "seo-friendly-website-setup": [
+    {
+      title: "Zero organic Google search rankings for high-intent keywords",
+      description: "We perform keyword mapping, optimize heading hierarchies, and craft search-intent-driven content structure.",
+      whyItHappens: "Websites built without SEO architecture are invisible to Google search bots for competitive terms.",
+      expectedOutcome: "Strong organic foundation designed to rank on Google Page 1 for commercial queries.",
+      icon: "Search",
+    },
+    {
+      title: "Missing structured JSON-LD schema markup",
+      description: "We inject Organization, LocalBusiness, Service, Article, and BreadcrumbList schemas.",
+      whyItHappens: "Without structured data, Google cannot display rich snippets, reviews, or knowledge panels.",
+      expectedOutcome: "Enhanced Google search presence with rich snippets and higher click-through rates.",
+      icon: "Code2",
+    },
+    {
+      title: "Broken canonical tags and duplicate metadata penalties",
+      description: "We configure strict self-referencing canonicals, automated robots.txt, and dynamic XML sitemaps.",
+      whyItHappens: "Multiple URL variations (http/https, www/non-www, trailing slashes) dilute domain authority.",
+      expectedOutcome: "Consolidated domain authority and clean crawl budgets for search engine spiders.",
+      icon: "FileCheck",
+    },
+    {
+      title: "Competitors capturing all local search traffic in Lahore & Pakistan",
+      description: "We optimize local SEO signals, geo-targeted metadata, and Google Search Console indexing.",
+      whyItHappens: "Lacking localized keyword targeting allows regional competitors to win local client inquiries.",
+      expectedOutcome: "Dominant local search visibility for clients searching for services in your area.",
+      icon: "MapPin",
+    },
+  ],
+
+  "website-speed-optimization": [
+    {
+      title: "Heavy uncompressed media assets causing slow page loads",
+      description: "We compress and convert images to next-gen WebP/AVIF formats and configure responsive srcset.",
+      whyItHappens: "Uploading multi-megabyte raw photos directly from cameras paralyzes mobile loading speeds.",
+      expectedOutcome: "Up to 80% reduction in total page weight with instant media rendering.",
+      icon: "Image",
+    },
+    {
+      title: "Poor Time-to-First-Byte (TTFB) and Google Search ranking penalties",
+      description: "We implement edge caching, Redis data caching, and server-side response compression.",
+      whyItHappens: "Slow backend database queries and lack of HTTP cache headers delay initial server response.",
+      expectedOutcome: "Under 150ms TTFB globally, giving an immediate boost to search engine rankings.",
+      icon: "Zap",
+    },
+    {
+      title: "High bounce rates as mobile users abandon slow pages",
+      description: "We defer non-critical scripts, eliminate render-blocking CSS, and preload critical fonts.",
+      whyItHappens: "53% of mobile visits are abandoned if a page takes more than 3 seconds to load.",
+      expectedOutcome: "Instant First Contentful Paint (FCP) keeping visitors engaged on your site.",
+      icon: "Smartphone",
+    },
+    {
+      title: "High server CPU usage and unoptimized hosting costs",
+      description: "We optimize JavaScript execution, reduce DOM size, and implement stale-while-revalidate caching.",
+      whyItHappens: "Uncached dynamic rendering forces servers to re-compute identical pages on every visit.",
+      expectedOutcome: "70% lower server resource consumption and rock-solid stability during traffic surges.",
+      icon: "Server",
+    },
+  ],
+
+  "maintenance-support": [
+    {
+      title: "Unexpected website crashes during peak business hours",
+      description: "We provide 24/7 uptime monitoring, automated error tracking, and rapid incident response.",
+      whyItHappens: "Websites left unmonitored can crash silently for days without the business owner knowing.",
+      expectedOutcome: "Guaranteed 99.9% uptime and immediate resolution before visitors notice issues.",
+      icon: "ShieldAlert",
+    },
+    {
+      title: "Unpatched security vulnerabilities and outdated dependencies",
+      description: "We perform regular dependency audits, security patch updates, and SSL certificate renewals.",
+      whyItHappens: "Outdated software packages are the #1 entry point for malware and automated bot attacks.",
+      expectedOutcome: "Airtight digital security protecting your brand and customer data from breaches.",
+      icon: "Lock",
+    },
+    {
+      title: "Broken forms, expired API keys, and plugin conflicts",
+      description: "We run scheduled weekly functional tests across contact forms, checkouts, and external integrations.",
+      whyItHappens: "Third-party API updates often break forms silently, causing lost client inquiries.",
+      expectedOutcome: "100% verified inquiry flow ensuring you never miss a prospective client message.",
+      icon: "CheckCircle2",
+    },
+    {
+      title: "Stale, un-updated business content giving an abandoned impression",
+      description: "We provide dedicated monthly hours for fast text, image, pricing, and project updates.",
+      whyItHappens: "Busy business owners lack the time or tools to keep website information current.",
+      expectedOutcome: "Always fresh, accurate, and relevant website content that reflects your latest work.",
+      icon: "Edit",
+    },
+  ],
+};
 
 const makeItems = (items) =>
   items.map((item) =>
@@ -269,7 +682,7 @@ const makeService = ({
   shortDescription,
   overview,
   technologies,
-  problemsSolved = defaultProblems,
+  problemsSolved,
   deliverables,
   features,
   benefits,
@@ -294,8 +707,8 @@ const makeService = ({
   description: shortDescription,
   fullDescription: overview,
   overview,
-  problemsSolved,
-  problemSolved: problemsSolved[0]?.description || shortDescription,
+  problemsSolved: problemsSolved || problemsBySlug[slug] || defaultProblems,
+  problemSolved: (problemsSolved || problemsBySlug[slug] || defaultProblems)[0]?.description || shortDescription,
   deliverables: makeItems(deliverables),
   features: makeItems(features),
   benefits: makeItems(benefits),

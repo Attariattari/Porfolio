@@ -221,12 +221,27 @@ const ProjectRow = ({ project, index, setSelectedProject, showViewAll }) => {
 
 export default function ProjectsListClient({ displayData, showViewAll }) {
   const [selectedProject, setSelectedProject] = useState(null);
+  const [projects, setProjects] = useState(displayData || []);
+
+  React.useEffect(() => {
+    setProjects(displayData || []);
+  }, [displayData]);
+
+  React.useEffect(() => {
+    const onCacheUpdate = (e) => {
+      if (e.detail?.collectionKey === "projects" && Array.isArray(e.detail?.data)) {
+        setProjects(showViewAll ? e.detail.data.slice(0, 4) : e.detail.data);
+      }
+    };
+    window.addEventListener("muhyo:public-cache-update", onCacheUpdate);
+    return () => window.removeEventListener("muhyo:public-cache-update", onCacheUpdate);
+  }, [showViewAll]);
 
   return (
     <>
       <div className="flex flex-col relative z-20">
         <AnimatePresence mode="popLayout">
-          {displayData.map((project, index) => (
+          {projects.map((project, index) => (
             <ProjectRow
               key={project._id || project.slug || project.id}
               project={project}

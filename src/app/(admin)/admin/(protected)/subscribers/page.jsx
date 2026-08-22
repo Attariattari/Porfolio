@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { Mail, Send, Filter, Users, UserCheck, UserX, CheckSquare, Square, Zap, RefreshCcw, Eye, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+import AdminPageLoader from "@/components/admin/AdminPageLoader";
 
 const newsletterSchema = z.object({
   type: z.enum(["blog", "service", "project", "manual"]),
@@ -336,6 +337,16 @@ export default function SubscribersPage() {
         toast.error("Transmission breakdown: Network interference.", { id: toastId });
     }
   };
+
+  if (loading && subscribers.length === 0) {
+    return (
+      <AdminPageLoader
+        title="Loading Subscriber Directory"
+        message="Hydrating subscriber lists, audience health, and campaign metrics..."
+        badge="Audience Workspace"
+      />
+    );
+  }
 
   return (
     <div className="mx-auto max-w-[1500px] space-y-7 pb-20">

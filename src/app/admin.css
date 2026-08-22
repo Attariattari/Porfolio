@@ -236,3 +236,29 @@
         color: var(--status-warning) !important;
     }
 }
+
+/* Zero-shift layout synchronization for Admin Sidebar before React Hydration */
+@media (min-width: 1024px) {
+    html.admin-sidebar-collapsed .admin-sidebar-shell {
+        width: 5rem !important; /* 80px */
+    }
+    html.admin-sidebar-expanded .admin-sidebar-shell {
+        width: 18rem !important; /* 288px */
+    }
+    html.admin-sidebar-collapsed .admin-content-shell {
+        padding-left: 5rem !important; /* 80px */
+    }
+    html.admin-sidebar-expanded .admin-content-shell {
+        padding-left: 18rem !important; /* 288px */
+    }
+}
+
+@keyframes adminLoaderBar {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(180%);
+    }
+}
+

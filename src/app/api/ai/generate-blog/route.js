@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { runBlogAutomationPipeline, finalizeBlogPipeline } from "@/lib/blogAutomation";
+import { getBlogAutomationSettings } from "@/lib/blogAutomationSettings";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -78,6 +79,20 @@ export async function GET(request) {
                         });
                     }
                 } else {
+                    const settings = await getBlogAutomationSettings();
+                    if (!settings.enabled && searchParams.get("force") !== "true") {
+                        sendUpdate({
+                            status: "FAILED",
+                            details: {
+                                message: "AI Blog Automation is currently turned OFF in Master Database Settings. Please turn it ON from the dashboard header to generate.",
+                                isPaused: true,
+                            },
+                        });
+                        clearInterval(keepAlive);
+                        controller.close();
+                        return;
+                    }
+
                     const result = await runBlogAutomationPipeline(0, (progress) => {
                         sendUpdate(progress);
                     });

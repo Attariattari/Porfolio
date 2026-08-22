@@ -12,6 +12,9 @@ import { portfolioData } from "@/lib/data";
 import { serializeDoc } from "@/lib/mongooseHelper";
 import { SITE_URL } from "@/lib/config";
 import { getSeoImage } from "@/lib/seo";
+import PublicDeltaSync from "@/components/PublicDeltaSync";
+import SpeculativeWarmUp from "@/components/SpeculativeWarmUp";
+import PWAOfflineEngine from "@/components/PWAOfflineEngine";
 import { withTimeoutFallback } from "@/lib/withTimeoutFallback";
 
 export const metadata = {
@@ -88,6 +91,9 @@ export default async function MainLayout({ children }) {
     <div
       className="relative pb-32 transition-colors duration-300 md:pb-0"
     >
+      <PWAOfflineEngine />
+      <PublicDeltaSync />
+      <SpeculativeWarmUp />
       <DeferredRuntimeWidgets />
       <DeferredNavigationWatcher />
       <ScrollProgress />
