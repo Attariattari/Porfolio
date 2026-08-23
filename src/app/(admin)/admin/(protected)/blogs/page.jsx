@@ -816,93 +816,178 @@ export default function BlogsPage() {
 
   return (
     <div className="mx-auto max-w-[1500px] space-y-6 pb-20">
-      <header className="relative overflow-hidden rounded-[28px] border border-white/[0.08] bg-[#0d1727] p-6 sm:p-8"><div className="pointer-events-none absolute -right-20 -top-24 size-72 rounded-full bg-violet-400/[0.07] blur-3xl" /><div className="relative flex flex-col justify-between gap-6 xl:flex-row xl:items-center"><div className="flex items-start gap-4"><span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-violet-400/10 text-violet-300 ring-1 ring-inset ring-violet-400/15"><BookOpen className="size-5" /></span><div><p className="text-[10px] font-bold uppercase tracking-[.24em] text-violet-300">Editorial workspace</p><h1 className="mt-2 text-2xl font-semibold tracking-[-.035em] text-white sm:text-3xl">Blog management</h1><p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">Create, review and publish articles across your portfolio.</p></div></div>
+      {/* Editorial Workspace Header */}
+      <header className="relative overflow-hidden rounded-[2rem] border border-border/70 bg-card p-6 sm:p-8 shadow-xl shadow-overlay/5">
+        <div className="pointer-events-none absolute -right-16 -top-24 size-80 rounded-full bg-accent/15 blur-3xl" />
+        <div className="pointer-events-none absolute -left-20 -bottom-20 size-72 rounded-full bg-accent/10 blur-3xl" />
 
-        <div className="grid items-stretch gap-2 sm:grid-cols-2 xl:flex xl:items-center">
-          <Link href="/admin/blog-topics" className="group inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-background/45 px-4 text-xs font-semibold text-foreground shadow-sm transition hover:-translate-y-0.5 hover:border-accent/35 hover:bg-accent/5 hover:text-accent"><ListChecks className="size-4 transition group-hover:scale-105" />Editorial planner</Link><button onClick={handleExport} className="group inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-background/45 px-4 text-xs font-semibold text-muted-foreground shadow-sm transition hover:-translate-y-0.5 hover:border-accent/25 hover:bg-muted hover:text-foreground"><Download className="size-4 transition group-hover:-translate-y-0.5" />Export JSON</button><input type="file" id="import-blog-json" accept=".json" onChange={handleImportFileChange} className="hidden" /><button type="button" onClick={() => document.getElementById("import-blog-json")?.click()} disabled={importing} className="group inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-background/45 px-4 text-xs font-semibold text-muted-foreground shadow-sm transition hover:-translate-y-0.5 hover:border-accent/25 hover:bg-muted hover:text-foreground disabled:opacity-50"><Upload className="size-4 transition group-hover:-translate-y-0.5" />{importing ? "Importing..." : "Import JSON"}</button><button onClick={handleAdd} className="group inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-accent/25 bg-accent/10 px-4 text-xs font-semibold text-accent shadow-sm transition hover:-translate-y-0.5 hover:bg-accent/15"><Plus className="size-4 transition group-hover:rotate-90" />New article</button>
-          <label
-            className={`flex h-11 cursor-pointer select-none items-center justify-between gap-3 rounded-xl border px-3.5 text-xs font-semibold tracking-wide shadow-sm transition-all duration-200 ${
-              autoGenerateImages
-                ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-300 shadow-emerald-500/10"
-                : "border-white/[0.08] bg-slate-950/40 text-slate-400 hover:border-violet-400/30 hover:text-slate-200"
-            }`}
-            title="Toggle automatic blog image generation"
-          >
+        <div className="relative flex flex-col justify-between gap-6 2xl:flex-row 2xl:items-center">
+          <div className="flex items-start gap-4 sm:gap-5">
+            <div className="relative flex size-14 shrink-0 items-center justify-center rounded-2xl bg-accent/10 text-accent ring-1 ring-inset ring-accent/20 shadow-lg shadow-accent/10">
+              <BookOpen className="size-6" />
+              <span className="absolute -right-1 -top-1 flex size-3">
+                <span className="absolute inline-flex size-full animate-ping rounded-full bg-accent opacity-75" />
+                <span className="relative inline-flex size-3 rounded-full bg-accent" />
+              </span>
+            </div>
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="rounded-full bg-accent/10 px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.24em] text-accent ring-1 ring-accent/20">
+                  Editorial Workspace
+                </span>
+                <span className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-bold text-emerald-400 ring-1 ring-emerald-500/20">
+                  {blogs.length} Articles
+                </span>
+              </div>
+              <h1 className="mt-2 text-2xl font-black tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+                Blog management
+              </h1>
+              <p className="mt-1.5 max-w-xl text-xs sm:text-sm leading-relaxed text-muted-foreground">
+                Create, review, optimize, and publish high-performance articles across your portfolio.
+              </p>
+            </div>
+          </div>
+
+          {/* Action Buttons Toolbar - Aligned with Theme System */}
+          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+            <Link
+              href="/admin/blog-topics"
+              className="group inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-border bg-background/60 px-4 text-xs font-bold text-foreground shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/40 hover:bg-accent/10 hover:text-accent"
+            >
+              <ListChecks className="size-4 text-accent transition group-hover:scale-110" />
+              <span>Editorial planner</span>
+            </Link>
+
+            <button
+              type="button"
+              onClick={handleExport}
+              className="group inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-border bg-background/60 px-4 text-xs font-bold text-muted-foreground shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-border hover:bg-muted hover:text-foreground"
+            >
+              <Download className="size-4 text-muted-foreground transition group-hover:-translate-y-0.5" />
+              <span>Export JSON</span>
+            </button>
+
             <input
-              type="checkbox"
-              checked={autoGenerateImages}
-              onChange={handleAutoImageToggle}
-              className="sr-only"
-              aria-label="Toggle automatic blog image generation"
+              type="file"
+              id="import-blog-json"
+              accept=".json"
+              onChange={handleImportFileChange}
+              className="hidden"
             />
-            <span className="flex items-center gap-2">
-              {autoGenerateImages ? (
-                <Sparkles className="size-4 text-emerald-300" />
-              ) : (
-                <Mail className="size-4 text-slate-500" />
-              )}
-              Auto image
-            </span>
-            <span
-              className={`relative h-5 w-10 rounded-full p-0.5 transition-colors duration-200 ${
-                autoGenerateImages ? "bg-emerald-500" : "bg-slate-800"
+            <button
+              type="button"
+              onClick={() => document.getElementById("import-blog-json")?.click()}
+              disabled={importing}
+              className="group inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-border bg-background/60 px-4 text-xs font-bold text-muted-foreground shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-border hover:bg-muted hover:text-foreground disabled:opacity-50"
+            >
+              <Upload className="size-4 text-muted-foreground transition group-hover:-translate-y-0.5" />
+              <span>{importing ? "Importing..." : "Import JSON"}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleAdd}
+              className="group inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-accent/30 bg-accent/10 px-4 text-xs font-bold text-accent shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-accent/20 hover:border-accent/50"
+            >
+              <Plus className="size-4 text-accent transition duration-300 group-hover:rotate-90" />
+              <span>New article</span>
+            </button>
+
+            <label
+              className={`flex h-11 cursor-pointer select-none items-center justify-between gap-3 whitespace-nowrap rounded-xl border px-3.5 text-xs font-bold shadow-sm transition-all duration-200 ${
+                autoGenerateImages
+                  ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400 shadow-emerald-500/10"
+                  : "border-border bg-background/60 text-muted-foreground hover:border-accent/30 hover:text-foreground"
+              }`}
+              title="Toggle automatic blog image generation"
+            >
+              <input
+                type="checkbox"
+                checked={autoGenerateImages}
+                onChange={handleAutoImageToggle}
+                className="sr-only"
+                aria-label="Toggle automatic blog image generation"
+              />
+              <span className="flex items-center gap-2">
+                {autoGenerateImages ? (
+                  <Sparkles className="size-4 text-emerald-400 animate-pulse" />
+                ) : (
+                  <Mail className="size-4 text-muted-foreground" />
+                )}
+                <span>Auto image</span>
+              </span>
+              <span
+                className={`relative h-5 w-9 rounded-full p-0.5 transition-colors duration-200 ${
+                  autoGenerateImages ? "bg-emerald-500" : "bg-muted"
+                }`}
+              >
+                <span
+                  className={`block size-4 rounded-full bg-foreground shadow-md transition-transform duration-200 ease-out ${
+                    autoGenerateImages ? "translate-x-4" : "translate-x-0"
+                  }`}
+                />
+              </span>
+            </label>
+
+            <button
+              type="button"
+              onClick={() => {
+                if (hasPendingImage) {
+                  setSelectedBlogForImage(pendingImageBlog);
+                } else {
+                  setSelectedBlogForImage(null);
+                }
+                setIsAIProgressOpen(true);
+              }}
+              className={`group flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl border px-5 text-xs font-black tracking-wide shadow-lg shadow-accent/20 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 ${
+                hasPendingImage
+                  ? autoGenerateImages
+                    ? "border-amber-400/40 bg-amber-400/20 text-amber-300 shadow-amber-500/20 hover:bg-amber-400/30"
+                    : "border-emerald-400/40 bg-emerald-500/20 text-emerald-300 shadow-emerald-500/20 hover:bg-emerald-500/30"
+                  : "border-accent bg-accent text-accent-foreground hover:bg-accent/90"
               }`}
             >
-              <span
-                className={`block size-4 rounded-full bg-white shadow-md transition-transform duration-200 ease-out ${
-                  autoGenerateImages ? "translate-x-5" : "translate-x-0"
-                }`}
-              />
-            </span>
-          </label>
+              {hasPendingImage && !autoGenerateImages ? (
+                <Mail className="size-4" />
+              ) : (
+                <Sparkles
+                  className={`size-4 ${
+                    hasPendingImage ? "animate-bounce" : "transition duration-300 group-hover:rotate-180"
+                  }`}
+                />
+              )}
+              <span>
+                {hasPendingImage
+                  ? autoGenerateImages
+                    ? "Generate Blog Image"
+                    : "Send Image Prompt"
+                  : "Generate AI blog"}
+              </span>
+            </button>
+          </div>
+        </div>
+      </header>
 
-          <button
-            onClick={() => {
-              if (hasPendingImage) {
-                setSelectedBlogForImage(pendingImageBlog);
-              } else {
-                setSelectedBlogForImage(null);
-              }
-              setIsAIProgressOpen(true);
-            }}
-            className={`group flex h-11 items-center justify-center gap-2 rounded-xl border px-5 text-xs font-extrabold shadow-lg transition-all duration-200 hover:-translate-y-0.5 disabled:opacity-50 ${
-              hasPendingImage
-                ? autoGenerateImages
-                  ? "border-amber-300 bg-amber-400 text-slate-950 shadow-amber-500/20 hover:bg-amber-300 hover:text-black"
-                  : "border-emerald-400 bg-emerald-500 text-slate-950 shadow-emerald-500/25 hover:bg-emerald-400 hover:text-black hover:border-emerald-300"
-                : "border-violet-500 bg-violet-600 text-white font-extrabold shadow-violet-600/30 hover:bg-violet-500 hover:border-violet-400"
-            }`}
-          >
-            {hasPendingImage && !autoGenerateImages ? (
-              <Mail className="size-4" />
-            ) : (
-              <Sparkles
-                className={`size-4 ${hasPendingImage ? "animate-bounce" : "group-hover:animate-spin"}`}
-              />
-            )}
-            {hasPendingImage
-              ? autoGenerateImages
-                ? "Generate Blog Image"
-                : "Send Image Prompt"
-              : "Generate AI blog"}
-          </button>
-        </div></div></header>
-
-      <section className="rounded-[24px] border border-white/[0.08] bg-[#0d1727] p-5 sm:p-6">
+      {/* AI Publishing Schedule Section - Theme Aligned */}
+      <section className="overflow-hidden rounded-[1.75rem] border border-border/70 bg-card p-5 sm:p-7 shadow-sm">
         <BlogPublishCountdown settings={automationSettings} />
-        <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+        <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
           <div>
-            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.2em] text-violet-300">
-              <Clock3 className="size-4" />AI publishing schedule
+            <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.24em] text-accent">
+              <Clock3 className="size-4 text-accent" />
+              <span>AI Publishing Schedule</span>
             </div>
-            <h2 className="mt-2 text-lg font-semibold text-white">Automated blog frequency</h2>
-            <p className="mt-1 max-w-2xl text-xs leading-5 text-slate-500">
-              The scheduler writes one safe article per eligible run until the daily quantity is complete. Topic Intelligence keeps a seven-day queue reserve based on this demand.
+            <h2 className="mt-2 text-xl font-black text-foreground sm:text-2xl">Automated blog frequency</h2>
+            <p className="mt-1 max-w-2xl text-xs sm:text-sm leading-relaxed text-muted-foreground">
+              The scheduler writes safe, optimized articles per eligible run until daily quota is fulfilled.
             </p>
           </div>
-          <div className="flex flex-wrap items-end gap-3">
-            <label className="w-full sm:w-28">
-              <span className="mb-2 block text-[10px] font-semibold text-slate-400">Blogs per day</span>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <label className="w-full sm:w-32">
+              <span className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">
+                Blogs per day
+              </span>
               <input
                 type="number"
                 min="1"
@@ -916,11 +1001,14 @@ export default function BlogsPage() {
                     dailyQuantity: Number(event.target.value),
                   }))
                 }
-                className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-white outline-none focus:border-violet-400/40"
+                className="h-11 w-full rounded-xl border border-border bg-background/50 px-3.5 text-sm font-bold text-foreground outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
               />
             </label>
-            <label className="w-full sm:w-32">
-              <span className="mb-2 block text-[10px] font-semibold text-slate-400">Interval hours</span>
+
+            <label className="w-full sm:w-36">
+              <span className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">
+                Interval hours
+              </span>
               <input
                 type="number"
                 min="1"
@@ -934,19 +1022,19 @@ export default function BlogsPage() {
                     intervalHours: Number(event.target.value),
                   }))
                 }
-                className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-white outline-none focus:border-violet-400/40"
+                className="h-11 w-full rounded-xl border border-border bg-background/50 px-3.5 text-sm font-bold text-foreground outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
               />
             </label>
 
-            {/* Master AI Engine Persistence Kill-Switch Button */}
+            {/* Master AI Engine Toggle */}
             <button
               type="button"
               disabled={automationSettingsLoading || automationSettingsSaving}
               onClick={handleMasterAutomationToggle}
-              className={`group flex h-11 items-center justify-between gap-3 rounded-xl border px-4 text-xs font-bold tracking-wide shadow-sm transition-all duration-200 ${
+              className={`group flex h-11 items-center justify-between gap-3 whitespace-nowrap rounded-xl border px-4 text-xs font-bold tracking-wide shadow-sm transition-all duration-200 ${
                 automationSettings.enabled
-                  ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-300 shadow-emerald-500/10 hover:bg-emerald-500/25"
-                  : "border-rose-500/40 bg-rose-500/15 text-rose-300 shadow-rose-500/10 hover:bg-rose-500/25"
+                  ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20"
+                  : "border-rose-500/40 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20"
               }`}
               title={
                 automationSettings.enabled
@@ -978,13 +1066,13 @@ export default function BlogsPage() {
                 </span>
               </div>
               <span
-                className={`relative h-5 w-10 rounded-full p-0.5 transition-colors duration-200 ${
+                className={`relative h-5 w-9 rounded-full p-0.5 transition-colors duration-200 ${
                   automationSettings.enabled ? "bg-emerald-500" : "bg-rose-600/70"
                 }`}
               >
                 <span
-                  className={`block size-4 rounded-full bg-white shadow-md transition-transform duration-200 ease-out ${
-                    automationSettings.enabled ? "translate-x-5" : "translate-x-0"
+                  className={`block size-4 rounded-full bg-foreground shadow-md transition-transform duration-200 ease-out ${
+                    automationSettings.enabled ? "translate-x-4" : "translate-x-0"
                   }`}
                 />
               </span>
@@ -994,23 +1082,33 @@ export default function BlogsPage() {
               type="button"
               onClick={resetAutomationSettings}
               disabled={automationSettingsLoading || automationSettingsSaving}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-white/[0.1] bg-slate-950/35 px-4 text-xs font-bold text-slate-300 transition hover:border-violet-400/30 hover:text-violet-300 disabled:opacity-50"
+              className="inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-border bg-background/60 px-4 text-xs font-bold text-muted-foreground transition hover:border-accent/30 hover:text-foreground disabled:opacity-50"
             >
-              <RefreshCcw className="size-4" />Reset default
+              <RefreshCcw className="size-4 text-muted-foreground" />
+              <span>Reset</span>
             </button>
+
             <button
               type="button"
               onClick={() => saveAutomationSettings()}
               disabled={automationSettingsLoading || automationSettingsSaving}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-violet-400 px-4 text-xs font-bold text-slate-950 transition hover:bg-violet-300 disabled:opacity-50"
+              className="inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-accent px-5 text-xs font-bold text-accent-foreground shadow-lg shadow-accent/20 transition hover:bg-accent/90 disabled:opacity-50"
             >
-              <Save className="size-4" />{automationSettingsSaving ? "Saving..." : "Save schedule"}
+              <Save className="size-4" />
+              <span>{automationSettingsSaving ? "Saving..." : "Save schedule"}</span>
             </button>
           </div>
         </div>
       </section>
 
-      <div className="grid overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0d1727] grid-cols-2 sm:grid-cols-5"><BlogMetric label="Total articles" value={blogs.length} /><BlogMetric label="Published" value={blogs.filter((item) => item.publishStatus === "published").length} /><BlogMetric label="Pending" value={blogs.filter((item) => item.publishStatus === "pending").length} /><BlogMetric label="Drafts" value={blogs.filter((item) => item.publishStatus === "draft" || !item.publishStatus).length} /><BlogMetric label="AI generated" value={blogs.filter((item) => item.aiGenerated).length} last /></div>
+      {/* Metrics Row - Theme Aligned */}
+      <div className="grid overflow-hidden rounded-2xl border border-border/70 bg-card grid-cols-2 sm:grid-cols-5 shadow-sm">
+        <BlogMetric label="Total articles" value={blogs.length} icon={BookOpen} color="text-accent" />
+        <BlogMetric label="Published" value={blogs.filter((item) => item.publishStatus === "published").length} icon={CheckCircle2} color="text-emerald-400" />
+        <BlogMetric label="Pending" value={blogs.filter((item) => item.publishStatus === "pending").length} icon={Clock3} color="text-amber-400" />
+        <BlogMetric label="Drafts" value={blogs.filter((item) => item.publishStatus === "draft" || !item.publishStatus).length} icon={Pencil} color="text-muted-foreground" />
+        <BlogMetric label="AI generated" value={blogs.filter((item) => item.aiGenerated).length} icon={Sparkles} color="text-accent" last />
+      </div>
 
       <section id="article-library-section" data-columns={columns.length} data-reorder={Boolean(reorderBlogs)} className="overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#0d1727]"><div className="flex flex-col justify-between gap-4 border-b border-white/[0.07] p-4 xl:flex-row xl:items-center sm:p-5"><div className="space-y-3"><div><p className="text-sm font-semibold text-slate-200">Article library</p><p className="mt-1 text-xs text-slate-600">Manage manual and AI-assisted content in one place (21 articles per page).</p></div><div className="flex items-center gap-1.5 flex-wrap pt-1"><button type="button" onClick={() => setBlogStatusFilter("all")} className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${blogStatusFilter === "all" ? "bg-violet-500/20 text-violet-300 border border-violet-500/40 shadow-sm" : "bg-slate-950/35 text-slate-400 border border-white/[0.08] hover:text-slate-200"}`}>All ({blogs.length})</button><button type="button" onClick={() => setBlogStatusFilter("published")} className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${blogStatusFilter === "published" ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm" : "bg-slate-950/35 text-slate-400 border border-white/[0.08] hover:text-emerald-300"}`}><span className="size-2 rounded-full bg-emerald-400 animate-pulse"></span>Published ({blogs.filter((b) => b.publishStatus === "published").length})</button><button type="button" onClick={() => setBlogStatusFilter("pending")} className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${blogStatusFilter === "pending" ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm" : "bg-slate-950/35 text-slate-400 border border-white/[0.08] hover:text-amber-300"}`}><span className="size-2 rounded-full bg-amber-400"></span>Pending ({blogs.filter((b) => b.publishStatus === "pending").length})</button><button type="button" onClick={() => setBlogStatusFilter("draft")} className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${blogStatusFilter === "draft" ? "bg-slate-700/50 text-slate-200 border border-slate-500/50 shadow-sm" : "bg-slate-950/35 text-slate-400 border border-white/[0.08] hover:text-slate-200"}`}><span className="size-2 rounded-full bg-slate-400"></span>Drafts ({blogs.filter((b) => (b.publishStatus || "draft") === "draft" && b.publishStatus !== "published" && b.publishStatus !== "pending").length})</button></div></div><div className="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap xl:w-auto"><label className="relative w-full sm:min-w-64"><Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-600" /><input value={blogSearch} onChange={(event) => setBlogSearch(event.target.value)} placeholder="Search articles..." className="w-full rounded-xl border border-white/[0.08] bg-slate-950/35 py-3 pl-10 pr-4 text-sm outline-none placeholder:text-slate-700 focus:border-violet-400/40" /></label><label><span className="sr-only">Filter by status</span><select value={blogStatusFilter} onChange={(event) => setBlogStatusFilter(event.target.value)} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40"><option value="all">All Statuses</option><option value="published">Published 🟢</option><option value="pending">Pending 🟡</option><option value="draft">Draft ⚪</option></select></label><label><span className="sr-only">Filter by featured</span><select value={blogFeaturedFilter} onChange={(event) => setBlogFeaturedFilter(event.target.value)} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40"><option value="all">All Articles</option><option value="featured">Featured ⭐</option><option value="non-featured">Non-Featured</option></select></label><label><span className="sr-only">Filter articles by date</span><input type="date" value={blogDateFilter} onChange={(event) => setBlogDateFilter(event.target.value)} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40" title="Show blogs published on this date" /></label><label><span className="sr-only">Sort articles</span><select value={blogSortDirection} onChange={(event) => setBlogSortDirection(event.target.value)} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40"><option value="ascending">Ascending (newest first)</option><option value="descending">Descending (oldest first)</option></select></label>{isAnyFilterActive && <button type="button" onClick={handleClearFilters} className="inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border border-rose-400/30 bg-rose-500/10 px-3.5 text-xs font-semibold text-rose-300 transition hover:bg-rose-500/20" title="Clear all active filters"><X className="size-3.5" />Clear filters</button>}</div></div><div className="grid gap-4 p-4 sm:p-5 md:grid-cols-2 xl:grid-cols-3">{paginatedBlogs.map((blog) => <BlogCard key={blog._id || blog.slug || blog.title} blog={blog} aiActions={aiActionRenderer?.(blog)} onCreateBlogger={handleGenerateBloggerForBlog} onEdit={() => handleEdit(blog)} onView={() => handleView(blog)} onDelete={() => handleDelete(blog)} onInspect={() => setInspectedBlog(blog)} />)}</div>{visibleBlogs.length === 0 && <div className="grid min-h-72 place-items-center text-center"><div><BookOpen className="mx-auto size-9 text-slate-700" /><p className="mt-4 text-sm font-semibold text-slate-300">No matching articles</p><p className="mt-1 text-xs text-slate-600">Try another title, date, category or status filter.</p></div></div>}
       {totalPages > 1 && (
@@ -1332,11 +1430,14 @@ function BlogPublishCountdown({ settings }) {
   );
 }
 
-function BlogMetric({ label, value, last = false }) {
+function BlogMetric({ label, value, icon: Icon, color = "text-violet-400", last = false }) {
   return (
-    <div className={`p-5 sm:p-6 ${last ? "" : "border-b border-white/[0.07] sm:border-b-0 sm:border-r"}`}>
-      <p className="text-[9px] font-bold uppercase tracking-[.18em] text-slate-600">{label}</p>
-      <p className="mt-1 text-2xl font-semibold text-white">{value}</p>
+    <div className={`group relative p-5 sm:p-6 transition-all duration-300 hover:bg-white/[0.02] ${last ? "" : "border-b border-white/[0.07] sm:border-b-0 sm:border-r"}`}>
+      <div className="flex items-center justify-between">
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">{label}</p>
+        {Icon && <Icon className={`size-4 opacity-70 transition duration-300 group-hover:scale-110 ${color}`} />}
+      </div>
+      <p className="mt-2 text-2xl sm:text-3xl font-black text-white tracking-tight">{value}</p>
     </div>
   );
 }
