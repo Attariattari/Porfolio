@@ -63,6 +63,25 @@ export async function POST(request, { params }) {
     return NextResponse.json({ success: true, status: result.status });
   }
 
+  if (action === "regenerate_prompt") {
+    const imagePrompt = await generateBlogImagePrompt(blog);
+    blog.imagePrompt = imagePrompt.prompt;
+    blog.image_prompt = imagePrompt.prompt;
+    blog.imagePromptEnhanced = imagePrompt.visualDirection || "";
+    blog.imageNegativePrompt = imagePrompt.negativePrompt || "";
+    if (!blog.imageStatus || blog.imageStatus === "pending") {
+      blog.imageStatus = "manual_required";
+    }
+    await blog.save();
+    return NextResponse.json({
+      success: true,
+      message: "New image prompt generated & saved to database successfully.",
+      imagePrompt: imagePrompt.prompt,
+      imagePromptEnhanced: imagePrompt.visualDirection,
+      negativePrompt: imagePrompt.negativePrompt,
+    });
+  }
+
   if (action === "send_prompt_email" || action === "create_upload_link") {
     const targetEmail = getSuperAdminEmail();
     if (!targetEmail) {

@@ -240,7 +240,7 @@ export default function AdminPwaInstaller({ session: propSession, isSuperAdmin: 
                       1
                     </span>
                     <span>
-                      Tap the <strong>Share</strong> button (<Share2 className="inline h-3.5 w-3.5 text-cyan-400 mx-0.5" />) in Safari's bottom toolbar.
+                      Tap the <strong>Share</strong> button (<Share2 className="inline h-3.5 w-3.5 text-cyan-400 mx-0.5" />) in Safari&apos;s bottom toolbar.
                     </span>
                   </div>
 
@@ -278,7 +278,7 @@ export default function AdminPwaInstaller({ session: propSession, isSuperAdmin: 
                       2
                     </span>
                     <span>
-                      Select <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.
+                      Select <strong>&quot;Install app&quot;</strong> or <strong>&quot;Add to Home screen&quot;</strong>.
                     </span>
                   </div>
 

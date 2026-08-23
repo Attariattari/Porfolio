@@ -36,15 +36,21 @@ export default function PWAOfflineEngine() {
   const [justReconnected, setJustReconnected] = useState(false);
 
   useEffect(() => {
-    // 1. Service Worker Lifecycle Management
+    // 1. Service Worker Lifecycle Management with immediate registration
     if (typeof window !== "undefined" && "serviceWorker" in navigator) {
       navigator.serviceWorker
-        .register("/sw.js")
+        .register("/sw.js", { scope: "/" })
         .then((reg) => {
-          console.log("[OfflineEngine] Service Worker active with scope:", reg.scope);
+          // Warm up current URL into cache if online
+          if (navigator.onLine && reg.active) {
+            reg.active.postMessage({
+              type: "MUHYO_WARMUP_CACHE",
+              url: window.location.pathname,
+            });
+          }
         })
         .catch((err) => {
-          console.warn("[OfflineEngine] Service Worker skipped:", err);
+          console.warn("[OfflineEngine] Service Worker registration:", err);
         });
     }
 

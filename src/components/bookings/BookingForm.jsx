@@ -14,6 +14,7 @@ import {
   Sparkles,
   User,
   BookOpen,
+} from "lucide-react";
 import { Button } from "@/components/ui";
 import { saveToOfflineOutbox } from "@/lib/offlineOutbox";
 

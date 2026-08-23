@@ -312,13 +312,44 @@ export default function BlogsPage() {
               Manual
             </span>
           )}
-          {item.aiGenerated && item._id ? (
+          {!item._isFromDataJs && item._id ? (
             <>
-              {autoGenerateImages ? (
+              <button
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  const toastId = toast.loading("Generating new AI image prompt...");
+                  try {
+                    const res = await fetch(`/api/admin/blogs/${item._id}/image`, {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ action: "regenerate_prompt" }),
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                      toast.success("New image prompt saved to DB & copied!", { id: toastId });
+                      if (data.imagePrompt) {
+                        try {
+                          await navigator.clipboard.writeText(data.imagePrompt);
+                        } catch (_) {}
+                      }
+                      await fetchBlogs({ force: true });
+                    } else {
+                      toast.error(data.message || "Prompt generation failed.", { id: toastId });
+                    }
+                  } catch (error) {
+                    toast.error(error.message || "Prompt generation failed.", { id: toastId });
+                  }
+                }}
+                className="p-1.5 rounded-md border border-amber-500/30 bg-amber-500/10 text-amber-300 hover:text-amber-200 hover:bg-amber-500/20 transition-all"
+                title="Generate / Regenerate Image Prompt & Save to DB"
+              >
+                <Sparkles className="w-3 h-3" />
+              </button>
+              {autoGenerateImages && item.aiGenerated ? (
                 <button
                   onClick={async (e) => {
                     e.stopPropagation();
-                    const toastId = toast.loading("Regenerating blog image...");
+                    const toastId = toast.loading("Regenerating blog cover image...");
                     const res = await fetch(`/api/admin/blogs/${item._id}/image`, {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
@@ -337,7 +368,7 @@ export default function BlogsPage() {
                     }
                   }}
                   className="p-1.5 rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-muted"
-                  title="Regenerate AI image"
+                  title="Regenerate AI cover image"
                 >
                   <RefreshCcw className="w-3 h-3" />
                 </button>
@@ -361,7 +392,7 @@ export default function BlogsPage() {
                   }
                 }}
                 className="p-1.5 rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-muted"
-                title="Send prompt email"
+                title="Send prompt email to Super Admin"
               >
                 <Mail className="w-3 h-3" />
               </button>
@@ -370,10 +401,10 @@ export default function BlogsPage() {
                   onClick={(e) => {
                     e.stopPropagation();
                     navigator.clipboard.writeText(item.imagePrompt || item.image_prompt);
-                    toast.success("Image prompt copied.");
+                    toast.success("Image prompt copied to clipboard.");
                   }}
                   className="p-1.5 rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-muted"
-                  title="Copy image prompt"
+                  title="Copy current image prompt"
                 >
                   <Copy className="w-3 h-3" />
                 </button>
