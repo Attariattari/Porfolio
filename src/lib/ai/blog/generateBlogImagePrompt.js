@@ -3,7 +3,7 @@ import { ensureBlogImageAlt } from "@/lib/blogImageAlt";
 import { Blog } from "@/models/Portfolio";
 
 const FALLBACK_NEGATIVE_PROMPT =
-  "No fake logos, no watermarks, no fake brand names, no gibberish text, no unreadable labels, no copyrighted characters, no misleading claims, no cluttered UI, no neon cyberpunk, no obvious AI-art cliches, no generic blue dashboard template, no repeated office background.";
+  "No blurry text, no unreadable sticky notes, no smeared labels, no motion blur, no out-of-focus artifacts, no noisy compression artifacts, no fake logos, no watermarks, no gibberish text, no neon cyberpunk cliches, no floating code clouds, no plastic AI gloss, no generic blue dashboard templates, no distorted laptop screens, no chaotic wireframes.";
 
 const VISUAL_PALETTES = [
   "warm ivory, terracotta, deep ink, and restrained brass accents",
@@ -116,16 +116,14 @@ export async function generateBlogImagePrompt(blog, options = {}) {
     : "No recent visual directions available.";
 
   const fallback = {
-    prompt: `Create a premium 16:9 technical editorial ${visualIdentity.articleType} cover for the Muhyo Tech article "${blog.title}". Render in ultra-HD 4K quality (3840 x 2160), with crisp focal details, clean edges, refined textures, and professional clarity. Communicate the exact lesson through realistic software-engineering and business artifacts, not generic stock imagery. Article-level composition: ${visualIdentity.composition}. Use this specific background direction: ${visualIdentity.background}. Use a clearly dominant, distinctive palette of ${visualIdentity.palette}; do not fall back to the usual dark-blue/cyan SaaS look. Show believable architecture cards, workflows, product states, infrastructure, devices, or before/after operational outcomes only when they explain this topic. Keep a strong focal point, balanced depth, clean social-preview crop space, realistic materials, and professional lighting. No reused banner layout, generic office scene, repeated dashboard wall, neon cyberpunk, floating code, plastic AI gloss, random robots, fake logos, gibberish, watermarks, or large title text.` ,
+    prompt: `Create a premium 16:9 technical editorial ${visualIdentity.articleType} cover for the Muhyo Tech article "${blog.title}". Render in ultra-HD 4K resolution (3840 x 2160), with pin-sharp focal clarity, clean geometric edges, and zero motion blur. Dynamically reflect the authentic brand color DNA and visual identity of the subject technology. Any sticky notes, architecture cards, flowchart nodes, and metric labels must be crystal-clear, high-contrast, and effortlessly legible. Laptop screens and system graphs must feature structured, anti-aliased precision. Composition: ${visualIdentity.composition}. Environment: ${visualIdentity.background}. Palette: ${visualIdentity.palette}. Photorealistic lighting with high micro-contrast and realistic physical textures. No blurry text, no unreadable sticky notes, no motion blur, no neon cyberpunk, no floating code clouds, no plastic AI gloss, no fake logos, no watermarks.`,
     altText: ensureBlogImageAlt("", blog.title),
     visualDirection:
-      `${visualIdentity.articleType} cover; ${visualIdentity.composition}; ${visualIdentity.background}; palette: ${visualIdentity.palette}.`,
+      `${visualIdentity.articleType} cover; ${visualIdentity.composition}; ${visualIdentity.background}; palette: ${visualIdentity.palette}; 4K zero-blur clarity.`,
     negativePrompt: FALLBACK_NEGATIVE_PROMPT,
   };
 
   // The manual-email path already follows a full AI content-generation run.
-  // Use the deterministic production-ready prompt there so SMTP gets a fresh,
-  // predictable time budget instead of spending another Gemini request.
   if (options.useAI === false) {
     return fallback;
   }
@@ -133,56 +131,51 @@ export async function generateBlogImagePrompt(blog, options = {}) {
   try {
     const response = await generateGeminiResponse(
       `
-      Create a FULL professional image-generation prompt for a Muhyo Tech blog cover.
+      Create an elite, production-ready AI image-generation prompt for a Muhyo Tech blog featured cover.
 
-      BLOG:
+      BLOG CONTEXT:
       Title: ${blog.title}
       Summary: ${blog.summary || ""}
       Category: ${blog.category || "Technology"}
       Article Type: ${visualIdentity.articleType}
       Cluster: ${blog.clusterTitle || blog.clusterKey || "Standalone editorial topic"}
-      Cluster Position: ${Number(blog.clusterOrder || 0)} (0=pillar, 1/2=supporting)
       Tags: ${Array.isArray(blog.tags) ? blog.tags.join(", ") : ""}
       Keywords: ${Array.isArray(blog.keywords) ? blog.keywords.join(", ") : ""}
       Content Excerpt: ${contentExcerpt}
 
-      ASSIGNED UNIQUE VISUAL IDENTITY:
-      - Palette: ${visualIdentity.palette}
-      - Background: ${visualIdentity.background}
-      - Composition: ${visualIdentity.composition}
-
       RECENT BANNERS TO DIFFERENTIATE FROM:
       ${recentAvoidance}
 
-      BRAND STYLE:
-      Muhyo Tech, web development, software engineering, digital services, portfolio/business websites.
+      CORE INTELLIGENCE & VISUAL DIRECTIVES:
+      1. DYNAMIC TECHNOLOGY & BRAND COLOR DNA:
+         - Analyze the core technology, database, framework, language, or system discussed in this article.
+         - Dynamically identify and apply its signature authentic color theme and official brand ecosystem into the lighting, architecture cards, and focal elements (e.g., MongoDB -> leaf green & slate; React -> electric cyan & navy; Next.js -> obsidian black & pure white; Node.js -> emerald & graphite; Python -> steel blue & amber; PostgreSQL -> classic ocean blue & silver; Rust -> industrial rust-orange & steel; Docker/Kubernetes -> container blue & white; Supabase -> emerald & dark mode; etc.).
+         - Never use mismatched generic colors that contradict the subject technology.
 
-      REQUIREMENTS:
-      - The prompt must be production-ready for an AI image generator.
-      - Prompt length: 850-1300 characters.
-      - Include aspect ratio 16:9.
-      - Require ultra-HD 4K output (3840 x 2160) with crisp focal details, clean edges, refined textures, and professional clarity.
-      - Include subject, composition, foreground/background, technical artifacts, mood, lighting, depth, palette, style, and quality.
-      - Make it specific to this exact blog topic and content excerpt.
-      - Follow the assigned palette, background, and composition. Do not replace them with a generic dark-blue dashboard theme.
-      - Do not reuse the dominant background, camera angle, palette, focal metaphor, or layout described in recent banners above.
-      - A pillar must show the broad system/decision landscape. A supporting article must isolate one subproblem and use a visibly different composition from its pillar and sibling.
-      - The altText must be professional, accurately describe the visual/topic, and include the words "Muhyo Tech" naturally.
-      - Clean SaaS/web development feel, premium software-engineering/product publication style.
-      - Suitable for a blog featured image and social preview crop.
-      - Prefer realistic technical storytelling: architecture cards, dashboard panels, data-flow paths, pipeline stages, product screens, servers, devices, or before/after transformation scenes when relevant.
-      - Short readable labels/status cards are allowed only when they clarify the technical story.
-      - No random robots unless directly relevant
-      - No fake logos, no gibberish, no watermarks, no text-heavy design, no copyrighted characters
-      - Do not include instructions to add large title text inside the image.
-      - Avoid neon cyberpunk, floating code clouds, fantasy holograms, plastic AI gloss, and generic stock-photo scenes.
+      2. CRYSTAL-CLEAR LEGIBILITY & ZERO BLUR:
+         - Any visible sticky notes, UI cards, architectural nodes, status chips, workflow steps, or annotations MUST be rendered with pin-sharp clarity, high contrast, and crisp legible typography.
+         - Absolutely zero blurred text, zero smeared labels, zero messy artifacts, and zero unreadable scribbles.
+         - The visual structure must be immediately intuitive and clean.
+
+      3. PRECISE LAPTOP & TECHNICAL DISPLAYS:
+         - If laptops, monitors, code editors, database query panels, latency graphs, or system flowcharts are shown, they must feature clean anti-aliased geometry, crisp lines, and structured visual hierarchy without chaotic AI noise.
+
+      4. 4K ULTRA-HD CINEMATIC SPECS:
+         - Resolution: Ultra-HD 4K (3840 x 2160).
+         - Aspect Ratio: 16:9.
+         - Lighting & Optics: Studio practical lighting, balanced focal depth, realistic material textures, razor-sharp focus, and zero motion blur.
+         - Clean negative space suitable for responsive mobile and social card cropping.
+
+      5. NEGATIVE RESTRICTIONS:
+         - No fake logos, no watermarks, no unreadable gibberish, no childish cartoon robots.
+         - Avoid neon cyberpunk, floating code clouds, magical glowing orbs, plastic AI gloss, and generic stock-photo corporate handshakes.
 
       OUTPUT STRICT JSON:
       {
-        "prompt": "Full production-ready image generation prompt, 850-1300 characters",
-        "altText": "Short descriptive alt text",
-        "visualDirection": "Specific art direction, 120-220 characters",
-        "negativePrompt": "Detailed negative prompt"
+        "prompt": "Full production-ready image generation prompt in English, 850-1350 characters, containing dynamic tech colors, 4K resolution, 16:9 aspect ratio, crystal-clear legible sticky notes/cards, and pin-sharp technical displays",
+        "altText": "Descriptive SEO alt text including 'Muhyo Tech' and the core topic",
+        "visualDirection": "Concise art direction and dynamic color palette summary, 120-220 characters",
+        "negativePrompt": "Comprehensive negative prompt string"
       }
       `,
       {
@@ -211,7 +204,7 @@ export async function generateBlogImagePrompt(blog, options = {}) {
 
     return normalized;
   } catch (error) {
-    console.warn("[BlogImagePrompt] Falling back to deterministic prompt.");
+    console.warn("[BlogImagePrompt] Falling back to deterministic prompt:", error?.message || error);
     return fallback;
   }
 }

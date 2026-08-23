@@ -71,8 +71,8 @@ function validateShareReadyKit(kit, blog) {
   const titleFingerprint = cleanText(blog.title).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
   const unsafeStyle = /\bever wonder\b|\bdid you know\b|\bin today'?s digital world\b|\bkey takeaways\b|\bsearch engines? (?:will )?reward\b|\bboost(?:ing)? (?:your )?(?:rankings?|ctr)\b|\bguaranteed?\b|\b100%\b|\bskyrocket\b|\bgame[- ]changer\b|\blet'?s talk\b|\bclick here\b|\bunlock(?:ing)? the power\b|\brevolutioni[sz]e\b|\bdelve\b/i;
   const hardWording = /\b(?:utili[sz]e|leverage|facilitate|synergy|paradigm|multifaceted|holistic|cutting[- ]edge|state[- ]of[- ]the[- ]art|seamless(?:ly)?|robust|transformative|groundbreaking|unprecedented|intricacies|aforementioned|in order to|it is important to note|navigate the complexities|ever[- ]evolving landscape)\b/i;
-  const limits = { linkedin: [650, 1800], facebook: [500, 1400], x: [270, 280], whatsapp: [220, 650], reddit: [650, 2000], instagram: [550, 1600], devto: [650, 2200] };
-  const wordLimits = { linkedin: [100, 260], facebook: [80, 210], x: [25, 60], whatsapp: [35, 110], reddit: [100, 300], instagram: [90, 240], devto: [100, 350] };
+  const limits = { linkedin: [650, 1800], facebook: [500, 1400], x: [160, 280], whatsapp: [220, 650], reddit: [650, 2000], instagram: [550, 1600], devto: [650, 2200] };
+  const wordLimits = { linkedin: [100, 260], facebook: [80, 210], x: [18, 60], whatsapp: [35, 110], reddit: [100, 300], instagram: [90, 240], devto: [100, 350] };
   const hashtagLimits = { linkedin: [3, 5], facebook: [0, 3], x: [0, 2], whatsapp: [0, 0], reddit: [0, 0], instagram: [3, 8], devto: [2, 5] };
   const hooks = [];
 
@@ -88,7 +88,7 @@ function validateShareReadyKit(kit, blog) {
     const [minimumWords, maximumWords] = wordLimits[platform];
     const [minimumTags, maximumTags] = hashtagLimits[platform];
     if (text.length < minimum || text.length > maximum) throw new Error(`${platform} post length is outside the professional platform limit.`);
-    if (hook.length < 24 || hook.length > 170 || hookWords < 6 || hookWords > 22 || /https?:\/\/|#|\?/.test(hook)) throw new Error(`${platform} needs a concise standalone first-line hook.`);
+    if (hook.length < 20 || hook.length > 170 || hookWords < 5 || hookWords > 22 || /https?:\/\/|#|\?/.test(hook)) throw new Error(`${platform} needs a concise standalone first-line hook.`);
     if (firstAlphabet && firstAlphabet !== firstAlphabet.toUpperCase()) throw new Error(`${platform} must start with a capital letter.`);
     if (normalizedHook === titleFingerprint || unsafeStyle.test(editorialText)) throw new Error(`${platform} uses a weak, generic, or unsupported social formula.`);
     if (hardWording.test(editorialText)) throw new Error(`${platform} uses difficult corporate or AI-style wording instead of plain language.`);
@@ -122,7 +122,18 @@ function createFallbackKit(blog, { validate = true } = {}) {
   const sourceSummary = easyExcerpt(blog.summary || blog.seoDescription || blog.content, 430);
   const linkedinHook = capitalizeFirstLetter(`${topic} works better when the build choices are clear from the start.`);
   const facebookHook = capitalizeFirstLetter(`Clear ${topic} choices can make a web project easier to use and maintain.`);
-  const xHook = capitalizeFirstLetter(`Good ${topic} work keeps every build choice tied to the real goal.`);
+
+  // Dynamic X (Twitter) Hook Pool - Never hardcoded to "Good"
+  const xHooksPool = [
+    `Mastering ${topic} requires focusing on real-world engineering, not just syntax.`,
+    `Clean ${topic} architecture saves hours of debugging in production environments.`,
+    `Effective ${topic} starts by aligning system design directly with user impact.`,
+    `Building scalable solutions with ${topic} comes down to key structural decisions.`,
+    `When implementing ${topic}, simplicity and maintainability beat over-engineering.`,
+  ];
+  const xHash = Math.abs(String(blog.title || topic).split("").reduce((acc, char) => acc + char.charCodeAt(0), 0));
+  const xHook = capitalizeFirstLetter(xHooksPool[xHash % xHooksPool.length]);
+
   const whatsappHook = capitalizeFirstLetter(`A new practical guide explains the key choices behind ${topic}.`);
   const redditHook = capitalizeFirstLetter(`${topic} raises a useful question about how web projects are planned and built.`);
   const instagramHook = capitalizeFirstLetter(`Better ${topic} starts with clear choices people can understand.`);
@@ -221,7 +232,7 @@ ${feedback ? `Editor direction: ${cleanText(feedback).slice(0, 300)}` : ""}
 Write seven distinct posts:
 - linkedin: 110-220 words and at least 650 characters. Write like an experienced web developer sharing one useful lesson from the article. Use 4-6 short paragraphs and explain the problem, practical idea, tradeoff, and reader benefit without retelling everything. End with a simple invitation to read, URL, and 3-5 relevant hashtags.
 - facebook: 90-170 words and at least 500 characters. Conversational and accessible. Explain the article's main problem, core lesson, and practical value with enough context to stand on its own, then include a simple read-more CTA, URL, and no more than 3 hashtags.
-- x: exactly 270-280 characters including URL, one clear explained insight, no more than 2 hashtags. Keep the first word capitalized.
+- x: 180-280 characters including canonical URL, a sharp and punchy technical engineering insight, and no more than 2 hashtags. Never start with "Good" or generic greetings.
 - whatsapp: 40-90 words and at least 220 characters, natural, no hashtags. Explain the useful takeaway briefly, then give the title and URL.
 - reddit: 110-220 words and at least 650 characters, useful and community-minded, no hashtags and no sales pitch. Explain the problem, the article's approach, an important tradeoff, and what readers can learn before including the URL.
 - instagram: 100-190 words and at least 550 characters, easy to scan, with a strong first line and short paragraphs. Explain the central lesson, practical value, and one useful detail, then include the URL and 3-8 relevant hashtags. Do not depend on the link being clickable.
