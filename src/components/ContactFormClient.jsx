@@ -18,6 +18,9 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { SERVICE_OPTIONS } from "@/lib/constants";
+import { saveToOfflineOutbox } from "@/lib/offlineOutbox";
+
+const CONTACT_DRAFT_KEY = "muhyo_contact_form_draft";
 
 export default function ContactFormClient() {
   // Form state
@@ -38,6 +41,34 @@ export default function ContactFormClient() {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const dropdownRef = useRef(null);
+
+  // 1. Restore draft on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(CONTACT_DRAFT_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === "object") {
+          setFormData((prev) => ({ ...prev, ...parsed }));
+        }
+      }
+    } catch {}
+  }, []);
+
+  // 2. Persist draft on user input
+  useEffect(() => {
+    try {
+      const hasContent =
+        Boolean(formData.name) ||
+        Boolean(formData.email) ||
+        Boolean(formData.message) ||
+        Boolean(formData.subject);
+
+      if (hasContent) {
+        localStorage.setItem(CONTACT_DRAFT_KEY, JSON.stringify(formData));
+      }
+    } catch {}
+  }, [formData]);
 
   // Click outside to close dropdown
   useEffect(() => {
@@ -108,15 +139,43 @@ export default function ContactFormClient() {
     }
 
     setLoading(true);
-    try {
-      const submissionData = {
-        ...formData,
-        service:
-          formData.service === "other"
-            ? formData.otherService
-            : formData.service,
-      };
+    const submissionData = {
+      ...formData,
+      service:
+        formData.service === "other"
+          ? formData.otherService
+          : formData.service,
+    };
 
+    // If already offline, save directly to outbox
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      saveToOfflineOutbox({
+        endpoint: "/api/contact",
+        payload: submissionData,
+        label: "Contact Message",
+      });
+      try {
+        localStorage.removeItem(CONTACT_DRAFT_KEY);
+      } catch {}
+      toast.success(
+        "Saved to Outbox: You're currently offline. Your message is safely stored and will be sent automatically as soon as you reconnect!",
+        { duration: 6000 }
+      );
+      setFormData({
+        name: "",
+        email: "",
+        subject: "",
+        service: "",
+        otherService: "",
+        message: "",
+      });
+      setSubmitted(true);
+      setTimeout(() => setSubmitted(false), 5000);
+      setLoading(false);
+      return;
+    }
+
+    try {
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: {
@@ -136,6 +195,9 @@ export default function ContactFormClient() {
       }
 
       toast.success("Message sent successfully! We'll be in touch soon.");
+      try {
+        localStorage.removeItem(CONTACT_DRAFT_KEY);
+      } catch {}
       setFormData({
         name: "",
         email: "",
@@ -148,7 +210,40 @@ export default function ContactFormClient() {
       setTimeout(() => setSubmitted(false), 5000);
     } catch (error) {
       console.error("Form submission error:", error);
-      toast.error(error.message || "Failed to send message. Please try again.");
+
+      // If network failure or offline, safely queue to outbox
+      const isNetworkError =
+        (typeof navigator !== "undefined" && !navigator.onLine) ||
+        error.message?.includes("fetch") ||
+        error.name === "TypeError" ||
+        error.name === "OfflineError";
+
+      if (isNetworkError) {
+        saveToOfflineOutbox({
+          endpoint: "/api/contact",
+          payload: submissionData,
+          label: "Contact Message",
+        });
+        try {
+          localStorage.removeItem(CONTACT_DRAFT_KEY);
+        } catch {}
+        toast.success(
+          "Connection Interrupted: Your message was safely saved to the offline outbox and will be delivered automatically upon reconnection!",
+          { duration: 6000 }
+        );
+        setFormData({
+          name: "",
+          email: "",
+          subject: "",
+          service: "",
+          otherService: "",
+          message: "",
+        });
+        setSubmitted(true);
+        setTimeout(() => setSubmitted(false), 5000);
+      } else {
+        toast.error(error.message || "Failed to send message. Please try again.");
+      }
     } finally {
       setLoading(false);
     }

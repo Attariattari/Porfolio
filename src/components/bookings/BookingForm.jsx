@@ -14,8 +14,10 @@ import {
   Sparkles,
   User,
   BookOpen,
-} from "lucide-react";
 import { Button } from "@/components/ui";
+import { saveToOfflineOutbox } from "@/lib/offlineOutbox";
+
+const BOOKING_DRAFT_KEY = "muhyo_booking_form_draft";
 
 const initialFormState = {
   name: "",
@@ -101,6 +103,34 @@ export default function BookingForm({
   );
 
   const projectTypeOptions = selectedService?.projectTypes || [];
+
+  // 1. Restore draft on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(BOOKING_DRAFT_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === "object") {
+          setFormData((prev) => ({ ...prev, ...parsed }));
+        }
+      }
+    } catch {}
+  }, []);
+
+  // 2. Auto-save draft on change
+  useEffect(() => {
+    try {
+      const hasContent =
+        Boolean(formData.name) ||
+        Boolean(formData.email) ||
+        Boolean(formData.phone) ||
+        Boolean(formData.message);
+
+      if (hasContent) {
+        localStorage.setItem(BOOKING_DRAFT_KEY, JSON.stringify(formData));
+      }
+    } catch {}
+  }, [formData]);
 
   const updateField = (name, value) => {
     setFormData((current) => ({ ...current, [name]: value }));
@@ -212,15 +242,35 @@ export default function BookingForm({
     if (!validate()) return;
 
     setLoading(true);
-    try {
-      const payload = {
-        ...formData,
-        serviceTitle: selectedService?.title || "",
-        source,
-        sourcePage,
-        contextTitle,
-      };
+    const payload = {
+      ...formData,
+      serviceTitle: selectedService?.title || "",
+      source,
+      sourcePage,
+      contextTitle,
+    };
 
+    // If currently offline, queue directly to outbox
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      saveToOfflineOutbox({
+        endpoint: "/api/bookings",
+        payload,
+        label: "Booking Request",
+      });
+      try {
+        localStorage.removeItem(BOOKING_DRAFT_KEY);
+      } catch {}
+      setSuccessMessage(
+        "Saved to Outbox: You are currently offline. Your booking request has been preserved and will be sent automatically once your internet reconnects!"
+      );
+      setFormData({ ...initialFormState, serviceSlug: serviceValue(initialServiceSlug) });
+      setDescriptionSource("manual");
+      aiSourceNotesRef.current = "";
+      setLoading(false);
+      return;
+    }
+
+    try {
       const res = await fetch("/api/bookings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -236,12 +286,38 @@ export default function BookingForm({
         result.message ||
         "Your booking request has been submitted successfully. I'll review your project details and get back to you as soon as possible.";
       setSuccessMessage(message);
+      try {
+        localStorage.removeItem(BOOKING_DRAFT_KEY);
+      } catch {}
       setFormData({ ...initialFormState, serviceSlug: serviceValue(initialServiceSlug) });
       setDescriptionSource("manual");
       aiSourceNotesRef.current = "";
       onSuccess?.(result.data);
     } catch (error) {
-      setErrorMessage(error.message || "Something went wrong. Please try again.");
+      const isNetworkError =
+        (typeof navigator !== "undefined" && !navigator.onLine) ||
+        error.message?.includes("fetch") ||
+        error.name === "TypeError" ||
+        error.name === "OfflineError";
+
+      if (isNetworkError) {
+        saveToOfflineOutbox({
+          endpoint: "/api/bookings",
+          payload,
+          label: "Booking Request",
+        });
+        try {
+          localStorage.removeItem(BOOKING_DRAFT_KEY);
+        } catch {}
+        setSuccessMessage(
+          "Connection Interrupted: Your booking request was saved to the offline outbox and will be submitted automatically when reconnected!"
+        );
+        setFormData({ ...initialFormState, serviceSlug: serviceValue(initialServiceSlug) });
+        setDescriptionSource("manual");
+        aiSourceNotesRef.current = "";
+      } else {
+        setErrorMessage(error.message || "Something went wrong. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
