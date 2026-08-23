@@ -283,37 +283,45 @@ export default function BlogsPage() {
       key: "ai_actions",
       label: "AI Status",
       render: (item) => (
-        <div className="flex flex-wrap items-center gap-2">
-          {item.aiGenerated &&
-          (!item.imageStatus ||
-            item.imageStatus === "failed" ||
-            item.imageStatus === "manual_required" ||
-            item.imageStatus === "retry_pending" ||
-            (!item.image && !item.featuredImage?.url)) ? (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setSelectedBlogForImage(item);
-                setIsAIProgressOpen(true);
-              }}
-              className="px-3 py-1.5 bg-amber-500 text-accent-foreground text-[9px] font-black uppercase tracking-tighter rounded-md hover:bg-amber-400 transition-all flex items-center gap-1 animate-pulse"
-            >
-              <Sparkles className="w-3 h-3" />
-              {autoGenerateImages ? "Gen Image" : "Send Prompt"}
-            </button>
-          ) : item.aiGenerated &&
-            ["completed", "generated", "uploaded"].includes(item.imageStatus) &&
-            (item.image || item.featuredImage?.url) ? (
-            <div className="flex items-center gap-1 text-[9px] font-bold text-green-500 uppercase">
-              <CheckCircle2 className="w-3 h-3" /> {item.imageStatus}
-            </div>
-          ) : (
-            <span className="text-[9px] text-muted-foreground/80 font-bold uppercase">
-              Manual
-            </span>
-          )}
-          {!item._isFromDataJs && item._id ? (
-            <>
+        <div className="w-full space-y-2">
+          {/* Row 1: Image & Prompt Controls Toolbar (3 Equal Width Theme-Adaptive Unique Colored Buttons) */}
+          <div className="grid grid-cols-3 gap-1.5 w-full rounded-xl border border-white/[0.08] bg-slate-950/50 p-1.5 shadow-inner">
+            {/* Button 1: Send Prompt / Gen Image / Status (Amber Theme) */}
+            {item.aiGenerated &&
+            (!item.imageStatus ||
+              item.imageStatus === "failed" ||
+              item.imageStatus === "manual_required" ||
+              item.imageStatus === "retry_pending" ||
+              (!item.image && !item.featuredImage?.url)) ? (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedBlogForImage(item);
+                  setIsAIProgressOpen(true);
+                }}
+                className="w-full h-8.5 rounded-xl border border-amber-400/50 bg-amber-500/20 hover:bg-amber-500/35 hover:border-amber-400/80 transition-all flex items-center justify-center gap-1 font-black text-[9px] uppercase tracking-wider shadow-sm backdrop-blur-md animate-pulse"
+                style={{ color: "#fcd34d" }}
+              >
+                <Sparkles className="w-3 h-3 text-amber-300" />
+                {autoGenerateImages ? "Gen Image" : "Send Prompt"}
+              </button>
+            ) : item.aiGenerated &&
+              ["completed", "generated", "uploaded"].includes(item.imageStatus) &&
+              (item.image || item.featuredImage?.url) ? (
+              <div
+                className="w-full h-8.5 flex items-center justify-center gap-1 rounded-xl border border-emerald-400/40 bg-emerald-500/20 text-[9px] font-black uppercase tracking-wider backdrop-blur-md"
+                style={{ color: "#6ee7b7" }}
+              >
+                <CheckCircle2 className="w-3 h-3 text-emerald-400" /> {item.imageStatus}
+              </div>
+            ) : (
+              <div className="w-full h-8.5 flex items-center justify-center rounded-xl border border-white/10 bg-white/5 text-[9px] text-slate-300 font-bold uppercase tracking-wider">
+                Manual
+              </div>
+            )}
+
+            {/* Button 2: Regenerate Prompt & Save DB (Emerald Theme) */}
+            {!item._isFromDataJs && item._id ? (
               <button
                 onClick={async (e) => {
                   e.stopPropagation();
@@ -340,123 +348,89 @@ export default function BlogsPage() {
                     toast.error(error.message || "Prompt generation failed.", { id: toastId });
                   }
                 }}
-                className="p-1.5 rounded-md border border-amber-500/30 bg-amber-500/10 text-amber-300 hover:text-amber-200 hover:bg-amber-500/20 transition-all"
+                className="w-full h-8.5 rounded-xl border border-emerald-400/50 bg-emerald-500/20 hover:bg-emerald-500/35 hover:border-emerald-400/80 transition-all flex items-center justify-center gap-1 font-black text-[9px] uppercase tracking-wider shadow-sm backdrop-blur-md"
+                style={{ color: "#6ee7b7" }}
                 title="Generate / Regenerate Image Prompt & Save to DB"
               >
-                <Sparkles className="w-3 h-3" />
+                <Sparkles className="w-3 h-3 text-emerald-300" />
+                Regen Prompt
               </button>
-              {autoGenerateImages && item.aiGenerated ? (
-                <button
-                  onClick={async (e) => {
-                    e.stopPropagation();
-                    const toastId = toast.loading("Regenerating blog cover image...");
-                    const res = await fetch(`/api/admin/blogs/${item._id}/image`, {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ action: "regenerate" }),
-                    });
-                    const data = await res.json();
-                    if (data.success) {
-                      toast.success(`Image workflow: ${data.status}`, {
-                        id: toastId,
-                      });
-                      fetchBlogs({ force: true });
-                    } else {
-                      toast.error(data.message || "Image regeneration failed.", {
-                        id: toastId,
-                      });
-                    }
-                  }}
-                  className="p-1.5 rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-muted"
-                  title="Regenerate AI cover image"
-                >
-                  <RefreshCcw className="w-3 h-3" />
-                </button>
-              ) : null}
+            ) : (
+              <div />
+            )}
+
+            {/* Button 3: Copy Prompt (Electric Cyan Theme) */}
+            {!item._isFromDataJs && item._id ? (
               <button
-                onClick={async (e) => {
+                onClick={(e) => {
                   e.stopPropagation();
-                  const toastId = toast.loading("Sending secure prompt email...");
-                  const res = await fetch(`/api/admin/blogs/${item._id}/image`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ action: "send_prompt_email" }),
-                  });
-                  const data = await res.json();
-                  if (data.success) {
-                    toast.success(data.message, { id: toastId });
-                  } else {
-                    toast.error(data.message || "Prompt email failed.", {
-                      id: toastId,
-                    });
-                  }
-                }}
-                className="p-1.5 rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-muted"
-                title="Send prompt email to Super Admin"
-              >
-                <Mail className="w-3 h-3" />
-              </button>
-              {(item.imagePrompt || item.image_prompt) ? (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
+                  if (item.imagePrompt || item.image_prompt) {
                     navigator.clipboard.writeText(item.imagePrompt || item.image_prompt);
                     toast.success("Image prompt copied to clipboard.");
-                  }}
-                  className="p-1.5 rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-muted"
-                  title="Copy current image prompt"
-                >
-                  <Copy className="w-3 h-3" />
-                </button>
-              ) : null}
-            </>
-          ) : null}
+                  } else {
+                    toast.error("No image prompt available. Click Regen Prompt first.");
+                  }
+                }}
+                className="w-full h-8.5 rounded-xl border border-cyan-400/50 bg-cyan-500/20 hover:bg-cyan-500/35 hover:border-cyan-400/80 transition-all flex items-center justify-center gap-1 font-black text-[9px] uppercase tracking-wider shadow-sm backdrop-blur-md"
+                style={{ color: "#67e8f9" }}
+                title="Copy current image prompt"
+              >
+                <Copy className="w-3 h-3 text-cyan-300" />
+                Copy Prompt
+              </button>
+            ) : (
+              <div />
+            )}
+          </div>
+
+          {/* Row 2: Social Kit Marketing Automation Strip */}
           {!item._isFromDataJs && item._id ? (
-            <button
-              onClick={(event) => {
-                event.stopPropagation();
-                markSocialKitOpened(item._id);
-                setSelectedSocialBlog(item);
-              }}
-              className={`inline-flex h-8 min-w-[104px] flex-1 items-center justify-center gap-1.5 rounded-lg border px-3 text-[9px] font-bold uppercase tracking-wider transition-all duration-200 ${
-                openedSocialKitIds.has(String(item._id))
-                  ? "border-blue-500/50 bg-blue-500/20 text-blue-300 shadow-sm shadow-blue-500/10 hover:bg-blue-500/30"
-                  : "border-emerald-500/40 bg-emerald-500/15 text-emerald-300 hover:border-emerald-400/60 hover:bg-emerald-500/25"
-              }`}
-              title={openedSocialKitIds.has(String(item._id)) ? "Social kit already opened/used" : "Open Social Share Kit"}
-            >
-              {openedSocialKitIds.has(String(item._id)) ? (
-                <CheckCircle2 className="h-3 w-3 text-blue-300" />
-              ) : (
-                <Share2 className="h-3 w-3 text-emerald-300" />
-              )}
-              {openedSocialKitIds.has(String(item._id)) ? "Social kit (Opened)" : "Social kit"}
-            </button>
-          ) : null}
-          {!item._isFromDataJs && item._id ? (
-            <button
-              onClick={async (event) => {
-                event.stopPropagation();
-                const toastId = toast.loading("Regenerating all social posts...");
-                try {
-                  const response = await fetch(`/api/admin/blogs/${item._id}/social-kit`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({}),
-                  });
-                  const result = await response.json();
-                  if (!response.ok || !result.success) throw new Error(result.error || "Social regeneration failed.");
-                  toast.success("LinkedIn, Facebook, X and WhatsApp posts regenerated.", { id: toastId });
-                  await fetchBlogs({ force: true });
-                } catch (error) {
-                  toast.error(error.message, { id: toastId });
-                }
-              }}
-              className="inline-flex h-8 min-w-[104px] flex-1 items-center justify-center gap-1.5 rounded-lg border border-border bg-background/40 px-3 text-[9px] font-bold uppercase tracking-wider text-muted-foreground transition hover:border-accent/30 hover:bg-accent/10 hover:text-accent"
-              title="Regenerate LinkedIn, Facebook, X and WhatsApp posts"
-            >
-              <RefreshCcw className="h-3 w-3" /> {item.socialKit?.status === "ready" ? "Regenerate" : "Generate posts"}
-            </button>
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={(event) => {
+                  event.stopPropagation();
+                  markSocialKitOpened(item._id);
+                  setSelectedSocialBlog(item);
+                }}
+                className={`inline-flex h-8 flex-1 items-center justify-center gap-1.5 rounded-xl border px-3 text-[9px] font-bold uppercase tracking-wider transition-all duration-200 shadow-sm ${
+                  openedSocialKitIds.has(String(item._id))
+                    ? "border-blue-500/40 bg-blue-500/15 text-blue-300 shadow-blue-500/10 hover:bg-blue-500/25"
+                    : "border-emerald-500/40 bg-emerald-500/15 text-emerald-300 hover:border-emerald-400/60 hover:bg-emerald-500/25"
+                }`}
+                title={openedSocialKitIds.has(String(item._id)) ? "Social kit already opened/used" : "Open Social Share Kit"}
+              >
+                {openedSocialKitIds.has(String(item._id)) ? (
+                  <CheckCircle2 className="h-3 w-3 text-blue-300" />
+                ) : (
+                  <Share2 className="h-3 w-3 text-emerald-300" />
+                )}
+                {openedSocialKitIds.has(String(item._id)) ? "Social kit (Opened)" : "Social kit"}
+              </button>
+              <button
+                onClick={async (event) => {
+                  event.stopPropagation();
+                  const toastId = toast.loading("Regenerating all social posts...");
+                  try {
+                    const response = await fetch(`/api/admin/blogs/${item._id}/social-kit`, {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({}),
+                    });
+                    const result = await response.json();
+                    if (!response.ok || !result.success) throw new Error(result.error || "Social regeneration failed.");
+                    toast.success("LinkedIn, Facebook, X and WhatsApp posts regenerated.", { id: toastId });
+                    await fetchBlogs({ force: true });
+                  } catch (error) {
+                    toast.error(error.message, { id: toastId });
+                  }
+                }}
+                className="inline-flex h-8 items-center justify-center gap-1 rounded-xl border border-white/10 bg-slate-950/40 px-2.5 text-[9px] font-bold uppercase tracking-wider text-slate-400 transition-all hover:border-violet-400/30 hover:bg-violet-500/10 hover:text-violet-300"
+                title="Regenerate LinkedIn, Facebook, X and WhatsApp posts"
+              >
+                <RefreshCcw className="h-3 w-3" />
+                {item.socialKit?.status === "ready" ? "Regen Posts" : "Gen Posts"}
+              </button>
+            </div>
           ) : null}
         </div>
       ),
@@ -1373,5 +1347,126 @@ function BlogMetric({ label, value, last = false }) {
     const date = blog.createdAt ? format(new Date(blog.createdAt), "MMM d, yyyy") : "Not published";
     const intel = blog.intelligence;
 
-    return <article className="group overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.025] transition hover:border-violet-400/20 hover:bg-violet-400/[0.025]"><div className="relative aspect-[16/9] overflow-hidden bg-slate-950/50"><Image src={image} alt={getBlogImageAlt(blog)} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition duration-500 group-hover:scale-[1.03]" /><div className="absolute inset-x-0 top-0 flex items-start justify-between p-3"><span className={`rounded-full border px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider backdrop-blur-md ${status === "published" ? "border-emerald-300/20 bg-emerald-400/15 text-emerald-200" : status === "pending" ? "border-amber-300/20 bg-amber-400/15 text-amber-200" : "border-white/10 bg-slate-950/60 text-slate-400"}`}>{status}</span>{blog.featured && <span className="grid size-8 place-items-center rounded-full bg-amber-300 text-slate-950"><Star className="size-3.5 fill-current" /></span>}</div></div><div className="p-5"><div className="flex items-center justify-between gap-3"><p className="text-[9px] font-bold uppercase tracking-[.16em] text-violet-300/70">{blog.category || "Article"}</p><p className="text-[9px] text-slate-600">{date}</p></div><h2 className="mt-2 line-clamp-2 min-h-10 text-base font-semibold leading-5 text-slate-100">{blog.title}</h2><div className="mt-3 flex flex-wrap items-center gap-1.5">{intel?.service?.primaryService && <span className="rounded border border-white/[0.08] bg-slate-950/50 px-2 py-0.5 text-[8px] font-semibold text-slate-300 truncate max-w-[200px]">⚡ {intel.service.primaryService.title} ({intel.service.primaryService.relevanceScore}%)</span>}{intel?.topic?.linked && <span className="rounded bg-violet-500/15 border border-violet-400/20 px-2 py-0.5 text-[8px] font-bold text-violet-300">📌 Topic Linked</span>}<span className="rounded bg-amber-500/10 border border-amber-400/20 px-2 py-0.5 text-[8px] font-bold text-amber-300 uppercase">👑 {blog.articleType || "pillar"}</span></div><p className="mt-3 line-clamp-2 min-h-10 text-xs leading-5 text-slate-500">{blog.summary || "No article summary added yet."}</p><div className="mt-4 flex min-h-7 flex-wrap items-center gap-1.5">{aiActions}</div><div className="mt-5 flex items-center gap-2 border-t border-white/[0.06] pt-4"><button onClick={onEdit} className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-violet-400/10 py-2.5 text-[10px] font-bold uppercase tracking-wider text-violet-300 hover:bg-violet-400/15"><Pencil className="size-3.5" />Edit article</button><button onClick={onInspect} className="inline-flex items-center justify-center gap-1 rounded-lg border border-violet-400/30 bg-violet-400/10 px-2.5 py-2.5 text-[10px] font-bold uppercase tracking-wider text-violet-300 hover:bg-violet-400/20 transition-all" title="Inspect Topic, Service & Conversion Intelligence"><BrainCircuit className="size-3.5 text-violet-300" />Inspect</button>{!blog._isFromDataJs && <button onClick={() => onCreateBlogger(blog)} className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-3 py-2.5 text-[10px] font-bold uppercase tracking-wider text-cyan-300 hover:bg-cyan-500/20 transition-all" title="Generate 900-1200 word supporting article for Google Blogger"><Sparkles className="size-3.5 text-cyan-400" />Blogger Post</button>}{!blog._isFromDataJs && <button onClick={onDelete} className="grid size-9 place-items-center rounded-lg text-slate-600 hover:bg-rose-400/10 hover:text-rose-300"><Trash2 className="size-3.5" /></button>}<button onClick={onView} className="grid size-9 place-items-center rounded-lg border border-white/[0.07] text-slate-500 hover:text-white"><ExternalLink className="size-3.5" /></button></div></div></article>;
+    return (
+      <article className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0d1727]/90 backdrop-blur-md transition-all duration-300 hover:border-violet-500/30 hover:shadow-xl hover:shadow-violet-500/5">
+        <div>
+          <div className="relative aspect-[16/9] overflow-hidden bg-slate-950/60">
+            <Image
+              src={image}
+              alt={getBlogImageAlt(blog)}
+              fill
+              sizes="(max-width: 768px) 100vw, 33vw"
+              className="object-cover transition duration-500 group-hover:scale-[1.03]"
+            />
+            <div className="absolute inset-x-0 top-0 flex items-start justify-between p-3">
+              <span
+                className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-widest backdrop-blur-md shadow-lg transition-all ${
+                  status === "published"
+                    ? "border-emerald-400/60 bg-emerald-500/35 text-emerald-300 shadow-emerald-950/60"
+                    : status === "pending"
+                    ? "border-amber-400/70 bg-amber-500/35 text-amber-300 shadow-amber-950/60 ring-1 ring-amber-400/40"
+                    : "border-slate-400/50 bg-slate-950/90 text-slate-200 shadow-slate-950/60"
+                }`}
+                style={{
+                  color: status === "pending" ? "#fcd34d" : status === "published" ? "#6ee7b7" : "#e2e8f0",
+                }}
+              >
+                {status}
+              </span>
+              {blog.featured && (
+                <span className="grid size-7 place-items-center rounded-full bg-amber-400 text-slate-950 shadow-md">
+                  <Star className="size-3.5 fill-current" />
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="p-5 space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-[9px] font-bold uppercase tracking-[.18em] text-violet-400">
+                {blog.category || "Article"}
+              </p>
+              <p className="text-[9px] font-medium text-slate-500">{date}</p>
+            </div>
+            <h2 className="line-clamp-2 min-h-10 text-base font-bold leading-snug text-slate-100 group-hover:text-white transition-colors">
+              {blog.title}
+            </h2>
+            <div className="flex flex-wrap items-center gap-1.5 pt-1">
+              {intel?.service?.primaryService && (
+                <span className="rounded-lg border border-white/[0.08] bg-slate-950/60 px-2 py-0.5 text-[8px] font-bold text-slate-300 truncate max-w-[200px]">
+                  ⚡ {intel.service.primaryService.title} ({intel.service.primaryService.relevanceScore}%)
+                </span>
+              )}
+              {intel?.topic?.linked && (
+                <span className="rounded-lg bg-violet-500/15 border border-violet-400/20 px-2 py-0.5 text-[8px] font-bold text-violet-300">
+                  📌 Topic Linked
+                </span>
+              )}
+              <span className="rounded-lg bg-amber-500/10 border border-amber-400/20 px-2 py-0.5 text-[8px] font-bold text-amber-300 uppercase">
+                👑 {blog.articleType || "pillar"}
+              </span>
+            </div>
+            <p className="line-clamp-2 min-h-9 text-xs leading-5 text-slate-400">
+              {blog.summary || "No article summary added yet."}
+            </p>
+          </div>
+        </div>
+
+        <div className="p-5 pt-0 space-y-3">
+          {/* Middle Section: AI Actions Toolbar */}
+          <div>{aiActions}</div>
+
+          {/* Footer Section: Primary Management Buttons */}
+          <div className="border-t border-white/[0.07] pt-3.5 space-y-2">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <button
+                onClick={onEdit}
+                className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-xl border border-violet-500/30 bg-violet-500/10 px-2.5 text-[10px] font-bold uppercase tracking-wider text-violet-300 hover:bg-violet-500/20 hover:border-violet-400/50 transition-all shadow-sm"
+              >
+                <Pencil className="size-3.5" />
+                Edit
+              </button>
+
+              <button
+                onClick={onInspect}
+                className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-xl border border-purple-500/30 bg-purple-500/10 px-2.5 text-[10px] font-bold uppercase tracking-wider text-purple-300 hover:bg-purple-500/20 hover:border-purple-400/50 transition-all"
+                title="Inspect Topic, Service & Conversion Intelligence"
+              >
+                <BrainCircuit className="size-3.5 text-purple-300" />
+                Inspect
+              </button>
+
+              {!blog._isFromDataJs && (
+                <button
+                  onClick={() => onCreateBlogger(blog)}
+                  className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-2.5 text-[10px] font-bold uppercase tracking-wider text-cyan-300 hover:bg-cyan-500/20 hover:border-cyan-400/50 transition-all"
+                  title="Generate 900-1200 word supporting article for Google Blogger"
+                >
+                  <Sparkles className="size-3.5 text-cyan-400" />
+                  Blogger
+                </button>
+              )}
+
+              {!blog._isFromDataJs && (
+                <button
+                  onClick={onDelete}
+                  className="grid size-9 shrink-0 place-items-center rounded-xl border border-rose-500/20 bg-rose-500/10 text-rose-300 hover:bg-rose-500/25 hover:border-rose-400/40 transition-all"
+                  title="Delete Blog Entry"
+                >
+                  <Trash2 className="size-3.5" />
+                </button>
+              )}
+
+              <button
+                onClick={onView}
+                className="grid size-9 shrink-0 place-items-center rounded-xl border border-white/10 bg-slate-950/40 text-slate-400 hover:border-white/20 hover:text-white transition-all"
+                title="View Public Article"
+              >
+                <ExternalLink className="size-3.5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </article>
+    );
   }
