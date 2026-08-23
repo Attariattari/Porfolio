@@ -53,34 +53,70 @@ export function resolveFeaturedBlogs(dbBlogs = [], staticBlogs = []) {
     return [];
 }
 
-const toTimestamp = (blog = {}) => {
+export const toTimestamp = (blog = {}) => {
     const value = blog.createdAt || blog.generatedAt || blog.date || blog.updatedAt;
     const timestamp = value ? new Date(value).getTime() : 0;
     return Number.isFinite(timestamp) ? timestamp : 0;
 };
 
-const fallbackTrendScore = (blog = {}, referenceTimestamp = toTimestamp(blog)) => {
-    const quality = Number(blog.qualityScore);
-    const qualityScore = Number.isFinite(quality) && quality > 0
-        ? Math.min(100, quality * 10)
-        : (blog.featured ? 78 : 55);
-    const ageInDays = Math.max(0, (referenceTimestamp - toTimestamp(blog)) / 86400000);
-    const freshnessScore = Math.max(0, 100 - ageInDays * 1.5);
-    const completenessScore = [
-        blog.image || blog.featuredImage?.url,
-        blog.summary,
-        blog.readTime,
-        Array.isArray(blog.tags) && blog.tags.length > 0,
-    ].filter(Boolean).length * 25;
-
-    return qualityScore * 0.55 + freshnessScore * 0.3 + completenessScore * 0.15;
+const getBlogHash = (str = "") => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = (hash << 5) - hash + str.charCodeAt(i);
+        hash |= 0;
+    }
+    return Math.abs(hash);
 };
 
 export const getBlogTrendScore = (blog = {}, referenceTimestamp) => {
-    const aiScore = Number(blog.featuredScore);
-    return Number.isFinite(aiScore) && aiScore > 0
-        ? aiScore
-        : fallbackTrendScore(blog, referenceTimestamp);
+    const rawAiScore = Number(blog.featuredScore);
+    if (Number.isFinite(rawAiScore) && rawAiScore > 0) {
+        return rawAiScore <= 10 ? rawAiScore * 10 : rawAiScore;
+    }
+
+    const title = String(blog.title || "");
+    const slug = String(blog.slug || "");
+    const hash = getBlogHash(slug || title);
+
+    let topicBoost = 0;
+    const lowerText = `${title} ${blog.category || ""} ${(blog.tags || []).join(" ")}`.toLowerCase();
+    if (lowerText.includes("architecture") || lowerText.includes("microservices")) topicBoost += 22;
+    if (lowerText.includes("security") || lowerText.includes("auth") || lowerText.includes("jwt")) topicBoost += 18;
+    if (lowerText.includes("scale") || lowerText.includes("sharding") || lowerText.includes("performance")) topicBoost += 16;
+    if (lowerText.includes("saas") || lowerText.includes("llm") || lowerText.includes("ai")) topicBoost += 20;
+    if (lowerText.includes("next.js") || lowerText.includes("react") || lowerText.includes("node")) topicBoost += 14;
+
+    const realViews = Number(blog.views) || 0;
+    const viewFactor = realViews > 0 ? Math.min(30, realViews * 3) : ((hash % 25) + 12);
+
+    const readMin = parseInt(String(blog.readTime || "5"), 10) || 5;
+    const depthScore = Math.min(20, readMin * 2.5);
+
+    const baseQuality = Number(blog.qualityScore) > 0
+        ? (Number(blog.qualityScore) <= 10 ? Number(blog.qualityScore) * 10 : Number(blog.qualityScore))
+        : 65 + (hash % 25);
+
+    return baseQuality * 0.35 + topicBoost * 0.30 + viewFactor * 0.20 + depthScore * 0.15;
+};
+
+export const getBlogEditorPickScore = (blog = {}) => {
+    if (blog.featured) {
+        const order = Number(blog.featuredOrder);
+        return 1000 - (Number.isFinite(order) && order > 0 ? order * 10 : 0);
+    }
+
+    const title = String(blog.title || "").toLowerCase();
+    const cat = String(blog.category || "").toLowerCase();
+    const hash = getBlogHash(blog.slug || title);
+
+    let editorialPillarScore = 40;
+    if (title.includes("blueprint") || title.includes("resilience") || title.includes("guide")) editorialPillarScore += 30;
+    if (title.includes("foundation") || title.includes("architecture") || title.includes("trust")) editorialPillarScore += 25;
+    if (cat.includes("architecture") || cat.includes("security")) editorialPillarScore += 20;
+    if (title.includes("product engineer") || title.includes("scale")) editorialPillarScore += 22;
+
+    editorialPillarScore += (hash % 18);
+    return editorialPillarScore;
 };
 
 export function rankBlogsByMode(blogs = [], mode = "latest") {
@@ -88,38 +124,29 @@ export function rankBlogsByMode(blogs = [], mode = "latest") {
     const referenceTimestamp = Math.max(0, ...ranked.map(toTimestamp));
 
     if (mode === "trending") {
-        return ranked.sort((a, b) =>
-            getBlogTrendScore(b, referenceTimestamp) - getBlogTrendScore(a, referenceTimestamp)
-            || toTimestamp(b) - toTimestamp(a)
-            || String(a.title || "").localeCompare(String(b.title || "")),
-        );
+        return ranked.sort((a, b) => {
+            const scoreA = getBlogTrendScore(a, referenceTimestamp);
+            const scoreB = getBlogTrendScore(b, referenceTimestamp);
+            return scoreB - scoreA
+                || toTimestamp(b) - toTimestamp(a)
+                || String(a.title || "").localeCompare(String(b.title || ""));
+        });
     }
 
     if (mode === "picks") {
         return ranked.sort((a, b) => {
-            const featuredDifference = Number(Boolean(b.featured)) - Number(Boolean(a.featured));
-            if (featuredDifference) return featuredDifference;
-
-            const orderA = Number(a.featuredOrder) > 0 ? Number(a.featuredOrder) : 999;
-            const orderB = Number(b.featuredOrder) > 0 ? Number(b.featuredOrder) : 999;
-            return orderA - orderB
-                || getBlogTrendScore(b, referenceTimestamp) - getBlogTrendScore(a, referenceTimestamp)
-                || toTimestamp(b) - toTimestamp(a);
+            const scoreA = getBlogEditorPickScore(a);
+            const scoreB = getBlogEditorPickScore(b);
+            return scoreB - scoreA
+                || toTimestamp(b) - toTimestamp(a)
+                || String(a.title || "").localeCompare(String(b.title || ""));
         });
     }
 
     return ranked.sort((a, b) => {
-        const featuredDifference = Number(Boolean(b.featured)) - Number(Boolean(a.featured));
-        if (featuredDifference !== 0) return featuredDifference;
-
-        if (a.featured && b.featured) {
-            const orderA = Number(a.featuredOrder || 999);
-            const orderB = Number(b.featuredOrder || 999);
-            if (orderA !== orderB) return orderA - orderB;
-        }
-
-        return toTimestamp(b) - toTimestamp(a)
-            || (Number(a.order) || 999) - (Number(b.order) || 999);
+        const diff = toTimestamp(b) - toTimestamp(a);
+        if (diff !== 0) return diff;
+        return (Number(a.order) || 999) - (Number(b.order) || 999);
     });
 }
 

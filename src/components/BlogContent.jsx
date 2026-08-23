@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback, useTransition } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   User,
@@ -26,6 +26,12 @@ import React from "react";
 import dynamic from "next/dynamic";
 import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
 import { getBlogImageAlt } from "@/lib/blogImageAlt";
+
+const toTimestamp = (blog = {}) => {
+  const value = blog?.createdAt || blog?.generatedAt || blog?.date || blog?.updatedAt;
+  const timestamp = value ? new Date(value).getTime() : 0;
+  return Number.isFinite(timestamp) ? timestamp : 0;
+};
 
 const ImageLightbox = dynamic(
   () => import("./ImageLightbox").then((mod) => mod.ImageLightbox),
@@ -185,62 +191,71 @@ const EditorialHeader = ({
   );
 };
 
-const ControlHub = ({
+const ControlHub = React.memo(function ControlHub({
   searchQuery,
   setSearchQuery,
   categories,
   activeCategory,
-  setActiveCategory,
-}) => {
-  const categoryScrollerRef = useRef(null);
-  const dragStateRef = useRef({ active: false, startX: 0, startScrollLeft: 0, moved: false });
+  onSelectCategory,
+}) {
+  const scrollerRef = useRef(null);
+  const isDraggingRef = useRef(false);
+  const startXRef = useRef(0);
+  const scrollLeftRef = useRef(0);
+  const hasMovedRef = useRef(false);
 
-  const handleCategoryPointerDown = (event) => {
-    const scroller = categoryScrollerRef.current;
+  const handleMouseDown = (e) => {
+    const scroller = scrollerRef.current;
     if (!scroller) return;
-    dragStateRef.current = {
-      active: true,
-      startX: event.clientX,
-      startScrollLeft: scroller.scrollLeft,
-      moved: false,
-    };
-    scroller.setPointerCapture?.(event.pointerId);
+    isDraggingRef.current = true;
+    hasMovedRef.current = false;
+    startXRef.current = e.pageX - scroller.offsetLeft;
+    scrollLeftRef.current = scroller.scrollLeft;
   };
 
-  const handleCategoryPointerMove = (event) => {
-    const scroller = categoryScrollerRef.current;
-    const drag = dragStateRef.current;
-    if (!scroller || !drag.active) return;
-    const delta = event.clientX - drag.startX;
-    if (Math.abs(delta) > 4) drag.moved = true;
-    if (drag.moved) scroller.scrollLeft = drag.startScrollLeft - delta;
+  const handleMouseMove = (e) => {
+    if (!isDraggingRef.current) return;
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+    const x = e.pageX - scroller.offsetLeft;
+    const walk = (x - startXRef.current) * 1.5;
+    if (Math.abs(x - startXRef.current) > 6) {
+      hasMovedRef.current = true;
+      scroller.scrollLeft = scrollLeftRef.current - walk;
+    }
   };
 
-  const handleCategoryPointerUp = (event) => {
-    const scroller = categoryScrollerRef.current;
-    if (scroller?.hasPointerCapture?.(event.pointerId)) scroller.releasePointerCapture(event.pointerId);
-    dragStateRef.current.active = false;
+  const handleMouseUpOrLeave = () => {
+    isDraggingRef.current = false;
   };
 
   const handleCategoryClick = (category) => {
-    if (dragStateRef.current.moved) {
-      dragStateRef.current.moved = false;
+    if (hasMovedRef.current) {
+      hasMovedRef.current = false;
       return;
     }
-    setActiveCategory(category);
+    onSelectCategory(category);
   };
 
   return (
     <div className="max-w-7xl mx-auto px-6 mb-16">
       <div className="flex flex-col lg:flex-row items-center justify-between gap-10 bg-card/30 border border-border/50 p-3 rounded-[2.5rem]">
-        {/* Category Navigation */}
-        <div ref={categoryScrollerRef} onPointerDown={handleCategoryPointerDown} onPointerMove={handleCategoryPointerMove} onPointerUp={handleCategoryPointerUp} onPointerCancel={handleCategoryPointerUp} className="relative w-full lg:flex-1 min-w-0 rounded-[1.8rem] overflow-x-auto scrollbar-hide cursor-grab active:cursor-grabbing touch-pan-y select-none">
+        {/* Category Navigation with Smooth Drag Slider */}
+        <div
+          ref={scrollerRef}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUpOrLeave}
+          onMouseLeave={handleMouseUpOrLeave}
+          className="relative w-full lg:flex-1 min-w-0 rounded-[1.8rem] overflow-x-auto scrollbar-hide select-none cursor-grab active:cursor-grabbing touch-pan-x"
+        >
           <div className="flex w-max min-w-full gap-1 py-1">
             {categories.map((category) => (
               <button
                 key={category}
+                type="button"
                 onClick={() => handleCategoryClick(category)}
-                className={`relative px-8 py-4 rounded-[1.8rem] text-xs font-semibold tracking-normal transition-all whitespace-nowrap ${
+                className={`relative px-8 py-4 rounded-[1.8rem] text-xs font-semibold tracking-normal transition-all whitespace-nowrap cursor-pointer ${
                   activeCategory === category
                     ? "text-accent-foreground"
                     : "text-muted-foreground hover:text-foreground"
@@ -276,7 +291,7 @@ const ControlHub = ({
       </div>
     </div>
   );
-};
+});
 
 const TrendingTabs = ({ activeTab, setActiveTab }) => {
   const tabs = [
@@ -321,8 +336,58 @@ const TrendingTabs = ({ activeTab, setActiveTab }) => {
   );
 };
 
-const ArticleCard = ({ blog, index, onImageClick }) => {
+const ArticleCard = ({ blog, index, activeTab = "latest", onImageClick }) => {
   const staggerIndex = index % 12;
+
+  const renderBadge = () => {
+    if (activeTab === "trending") {
+      if (index === 0) {
+        return (
+          <span className="rounded-full bg-gradient-to-r from-amber-500 to-rose-500 px-3 py-1.5 text-[10px] font-bold text-white shadow-lg shadow-rose-500/20 flex items-center gap-1">
+            🔥 #1 Trending
+          </span>
+        );
+      }
+      if (index === 1) {
+        return (
+          <span className="rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-3 py-1.5 text-[10px] font-bold text-white shadow-lg shadow-orange-500/20 flex items-center gap-1">
+            🔥 #2 Trending
+          </span>
+        );
+      }
+      if (index === 2) {
+        return (
+          <span className="rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 px-3 py-1.5 text-[10px] font-bold text-white shadow-lg shadow-yellow-500/20 flex items-center gap-1">
+            🔥 #3 Trending
+          </span>
+        );
+      }
+      return (
+        <span className="rounded-full bg-amber-500/15 border border-amber-500/30 px-3 py-1.5 text-[10px] font-bold text-amber-400">
+          🔥 Trending
+        </span>
+      );
+    }
+
+    if (activeTab === "picks") {
+      return (
+        <span className="rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 px-3 py-1.5 text-[10px] font-bold text-white shadow-lg shadow-cyan-500/20 flex items-center gap-1">
+          ⭐ Editor's Pick
+        </span>
+      );
+    }
+
+    if (blog.featured) {
+      return (
+        <span className="rounded-full bg-accent px-3 py-1.5 text-[10px] font-bold text-accent-foreground shadow-lg shadow-accent/20">
+          Featured
+        </span>
+      );
+    }
+
+    return null;
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -348,11 +413,7 @@ const ArticleCard = ({ blog, index, onImageClick }) => {
         />
         <div className="theme-image-wash absolute inset-0" />
         <div className="absolute left-4 top-4 flex flex-wrap gap-2">
-          {blog.featured && (
-            <span className="rounded-full bg-accent px-3 py-1.5 text-[10px] font-bold text-accent-foreground shadow-lg shadow-accent/20">
-              Featured
-            </span>
-          )}
+          {renderBadge()}
           <span className="rounded-full border border-white/20 bg-background/75 px-3 py-1.5 text-[10px] font-bold text-foreground backdrop-blur-md">
             {blog.category || "Insight"}
           </span>
@@ -616,6 +677,52 @@ export default function BlogContent({
   const [lightboxIndex, setLightboxIndex] = useState(null);
   const [lightboxImages, setLightboxImages] = useState([]);
   const [lightboxAlts, setLightboxAlts] = useState([]);
+  const [, startTransition] = useTransition();
+
+  // In-memory instant cache for zero-latency category switching
+  const categoryCacheRef = useRef(new Map());
+  const allKnownBlogsRef = useRef(new Map());
+
+  // Populate known blogs from initial SSR data
+  useEffect(() => {
+    if (Array.isArray(data)) {
+      data.forEach((blog) => {
+        const id = blog.id || blog._id || blog.slug;
+        if (id) allKnownBlogsRef.current.set(id, blog);
+      });
+      categoryCacheRef.current.set("All", { items: data, hasMore: Boolean(initialHasMore) });
+    }
+  }, [data, initialHasMore]);
+
+  // Fast Instant Category Selector (0ms Response)
+  const handleCategorySelect = useCallback((category) => {
+    startTransition(() => {
+      setActiveCategory(category);
+    });
+
+    // Check if category results are already cached
+    const cached = categoryCacheRef.current.get(category);
+    if (cached) {
+      setLoadedBlogs(cached.items);
+      setHasMoreBlogs(cached.hasMore);
+      return;
+    }
+
+    // Immediate optimistic filter from in-memory pool (0ms)
+    if (category !== "All") {
+      const activeLower = category.toLowerCase();
+      const inMemoryMatches = Array.from(allKnownBlogsRef.current.values()).filter((blog) => {
+        const blogCat = (blog.category || "").toLowerCase();
+        const blogTags = (blog.tags || []).map((t) => t.toLowerCase());
+        const splitCats = blogCat.split(/[|,/]/).map((s) => s.trim());
+        return blogCat === activeLower || splitCats.includes(activeLower) || blogTags.includes(activeLower);
+      });
+
+      if (inMemoryMatches.length > 0) {
+        setLoadedBlogs(inMemoryMatches);
+      }
+    }
+  }, []);
 
   // categories already precomputed server-side — use directly
   const categories = initialCategories;
@@ -623,6 +730,10 @@ export default function BlogContent({
   useEffect(() => {
     const onCacheUpdate = (e) => {
       if (e.detail?.collectionKey === "blogs" && Array.isArray(e.detail?.data)) {
+        e.detail.data.forEach((b) => {
+          const id = b.id || b._id || b.slug;
+          if (id) allKnownBlogsRef.current.set(id, b);
+        });
         if (!searchQuery && activeCategory === "All") {
           setLoadedBlogs(e.detail.data);
         }
@@ -634,24 +745,66 @@ export default function BlogContent({
 
   useEffect(() => {
     if (isHomePage) return undefined;
+
     if (!searchQuery && activeCategory === "All") {
-      setLoadedBlogs(data || []);
-      setHasMoreBlogs(initialHasMore);
+      const allCached = categoryCacheRef.current.get("All");
+      if (allCached) {
+        setLoadedBlogs(allCached.items);
+        setHasMoreBlogs(allCached.hasMore);
+      } else {
+        setLoadedBlogs(data || []);
+        setHasMoreBlogs(initialHasMore);
+      }
       return undefined;
     }
+
+    const cacheKey = `${activeCategory}::${searchQuery}`;
+    if (categoryCacheRef.current.has(cacheKey)) {
+      const cached = categoryCacheRef.current.get(cacheKey);
+      setLoadedBlogs(cached.items);
+      setHasMoreBlogs(cached.hasMore);
+      return undefined;
+    }
+
     const controller = new AbortController();
     setIsLoadingMore(true);
     const params = new URLSearchParams({ offset: "0", limit: "12" });
     if (searchQuery) params.set("search", searchQuery);
     if (activeCategory !== "All") params.set("category", activeCategory);
+
     fetch(`/api/blogs?${params}`, { signal: controller.signal, cache: "no-store" })
       .then((response) => response.json())
-      .then((result) => { if (result.success) { setLoadedBlogs(result.data || []); setHasMoreBlogs(Boolean(result.hasMore)); } })
-      .catch((error) => { if (error.name !== "AbortError") console.error("Blog page loading failed", error); })
+      .then((result) => {
+        if (result.success && Array.isArray(result.data)) {
+          result.data.forEach((b) => {
+            const id = b.id || b._id || b.slug;
+            if (id) allKnownBlogsRef.current.set(id, b);
+          });
+
+          categoryCacheRef.current.set(cacheKey, {
+            items: result.data,
+            hasMore: Boolean(result.hasMore),
+          });
+          if (!searchQuery) {
+            categoryCacheRef.current.set(activeCategory, {
+              items: result.data,
+              hasMore: Boolean(result.hasMore),
+            });
+          }
+
+          startTransition(() => {
+            setLoadedBlogs(result.data);
+            setHasMoreBlogs(Boolean(result.hasMore));
+          });
+        }
+      })
+      .catch((error) => {
+        if (error.name !== "AbortError") console.error("Blog page loading failed", error);
+      })
       .finally(() => setIsLoadingMore(false));
+
     return () => controller.abort();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeCategory, isHomePage, searchQuery]);
+  }, [activeCategory, isHomePage, searchQuery, data, initialHasMore]);
 
   const loadMoreBlogs = async () => {
     if (isLoadingMore || !hasMoreBlogs) return;
@@ -662,24 +815,100 @@ export default function BlogContent({
     try {
       const response = await fetch(`/api/blogs?${params}`, { cache: "no-store" });
       const result = await response.json();
-      if (result.success) { setLoadedBlogs((current) => [...current, ...(result.data || [])]); setHasMoreBlogs(Boolean(result.hasMore)); }
-    } finally { setIsLoadingMore(false); }
+      if (result.success && Array.isArray(result.data)) {
+        result.data.forEach((b) => {
+          const id = b.id || b._id || b.slug;
+          if (id) allKnownBlogsRef.current.set(id, b);
+        });
+        setLoadedBlogs((current) => [...current, ...result.data]);
+        setHasMoreBlogs(Boolean(result.hasMore));
+      }
+    } finally {
+      setIsLoadingMore(false);
+    }
   };
 
-  const filteredBlogs = (loadedBlogs || []).filter((blog) => {
-    if (blog.publishStatus && blog.publishStatus !== "published") return false;
-    const matchesSearch =
-      blog.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      blog.summary.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory =
-      activeCategory === "All" || blog.category === activeCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const filteredBlogs = useMemo(() => {
+    if (!Array.isArray(loadedBlogs)) return [];
+    const searchLower = searchQuery.trim().toLowerCase();
+    const activeLower = activeCategory.toLowerCase();
+
+    return loadedBlogs.filter((blog) => {
+      if (blog.publishStatus && blog.publishStatus !== "published") return false;
+
+      const matchesSearch =
+        !searchLower ||
+        (blog.title && blog.title.toLowerCase().includes(searchLower)) ||
+        (blog.summary && blog.summary.toLowerCase().includes(searchLower));
+
+      if (!matchesSearch) return false;
+
+      if (activeCategory === "All") return true;
+
+      const blogCat = (blog.category || "").toLowerCase();
+      const splitCats = blogCat.split(/[|,/]/).map((s) => s.trim());
+      const blogTags = (blog.tags || []).map((t) => t.toLowerCase());
+
+      return (
+        blogCat === activeLower ||
+        splitCats.includes(activeLower) ||
+        blogTags.includes(activeLower)
+      );
+    });
+  }, [loadedBlogs, searchQuery, activeCategory]);
 
   const displayPosts = useMemo(() => {
+    if (activeTab === "picks") {
+      // Editor's Picks: Strictly ONLY Featured blogs (the 6 curated blogs)
+      const sourceList = (Array.isArray(featuredBlogs) && featuredBlogs.length > 0)
+        ? featuredBlogs
+        : (loadedBlogs || []).filter((b) => Boolean(b.featured));
+
+      const searchLower = searchQuery.trim().toLowerCase();
+      const activeLower = activeCategory.toLowerCase();
+
+      const picks = sourceList.filter((blog) => {
+        if (blog.publishStatus && blog.publishStatus !== "published") return false;
+
+        const matchesSearch =
+          !searchLower ||
+          (blog.title && blog.title.toLowerCase().includes(searchLower)) ||
+          (blog.summary && blog.summary.toLowerCase().includes(searchLower));
+
+        if (!matchesSearch) return false;
+
+        if (activeCategory === "All") return true;
+
+        const blogCat = (blog.category || "").toLowerCase();
+        const splitCats = blogCat.split(/[|,/]/).map((s) => s.trim());
+        const blogTags = (blog.tags || []).map((t) => t.toLowerCase());
+
+        return (
+          blogCat === activeLower ||
+          splitCats.includes(activeLower) ||
+          blogTags.includes(activeLower)
+        );
+      });
+
+      return picks.sort((a, b) => {
+        const orderA = Number(a.featuredOrder) > 0 ? Number(a.featuredOrder) : 999;
+        const orderB = Number(b.featuredOrder) > 0 ? Number(b.featuredOrder) : 999;
+        return orderA - orderB || (toTimestamp(b) - toTimestamp(a));
+      });
+    }
+
     if (!filteredBlogs || filteredBlogs.length === 0) return [];
-    return rankBlogsByMode(filteredBlogs, activeTab);
-  }, [filteredBlogs, activeTab]);
+
+    if (activeTab === "trending") {
+      // Trending Now: Organic high-velocity trending blogs (separate from featured picks)
+      const nonFeatured = filteredBlogs.filter((b) => !b.featured);
+      const pool = nonFeatured.length >= 3 ? nonFeatured : filteredBlogs;
+      return rankBlogsByMode(pool, "trending").slice(0, 6);
+    }
+
+    // Recent Articles: Full timeline list
+    return [...filteredBlogs].sort((a, b) => toTimestamp(b) - toTimestamp(a));
+  }, [filteredBlogs, activeTab, featuredBlogs, loadedBlogs, searchQuery, activeCategory]);
 
   if (!data) return null;
 
@@ -782,7 +1011,7 @@ export default function BlogContent({
         setSearchQuery={setSearchQuery}
         categories={categories}
         activeCategory={activeCategory}
-        setActiveCategory={setActiveCategory}
+        onSelectCategory={handleCategorySelect}
       />
 
       {/* 4. Trending / Recent Tabs */}
@@ -798,6 +1027,7 @@ export default function BlogContent({
                   key={blog.id || blog._id || blog.slug || i}
                   blog={blog}
                   index={i}
+                  activeTab={activeTab}
                   onImageClick={(idx) => {
                     setLightboxImages(
                       displayPosts.map(
@@ -844,7 +1074,9 @@ export default function BlogContent({
                 <div className="flex items-center gap-3 text-xs font-semibold text-muted-foreground uppercase tracking-widest">
                   <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-accent/10 border border-accent/25 text-accent font-bold text-[11px] shadow-sm">
                     <Sparkles className="w-3.5 h-3.5" />
-                    Showing {displayPosts.length} of {initialTotal || loadedBlogs.length} Articles
+                    {activeTab === "picks" && `Showing All ${displayPosts.length} Editor's Picks`}
+                    {activeTab === "trending" && `Showing Top ${displayPosts.length} Trending Articles`}
+                    {activeTab === "latest" && `Showing ${displayPosts.length} of ${initialTotal || loadedBlogs.length} Articles`}
                   </span>
                   <span className="text-muted-foreground/40">&bull;</span>
                   <span className="text-muted-foreground font-mono">
@@ -857,14 +1089,16 @@ export default function BlogContent({
                   <div
                     className="h-full bg-accent rounded-full transition-all duration-500 shadow-sm shadow-accent/40"
                     style={{
-                      width: `${Math.min(100, Math.max(10, (displayPosts.length / (initialTotal || loadedBlogs.length || 1)) * 100))}%`,
+                      width: activeTab === "latest"
+                        ? `${Math.min(100, Math.max(10, (displayPosts.length / (initialTotal || loadedBlogs.length || 1)) * 100))}%`
+                        : "100%",
                     }}
                   />
                 </div>
               </div>
 
-              {/* Theme-Adaptive Load More Button or All Loaded Badge */}
-              {hasMoreBlogs ? (
+              {/* Theme-Adaptive Load More Button (Only for Recent tab when more exists) */}
+              {activeTab === "latest" && hasMoreBlogs ? (
                 <motion.button
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
@@ -886,9 +1120,13 @@ export default function BlogContent({
                   )}
                 </motion.button>
               ) : (
-                <div className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-card/80 border border-border text-xs font-bold text-muted-foreground backdrop-blur-md shadow-md">
-                  <CheckCircle2 className="w-4 h-4 text-accent" />
-                  <span>You&apos;ve explored all {displayPosts.length} articles!</span>
+                <div className="inline-flex items-center gap-2 text-xs font-semibold text-muted-foreground/60 py-2">
+                  <CheckCircle2 className="w-4 h-4 text-accent/60" />
+                  <span>
+                    {activeTab === "picks" && "All curated Editor's Picks displayed"}
+                    {activeTab === "trending" && "All top trending articles displayed"}
+                    {activeTab === "latest" && "You have reached the end of the archive"}
+                  </span>
                 </div>
               )}
             </div>

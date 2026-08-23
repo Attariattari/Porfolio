@@ -109,30 +109,56 @@ export const BlogController = {
         const safeLimit = Math.min(30, Math.max(1, Math.trunc(Number(limit) || 12)));
         try {
             await dbConnect();
-            const query = {
+            const statusCondition = {
                 $or: [
                     { publishStatus: "published" },
                     { status: "published" },
                     { publishStatus: { $exists: false }, status: { $exists: false } },
                 ],
             };
-            if (category && category !== "All") query.category = category;
+            const query = { $and: [statusCondition] };
+
+            if (category && category !== "All") {
+                const escapedCat = String(category).trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+                const catRegex = new RegExp(`(^|[|,/\\s])${escapedCat}([|,/\\s]|$)`, "i");
+                query.$and.push({
+                    $or: [
+                        { category: category },
+                        { category: { $regex: catRegex } },
+                        { tags: { $regex: new RegExp(`^${escapedCat}$`, "i") } },
+                    ],
+                });
+            }
+
             if (search) {
                 const escaped = String(search).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-                query.$and = [{ $or: [{ title: { $regex: escaped, $options: "i" } }, { summary: { $regex: escaped, $options: "i" } }] }];
+                query.$and.push({
+                    $or: [
+                        { title: { $regex: escaped, $options: "i" } },
+                        { summary: { $regex: escaped, $options: "i" } },
+                    ],
+                });
             }
+
             const projection = "title slug summary image featuredImage category tags date createdAt updatedAt generatedAt featured featuredOrder featuredScore qualityScore order publishStatus author readTime views";
-            const [rows, total, categories] = await Promise.all([
+            const [rows, total, rawCategories] = await Promise.all([
                 Blog.find(query).select(projection).sort({ featured: -1, featuredOrder: 1, createdAt: -1, order: 1 }).skip(safeOffset).limit(safeLimit + 1).lean(),
                 Blog.countDocuments(query),
-                Blog.distinct("category", { $or: query.$or }),
+                Blog.distinct("category", statusCondition),
             ]);
             const serialized = serializeDoc(rows).filter((blog) => !isLegacyBlogSlug(blog.slug));
+            const cleanCategories = [
+                ...new Set(
+                    (rawCategories || [])
+                        .filter(Boolean)
+                        .flatMap((c) => String(c).split(/[|,/]/).map((s) => s.trim()).filter(Boolean))
+                ),
+            ].sort();
             return {
                 items: serialized.slice(0, safeLimit),
                 hasMore: safeOffset + safeLimit < total && serialized.length > safeLimit,
                 total,
-                categories: categories.filter(Boolean).sort(),
+                categories: cleanCategories,
             };
         } catch (error) {
             const fallback = portfolioData.blogs.filter((blog) => isPublicBlog(blog) && !isLegacyBlogSlug(blog.slug));

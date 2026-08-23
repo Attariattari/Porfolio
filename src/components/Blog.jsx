@@ -1,6 +1,12 @@
 import { resolveFeaturedBlogs } from "@/lib/blogUtils";
 import BlogContent from "./BlogContent";
 
+const parseCategories = (cat) => {
+  if (!cat) return [];
+  if (typeof cat !== "string") return [];
+  return cat.split(/[|,/]/).map((c) => c.trim()).filter(Boolean);
+};
+
 export default function Blog({
   data,
   isHomePage = false,
@@ -10,13 +16,15 @@ export default function Blog({
 }) {
   if (!data) return null;
 
+  const rawCategories = [
+    ...(initialCategories || []).flatMap(parseCategories),
+    ...(data || []).flatMap((b) => parseCategories(b.category)),
+  ];
+
   // Server-safe precomputation — moved off the browser main thread
   const computedCategories = [
     "All",
-    ...new Set([
-      ...(initialCategories || []),
-      ...(data.map((b) => b.category).filter(Boolean)),
-    ]),
+    ...new Set(rawCategories.filter(Boolean)),
   ];
 
   const featuredBlogs = resolveFeaturedBlogs(data, data);
