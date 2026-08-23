@@ -36,7 +36,7 @@ export default function BlogPostDetail({
 }) {
   if (!blog) return null;
 
-  const coverImage = getSafeImageSrc(blog.image || blog.featuredImage?.url, "/blog-preview.png");
+  const coverImage = getSafeImageSrc(blog.image || blog.featuredImage?.url, "/blog-fallback.webp");
   const blogPath = `/blog/${blog.slug}`;
   const fullShareUrl = shareUrl || `${SITE_URL}${blogPath}`;
   const encodedShareUrl = encodeURIComponent(fullShareUrl);

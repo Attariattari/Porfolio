@@ -339,7 +339,7 @@ const ArticleCard = ({ blog, index, onImageClick }) => {
         aria-label={`Preview image for ${blog.title}`}
       >
         <Image
-          src={getSafeImageSrc(blog.image || blog.featuredImage?.url, "/portfolio-hero.png")}
+          src={getSafeImageSrc(blog.image || blog.featuredImage?.url, "/blog-fallback.webp")}
           alt={getBlogImageAlt(blog)}
           fill
           loading="lazy"
@@ -400,7 +400,7 @@ const ArticleCard = ({ blog, index, onImageClick }) => {
 };
 
 const HomeArticleCard = ({ blog, index, onImageClick }) => {
-  const image = getSafeImageSrc(blog.image || blog.featuredImage?.url, "/portfolio-hero.png");
+  const image = getSafeImageSrc(blog.image || blog.featuredImage?.url, "/blog-fallback.webp");
   const isFeatured = !!blog.featured;
 
   return (
@@ -714,7 +714,7 @@ export default function BlogContent({
                     setLightboxImages(
                       (homeBlogs || []).map(
                         (b) =>
-                          b.image || b.featuredImage?.url || "/portfolio-hero.png",
+                          b.image || b.featuredImage?.url || "/blog-fallback.webp",
                       ),
                     );
                     setLightboxAlts((homeBlogs || []).map(getBlogImageAlt));
@@ -801,7 +801,7 @@ export default function BlogContent({
                   onImageClick={(idx) => {
                     setLightboxImages(
                       displayPosts.map(
-                        (b) => b.image || b.featuredImage?.url || "/portfolio-hero.png"
+                        (b) => b.image || b.featuredImage?.url || "/blog-fallback.webp"
                       )
                     );
                     setLightboxAlts(displayPosts.map(getBlogImageAlt));

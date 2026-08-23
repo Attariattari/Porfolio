@@ -104,7 +104,7 @@ export default function FeaturedBlogSlider({ featuredBlogs, onImageClick }) {
                     <Image
                       src={getSafeImageSrc(
                         blog.image || blog.featuredImage?.url,
-                        "/portfolio-hero.png",
+                        "/blog-fallback.webp",
                       )}
                       alt={getBlogImageAlt(blog)}
                       width={1600}

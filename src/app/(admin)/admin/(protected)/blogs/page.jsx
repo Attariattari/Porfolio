@@ -245,7 +245,7 @@ export default function BlogsPage() {
       render: (item) => (
         <div className="w-16 h-10 rounded-lg overflow-hidden border border-border shadow-lg bg-muted/50 flex items-center justify-center">
           <Image
-            src={getSafeImageSrc(item.image || item.images?.[0])}
+            src={getSafeImageSrc(item.image || item.featuredImage?.url || item.images?.[0], "/blog-fallback.webp")}
             alt={getBlogImageAlt(item)}
             width={64}
             height={40}
@@ -1443,7 +1443,7 @@ function BlogMetric({ label, value, icon: Icon, color = "text-violet-400", last 
 }
 
   function BlogCard({ blog, aiActions, onCreateBlogger, onEdit, onView, onDelete, onInspect }) {
-    const image = getSafeImageSrc(blog.image || blog.featuredImage?.url || blog.images?.[0]);
+    const image = getSafeImageSrc(blog.image || blog.featuredImage?.url || blog.images?.[0], "/blog-fallback.webp");
     const status = blog._isFromDataJs ? "template" : blog.publishStatus || "draft";
     const date = blog.createdAt ? format(new Date(blog.createdAt), "MMM d, yyyy") : "Not published";
     const intel = blog.intelligence;

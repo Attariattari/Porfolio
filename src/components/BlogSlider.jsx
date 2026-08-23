@@ -66,7 +66,7 @@ const BlogSliderComponent = ({ posts }) => {
           {/* Background Image */}
           <div className="absolute inset-0">
             <Image
-              src={getSafeImageSrc(currentPost.image || currentPost.featuredImage?.url, "/portfolio-hero.png")}
+              src={getSafeImageSrc(currentPost.image || currentPost.featuredImage?.url, "/blog-fallback.webp")}
               alt={getBlogImageAlt(currentPost)}
               fill
               className="object-cover transition-transform duration-[2000ms] group-hover:scale-105"

@@ -1,9 +1,10 @@
-const DEFAULT_FALLBACK_IMAGE = "/portfolio-hero.webp";
+const DEFAULT_FALLBACK_IMAGE = "/blog-fallback.webp";
 
 const optimizedLocalImages = {
   "/logo.png": "/logo.webp",
   "/hero-visual.png": "/hero-visual.webp",
   "/portfolio-hero.png": "/portfolio-hero.webp",
+  "/blog-fallback.png": "/blog-fallback.webp",
   "/contact_hero_abstract.png": "/contact_hero_abstract.webp",
   "/images/contact-hero.png": "/images/contact-hero.webp",
   "/images/contact-elite.png": "/images/contact-elite.webp",
