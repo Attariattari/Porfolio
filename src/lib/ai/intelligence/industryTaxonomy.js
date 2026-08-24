@@ -10,6 +10,8 @@ export const INDUSTRY_TAXONOMY = Object.freeze({
   "ecommerce": { label: "E-Commerce", keywords: [/e-?commerce/i, /online store/i, /shopping cart/i, /checkout/i, /retail/i, /fashion/i] },
   "real_estate": { label: "Real Estate", keywords: [/real estate/i, /property/i, /realtor/i, /mls/i, /listing/i] },
   "healthcare": { label: "Healthcare", keywords: [/health/i, /medical/i, /telehealth/i, /hipaa/i, /clinic/i, /patient/i] },
+  "developer_portfolios": { label: "Developer & Career Portfolios", keywords: [/portfolio/i, /developer portfolio/i, /resume website/i, /engineer portfolio/i, /designer portfolio/i, /portfolio website/i, /personal branding/i] },
+  "student_fyps": { label: "Academic Projects & BSCS FYP", keywords: [/final year project/i, /fyp/i, /capstone/i, /bscs/i, /student project/i, /semester project/i, /university project/i, /academic project/i] },
   "beauty_wellness": { label: "Beauty, Salons & Wellness", keywords: [/salon/i, /spa/i, /beauty/i, /skincare/i, /barber/i, /wellness/i, /hair salon/i, /nail salon/i, /esthetician/i, /appointment booking/i] },
   "fitness_gyms": { label: "Fitness & Gyms", keywords: [/gym/i, /fitness/i, /workout/i, /personal trainer/i, /crossfit/i, /membership portal/i, /yoga studio/i] },
   "automotive": { label: "Automotive & Dealerships", keywords: [/automotive/i, /dealership/i, /car rental/i, /vehicle inventory/i, /auto repair/i, /auto parts/i] },
