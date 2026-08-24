@@ -7,6 +7,11 @@
  */
 
 export const INDUSTRY_TAXONOMY = Object.freeze({
+  "ai_saas_tools": { label: "AI SaaS & Micro-SaaS Platforms", keywords: [/ai saas/i, /micro-?saas/i, /ai tool/i, /ai app/i, /rag/i, /llm integration/i, /openai api/i, /gemini api/i, /ai wrapper/i, /ai assistant/i] },
+  "home_services_contractors": { label: "Home Services & Contractors", keywords: [/contractor/i, /solar/i, /roofing/i, /hvac/i, /plumbing/i, /construction/i, /remodeling/i, /instant quote/i, /cost calculator/i] },
+  "edtech_coaching": { label: "EdTech & Online Course Platforms", keywords: [/course portal/i, /lms platform/i, /coaching/i, /online academy/i, /video course/i, /tutor/i, /learning management/i] },
+  "legal_tech": { label: "Law Firms & Legal Tech", keywords: [/law firm/i, /legal/i, /lawyer/i, /attorney/i, /client intake/i, /case management/i, /legal tech/i] },
+  "b2b_wholesale": { label: "B2B Wholesale & Inventory Portals", keywords: [/b2b wholesale/i, /bulk ordering/i, /wholesale portal/i, /distributor/i, /supplier/i, /inventory dashboard/i, /invoice automation/i] },
   "ecommerce": { label: "E-Commerce", keywords: [/e-?commerce/i, /online store/i, /shopping cart/i, /checkout/i, /retail/i, /fashion/i] },
   "real_estate": { label: "Real Estate", keywords: [/real estate/i, /property/i, /realtor/i, /mls/i, /listing/i] },
   "healthcare": { label: "Healthcare", keywords: [/health/i, /medical/i, /telehealth/i, /hipaa/i, /clinic/i, /patient/i] },
