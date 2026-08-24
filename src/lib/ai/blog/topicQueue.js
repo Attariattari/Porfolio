@@ -66,6 +66,13 @@ function planAsBlog(plan) {
 function cleanPlan(plan, source = "ai") {
   const articleType = ["pillar", "supporting", "standalone_authority", "verified_trend"].includes(plan.articleType) ? plan.articleType : "supporting";
   const enrichedIntel = enrichTopicWithIntelligence(plan);
+
+  const toSafeNum = (val, fallback = 0, min = 0, max = 100) => {
+    const num = Number(val);
+    if (!Number.isFinite(num)) return fallback;
+    return Math.min(max, Math.max(min, num));
+  };
+
   const cleaned = {
     title: String(plan.title || "").trim(),
     articleType,
@@ -74,7 +81,7 @@ function cleanPlan(plan, source = "ai") {
     primaryTechnology: derivePrimaryTechnology(plan),
     clusterKey: String(plan.clusterKey || "").trim(),
     clusterTitle: String(plan.clusterTitle || "").trim(),
-    clusterOrder: Math.min(12, Math.max(0, Number(plan.clusterOrder) || 0)),
+    clusterOrder: toSafeNum(plan.clusterOrder, 0, 0, 12),
     parentTopicId: plan.parentTopicId || null,
     pillar: String(plan.pillar || "Web Development").trim(),
     subtopic: String(plan.subtopic || "").trim(),
@@ -86,8 +93,8 @@ function cleanPlan(plan, source = "ai") {
     searchIntent: ["informational", "commercial", "transactional", "navigational", "problem_solving", "pricing", "comparison"].includes(plan.searchIntent || plan.intent) ? (plan.searchIntent || plan.intent) : "informational",
     format: String(plan.format || "Problem-solution guide").trim(),
     relatedServiceSlugs: Array.isArray(plan.relatedServiceSlugs) ? [...new Set(plan.relatedServiceSlugs)].filter((slug) => ALLOWED_SERVICES.has(slug)).slice(0, 3) : [],
-    priority: Math.min(100, Math.max(0, Number(plan.priority) || 50)),
-    professionalScore: Math.min(100, Math.max(0, Number(plan.professionalScore ?? plan.score ?? plan.opportunityScore) || 0)),
+    priority: toSafeNum(plan.priority, 50, 0, 100),
+    professionalScore: toSafeNum(plan.professionalScore ?? plan.score ?? plan.opportunityScore, 0, 0, 100),
     scoreBreakdown: plan.scoreBreakdown || plan.breakdown || {},
     selectionReason: String(plan.selectionReason || "").trim(),
     scheduledFor: plan.scheduledFor ? new Date(plan.scheduledFor) : null,
@@ -101,20 +108,20 @@ function cleanPlan(plan, source = "ai") {
     industry: enrichedIntel.industry || plan.industry || null,
     businessProblem: enrichedIntel.businessProblem || plan.businessProblem || null,
     technology: Array.isArray(plan.technology) ? plan.technology : [derivePrimaryTechnology(plan)],
-    serviceRelevance: Math.min(1, Math.max(0, Number(enrichedIntel.serviceIntent?.confidence ?? plan.serviceRelevance) || 0)),
+    serviceRelevance: toSafeNum(enrichedIntel.serviceIntent?.confidence ?? plan.serviceRelevance, 0, 0, 1),
     serviceSlug: String(enrichedIntel.serviceIntent?.serviceKey || plan.serviceSlug || "").trim(),
-    clusterDepth: Math.min(12, Math.max(0, Number(plan.clusterDepth) ?? (articleType === "pillar" ? 2 : 0))),
+    clusterDepth: toSafeNum(plan.clusterDepth, articleType === "pillar" ? 2 : 0, 0, 12),
     clusterStrategy: plan.clusterStrategy || "dynamic_cluster",
-    opportunityScore: Math.min(100, Math.max(0, Number(plan.opportunityScore ?? plan.priority) || 50)),
+    opportunityScore: toSafeNum(plan.opportunityScore ?? plan.priority, 50, 0, 100),
     searchSignals: plan.searchSignals || { available: false, source: null },
     contentGap: plan.contentGap || null,
-    cannibalizationRisk: Math.min(100, Math.max(0, Number(plan.cannibalizationRisk) || 0)),
+    cannibalizationRisk: toSafeNum(plan.cannibalizationRisk, 0, 0, 100),
     clusterHealth: plan.clusterHealth || null,
     expansionEligible: Boolean(plan.expansionEligible),
     expansionReason: String(plan.expansionReason || "").trim(),
     generationStrategy: String(plan.generationStrategy || "").trim(),
     decisionSource: String(plan.decisionSource || "think10x_ai").trim(),
-    confidence: Math.min(1, Math.max(0, Number(plan.confidence) ?? 0.9)),
+    confidence: toSafeNum(plan.confidence, 0.9, 0, 1),
 
     // Phase 4 Intelligence Structured Metadata
     audienceProfile: enrichedIntel.audienceProfile || null,
