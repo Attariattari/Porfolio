@@ -13,6 +13,8 @@ import {
 import { revalidatePath } from "next/cache";
 import { isLegacyBlogSlug, normalizeBlogServiceLinks } from "@/lib/blogSeo";
 import { scheduleInternalLinkAudit } from "@/lib/ai/blog/internalLinkingEngine";
+import { InternalLinkSuggestion } from "@/models/InternalLinkSuggestion";
+import { BlogTopicPlan } from "@/models/BlogTopicPlan";
 import { triggerBloggerPublishIfReady } from "@/lib/ai/blog/bloggerAutomationHook";
 import { matchTopicToServicesSync } from "@/lib/ai/intelligence/services/serviceTopicMatcherEngine";
 import { generateConversionStrategy } from "@/lib/ai/intelligence/conversionLinkingEngine";
@@ -443,15 +445,117 @@ export const BlogController = {
             await dbConnect();
             const deleted = await Blog.findByIdAndDelete(id).lean();
             if (deleted) {
-                await updateFeaturedRankings();
+                // Non-blocking cascade cleanup of internal link suggestions & orphaned topic plans
+                InternalLinkSuggestion.deleteMany({
+                    $or: [{ sourceBlogId: id }, { targetBlogId: id }],
+                }).catch((err) =>
+                    console.error("[BlogController.deleteOne] Link cleanup warning:", err.message)
+                );
+
+                // Auto-cleanup linked Pillar/Supporting topic plans from topic queue
+                (async () => {
+                    try {
+                        const linkedTopics = await BlogTopicPlan.find({ usedByBlogId: id })
+                            .select("_id clusterKey")
+                            .lean();
+                        const topicIds = linkedTopics.map((t) => t._id);
+                        const clusterKeys = linkedTopics.map((t) => t.clusterKey).filter(Boolean);
+
+                        await BlogTopicPlan.deleteMany({
+                            $or: [
+                                { usedByBlogId: id },
+                                ...(topicIds.length > 0 ? [{ parentTopicId: { $in: topicIds } }] : []),
+                                ...(clusterKeys.length > 0 ? [{ clusterKey: { $in: clusterKeys }, status: { $ne: "used" } }] : []),
+                            ],
+                        });
+                    } catch (err) {
+                        console.error("[BlogController.deleteOne] TopicPlan cascade cleanup error:", err.message);
+                    }
+                })();
+
+                // Immediate cache invalidation & socket sync
+                await cacheManager.invalidateByTag("blogs").catch(() => {});
                 emitSocketEvent(SOCKET_EVENTS.STATS_UPDATED);
-                await cacheManager.invalidateByTag("blogs");
                 revalidatePublicBlogPaths(deleted.slug);
-                await scheduleInternalLinkAudit(null);
+
+                // Background non-blocking featured rankings refresh
+                updateFeaturedRankings().catch((err) =>
+                    console.error("[BlogController.deleteOne] Background featured ranking error:", err.message)
+                );
             }
             return deleted;
         } catch (error) {
             throw new Error(`Failed to delete blog: ${error.message}`);
+        }
+    },
+
+    // 5b. Bulk Delete Multiple Blogs (High Speed)
+    async deleteMany(ids = []) {
+        try {
+            await dbConnect();
+            const validIds = ids
+                .map((id) => (typeof id === "object" ? id?.toString() : String(id)))
+                .filter((id) => mongoose.Types.ObjectId.isValid(id));
+
+            if (validIds.length === 0) {
+                return { deletedCount: 0 };
+            }
+
+            // Fetch slugs for revalidation
+            const blogsToDelete = await Blog.find({ _id: { $in: validIds } })
+                .select("slug")
+                .lean();
+
+            const result = await Blog.deleteMany({ _id: { $in: validIds } });
+
+            if (result.deletedCount > 0) {
+                // Non-blocking cascade cleanup of internal link suggestions
+                InternalLinkSuggestion.deleteMany({
+                    $or: [{ sourceBlogId: { $in: validIds } }, { targetBlogId: { $in: validIds } }],
+                }).catch((err) =>
+                    console.error("[BlogController.deleteMany] Bulk link cleanup warning:", err.message)
+                );
+
+                // Auto-cleanup linked Pillar/Supporting topic plans from topic queue for all deleted blogs
+                (async () => {
+                    try {
+                        const linkedTopics = await BlogTopicPlan.find({ usedByBlogId: { $in: validIds } })
+                            .select("_id clusterKey")
+                            .lean();
+                        const topicIds = linkedTopics.map((t) => t._id);
+                        const clusterKeys = linkedTopics.map((t) => t.clusterKey).filter(Boolean);
+
+                        await BlogTopicPlan.deleteMany({
+                            $or: [
+                                { usedByBlogId: { $in: validIds } },
+                                ...(topicIds.length > 0 ? [{ parentTopicId: { $in: topicIds } }] : []),
+                                ...(clusterKeys.length > 0 ? [{ clusterKey: { $in: clusterKeys }, status: { $ne: "used" } }] : []),
+                            ],
+                        });
+                    } catch (err) {
+                        console.error("[BlogController.deleteMany] TopicPlan bulk cascade cleanup error:", err.message);
+                    }
+                })();
+
+                // Immediate cache invalidation & socket sync
+                await cacheManager.invalidateByTag("blogs").catch(() => {});
+                emitSocketEvent(SOCKET_EVENTS.STATS_UPDATED);
+
+                // Revalidate public routes
+                revalidatePublicBlogPaths();
+                blogsToDelete.forEach((b) => {
+                    if (b.slug) revalidatePublicBlogPaths(b.slug);
+                });
+
+                // Background non-blocking featured rankings refresh
+                updateFeaturedRankings().catch((err) =>
+                    console.error("[BlogController.deleteMany] Background featured ranking error:", err.message)
+                );
+            }
+
+            return result;
+        } catch (error) {
+            throw new Error(`Failed to bulk delete blogs: ${error.message}`);
         }
     },
 
@@ -460,10 +564,16 @@ export const BlogController = {
         try {
             await dbConnect();
             const result = await Blog.deleteMany({});
-            await cacheManager.invalidateByTag("blogs");
+            InternalLinkSuggestion.deleteMany({}).catch((err) =>
+                console.error("[BlogController.deleteAll] All link cleanup warning:", err.message)
+            );
+            BlogTopicPlan.deleteMany({ status: { $ne: "planned" } }).catch((err) =>
+                console.error("[BlogController.deleteAll] TopicPlan cleanup warning:", err.message)
+            );
+            await cacheManager.invalidateByTag("blogs").catch(() => {});
             emitSocketEvent(SOCKET_EVENTS.STATS_UPDATED);
             revalidatePublicBlogPaths();
-            await scheduleInternalLinkAudit(null);
+            updateFeaturedRankings().catch(() => {});
             return result;
         } catch (error) {
             throw new Error(`Failed to clear blogs: ${error.message}`);

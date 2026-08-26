@@ -652,7 +652,20 @@ async function takeClusterTopic(source = "ai", { allowNewPillar = true } = {}) {
       .lean();
 
     if (!parentBlog) {
-      throw new Error(`Cluster ${pillar._id} is blocked because its used Pillar topic is not linked to an actual Pillar blog.`);
+      console.warn(
+        `[TopicQueue] Pillar topic ${pillar._id} parent blog (${pillar.usedByBlogId}) was deleted or does not exist. Auto-cleaning orphaned cluster topics.`
+      );
+      // Auto-heal: delete the orphan pillar topic and all its supporting child topics from the queue
+      await BlogTopicPlan.deleteMany({
+        $or: [
+          { _id: pillar._id },
+          { parentTopicId: pillar._id },
+          ...(pillar.clusterKey ? [{ clusterKey: pillar.clusterKey }] : []),
+        ],
+      }).catch((err) =>
+        console.error("[TopicQueue] Auto-cleanup orphaned cluster error:", err.message)
+      );
+      continue;
     }
 
     const readyChild = children.find((c) => c.status === "ready");

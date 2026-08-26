@@ -12,9 +12,9 @@ import { toast } from "sonner";
 import { uploadPendingImages } from "@/lib/uploadHelper";
 import ImageUploader from "@/components/admin/ImageUploader";
 import { Controller } from "react-hook-form";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { format } from "date-fns";
-import { Sparkles, CheckCircle2, Mail, RefreshCcw, Copy, BookOpen, Search, Pencil, Trash2, ExternalLink, Star, Plus, Download, Upload, Share2, Clock3, Save, X, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, BrainCircuit, Target } from "lucide-react";
+import { Sparkles, CheckCircle2, Mail, RefreshCcw, Copy, BookOpen, Search, Pencil, Trash2, ExternalLink, Star, Plus, Download, Upload, Share2, Clock3, Save, X, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, BrainCircuit, Target, CheckSquare, Square, Check } from "lucide-react";
 import AIBlogProgress from "@/components/admin/AIBlogProgress";
 import SocialShareKitModal from "@/components/admin/SocialShareKitModal";
 import BloggerPostModal from "@/components/admin/BloggerPostModal";
@@ -48,6 +48,7 @@ export default function BlogsPage() {
     addBlog,
     updateBlog,
     deleteBlog,
+    deleteBlogsBulk,
     reorderBlogs,
   } = useAdminStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -56,6 +57,9 @@ export default function BlogsPage() {
   const [editingBlog, setEditingBlog] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [isBulkConfirmOpen, setIsBulkConfirmOpen] = useState(false);
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
   const [autoGenerateImages, setAutoGenerateImages] = useState(false);
   const [blogSearch, setBlogSearch] = useState("");
   const [blogDateFilter, setBlogDateFilter] = useState("");
@@ -677,9 +681,9 @@ export default function BlogsPage() {
   };
 
   const handleDelete = (item) => {
-    if (!item._id) {
+    if (!item._id || item._isFromDataJs) {
       toast.error(
-        "Static core data cannot be deleted. Initiate custom data first.",
+        "Static template data cannot be deleted. Create or upload custom articles first.",
       );
       return;
     }
@@ -688,10 +692,15 @@ export default function BlogsPage() {
   };
 
   const onConfirmDelete = async () => {
+    if (!deletingId) return;
     setIsDeleting(true);
     const success = await deleteBlog(deletingId);
     setIsDeleting(false);
-    if (success) setIsConfirmOpen(false);
+    if (success) {
+      setSelectedIds((prev) => prev.filter((id) => id !== deletingId));
+      setIsConfirmOpen(false);
+      setDeletingId(null);
+    }
   };
 
   const onSubmit = async (data) => {
@@ -799,6 +808,52 @@ export default function BlogsPage() {
     if (newPage >= 1 && newPage <= totalPages) {
       setCurrentPage(newPage);
       document.getElementById("article-library-section")?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const selectableBlogs = visibleBlogs.filter((b) => !b._isFromDataJs && b._id);
+  const isAllVisibleSelected =
+    selectableBlogs.length > 0 &&
+    selectableBlogs.every((b) => selectedIds.includes(b._id));
+
+  const selectablePageBlogs = paginatedBlogs.filter((b) => !b._isFromDataJs && b._id);
+  const isPageSelected =
+    selectablePageBlogs.length > 0 &&
+    selectablePageBlogs.every((b) => selectedIds.includes(b._id));
+
+  const handleSelectOne = (id) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const handleSelectAllVisible = () => {
+    if (isAllVisibleSelected) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(selectableBlogs.map((b) => b._id));
+    }
+  };
+
+  const handleSelectCurrentPage = () => {
+    if (isPageSelected) {
+      setSelectedIds((prev) =>
+        prev.filter((id) => !selectablePageBlogs.some((b) => b._id === id))
+      );
+    } else {
+      const newIds = new Set([...selectedIds, ...selectablePageBlogs.map((b) => b._id)]);
+      setSelectedIds(Array.from(newIds));
+    }
+  };
+
+  const onConfirmBulkDelete = async () => {
+    if (selectedIds.length === 0) return;
+    setIsBulkDeleting(true);
+    const res = await deleteBlogsBulk(selectedIds);
+    setIsBulkDeleting(false);
+    if (res.success) {
+      setSelectedIds([]);
+      setIsBulkConfirmOpen(false);
     }
   };
 
@@ -1110,7 +1165,231 @@ export default function BlogsPage() {
         <BlogMetric label="AI generated" value={blogs.filter((item) => item.aiGenerated).length} icon={Sparkles} color="text-accent" last />
       </div>
 
-      <section id="article-library-section" data-columns={columns.length} data-reorder={Boolean(reorderBlogs)} className="overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#0d1727]"><div className="flex flex-col justify-between gap-4 border-b border-white/[0.07] p-4 xl:flex-row xl:items-center sm:p-5"><div className="space-y-3"><div><p className="text-sm font-semibold text-slate-200">Article library</p><p className="mt-1 text-xs text-slate-600">Manage manual and AI-assisted content in one place (21 articles per page).</p></div><div className="flex items-center gap-1.5 flex-wrap pt-1"><button type="button" onClick={() => setBlogStatusFilter("all")} className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${blogStatusFilter === "all" ? "bg-violet-500/20 text-violet-300 border border-violet-500/40 shadow-sm" : "bg-slate-950/35 text-slate-400 border border-white/[0.08] hover:text-slate-200"}`}>All ({blogs.length})</button><button type="button" onClick={() => setBlogStatusFilter("published")} className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${blogStatusFilter === "published" ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm" : "bg-slate-950/35 text-slate-400 border border-white/[0.08] hover:text-emerald-300"}`}><span className="size-2 rounded-full bg-emerald-400 animate-pulse"></span>Published ({blogs.filter((b) => b.publishStatus === "published").length})</button><button type="button" onClick={() => setBlogStatusFilter("pending")} className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${blogStatusFilter === "pending" ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm" : "bg-slate-950/35 text-slate-400 border border-white/[0.08] hover:text-amber-300"}`}><span className="size-2 rounded-full bg-amber-400"></span>Pending ({blogs.filter((b) => b.publishStatus === "pending").length})</button><button type="button" onClick={() => setBlogStatusFilter("draft")} className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${blogStatusFilter === "draft" ? "bg-slate-700/50 text-slate-200 border border-slate-500/50 shadow-sm" : "bg-slate-950/35 text-slate-400 border border-white/[0.08] hover:text-slate-200"}`}><span className="size-2 rounded-full bg-slate-400"></span>Drafts ({blogs.filter((b) => (b.publishStatus || "draft") === "draft" && b.publishStatus !== "published" && b.publishStatus !== "pending").length})</button></div></div><div className="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap xl:w-auto"><label className="relative w-full sm:min-w-64"><Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-600" /><input value={blogSearch} onChange={(event) => setBlogSearch(event.target.value)} placeholder="Search articles..." className="w-full rounded-xl border border-white/[0.08] bg-slate-950/35 py-3 pl-10 pr-4 text-sm outline-none placeholder:text-slate-700 focus:border-violet-400/40" /></label><label><span className="sr-only">Filter by status</span><select value={blogStatusFilter} onChange={(event) => setBlogStatusFilter(event.target.value)} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40"><option value="all">All Statuses</option><option value="published">Published 🟢</option><option value="pending">Pending 🟡</option><option value="draft">Draft ⚪</option></select></label><label><span className="sr-only">Filter by featured</span><select value={blogFeaturedFilter} onChange={(event) => setBlogFeaturedFilter(event.target.value)} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40"><option value="all">All Articles</option><option value="featured">Featured ⭐</option><option value="non-featured">Non-Featured</option></select></label><label><span className="sr-only">Filter articles by date</span><input type="date" value={blogDateFilter} onChange={(event) => setBlogDateFilter(event.target.value)} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40" title="Show blogs published on this date" /></label><label><span className="sr-only">Sort articles</span><select value={blogSortDirection} onChange={(event) => setBlogSortDirection(event.target.value)} className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40"><option value="ascending">Ascending (newest first)</option><option value="descending">Descending (oldest first)</option></select></label>{isAnyFilterActive && <button type="button" onClick={handleClearFilters} className="inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border border-rose-400/30 bg-rose-500/10 px-3.5 text-xs font-semibold text-rose-300 transition hover:bg-rose-500/20" title="Clear all active filters"><X className="size-3.5" />Clear filters</button>}</div></div><div className="grid gap-4 p-4 sm:p-5 md:grid-cols-2 xl:grid-cols-3">{paginatedBlogs.map((blog) => <BlogCard key={blog._id || blog.slug || blog.title} blog={blog} aiActions={aiActionRenderer?.(blog)} onCreateBlogger={handleGenerateBloggerForBlog} onEdit={() => handleEdit(blog)} onView={() => handleView(blog)} onDelete={() => handleDelete(blog)} onInspect={() => setInspectedBlog(blog)} />)}</div>{visibleBlogs.length === 0 && <div className="grid min-h-72 place-items-center text-center"><div><BookOpen className="mx-auto size-9 text-slate-700" /><p className="mt-4 text-sm font-semibold text-slate-300">No matching articles</p><p className="mt-1 text-xs text-slate-600">Try another title, date, category or status filter.</p></div></div>}
+      <section
+        id="article-library-section"
+        data-columns={columns.length}
+        data-reorder={Boolean(reorderBlogs)}
+        className="overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#0d1727]"
+      >
+        <div className="flex flex-col justify-between gap-4 border-b border-white/[0.07] p-4 xl:flex-row xl:items-center sm:p-5">
+          <div className="space-y-3">
+            <div>
+              <p className="text-sm font-semibold text-slate-200">Article library</p>
+              <p className="mt-1 text-xs text-slate-600">
+                Manage manual and AI-assisted content in one place (21 articles per page).
+              </p>
+            </div>
+            <div className="flex items-center gap-1.5 flex-wrap pt-1">
+              <button
+                type="button"
+                onClick={() => setBlogStatusFilter("all")}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                  blogStatusFilter === "all"
+                    ? "bg-violet-500/20 text-violet-300 border border-violet-500/40 shadow-sm"
+                    : "bg-slate-950/35 text-slate-400 border border-white/[0.08] hover:text-slate-200"
+                }`}
+              >
+                All ({blogs.length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setBlogStatusFilter("published")}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
+                  blogStatusFilter === "published"
+                    ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm"
+                    : "bg-slate-950/35 text-slate-400 border border-white/[0.08] hover:text-emerald-300"
+                }`}
+              >
+                <span className="size-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                Published ({blogs.filter((b) => b.publishStatus === "published").length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setBlogStatusFilter("pending")}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
+                  blogStatusFilter === "pending"
+                    ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
+                    : "bg-slate-950/35 text-slate-400 border border-white/[0.08] hover:text-amber-300"
+                }`}
+              >
+                <span className="size-2 rounded-full bg-amber-400"></span>
+                Pending ({blogs.filter((b) => b.publishStatus === "pending").length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setBlogStatusFilter("draft")}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
+                  blogStatusFilter === "draft"
+                    ? "bg-slate-700/50 text-slate-200 border border-slate-500/50 shadow-sm"
+                    : "bg-slate-950/35 text-slate-400 border border-white/[0.08] hover:text-slate-200"
+                }`}
+              >
+                <span className="size-2 rounded-full bg-slate-400"></span>
+                Drafts ({blogs.filter((b) => (b.publishStatus || "draft") === "draft" && b.publishStatus !== "published" && b.publishStatus !== "pending").length})
+              </button>
+            </div>
+          </div>
+
+          <div className="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap xl:w-auto">
+            <label className="relative w-full sm:min-w-64">
+              <Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-600" />
+              <input
+                value={blogSearch}
+                onChange={(event) => setBlogSearch(event.target.value)}
+                placeholder="Search articles..."
+                className="w-full rounded-xl border border-white/[0.08] bg-slate-950/35 py-3 pl-10 pr-4 text-sm outline-none placeholder:text-slate-700 focus:border-violet-400/40"
+              />
+            </label>
+            <label>
+              <span className="sr-only">Filter by status</span>
+              <select
+                value={blogStatusFilter}
+                onChange={(event) => setBlogStatusFilter(event.target.value)}
+                className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40"
+              >
+                <option value="all">All Statuses</option>
+                <option value="published">Published 🟢</option>
+                <option value="pending">Pending 🟡</option>
+                <option value="draft">Draft ⚪</option>
+              </select>
+            </label>
+            <label>
+              <span className="sr-only">Filter by featured</span>
+              <select
+                value={blogFeaturedFilter}
+                onChange={(event) => setBlogFeaturedFilter(event.target.value)}
+                className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40"
+              >
+                <option value="all">All Articles</option>
+                <option value="featured">Featured ⭐</option>
+                <option value="non-featured">Non-Featured</option>
+              </select>
+            </label>
+            <label>
+              <span className="sr-only">Filter articles by date</span>
+              <input
+                type="date"
+                value={blogDateFilter}
+                onChange={(event) => setBlogDateFilter(event.target.value)}
+                className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40"
+                title="Show blogs published on this date"
+              />
+            </label>
+            <label>
+              <span className="sr-only">Sort articles</span>
+              <select
+                value={blogSortDirection}
+                onChange={(event) => setBlogSortDirection(event.target.value)}
+                className="h-11 w-full rounded-xl border border-white/[0.08] bg-slate-950/35 px-3 text-sm text-slate-200 outline-none focus:border-violet-400/40"
+              >
+                <option value="ascending">Ascending (newest first)</option>
+                <option value="descending">Descending (oldest first)</option>
+              </select>
+            </label>
+            {isAnyFilterActive && (
+              <button
+                type="button"
+                onClick={handleClearFilters}
+                className="inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border border-rose-400/30 bg-rose-500/10 px-3.5 text-xs font-semibold text-rose-300 transition hover:bg-rose-500/20"
+                title="Clear all active filters"
+              >
+                <X className="size-3.5" />
+                Clear filters
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Selection & Batch Control Sub-Bar */}
+        {selectableBlogs.length > 0 && (
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.06] bg-slate-950/40 px-4 py-2.5 sm:px-5">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handleSelectAllVisible}
+                className="group flex items-center gap-2 text-xs font-bold text-slate-300 hover:text-white transition-colors"
+                title="Select or deselect all visible articles"
+              >
+                <span
+                  className={`grid size-5 place-items-center rounded-md border transition-all ${
+                    isAllVisibleSelected
+                      ? "border-violet-400 bg-violet-600 text-white shadow-sm shadow-violet-600/40"
+                      : selectedIds.length > 0
+                      ? "border-violet-400/60 bg-violet-600/30 text-violet-300"
+                      : "border-white/20 bg-slate-900 text-slate-500 group-hover:border-white/40"
+                  }`}
+                >
+                  {isAllVisibleSelected ? (
+                    <CheckSquare className="size-3.5" />
+                  ) : selectedIds.length > 0 ? (
+                    <Check className="size-3 stroke-[3]" />
+                  ) : (
+                    <Square className="size-3.5" />
+                  )}
+                </span>
+                <span>Select all ({selectableBlogs.length})</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleSelectCurrentPage}
+                className="text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors"
+              >
+                {isPageSelected ? "Deselect page" : `Select page (${selectablePageBlogs.length})`}
+              </button>
+            </div>
+
+            {selectedIds.length > 0 && (
+              <div className="flex items-center gap-2">
+                <span className="rounded-full bg-violet-500/20 border border-violet-400/30 px-2.5 py-0.5 text-[10px] font-extrabold text-violet-300">
+                  {selectedIds.length} selected
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedIds([])}
+                  className="text-xs font-medium text-slate-400 hover:text-white transition-colors"
+                >
+                  Clear
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsBulkConfirmOpen(true)}
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-rose-500/40 bg-rose-500/20 px-3 py-1 text-xs font-bold text-rose-300 hover:bg-rose-500/30 hover:border-rose-400 transition-all shadow-sm"
+                >
+                  <Trash2 className="size-3 text-rose-300" />
+                  <span>Delete selected ({selectedIds.length})</span>
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="grid gap-4 p-4 sm:p-5 md:grid-cols-2 xl:grid-cols-3">
+          {paginatedBlogs.map((blog) => (
+            <BlogCard
+              key={blog._id || blog.slug || blog.title}
+              blog={blog}
+              selected={selectedIds.includes(blog._id)}
+              onSelect={() => handleSelectOne(blog._id)}
+              aiActions={aiActionRenderer?.(blog)}
+              onCreateBlogger={handleGenerateBloggerForBlog}
+              onEdit={() => handleEdit(blog)}
+              onView={() => handleView(blog)}
+              onDelete={() => handleDelete(blog)}
+              onInspect={() => setInspectedBlog(blog)}
+            />
+          ))}
+        </div>
+
+        {visibleBlogs.length === 0 && (
+          <div className="grid min-h-72 place-items-center text-center">
+            <div>
+              <BookOpen className="mx-auto size-9 text-slate-700" />
+              <p className="mt-4 text-sm font-semibold text-slate-300">No matching articles</p>
+              <p className="mt-1 text-xs text-slate-600">Try another title, date, category or status filter.</p>
+            </div>
+          </div>
+        )}
       {totalPages > 1 && (
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/[0.07] px-6 py-4 bg-slate-950/20">
           <div className="text-xs font-semibold text-slate-400">
@@ -1211,6 +1490,61 @@ export default function BlogsPage() {
         )}
       </AnimatePresence>
 
+      {/* Floating Bulk Actions Toolbar */}
+      <AnimatePresence>
+        {selectedIds.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 30, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            className="fixed bottom-6 left-1/2 z-[75] flex -translate-x-1/2 items-center gap-3 sm:gap-5 rounded-2xl border border-violet-500/30 bg-[#0c1424]/95 p-3 sm:px-6 sm:py-3.5 shadow-2xl shadow-black/80 backdrop-blur-2xl ring-1 ring-white/10"
+          >
+            <div className="flex items-center gap-3">
+              <span className="grid size-9 place-items-center rounded-xl bg-violet-500/20 text-violet-300 font-bold border border-violet-500/30">
+                <CheckSquare className="size-4" />
+              </span>
+              <div className="flex flex-col">
+                <span className="text-xs font-black tracking-wide text-white">
+                  {selectedIds.length} article{selectedIds.length > 1 ? "s" : ""} selected
+                </span>
+                <span className="text-[10px] text-slate-400">Ready for bulk actions</span>
+              </div>
+            </div>
+
+            <div className="h-8 w-px bg-white/10 hidden sm:block" />
+
+            <div className="flex items-center gap-2 sm:gap-3">
+              <button
+                type="button"
+                onClick={handleSelectCurrentPage}
+                className="hidden md:inline-flex h-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-[11px] font-bold text-slate-300 hover:bg-white/10 hover:text-white transition-all"
+              >
+                {isPageSelected ? "Deselect page" : "Select page"}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setSelectedIds([])}
+                className="h-9 px-3 rounded-xl border border-white/10 bg-slate-900/60 text-slate-400 hover:bg-slate-800 hover:text-white text-[11px] font-bold transition-all"
+              >
+                Clear
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsBulkConfirmOpen(true)}
+                className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl border border-rose-500/40 bg-rose-500/20 px-4 text-xs font-bold text-rose-300 shadow-lg shadow-rose-950/40 hover:bg-rose-500/30 hover:border-rose-400 transition-all"
+              >
+                <Trash2 className="size-3.5 text-rose-300" />
+                <span>Delete selected ({selectedIds.length})</span>
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Single Blog Delete Confirmation Dialog */}
       <AnimatePresence>
         {isConfirmOpen && (
           <ConfirmDialog
@@ -1220,6 +1554,21 @@ export default function BlogsPage() {
             title="Delete Blog Entry?"
             message="This will permanently delete the post and its associated metadata from the system. This action is irreversible."
             isDeleting={isDeleting}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Bulk Blogs Delete Confirmation Dialog */}
+      <AnimatePresence>
+        {isBulkConfirmOpen && (
+          <ConfirmDialog
+            isOpen={isBulkConfirmOpen}
+            onConfirm={onConfirmBulkDelete}
+            onCancel={() => setIsBulkConfirmOpen(false)}
+            title={`Delete ${selectedIds.length} Selected Articles?`}
+            message={`This will permanently delete ${selectedIds.length} selected blog articles and their associated metadata from the database. This action cannot be undone.`}
+            confirmText={`Delete ${selectedIds.length} Articles`}
+            isDeleting={isBulkDeleting}
           />
         )}
       </AnimatePresence>
@@ -1442,14 +1791,20 @@ function BlogMetric({ label, value, icon: Icon, color = "text-violet-400", last 
   );
 }
 
-  function BlogCard({ blog, aiActions, onCreateBlogger, onEdit, onView, onDelete, onInspect }) {
+  function BlogCard({ blog, selected, onSelect, aiActions, onCreateBlogger, onEdit, onView, onDelete, onInspect }) {
     const image = getSafeImageSrc(blog.image || blog.featuredImage?.url || blog.images?.[0], "/blog-fallback.webp");
     const status = blog._isFromDataJs ? "template" : blog.publishStatus || "draft";
     const date = blog.createdAt ? format(new Date(blog.createdAt), "MMM d, yyyy") : "Not published";
     const intel = blog.intelligence;
 
     return (
-      <article className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0d1727]/90 backdrop-blur-md transition-all duration-300 hover:border-violet-500/30 hover:shadow-xl hover:shadow-violet-500/5">
+      <article
+        className={`group flex flex-col justify-between overflow-hidden rounded-2xl border transition-all duration-300 ${
+          selected
+            ? "border-violet-400 bg-[#121029] ring-2 ring-violet-500/50 shadow-xl shadow-violet-500/10"
+            : "border-white/[0.08] bg-[#0d1727]/90 backdrop-blur-md hover:border-violet-500/30 hover:shadow-xl hover:shadow-violet-500/5"
+        }`}
+      >
         <div>
           <div className="relative aspect-[16/9] overflow-hidden bg-slate-950/60">
             <Image
@@ -1459,21 +1814,41 @@ function BlogMetric({ label, value, icon: Icon, color = "text-violet-400", last 
               sizes="(max-width: 768px) 100vw, 33vw"
               className="object-cover transition duration-500 group-hover:scale-[1.03]"
             />
-            <div className="absolute inset-x-0 top-0 flex items-start justify-between p-3">
-              <span
-                className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-widest backdrop-blur-md shadow-lg transition-all ${
-                  status === "published"
-                    ? "border-emerald-400/60 bg-emerald-500/35 text-emerald-300 shadow-emerald-950/60"
-                    : status === "pending"
-                    ? "border-amber-400/70 bg-amber-500/35 text-amber-300 shadow-amber-950/60 ring-1 ring-amber-400/40"
-                    : "border-slate-400/50 bg-slate-950/90 text-slate-200 shadow-slate-950/60"
-                }`}
-                style={{
-                  color: status === "pending" ? "#fcd34d" : status === "published" ? "#6ee7b7" : "#e2e8f0",
-                }}
-              >
-                {status}
-              </span>
+            <div className="absolute inset-x-0 top-0 flex items-start justify-between p-3 z-10">
+              <div className="flex items-center gap-2">
+                {!blog._isFromDataJs && blog._id && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSelect?.();
+                    }}
+                    className={`grid size-7 place-items-center rounded-xl border transition-all shadow-md backdrop-blur-md ${
+                      selected
+                        ? "border-violet-300 bg-violet-600 text-white shadow-violet-600/40 ring-2 ring-violet-300/60"
+                        : "border-white/20 bg-slate-950/80 text-slate-300 hover:border-violet-400 hover:text-white hover:bg-slate-900"
+                    }`}
+                    title={selected ? "Deselect article" : "Select article for bulk delete"}
+                  >
+                    {selected ? <Check className="size-4 stroke-[3]" /> : <Square className="size-3.5 opacity-60" />}
+                  </button>
+                )}
+                <span
+                  className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-widest backdrop-blur-md shadow-lg transition-all ${
+                    status === "published"
+                      ? "border-emerald-400/60 bg-emerald-500/35 text-emerald-300 shadow-emerald-950/60"
+                      : status === "pending"
+                      ? "border-amber-400/70 bg-amber-500/35 text-amber-300 shadow-amber-950/60 ring-1 ring-amber-400/40"
+                      : "border-slate-400/50 bg-slate-950/90 text-slate-200 shadow-slate-950/60"
+                  }`}
+                  style={{
+                    color: status === "pending" ? "#fcd34d" : status === "published" ? "#6ee7b7" : "#e2e8f0",
+                  }}
+                >
+                  {status}
+                </span>
+              </div>
+
               {blog.featured && (
                 <span className="grid size-7 place-items-center rounded-full bg-amber-400 text-slate-950 shadow-md">
                   <Star className="size-3.5 fill-current" />

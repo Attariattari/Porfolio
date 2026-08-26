@@ -456,6 +456,38 @@ const useAdminStore = create(persist((set, get) => ({
     }
   },
 
+  deleteBlogsBulk: async (ids = []) => {
+    if (!ids || ids.length === 0) {
+      toast.error("No articles selected for deletion.");
+      return { success: false };
+    }
+
+    try {
+      const res = await fetch("/api/blogs", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids }),
+        cache: "no-store",
+      });
+      const result = await res.json();
+      if (result.success) {
+        const idSet = new Set(ids.map(String));
+        toast.success(result.message || `${ids.length} article(s) deleted successfully.`);
+        set((state) => ({
+          blogs: state.blogs.filter((b) => !idSet.has(String(b._id)) && !idSet.has(String(b.id))),
+          blogsLastFetchedAt: Date.now(),
+        }));
+        return { success: true, count: result.count || ids.length };
+      } else {
+        toast.error(result.error || "Bulk deletion failed.");
+        return { success: false };
+      }
+    } catch (error) {
+      toast.error("Network error during bulk deletion.");
+      return { success: false };
+    }
+  },
+
   reorderBlogs: async (ids) => {
     const previousBlogs = get().blogs;
     const reordered = [...previousBlogs].sort((a, b) => {

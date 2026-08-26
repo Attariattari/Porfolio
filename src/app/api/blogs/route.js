@@ -107,12 +107,43 @@ export async function POST(request) {
   }
 }
 
-// DELETE ALL BLOGS (Bulk)
-export async function DELETE() {
+// DELETE BLOGS (Bulk or Clear All)
+export async function DELETE(request) {
   try {
     const session = await getAuthSession();
     if (!checkPermission(session, "blogs", "delete")) {
       return NextResponse.json({ success: false, error: "Access Denied: You do not have 'delete' permission for blogs." }, { status: 403 });
+    }
+
+    let ids = [];
+    try {
+      const body = await request.json();
+      if (body && Array.isArray(body.ids)) {
+        ids = body.ids;
+      }
+    } catch {
+      // Empty or non-JSON body
+    }
+
+    if (ids.length > 0) {
+      const result = await BlogController.deleteMany(ids);
+      
+      // Trigger ISR Revalidation
+      revalidatePath("/");
+      revalidatePath("/blog");
+
+      // Log activity
+      await ActivityController.logFromSession(session, {
+        action: 'DELETE',
+        module: 'BLOGS',
+        details: `Bulk deleted ${result.deletedCount || ids.length} blog records`
+      });
+
+      return NextResponse.json({
+        success: true,
+        count: result.deletedCount || ids.length,
+        message: `Successfully deleted ${result.deletedCount || ids.length} blog(s).`
+      });
     }
 
     const result = await BlogController.deleteAll();
