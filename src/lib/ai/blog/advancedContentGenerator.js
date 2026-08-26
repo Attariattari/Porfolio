@@ -198,13 +198,17 @@ ${isAuthority ? `3. AUTHORITY & COMPLETE COVERAGE:
 5. SERVICE LINKING:
    - Contextually reference 1 to 3 relevant Muhyo Tech services using canonical URLs in the exact format /services/allowed-slug.
    - Allowed service slugs ONLY: custom-website-development, mern-stack-web-development, nextjs-website-development, full-stack-web-app-development, admin-dashboard-development, e-commerce-website-development, portfolio-website-development, landing-page-design, website-redesign, api-integration, database-integration, seo-friendly-website-setup, website-speed-optimization, maintenance-support.
+6. HEADLINE & TITLE DIVERSITY (STRICT):
+   - The article "title" must be natural, punchy, engaging, and unique.
+   - NEVER start the title with formulaic clichés like "Engineering for...", "Engineering [X]", "Architecting...", "AI in...", "AI's Role in...", "An Engineering Guide to...", or "The Ultimate Guide...".
+   - Use diverse, high-CTR developer styles (e.g. "How We Solved...", "Solving [Problem] in Production", "X vs Y: The Real Architectural Trade-offs", "4 [Topic] Mistakes That Break Web Apps at Scale", "Practical [Pattern] for Modern Next.js").
 
 TOPIC UNIQUENESS:
 Avoid structures or hooks similar to these recent articles: ${genCtx.seo.recentTopics.join(", ")}.
 
 OUTPUT FORMAT (STRICT JSON ONLY):
 {
-  "title": "Human, engaging, and clear engineering title",
+  "title": "Human, engaging, unique, and punchy title (NO 'Engineering for...' or 'Architecting...')",
   "slug": "url-friendly-slug",
   "summary": "Compelling editorial summary (150-160 chars).",
   "seoTitle": "Search title, ideally 45-65 characters.",

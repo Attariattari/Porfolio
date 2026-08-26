@@ -53,6 +53,15 @@ ${categoryBrief}
 
 Choose professional topics for founders, developers, product teams and technical decision-makers. Prefer real engineering or business decisions, production problems, trade-offs and implementation guidance. Rotate categories, audiences and formats. Reject gadget news, rumours, crypto speculation, generic AI hype, consumer troubleshooting, clickbait, unsupported predictions and topics without a credible connection to Muhyo Tech's expertise.
 
+HEADLINE DIVERSITY & ANTI-REPETITION MANDATE:
+- STRICTLY FORBIDDEN OPENERS: NEVER start titles with repetitive clichés like "Engineering for...", "Engineering [Topic]...", "Architecting for...", "Architecting...", "AI in...", "AI's Role in...", "An Engineering Guide to...", "The Complete Guide to...", or "A Deep Dive into...".
+- MANDATORY DIVERSE HEADLINE FORMATS: Rotate naturally across human, senior-engineer editorial styles:
+  * Practical Solution: "Solving Multi-Region Data Locality: Compliance & Latency Tactics"
+  * Trade-off / Decision: "Next.js on AWS vs Vercel: When Does Custom Infrastructure Make Financial Sense?"
+  * Production War-Story / Lessons: "How We Scaled Real-Time WebSockets to 50k Concurrent Users Without Redis Crashes"
+  * Common Mistakes / Traps: "4 State Management Pitfalls That Slow Down Large React Codebases"
+  * Implementation Blueprint: "Building Zero-Trust API Authentication in Node.js Microservices"
+
 Every candidate must have a concrete problem, a distinct solution/decision angle, practical value, and truthful language without guaranteed outcomes or invented statistics. Scores are 0-100 assessments; do not inflate weak ideas. Only candidates whose weighted professional score should genuinely reach 70 may be returned.
 
 EXISTING OR QUEUED CONTENT TO AVOID:

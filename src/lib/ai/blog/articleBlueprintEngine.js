@@ -36,6 +36,7 @@ RULES:
 1. Output MUST be strictly valid JSON matching the specified blueprint JSON structure.
 2. DO NOT write the article body itself. Write detailed structural and editorial instructions.
 3. Keep technical depth realistic, practical, and founder/engineer focused. Never fabricate client names or fake metrics.
+4. HEADLINE DIVERSITY MANDATE: Guide the writer to use human, punchy, and diverse titles. STRICTLY FORBID repetitive clichés like "Engineering for...", "Engineering [X]", "Architecting...", "AI in...", "An Engineering Guide to...", or "The Ultimate Guide...". Use varied real-world developer angles (Problem-solving, Trade-offs, War-stories, Pitfalls to avoid).
 `;
 
 function repairUnescapedJsonQuotes(value = "") {
