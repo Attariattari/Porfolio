@@ -1459,8 +1459,8 @@ export default function BlogsPage() {
               setSelectedBlogForImage(null);
             }}
             onComplete={() => fetchBlogs({ force: true })}
-            mode={selectedBlogForImage || pendingImageBlog ? "image" : "text"}
-            blogId={selectedBlogForImage?._id || pendingImageBlog?._id}
+            mode={selectedBlogForImage ? "image" : "text"}
+            blogId={selectedBlogForImage?._id || null}
             autoGenerateImages={autoGenerateImages}
           />
         )}
