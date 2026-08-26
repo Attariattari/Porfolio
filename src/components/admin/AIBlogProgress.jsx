@@ -155,7 +155,7 @@ export default function AIBlogProgress({
     }
 
     const generateImage = autoGenerateImages ? "true" : "false";
-    let url = `/api/ai/generate-blog?action=init&generateImage=${generateImage}`;
+    let url = `/api/ai/generate-blog?action=init&generateImage=${generateImage}&force=true`;
     if (mode === "image" && blogId) {
       url = `/api/ai/generate-blog?action=finalize&id=${blogId}&generateImage=${generateImage}`;
     }

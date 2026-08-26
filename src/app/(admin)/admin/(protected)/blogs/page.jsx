@@ -737,30 +737,6 @@ export default function BlogsPage() {
     }
   };
 
-  const pendingImageBlog = blogs.find((b) => {
-    const hasImage = !!(b.image || b.featuredImage?.url);
-    const imageStepStatus = b.imageStatus || "pending";
-    const canContinueImageStep = [
-      "pending",
-      "failed",
-      "retry_pending",
-      "manual_required",
-    ].includes(imageStepStatus);
-    const createdTime = new Date(b.generatedAt || b.createdAt || 0).getTime();
-    const isFreshAiBlog =
-      Number.isFinite(createdTime) &&
-      blogsLastFetchedAt > 0 &&
-      blogsLastFetchedAt - createdTime < 24 * 60 * 60 * 1000;
-
-    return (
-      b.aiGenerated &&
-      isFreshAiBlog &&
-      !hasImage &&
-      b.publishStatus !== "published" &&
-      canContinueImageStep
-    );
-  });
-  const hasPendingImage = !!pendingImageBlog;
   const visibleBlogs = [...blogs]
     .filter((blog) =>
       `${blog.title || ""} ${blog.category || ""} ${(blog.tags || []).join(" ")} ${blog.intelligence?.service?.primaryService?.title || ""} ${blog.intelligence?.topic?.topicTitle || ""}`
