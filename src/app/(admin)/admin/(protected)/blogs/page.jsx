@@ -987,37 +987,13 @@ export default function BlogsPage() {
             <button
               type="button"
               onClick={() => {
-                if (hasPendingImage) {
-                  setSelectedBlogForImage(pendingImageBlog);
-                } else {
-                  setSelectedBlogForImage(null);
-                }
+                setSelectedBlogForImage(null);
                 setIsAIProgressOpen(true);
               }}
-              className={`group flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl border px-5 text-xs font-black tracking-wide shadow-lg shadow-accent/20 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 ${
-                hasPendingImage
-                  ? autoGenerateImages
-                    ? "border-amber-400/40 bg-amber-400/20 text-amber-300 shadow-amber-500/20 hover:bg-amber-400/30"
-                    : "border-emerald-400/40 bg-emerald-500/20 text-emerald-300 shadow-emerald-500/20 hover:bg-emerald-500/30"
-                  : "border-accent bg-accent text-accent-foreground hover:bg-accent/90"
-              }`}
+              className="group flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-accent bg-accent px-5 text-xs font-black tracking-wide text-accent-foreground shadow-lg shadow-accent/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-accent/90 active:translate-y-0 disabled:opacity-50"
             >
-              {hasPendingImage && !autoGenerateImages ? (
-                <Mail className="size-4" />
-              ) : (
-                <Sparkles
-                  className={`size-4 ${
-                    hasPendingImage ? "animate-bounce" : "transition duration-300 group-hover:rotate-180"
-                  }`}
-                />
-              )}
-              <span>
-                {hasPendingImage
-                  ? autoGenerateImages
-                    ? "Generate Blog Image"
-                    : "Send Image Prompt"
-                  : "Generate AI blog"}
-              </span>
+              <Sparkles className="size-4 transition duration-300 group-hover:rotate-180" />
+              <span>Generate AI blog</span>
             </button>
           </div>
         </div>
