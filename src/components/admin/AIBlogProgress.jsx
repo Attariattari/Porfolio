@@ -108,8 +108,15 @@ export default function AIBlogProgress({
         setImagePreview(data.details?.url);
       }
 
-      if (data.status === "ERROR" || data.status === "FAILED" || data.status === "PAUSED") {
-        setError(data.details?.message || "An unexpected error occurred");
+      if (data.status === "ERROR" || data.status === "FAILED" || data.status === "PAUSED" || data.status === "BUSY") {
+        finished = true;
+        const msg = data.details?.message || "An unexpected error occurred.";
+        setError(msg);
+        if (data.status === "BUSY" || /already being generated|already processing/i.test(msg)) {
+          toast.info("⚡ Another AI article is currently being generated. Please wait for it to complete.");
+        } else {
+          toast.error(msg);
+        }
       }
 
       setSteps((prev) => [
@@ -126,15 +133,11 @@ export default function AIBlogProgress({
     eventSource.onerror = () => {
       if (finished) return;
       clearTimeout(timeoutId);
-      console.error("EventSource error:", eventSource.readyState);
-
-      // ReadyState 2 = CLOSED, 0 = CONNECTING
-      if (eventSource.readyState === 2) {
-        setError(
-          "⏳ Connection lost. The pipeline might still be running in the background. Check back in 1-2 minutes.",
-        );
-        toast.info("✅ Your blog generation is still processing on our servers.");
-      }
+      
+      setError((prevError) => {
+        if (prevError) return prevError;
+        return "Another AI article generation is currently in progress or the session connection was closed. Please wait a moment.";
+      });
       eventSource.close();
     };
 

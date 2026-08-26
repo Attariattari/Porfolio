@@ -98,13 +98,22 @@ export async function GET(request) {
                     });
 
                     if (!result?.success) {
+                        const rawMsg = result?.error || result?.details?.message || "AI blog generation failed.";
+                        const isConcurrent = /already processing/i.test(rawMsg);
+                        const cleanMsg = isConcurrent
+                            ? "Another AI article is currently being generated. Please wait for it to complete before starting a new one."
+                            : rawMsg;
+
                         sendUpdate({
-                            status: "FAILED",
-                            details: result?.details || {
-                                message: result?.error || "AI blog generation failed.",
+                            status: isConcurrent ? "BUSY" : "FAILED",
+                            details: {
+                                ...(result?.details || {}),
+                                message: cleanMsg,
+                                isConcurrent,
                             },
                         });
                         clearInterval(keepAlive);
+                        await new Promise((r) => setTimeout(r, 150));
                         controller.close();
                         return;
                     }
@@ -127,10 +136,21 @@ export async function GET(request) {
                 
                 // Final close
                 clearInterval(keepAlive);
+                await new Promise((r) => setTimeout(r, 100));
                 controller.close();
             } catch (error) {
-                sendUpdate({ status: "ERROR", details: { message: error.message } });
+                const rawMsg = error.message || "An unexpected error occurred.";
+                const isConcurrent = /already processing/i.test(rawMsg);
+                const cleanMsg = isConcurrent
+                    ? "Another AI article is currently being generated. Please wait for it to complete before starting a new one."
+                    : rawMsg;
+
+                sendUpdate({
+                    status: isConcurrent ? "BUSY" : "ERROR",
+                    details: { message: cleanMsg, isConcurrent },
+                });
                 clearInterval(keepAlive);
+                await new Promise((r) => setTimeout(r, 150));
                 controller.close();
             }
         },
