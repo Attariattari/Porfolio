@@ -373,12 +373,10 @@ Each cluster MUST contain:
 
 Rotate across: ${PILLARS.join(", ")}.
 
-HEADLINE DIVERSITY & ANTI-REPETITION MANDATE:
-- STRICTLY FORBIDDEN OPENERS: NEVER start titles with "Engineering for...", "Engineering [X]...", "Architecting...", "AI in...", "AI's Role in...", "An Engineering Guide to...", or "The Complete Guide to...".
-- Vary headline structures naturally across the cluster:
-  * Pillar Example: "Mastering Database Sharding: Architecture Patterns for High-Throughput Web Apps"
-  * Supporting 1 Example: "Solving Hot-Partition Bottlenecks in Distributed MongoDB"
-  * Supporting 2 Example: "Automating Database Failover: Lessons from Real-World Production Outages"
+DYNAMIC HEADLINE CRAFTING MANDATE:
+- CONTEXT-DRIVEN TITLES: Every Pillar and Supporting topic title MUST be dynamically crafted around its specific core technical problem, technology framework, and developer outcome.
+- ZERO ROBOTIC TEMPLATES: Never use repetitive stock prefixes like "Engineering for...", "Engineering [X]...", "Architecting...", "AI in...", "AI's Role in...", "An Engineering Guide to...", or "The Complete Guide to...".
+- Craft authentic, diverse, natural headlines that directly highlight the specific challenge or solution (e.g. cold starts, query optimization, connection pooling, caching strategies, zero-downtime migrations).
 
 EXISTING BLOGS AND QUEUED TOPICS TO AVOID:
 ${avoid}

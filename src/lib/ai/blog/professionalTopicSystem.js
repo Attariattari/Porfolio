@@ -51,16 +51,11 @@ These are NOT Core Web Engineering clusters. Every accepted plan becomes exactly
 CATEGORIES:
 ${categoryBrief}
 
-Choose professional topics for founders, developers, product teams and technical decision-makers. Prefer real engineering or business decisions, production problems, trade-offs and implementation guidance. Rotate categories, audiences and formats. Reject gadget news, rumours, crypto speculation, generic AI hype, consumer troubleshooting, clickbait, unsupported predictions and topics without a credible connection to Muhyo Tech's expertise.
-
-HEADLINE DIVERSITY & ANTI-REPETITION MANDATE:
-- STRICTLY FORBIDDEN OPENERS: NEVER start titles with repetitive clichés like "Engineering for...", "Engineering [Topic]...", "Architecting for...", "Architecting...", "AI in...", "AI's Role in...", "An Engineering Guide to...", "The Complete Guide to...", or "A Deep Dive into...".
-- MANDATORY DIVERSE HEADLINE FORMATS: Rotate naturally across human, senior-engineer editorial styles:
-  * Practical Solution: "Solving Multi-Region Data Locality: Compliance & Latency Tactics"
-  * Trade-off / Decision: "Next.js on AWS vs Vercel: When Does Custom Infrastructure Make Financial Sense?"
-  * Production War-Story / Lessons: "How We Scaled Real-Time WebSockets to 50k Concurrent Users Without Redis Crashes"
-  * Common Mistakes / Traps: "4 State Management Pitfalls That Slow Down Large React Codebases"
-  * Implementation Blueprint: "Building Zero-Trust API Authentication in Node.js Microservices"
+DYNAMIC HEADLINE CRAFTING MANDATE:
+- CONTEXT-DRIVEN TITLES: Every title MUST be dynamically engineered to reflect the exact technical problem, technology stack, and real-world outcome of that specific topic.
+- NO ROBOTIC TEMPLATES OR FIXED FORMULAS: Write organic, authentic, high-impact headlines just like top engineering publications (Stripe, Netflix, Figma, Vercel) write.
+- STRICTLY FORBIDDEN STOCK OPENERS: NEVER start titles with repetitive stock prefixes like "Engineering for...", "Engineering [Topic]...", "Architecting for...", "Architecting...", "AI in...", "AI's Role in...", "An Engineering Guide to...", "The Complete Guide to...", or "A Deep Dive into...".
+- Focus the headline on the actual technical mechanism, architecture decision, bottleneck, trade-off, or practical outcome unique to this subject.
 
 Every candidate must have a concrete problem, a distinct solution/decision angle, practical value, and truthful language without guaranteed outcomes or invented statistics. Scores are 0-100 assessments; do not inflate weak ideas. Only candidates whose weighted professional score should genuinely reach 70 may be returned.
 

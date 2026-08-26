@@ -198,17 +198,17 @@ ${isAuthority ? `3. AUTHORITY & COMPLETE COVERAGE:
 5. SERVICE LINKING:
    - Contextually reference 1 to 3 relevant Muhyo Tech services using canonical URLs in the exact format /services/allowed-slug.
    - Allowed service slugs ONLY: custom-website-development, mern-stack-web-development, nextjs-website-development, full-stack-web-app-development, admin-dashboard-development, e-commerce-website-development, portfolio-website-development, landing-page-design, website-redesign, api-integration, database-integration, seo-friendly-website-setup, website-speed-optimization, maintenance-support.
-6. HEADLINE & TITLE DIVERSITY (STRICT):
-   - The article "title" must be natural, punchy, engaging, and unique.
-   - NEVER start the title with formulaic clichés like "Engineering for...", "Engineering [X]", "Architecting...", "AI in...", "AI's Role in...", "An Engineering Guide to...", or "The Ultimate Guide...".
-   - Use diverse, high-CTR developer styles (e.g. "How We Solved...", "Solving [Problem] in Production", "X vs Y: The Real Architectural Trade-offs", "4 [Topic] Mistakes That Break Web Apps at Scale", "Practical [Pattern] for Modern Next.js").
+6. DYNAMIC CONTEXTUAL HEADLINES (STRICT):
+   - The article "title" MUST be dynamically generated to capture the exact technical challenge, technology framework, and outcome of this specific article.
+   - ZERO REPETITIVE FORMULAS: NEVER start titles with stock robotic clichés like "Engineering for...", "Engineering [X]", "Architecting for...", "Architecting...", "AI in...", "AI's Role in...", "An Engineering Guide to...", or "The Ultimate Guide...".
+   - Write authentic, compelling, human-crafted headlines tailored specifically to the problem being solved (e.g. cold starts, database deadlocks, state hydration, edge caching, zero-trust auth).
 
 TOPIC UNIQUENESS:
 Avoid structures or hooks similar to these recent articles: ${genCtx.seo.recentTopics.join(", ")}.
 
 OUTPUT FORMAT (STRICT JSON ONLY):
 {
-  "title": "Human, engaging, unique, and punchy title (NO 'Engineering for...' or 'Architecting...')",
+  "title": "Bespoke, dynamic, and compelling title tailored strictly to this article's specific problem and solution",
   "slug": "url-friendly-slug",
   "summary": "Compelling editorial summary (150-160 chars).",
   "seoTitle": "Search title, ideally 45-65 characters.",
