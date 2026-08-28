@@ -114,7 +114,7 @@ Muhyo Tech is a professional web engineering, cloud, software, and digital servi
 
 Target multiple audience personas: Developers, Tech Leads, CTOs, Startup Founders, Business Owners, E-Commerce Owners, Growth Leads.
 Rotate search intents: Informational, Problem-solving, Commercial investigation, Pricing, Comparison.
-Supported Industries: e-commerce, real-estate, healthcare, education, saas, finance, logistics, professional-services, general_technology.
+Supported Industries: ai_saas_tools, home_services_contractors, edtech_coaching, legal_tech, b2b_wholesale, ecommerce, real_estate, healthcare, seo_digital_marketing, developer_portfolios, student_fyps, beauty_wellness, fitness_gyms, automotive, travel_tourism, education, hospitality, restaurants, professional_services, logistics, finance, saas, startups, local_business, general_technology.
 
 Each cluster MUST contain:
 - 1 Pillar topic: articleType "pillar", clusterOrder 0.

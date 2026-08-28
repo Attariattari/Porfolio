@@ -211,6 +211,60 @@ Before release:
 5. Verify public metadata, redirects, sitemap, robots, and `/llms.txt`.
 6. Confirm admin routes and secrets are not publicly exposed.
 
+## Adding a New Target Industry (Developer Guide)
+
+When expanding Muhyo Tech's market reach or adding a new target industry to the AI intelligence and content generation pipeline, you must update **4 core files** to ensure seamless end-to-end integration:
+
+```text
+1. industryTaxonomy.js       --> Keyword patterns & detection regex
+2. serviceTaxonomy.js        --> Controlled enum registry
+3. serviceClassificationEngine.js --> Commercial service mapping
+4. topicIntelligenceFacade.js --> AI topic & cluster generation prompt
+```
+
+### Step-by-Step Procedure:
+
+#### 1. Add Industry Keywords & Regex Matcher
+* **File Path:** [`src/lib/ai/intelligence/industryTaxonomy.js`](src/lib/ai/intelligence/industryTaxonomy.js)
+* **Target Object:** `INDUSTRY_TAXONOMY`
+* **Action:** Add the unique snake_case key, display label, and regex keyword patterns for auto-detection:
+  ```javascript
+  "new_industry_key": {
+    label: "Industry Display Label",
+    keywords: [/keyword1/i, /keyword2/i, /phrase pattern/i]
+  },
+  ```
+
+#### 2. Register in Controlled Service Enum
+* **File Path:** [`src/lib/ai/intelligence/services/serviceTaxonomy.js`](src/lib/ai/intelligence/services/serviceTaxonomy.js)
+* **Target Object:** `SERVICE_INDUSTRIES`
+* **Action:** Register the industry key and label to maintain a 1:1 match across system enums:
+  ```javascript
+  new_industry_key: { key: "new_industry_key", label: "Industry Display Label" },
+  ```
+
+#### 3. Map to Commercial Services & Positioning
+* **File Path:** [`src/lib/ai/intelligence/services/serviceClassificationEngine.js`](src/lib/ai/intelligence/services/serviceClassificationEngine.js)
+* **Target Object:** `CLASSIFICATION_PROFILES`
+* **Action:** Attach the new industry to relevant services (e.g., `custom-website-development`, `admin-dashboard-development`) so `getServicesByIndustry("new_industry_key")` returns valid conversion targets:
+  ```javascript
+  industries: [
+    { key: "new_industry_key", label: SERVICE_INDUSTRIES.new_industry_key.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE },
+    ...
+  ]
+  ```
+
+#### 4. Update AI Cluster Generation Prompt
+* **File Path:** [`src/lib/ai/intelligence/topicIntelligenceFacade.js`](src/lib/ai/intelligence/topicIntelligenceFacade.js)
+* **Target:** `Supported Industries` line in Gemini prompt (Line ~117)
+* **Action:** Add `new_industry_key` to the comma-separated prompt list so the AI proactively originates topical authority clusters for this niche.
+
+#### 5. Automatic Graph & Validation Handling
+* [`src/lib/ai/seo/topicalAuthorityGraph.js`](src/lib/ai/seo/topicalAuthorityGraph.js) dynamically reads `Object.keys(INDUSTRY_TAXONOMY)` and automatically creates graph nodes for internal linking and topical coverage.
+* [`src/lib/ai/intelligence/topicIntelligenceValidation.js`](src/lib/ai/intelligence/topicIntelligenceValidation.js) automatically validates and normalizes the new industry keys without schema breakage.
+
+---
+
 ## Safe dependency updates
 
 Dependabot proposes weekly patch and minor dependency updates in isolated pull

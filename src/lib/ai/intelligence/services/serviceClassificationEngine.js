@@ -36,8 +36,15 @@ const CLASSIFICATION_PROFILES = {
       { key: "professional_services", label: SERVICE_INDUSTRIES.professional_services.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE },
       { key: "local_business", label: SERVICE_INDUSTRIES.local_business.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE },
       { key: "startups", label: SERVICE_INDUSTRIES.startups.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE },
-      { key: "real_estate", label: SERVICE_INDUSTRIES.real_estate.label, confidence: CONFIDENCE_LEVELS.MEDIUM, source: PROVENANCE_SOURCES.INFERRED },
-      { key: "education", label: SERVICE_INDUSTRIES.education.label, confidence: CONFIDENCE_LEVELS.MEDIUM, source: PROVENANCE_SOURCES.INFERRED }
+      { key: "real_estate", label: SERVICE_INDUSTRIES.real_estate.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE },
+      { key: "education", label: SERVICE_INDUSTRIES.education.label, confidence: CONFIDENCE_LEVELS.MEDIUM, source: PROVENANCE_SOURCES.INFERRED },
+      { key: "home_services_contractors", label: SERVICE_INDUSTRIES.home_services_contractors.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE },
+      { key: "beauty_wellness", label: SERVICE_INDUSTRIES.beauty_wellness.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE },
+      { key: "fitness_gyms", label: SERVICE_INDUSTRIES.fitness_gyms.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE },
+      { key: "automotive", label: SERVICE_INDUSTRIES.automotive.label, confidence: CONFIDENCE_LEVELS.MEDIUM, source: PROVENANCE_SOURCES.INFERRED },
+      { key: "travel_tourism", label: SERVICE_INDUSTRIES.travel_tourism.label, confidence: CONFIDENCE_LEVELS.MEDIUM, source: PROVENANCE_SOURCES.INFERRED },
+      { key: "hospitality", label: SERVICE_INDUSTRIES.hospitality.label, confidence: CONFIDENCE_LEVELS.MEDIUM, source: PROVENANCE_SOURCES.INFERRED },
+      { key: "legal_tech", label: SERVICE_INDUSTRIES.legal_tech.label, confidence: CONFIDENCE_LEVELS.MEDIUM, source: PROVENANCE_SOURCES.INFERRED }
     ],
     businessTypes: ["Local Businesses", "Professional Agencies", "Growing Companies"],
     audienceTypes: ["small_business", "growing_business", "agencies", "personal_brands"],
@@ -69,7 +76,10 @@ const CLASSIFICATION_PROFILES = {
       { key: "saas", label: SERVICE_INDUSTRIES.saas.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE },
       { key: "startups", label: SERVICE_INDUSTRIES.startups.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE },
       { key: "finance", label: SERVICE_INDUSTRIES.finance.label, confidence: CONFIDENCE_LEVELS.MEDIUM, source: PROVENANCE_SOURCES.INFERRED },
-      { key: "logistics", label: SERVICE_INDUSTRIES.logistics.label, confidence: CONFIDENCE_LEVELS.MEDIUM, source: PROVENANCE_SOURCES.INFERRED }
+      { key: "logistics", label: SERVICE_INDUSTRIES.logistics.label, confidence: CONFIDENCE_LEVELS.MEDIUM, source: PROVENANCE_SOURCES.INFERRED },
+      { key: "ai_saas_tools", label: SERVICE_INDUSTRIES.ai_saas_tools.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE },
+      { key: "b2b_wholesale", label: SERVICE_INDUSTRIES.b2b_wholesale.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE },
+      { key: "student_fyps", label: SERVICE_INDUSTRIES.student_fyps.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE }
     ],
     businessTypes: ["SaaS Founders", "Digital Product Companies", "Operational Teams"],
     audienceTypes: ["saas_companies", "startups", "developers", "enterprise"],
@@ -227,11 +237,13 @@ const CLASSIFICATION_PROFILES = {
     primaryCategory: SERVICE_CATEGORIES.WEB_DEVELOPMENT,
     secondaryCategories: [SERVICE_CATEGORIES.CONVERSION_DESIGN],
     industries: [
+      { key: "developer_portfolios", label: SERVICE_INDUSTRIES.developer_portfolios.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE },
+      { key: "student_fyps", label: SERVICE_INDUSTRIES.student_fyps.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE },
       { key: "professional_services", label: SERVICE_INDUSTRIES.professional_services.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE },
       { key: "startups", label: SERVICE_INDUSTRIES.startups.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE },
       { key: "general_technology", label: SERVICE_INDUSTRIES.general_technology.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE }
     ],
-    businessTypes: ["Freelancers", "Designers & Developers", "Consultants & Founders"],
+    businessTypes: ["Freelancers", "Designers & Developers", "Consultants & Founders", "Graduating Engineers"],
     audienceTypes: ["personal_brands", "developers", "agencies"],
     targetRoles: ["Founder & Co-Founder", "Senior Web Developer", "Business Owner"],
     problems: [
@@ -259,6 +271,9 @@ const CLASSIFICATION_PROFILES = {
       { key: "saas", label: SERVICE_INDUSTRIES.saas.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE },
       { key: "startups", label: SERVICE_INDUSTRIES.startups.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE },
       { key: "professional_services", label: SERVICE_INDUSTRIES.professional_services.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE },
+      { key: "real_estate", label: SERVICE_INDUSTRIES.real_estate.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE },
+      { key: "home_services_contractors", label: SERVICE_INDUSTRIES.home_services_contractors.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE },
+      { key: "fitness_gyms", label: SERVICE_INDUSTRIES.fitness_gyms.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE },
       { key: "ecommerce", label: SERVICE_INDUSTRIES.ecommerce.label, confidence: CONFIDENCE_LEVELS.MEDIUM, source: PROVENANCE_SOURCES.INFERRED }
     ],
     businessTypes: ["Ad Campaign Managers", "Product Launch Teams", "Service Providers"],
@@ -382,6 +397,7 @@ const CLASSIFICATION_PROFILES = {
     primaryCategory: SERVICE_CATEGORIES.SEO,
     secondaryCategories: [SERVICE_CATEGORIES.WEB_DEVELOPMENT, SERVICE_CATEGORIES.FRONTEND_ENGINEERING],
     industries: [
+      { key: "seo_digital_marketing", label: SERVICE_INDUSTRIES.seo_digital_marketing.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE },
       { key: "professional_services", label: SERVICE_INDUSTRIES.professional_services.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE },
       { key: "local_business", label: SERVICE_INDUSTRIES.local_business.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE },
       { key: "saas", label: SERVICE_INDUSTRIES.saas.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE },
@@ -414,7 +430,9 @@ const CLASSIFICATION_PROFILES = {
     industries: [
       { key: "ecommerce", label: SERVICE_INDUSTRIES.ecommerce.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE },
       { key: "saas", label: SERVICE_INDUSTRIES.saas.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE },
+      { key: "seo_digital_marketing", label: SERVICE_INDUSTRIES.seo_digital_marketing.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE },
       { key: "professional_services", label: SERVICE_INDUSTRIES.professional_services.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE },
+      { key: "local_business", label: SERVICE_INDUSTRIES.local_business.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE },
       { key: "general_technology", label: SERVICE_INDUSTRIES.general_technology.label, confidence: CONFIDENCE_LEVELS.HIGH, source: PROVENANCE_SOURCES.KNOWLEDGE_BASE }
     ],
     businessTypes: ["Slow Business Sites", "Image-Heavy Portfolios", "Next.js Web Platforms"],
