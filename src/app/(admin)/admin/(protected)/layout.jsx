@@ -32,7 +32,7 @@ export default function ProtectedAdminLayout({ children }) {
           `}
         >
           <Topbar />
-          <main className="relative z-10 flex-grow overflow-y-auto scroll-smooth px-4 py-6 sm:px-6 md:px-8 md:py-8 xl:px-10">
+          <main className="relative flex-grow overflow-y-auto scroll-smooth px-4 py-6 sm:px-6 md:px-8 md:py-8 xl:px-10">
             <div className="mx-auto w-full max-w-[1600px]">{children}</div>
           </main>
         </div>
