@@ -115,12 +115,12 @@ function cleanPlan(plan, source = "ai") {
     clusterOrder: toSafeNum(plan.clusterOrder, 0, 0, 12),
     parentTopicId: plan.parentTopicId || null,
     pillar: String(plan.pillar || "Web Development").trim(),
-    subtopic: String(plan.subtopic || "").trim(),
-    problem: String(plan.problem || "").trim(),
-    solutionAngle: String(plan.solutionAngle || "").trim(),
+    subtopic: String(plan.subtopic || plan.topicFamily || plan.focusKeyword || plan.pillar || "Architecture Strategy").trim(),
+    problem: String(plan.problem || (plan.businessProblem?.label || plan.businessProblem) || "Scaling and reliability challenges in production systems").trim(),
+    solutionAngle: String(plan.solutionAngle || (plan.solutionType ? `Implementing ${plan.solutionType} architecture` : "") || "Applying modern web engineering architecture").trim(),
     businessValue: String(plan.businessValue || "").trim(),
     audience: String(plan.audience || "Founders and developers").trim(),
-    focusKeyword: String(plan.focusKeyword || "").trim(),
+    focusKeyword: String(plan.focusKeyword || plan.subtopic || plan.title || "web architecture").trim(),
     searchIntent: ((raw) => {
       const norm = String(raw || "").toLowerCase().trim();
       if (["commercial", "commercial_investigation", "comparison"].includes(norm)) return "commercial";

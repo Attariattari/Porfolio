@@ -236,10 +236,12 @@ STRICT INTELLIGENCE RULES:
 
       const sanitizedPillarTitle = sanitizeTopicTitle(pack.pillar.title, pack.pillar);
       const sanitizedClusterTitle = sanitizeTopicTitle(pack.clusterTitle || sanitizedPillarTitle, pack.pillar);
+      const pillarSubtopic = String(pack.pillar.subtopic || pack.pillar.topicFamily || pack.pillar.focusKeyword || "Core Architecture").trim();
 
       const processedPillar = {
         ...pack.pillar,
         title: sanitizedPillarTitle,
+        subtopic: pillarSubtopic,
         articleType: "pillar",
         clusterKey: pack.clusterKey,
         clusterTitle: sanitizedClusterTitle,
@@ -270,10 +272,12 @@ STRICT INTELLIGENCE RULES:
         const supService = evaluateServiceRelevance(sup);
         const supScore = scoreTopicOpportunity({ ...sup, serviceRelevance: supService.serviceRelevance }, signals);
         const sanitizedSupTitle = sanitizeTopicTitle(sup.title, sup);
+        const supSubtopic = String(sup.subtopic || sup.topicFamily || sup.focusKeyword || pillarSubtopic || "Architecture Strategy").trim();
 
         processedSupporting.push({
           ...sup,
           title: sanitizedSupTitle,
+          subtopic: supSubtopic,
           articleType: "supporting",
           clusterKey: pack.clusterKey,
           clusterTitle: sanitizedClusterTitle,

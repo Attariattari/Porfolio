@@ -13,7 +13,7 @@ const BlogTopicPlanSchema = new mongoose.Schema({
   parentTopicId: { type: mongoose.Schema.Types.ObjectId, ref: "BlogTopicPlan", default: null, index: true },
   clusterOrder: { type: Number, min: 0, max: 12, default: 0 },
   pillar: { type: String, required: true, trim: true, index: true },
-  subtopic: { type: String, required: true, trim: true },
+  subtopic: { type: String, trim: true, default: "Architecture Strategy" },
   problem: { type: String, required: true, trim: true },
   solutionAngle: { type: String, required: true, trim: true },
   businessValue: { type: String, trim: true },
@@ -147,7 +147,23 @@ const BlogTopicPlanSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-BlogTopicPlanSchema.pre("validate", function normalizeSearchIntent() {
+BlogTopicPlanSchema.pre("validate", function normalizeFields() {
+  if (!this.subtopic || !String(this.subtopic).trim()) {
+    this.subtopic = String(this.topicFamily || this.focusKeyword || this.pillar || "Architecture Strategy").trim();
+  }
+  if (!this.pillar || !String(this.pillar).trim()) {
+    this.pillar = "Web Development";
+  }
+  if (!this.problem || !String(this.problem).trim()) {
+    this.problem = `Scaling and optimizing ${this.focusKeyword || this.title || "production web systems"}`;
+  }
+  if (!this.solutionAngle || !String(this.solutionAngle).trim()) {
+    this.solutionAngle = "Implementing modern web architecture patterns and best practices";
+  }
+  if (!this.focusKeyword || !String(this.focusKeyword).trim()) {
+    this.focusKeyword = String(this.subtopic || this.title || "web architecture").trim();
+  }
+
   if (this.searchIntent) {
     const norm = String(this.searchIntent).toLowerCase().trim();
     if (["commercial", "commercial_investigation", "comparison"].includes(norm)) {
