@@ -10,7 +10,7 @@ import { getServiceIntelligenceSnapshotSync } from "@/lib/ai/intelligence/servic
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-export const maxDuration = 300;
+export const maxDuration = 60;
 
 async function authorize(action = "edit") {
   const session = await getAuthSession();
@@ -136,7 +136,8 @@ export async function POST(request) {
   try {
     const body = await request.json();
     if (body.action === "rebuild-clusters") {
-      const result = await rebuildClusterTopicCatalog({ targetClusters: 10 });
+      const targetClusters = Math.min(10, Math.max(1, Number(body.targetClusters) || 5));
+      const result = await rebuildClusterTopicCatalog({ targetClusters });
       return NextResponse.json({ success: true, data: result });
     }
     if (body.action === "rebuild-professional-catalog") {
@@ -163,7 +164,7 @@ export async function POST(request) {
       return NextResponse.json({ success: true, data: result });
     }
     if (body.action === "refill-authority") {
-      return NextResponse.json({ success: true, data: await appendAuthorityTopics({ target: Number(body.target) || 21 }) });
+      return NextResponse.json({ success: true, data: await appendAuthorityTopics({ target: Number(body.target) || 10 }) });
     }
     if (body.action === "discover-trends") {
       return NextResponse.json({ success: true, data: await discoverVerifiedTrends({ maxTopics: Number(body.target) || 2 }) });

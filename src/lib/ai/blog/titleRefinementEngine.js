@@ -1,5 +1,6 @@
-import dbConnect from "@/lib/mongoose";
-import { Blog, BlogTopicPlan } from "@/models/Portfolio";
+import dbConnect from "@/lib/dbConnect";
+import { Blog } from "@/models/Portfolio";
+import { BlogTopicPlan } from "@/models/BlogTopicPlan";
 import { generateGeminiResponse } from "@/lib/geminiService";
 
 /**

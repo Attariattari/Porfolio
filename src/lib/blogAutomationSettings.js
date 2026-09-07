@@ -27,8 +27,9 @@ export function getNextAutomationAt({ settings, lastGeneratedAt = null } = {}) {
   const intervalHours = Number(settings?.intervalHours || 24);
   const dailyQuantity = Math.max(1, Number(settings?.dailyQuantity || 1));
 
-  // Per-blog interval = total window ÷ number of blogs
-  // e.g. 24 hours / 12 blogs = 2 hours between each blog
+  // Equal division interval: total hours window ÷ number of blogs
+  // e.g. 24 hours ÷ 4 blogs = 6 hours (21,600,000 ms)
+  // e.g. 24 hours ÷ 6 blogs = 4 hours (14,400,000 ms)
   const intervalPerBlogMs = (intervalHours / dailyQuantity) * 3600_000;
 
   const generatedAt = lastGeneratedAt ? new Date(lastGeneratedAt) : null;
@@ -36,20 +37,30 @@ export function getNextAutomationAt({ settings, lastGeneratedAt = null } = {}) {
   const settingsUpdatedAt = settings?.updatedAt ? new Date(settings.updatedAt) : null;
   const validSettingsUpdatedAt = settingsUpdatedAt && Number.isFinite(settingsUpdatedAt.getTime());
 
-  // If settings were saved AFTER the last blog (or no blog has ever been generated),
-  // the first blog should fire 10 minutes after the settings were saved.
-  if (validSettingsUpdatedAt && (!validGeneratedAt || settingsUpdatedAt > generatedAt)) {
-    const settingsTrigger = new Date(settingsUpdatedAt.getTime() + 10 * 60_000);
-    if (!validGeneratedAt) return settingsTrigger;
-    // Return whichever comes FIRST: settings trigger or normal interval
+  // 1. If a blog was previously generated, check the natural next interval
+  if (validGeneratedAt) {
     const normalNext = new Date(generatedAt.getTime() + intervalPerBlogMs);
-    return settingsTrigger < normalNext ? settingsTrigger : normalNext;
+
+    // If the natural interval is still in the future, honor it
+    if (normalNext > new Date()) {
+      return normalNext;
+    }
+
+    // If settings were updated AFTER the last blog and the natural next has already elapsed:
+    // schedule exactly one equal interval from when settings were updated, NOT immediately.
+    if (validSettingsUpdatedAt && settingsUpdatedAt > generatedAt) {
+      const scheduledFromUpdate = new Date(settingsUpdatedAt.getTime() + intervalPerBlogMs);
+      if (scheduledFromUpdate > new Date()) {
+        return scheduledFromUpdate;
+      }
+    }
   }
 
-  // No blog has been generated and no settings date → eligible immediately
-  if (!validGeneratedAt) return new Date(0);
+  // 2. If no blog has ever been generated (or baseline time needed):
+  // Schedule exactly one equal interval from when settings were saved/updated (or from now)
+  const baseTime = validSettingsUpdatedAt ? settingsUpdatedAt : new Date();
+  const scheduledFromBase = new Date(baseTime.getTime() + intervalPerBlogMs);
 
-  // Normal schedule: last blog time + per-blog interval
-  return new Date(generatedAt.getTime() + intervalPerBlogMs);
+  return scheduledFromBase > new Date() ? scheduledFromBase : new Date(Date.now() + intervalPerBlogMs);
 }
 

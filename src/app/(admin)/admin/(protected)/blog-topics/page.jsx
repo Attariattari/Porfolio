@@ -248,39 +248,77 @@ export default function EditorialPlannerPage() {
       error: ""
     });
     try {
-      const request = fetch("/api/admin/blog-topics", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          action: "rebuild-professional-catalog",
-          authorityTarget: 10,
-          trendTarget: 2
-        })
-      });
-      setGeneration(current => ({
+      // Step 1: Core Pillar Clusters (5 clusters = 15 topics)
+      setGeneration((current) => ({
         ...current,
         stage: 1,
-        message: "Gemini is creating and checking unique topic plans…"
+        message: "Gemini is generating 5 Core Pillar clusters (15 topics)..."
       }));
-      const response = await request;
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || "Topic generation failed.");
-      setGeneration(current => ({
+      const step1Res = await fetch("/api/admin/blog-topics", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "rebuild-clusters", targetClusters: 5 })
+      });
+      const step1Result = await step1Res.json();
+      if (!step1Res.ok || !step1Result.success) {
+        throw new Error(step1Result.error || step1Result.message || "Cluster generation failed.");
+      }
+      const coreData = step1Result.data;
+
+      // Step 2: Standalone Authority Topics (10 topics)
+      setGeneration((current) => ({
         ...current,
         stage: 2,
-        message: "Topics saved. Refreshing the editorial queue…"
+        message: "Gemini is generating 10 Standalone Authority topics..."
+      }));
+      const step2Res = await fetch("/api/admin/blog-topics", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "refill-authority", target: 10 })
+      });
+      const step2Result = await step2Res.json();
+      if (!step2Res.ok || !step2Result.success) {
+        throw new Error(step2Result.error || step2Result.message || "Authority topic generation failed.");
+      }
+      const authorityData = step2Result.data;
+
+      // Step 3: Verified Technology Trends (2 topics)
+      setGeneration((current) => ({
+        ...current,
+        stage: 2,
+        message: "Scanning official releases and verifying technology trends..."
+      }));
+      let trendData = { verified: 0 };
+      try {
+        const step3Res = await fetch("/api/admin/blog-topics", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "discover-trends", target: 2 })
+        });
+        const step3Result = await step3Res.json();
+        if (step3Res.ok && step3Result.success) {
+          trendData = step3Result.data || { verified: 0 };
+        }
+      } catch (trendErr) {
+        console.warn("Trend scan non-critical fallback:", trendErr);
+      }
+
+      // Step 4: Finalize & Refresh Queue
+      setGeneration((current) => ({
+        ...current,
+        stage: 3,
+        message: "All topics saved. Refreshing the editorial queue…"
       }));
       await load();
-      const coreTopics = result.data.core?.ai?.topics || 0;
-      const pillarCount = result.data.core?.ai?.pillarCount ?? result.data.core?.ai?.clusters ?? 0;
-      const supportingCount = result.data.core?.ai?.supportingCount ?? coreTopics - pillarCount;
-      const authorityCount = result.data.authority?.generated || 0;
-      const trendCount = result.data.trends?.verified || 0;
-      const added = result.data.totalGenerated || coreTopics + authorityCount + trendCount;
+
+      const coreTopics = coreData?.ai?.topics || 0;
+      const pillarCount = coreData?.ai?.pillarCount ?? coreData?.ai?.clusters ?? 0;
+      const supportingCount = coreData?.ai?.supportingCount ?? (coreTopics - pillarCount);
+      const authorityCount = authorityData?.generated || 0;
+      const trendCount = trendData?.verified || 0;
+      const added = coreTopics + authorityCount + trendCount;
       const message = `${pillarCount} Core Pillars, ${supportingCount} Core Supporting topics, ${authorityCount} standalone authority topics and ${trendCount} verified trends generated. ${added} total plans are ready.`;
-      setGeneration(current => ({
+      setGeneration((current) => ({
         ...current,
         status: "success",
         stage: 3,
@@ -288,10 +326,10 @@ export default function EditorialPlannerPage() {
         message
       }));
       toast.success(message);
-      window.setTimeout(() => setGeneration(current => current.status === "success" ? {
+      window.setTimeout(() => setGeneration((current) => (current.status === "success" ? {
         ...current,
         open: false
-      } : current), 1800);
+      } : current)), 1800);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Topic generation failed.";
       setGeneration(current => ({

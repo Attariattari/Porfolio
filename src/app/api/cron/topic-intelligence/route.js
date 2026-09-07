@@ -4,7 +4,7 @@ import { maintainProfessionalTopicReserve } from "@/lib/ai/blog/maintainTopicRes
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-export const maxDuration = 300;
+export const maxDuration = 60;
 
 export async function GET(request) {
   if (process.env.CRON_SECRET && request.headers.get("authorization") !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -13,7 +13,8 @@ export async function GET(request) {
   const reserve = await maintainProfessionalTopicReserve();
   const results = { settings: reserve.settings, trends: null, core: reserve.core, authority: reserve.authority };
   const now = new Date();
-  const shouldScanTrends = now.getUTCMinutes() < 10 && now.getUTCHours() % 6 === 0;
+  const isCron = Boolean(request.headers.get("x-vercel-cron") || request.headers.get("authorization"));
+  const shouldScanTrends = isCron || now.getUTCHours() % 6 === 0;
   if (shouldScanTrends) {
     try {
       results.trends = await discoverVerifiedTrends({ maxTopics: 2 });
@@ -24,5 +25,5 @@ export async function GET(request) {
     results.trends = { success: true, skipped: true, message: "Official trend scan runs once every six hours." };
   }
   const success = results.trends?.success !== false && results.core?.success !== false && results.authority?.success !== false;
-  return NextResponse.json({ success, nextReserveCheckInMinutes: 10, results }, { status: success ? 200 : 500 });
+  return NextResponse.json({ success, nextReserveCheckInMinutes: 1440, results }, { status: success ? 200 : 500 });
 }

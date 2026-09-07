@@ -39,6 +39,28 @@ export function scoreProfessionalTopic(candidate = {}, coverageBoost = 0) {
   return { score, breakdown };
 }
 
+function parseTopicsSafe(raw) {
+  const cleaned = String(raw || "").replace(/```json/gi, "").replace(/```/g, "").trim();
+  try {
+    const parsed = JSON.parse(cleaned);
+    if (Array.isArray(parsed?.topics)) return parsed.topics;
+  } catch (err) {
+    const matches = cleaned.match(/\{\s*"title"[\s\S]*?"contentCategory"[\s\S]*?"focusKeyword"[\s\S]*?\}/g);
+    if (matches && matches.length > 0) {
+      const recovered = [];
+      for (const m of matches) {
+        try {
+          const item = JSON.parse(m);
+          if (item?.title && item?.contentCategory) recovered.push(item);
+        } catch {}
+      }
+      if (recovered.length > 0) return recovered;
+    }
+    throw err;
+  }
+  return [];
+}
+
 export async function generateAuthorityCandidates({ count = 14, avoid = "", coverage = {} } = {}) {
   const categoryBrief = AUTHORITY_CATEGORY_KEYS.map((key) => {
     const config = CONTENT_CATEGORIES[key];
@@ -57,16 +79,22 @@ DYNAMIC HEADLINE CRAFTING MANDATE:
 - STRICTLY FORBIDDEN STOCK OPENERS: NEVER start titles with repetitive stock prefixes like "Engineering for...", "Engineering [Topic]...", "Architecting for...", "Architecting...", "AI in...", "AI's Role in...", "An Engineering Guide to...", "The Complete Guide to...", or "A Deep Dive into...".
 - Focus the headline on the actual technical mechanism, architecture decision, bottleneck, trade-off, or practical outcome unique to this subject.
 
+CRITICAL FIELD CONSTRAINTS (MANDATORY FOR VALID JSON):
+- "problem": 1-2 clear, specific sentences defining the technical problem (max 30 words).
+- "solutionAngle": 1-2 concise sentences outlining the decision or solution (max 30 words).
+- "businessValue": 1 concise sentence describing the practical business value (max 20 words).
+- Keep each plan compact and punchy.
+
 Every candidate must have a concrete problem, a distinct solution/decision angle, practical value, and truthful language without guaranteed outcomes or invented statistics. Scores are 0-100 assessments; do not inflate weak ideas. Only candidates whose weighted professional score should genuinely reach 70 may be returned.
 
 EXISTING OR QUEUED CONTENT TO AVOID:
 ${avoid || "None supplied."}
 
 Return strict JSON only:
-{"topics":[{"title":"","contentCategory":"software_architecture","topicFamily":"","pillar":"","subtopic":"","problem":"","solutionAngle":"","businessValue":"","audience":"","audienceProfile":{"type":"cto","label":"CTO"},"industry":null,"businessProblem":null,"solutionType":"architecture_decision","serviceIntent":{"relevant":false,"serviceKey":null,"confidence":0},"geoContext":{"type":"global"},"focusKeyword":"","searchIntent":"informational","format":"Decision framework","relatedServiceSlugs":[],"priority":70,"selectionReason":"","audienceRelevance":0,"practicalUsefulness":0,"expertiseFit":0,"searchOpportunity":0,"originalAngle":0,"coverageNeed":0,"serviceConnection":0}]}`,
-  { temperature: 0.6, responseMimeType: "application/json", maxOutputTokens: 8000, thinkingBudget: 0, timeoutMs: 60000 });
-  const parsed = JSON.parse(String(raw).replace(/```json/gi, "").replace(/```/g, "").trim());
-  return (Array.isArray(parsed.topics) ? parsed.topics : [])
+{"topics":[{"title":"","contentCategory":"software_architecture","topicFamily":"","pillar":"","subtopic":"","problem":"","solutionAngle":"","businessValue":"","audience":"CTOs and engineering leads","audienceProfile":{"type":"cto","label":"CTO"},"industry":null,"businessProblem":null,"solutionType":"architecture_decision","serviceIntent":{"relevant":false,"serviceKey":null,"confidence":0},"geoContext":{"type":"global"},"focusKeyword":"","searchIntent":"informational","format":"Decision framework","relatedServiceSlugs":[],"priority":70,"selectionReason":"","audienceRelevance":0,"practicalUsefulness":0,"expertiseFit":0,"searchOpportunity":0,"originalAngle":0,"coverageNeed":0,"serviceConnection":0}]}`,
+  { temperature: 0.6, responseMimeType: "application/json", maxOutputTokens: 8000, thinkingBudget: 0, timeoutMs: 35000 });
+  const topics = parseTopicsSafe(raw);
+  return topics
     .filter((topic) => AUTHORITY_CATEGORY_KEYS.includes(topic.contentCategory))
     .map((topic) => ({ ...topic, ...scoreProfessionalTopic(topic, 0) }))
     .filter((topic) => topic.score >= 70)

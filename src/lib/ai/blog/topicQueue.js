@@ -240,6 +240,29 @@ async function insertClusterPacks(packs, source, status, existingBlogs, historic
   return { clusters, topics, insertedTopicIds };
 }
 
+function parseClustersSafe(raw) {
+  const cleaned = String(raw || "").replace(/```json/gi, "").replace(/```/g, "").trim();
+  try {
+    const parsed = JSON.parse(cleaned);
+    if (Array.isArray(parsed?.clusters)) return parsed.clusters;
+  } catch (err) {
+    // If output truncated at the end due to token limits, recover all complete cluster objects
+    const matches = cleaned.match(/\{\s*"clusterKey"[\s\S]*?"supporting"\s*:\s*\[[\s\S]*?\}\s*\]\s*\}/g);
+    if (matches && matches.length > 0) {
+      const recovered = [];
+      for (const m of matches) {
+        try {
+          const item = JSON.parse(m);
+          if (item?.pillar && Array.isArray(item?.supporting)) recovered.push(item);
+        } catch {}
+      }
+      if (recovered.length > 0) return recovered;
+    }
+    throw err;
+  }
+  return [];
+}
+
 /**
  * Initial AI topic generation: Exactly 10 complete content clusters (10 Pillars + 20 Supporting = 30 topics).
  * Topics are strictly restricted to Muhyo Tech's professional web development niche.
@@ -257,60 +280,70 @@ export async function rebuildClusterTopicCatalog({ targetClusters = 10 } = {}) {
   ]);
 
   const avoid = [...blogs.map((item) => `${item.title} | ${item.focusKeyword || ""}`), ...usedPlans.map((item) => `${item.title} | ${item.focusKeyword || ""}`)].join("\n");
-  // One small request: five required clusters plus one duplicate-safe reserve.
-  const candidateTarget = Math.min(6, targetClusters + 1);
-  const prompt = `Create ${candidateTarget} unique topical-authority cluster candidates for Muhyo Tech. Muhyo Tech is a professional web engineering and software brand.
+
+  const candidateTarget = targetClusters + 3;
+  const batches = [];
+  let remaining = candidateTarget;
+  while (remaining > 0) {
+    const count = Math.min(3, remaining);
+    batches.push(count);
+    remaining -= count;
+  }
+
+  let aiPacks = [];
+  for (let b = 0; b < batches.length; b += 1) {
+    const count = batches[b];
+    const rotatedPillars = PILLARS.slice((b * 4) % PILLARS.length).concat(PILLARS.slice(0, (b * 4) % PILLARS.length));
+    const prompt = `Create ${count} unique topical-authority cluster candidates for Muhyo Tech. Muhyo Tech is a professional web engineering and software brand.
 
 STRICT NICHE MANDATE: ALL generated topics MUST be strictly in these web development niches:
-- Web Development
-- Next.js
-- React
-- MERN
-- Node.js
-- MongoDB
-- APIs
-- Performance
-- Technical SEO
-- Security
-- Deployment
-- UI/UX
-- Website cost/planning
-- AI for web development
+- Web Development, Next.js, React, MERN, Node.js, MongoDB, APIs, Performance, Technical SEO, Security, Deployment, UI/UX, Website cost/planning, AI for web development.
 
 STRICT NEGATIVE CONSTRAINT: Absolutely DO NOT generate technology news, mobile phone reviews, crypto, gaming, gadget reviews, or unrelated topics.
 
-The system will accept the best ${targetClusters} complete content clusters after duplicate validation.
 Each cluster MUST contain:
 - Exactly 1 Pillar topic: articleType "pillar", clusterOrder 0, suitable for a detailed 2,000-3,500 word authority guide, status "planned".
 - Exactly 2 Supporting topics: articleType "supporting", clusterOrder 1 and 2, suitable for focused 900-1,200 word practical guides, status "ready".
 
-Do not repeat or closely overlap any existing blog or used topic. Rotate across: ${PILLARS.join(", ")}.
+Rotate across: ${rotatedPillars.slice(0, 5).join(", ")}.
+
+CRITICAL FIELD CONSTRAINTS (MANDATORY FOR VALID JSON):
+- "problem": 1-2 clear, specific sentences defining the core technical bottleneck (max 30 words).
+- "solutionAngle": 1-2 concise sentences outlining the architectural decision (max 30 words).
+- "businessValue": 1 concise sentence describing the outcome (max 20 words).
+- Keep each plan compact and punchy. Do NOT write long paragraphs.
 
 EXISTING BLOGS AND USED TOPICS TO AVOID:
 ${avoid}
+${aiPacks.map((p) => `${p?.pillar?.title || ""} | ${p?.pillar?.focusKeyword || ""}`).filter(Boolean).join("\n")}
 
-Return strict JSON: {"clusters":[{"clusterKey":"","clusterTitle":"","pillar":{"title":"","pillar":"","subtopic":"","problem":"","solutionAngle":"","businessValue":"","audience":"","focusKeyword":"","searchIntent":"informational","format":"Premium pillar guide","relatedServiceSlugs":[],"priority":80},"supporting":[{"title":"","pillar":"","subtopic":"","problem":"","solutionAngle":"","businessValue":"","audience":"","focusKeyword":"","searchIntent":"informational","format":"Focused supporting guide","relatedServiceSlugs":[],"priority":70},{"title":"","pillar":"","subtopic":"","problem":"","solutionAngle":"","businessValue":"","audience":"","focusKeyword":"","searchIntent":"informational","format":"Focused supporting guide","relatedServiceSlugs":[],"priority":69}]}]}`;
+Return strict JSON: {"clusters":[{"clusterKey":"","clusterTitle":"","pillar":{"title":"","pillar":"","subtopic":"","problem":"","solutionAngle":"","businessValue":"","audience":"Developers and technical founders","focusKeyword":"","searchIntent":"informational","format":"Premium pillar guide","relatedServiceSlugs":[],"priority":80},"supporting":[{"title":"","pillar":"","subtopic":"","problem":"","solutionAngle":"","businessValue":"","audience":"Developers and technical founders","focusKeyword":"","searchIntent":"informational","format":"Focused supporting guide","relatedServiceSlugs":[],"priority":70},{"title":"","pillar":"","subtopic":"","problem":"","solutionAngle":"","businessValue":"","audience":"Developers and technical founders","focusKeyword":"","searchIntent":"informational","format":"Focused supporting guide","relatedServiceSlugs":[],"priority":69}]}]}`;
 
-  let aiPacks = [];
-  try {
-    const raw = await generateGeminiResponse(prompt, {
-      temperature: 0.7,
-      responseMimeType: "application/json",
-      maxOutputTokens: 10000,
-      thinkingBudget: 0,
-      timeoutMs: Math.min(60000, Math.max(30000, Number(process.env.AI_TOPIC_QUEUE_TIMEOUT_MS) || 60000)),
-    });
-    const parsed = JSON.parse(raw.replace(/```json/gi, "").replace(/```/g, "").trim());
-    aiPacks = Array.isArray(parsed.clusters) ? parsed.clusters.slice(0, candidateTarget) : [];
-  } catch (error) {
-    throw new Error(`Gemini could not prepare the initial 10-cluster queue: ${error.message}`);
+    try {
+      const raw = await generateGeminiResponse(prompt, {
+        temperature: 0.7,
+        responseMimeType: "application/json",
+        maxOutputTokens: 8192,
+        thinkingBudget: 0,
+        timeoutMs: 25000,
+      });
+      const parsedClusters = parseClustersSafe(raw);
+      aiPacks.push(...parsedClusters);
+    } catch (batchErr) {
+      console.warn(`[TopicQueue] Batch ${b + 1} cluster generation error:`, batchErr.message);
+      if (aiPacks.length >= targetClusters) break;
+    }
+  }
+
+  if (aiPacks.length < Math.min(targetClusters, 3)) {
+    throw new Error(`Gemini produced only ${aiPacks.length} candidate clusters; at least ${Math.min(targetClusters, 3)} are required.`);
   }
 
   await BlogTopicPlan.deleteMany({ status: { $ne: "used" }, articleType: { $in: ["pillar", "supporting"] } });
   try {
     const ai = await insertClusterPacks(aiPacks, "ai", "planned", blogs, usedPlans, targetClusters);
-    if (ai.clusters !== targetClusters || ai.topics !== targetClusters * 3) {
-      throw new Error(`Gemini produced only ${ai.clusters} duplicate-safe complete clusters; exactly ${targetClusters} are required. Previous queue will be restored.`);
+    if (ai.clusters < Math.min(targetClusters, 4) || ai.topics < 3) {
+      throw new Error(`Gemini produced only ${ai.clusters} duplicate-safe complete clusters; at least ${Math.min(targetClusters, 4)} are required. Previous queue will be restored.`);
     }
     return {
       success: true,
