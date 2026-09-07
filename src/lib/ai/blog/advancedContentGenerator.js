@@ -167,6 +167,9 @@ PRIMARY TOPIC DIRECTION: "${topic.title}"
 FOCUS KEYWORD: "${topic.focusKeyword}"
 SEARCH INTENT: "${topic.searchIntent}"
 AUDIENCE: ${topic.audience}
+${topic.industry?.label ? `TARGET INDUSTRY: ${topic.industry.label} (${topic.industry.key || ""})` : ""}
+${topic.businessProblem?.label ? `BUSINESS PROBLEM TO SOLVE: ${topic.businessProblem.label}` : ""}
+${topic.solutionType ? `SOLUTION DELIVERY TYPE: ${topic.solutionType}` : ""}
 
 BRAND AND WEBSITE REPRESENTATION:
 ${genCtx.brandRules.positioning}
@@ -198,6 +201,7 @@ ${isAuthority ? `3. AUTHORITY & COMPLETE COVERAGE:
 5. SERVICE LINKING:
    - Contextually reference 1 to 3 relevant Muhyo Tech services using canonical URLs in the exact format /services/allowed-slug.
    - Allowed service slugs ONLY: custom-website-development, mern-stack-web-development, nextjs-website-development, full-stack-web-app-development, admin-dashboard-development, e-commerce-website-development, portfolio-website-development, landing-page-design, website-redesign, api-integration, database-integration, seo-friendly-website-setup, website-speed-optimization, maintenance-support.
+   - When an industry or business problem is specified, ground the article in the practical business dilemma of that sector (e.g. lost leads, abandoned checkouts, slow quoting, high maintenance risk). Frame the web engineering solution as the reliable way to resolve that business bottleneck, positioning Muhyo Tech as the trusted engineering partner.
 6. DYNAMIC CONTEXTUAL HEADLINES (STRICT):
    - The article "title" MUST be dynamically generated to capture the exact technical challenge, technology framework, and outcome of this specific article.
    - ZERO REPETITIVE FORMULAS: NEVER start titles with stock robotic clichés like "Engineering for...", "Engineering [X]", "Architecting for...", "Architecting...", "AI in...", "AI's Role in...", "An Engineering Guide to...", or "The Ultimate Guide...".

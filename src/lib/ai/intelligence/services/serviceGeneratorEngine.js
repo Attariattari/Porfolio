@@ -8,6 +8,7 @@
 
 import { generateGeminiResponse } from "../../../geminiService.js";
 import { getServiceIntelligenceSnapshotSync } from "./serviceIntelligenceSnapshot.js";
+import { generateServiceImagePrompt } from "./generateServiceImagePrompt.js";
 
 const slugify = (value = "") =>
   String(value)
@@ -374,6 +375,12 @@ function buildFallbackServiceDraft(context, sourceOpportunityId = "") {
       ctaSecondaryText: "View Our Portfolio",
       deliveryNote: "Delivered in agile weekly sprints with direct Git repository access and live staging previews.",
       quoteNote: "Pricing depends on project requirements, features, timeline, and scope. Book a call to receive a custom quote.",
+      imagePrompt: `Create a cinematic 16:9 commercial tech service hero visual for Muhyo Tech's "${name}". Render in ultra-HD 4K resolution (3840 x 2160), with pin-sharp focal clarity, clean geometric edges, and zero motion blur. Dynamically integrate authentic tech brand ecosystem colors (obsidian black, pure white, and electric cyan). Any visible system architecture nodes, UI components, and workflow deliverables must be crystal-clear, high-contrast, and effortlessly legible. Studio practical lighting with high micro-contrast and realistic physical textures. No blurry text, no unreadable notes, no motion blur, no neon cyberpunk, no floating code clouds, no plastic AI gloss, no fake logos, no watermarks.`,
+      imagePromptEnhanced: "Commercial Service Hero Cover; 16:9 composition; modern architectural tech studio; obsidian black and electric cyan palette; 4K zero-blur clarity.",
+      imageNegativePrompt: "No blurry text, no unreadable sticky notes, no smeared labels, no motion blur, no out-of-focus artifacts, no noisy compression artifacts, no fake logos, no watermarks, no gibberish text, no neon cyberpunk cliches, no floating code clouds, no plastic AI gloss.",
+      heroImageAlt: `${name} - Professional Solution by Muhyo Tech`,
+      imageStatus: "manual_required",
+      imageGenerated: false,
     },
 
     positioning: {
@@ -477,6 +484,22 @@ Return JSON with exact top-level keys:
   } catch (err) {
     console.warn("[serviceGeneratorEngine] Gemini call failed/timed out, using robust fallback builder:", err.message);
     draftPayload = buildFallbackServiceDraft(context, opportunityId);
+  }
+
+  // Ensure professional 4K image prompt is attached to the draft
+  if (draftPayload.service && !draftPayload.service.imagePrompt) {
+    try {
+      const imgPromptObj = await generateServiceImagePrompt(draftPayload.service);
+      draftPayload.service.imagePrompt = imgPromptObj.prompt;
+      draftPayload.service.imagePromptEnhanced = imgPromptObj.visualDirection;
+      draftPayload.service.imageNegativePrompt = imgPromptObj.negativePrompt;
+      if (!draftPayload.service.heroImageAlt) {
+        draftPayload.service.heroImageAlt = imgPromptObj.altText;
+      }
+      draftPayload.service.imageStatus = "manual_required";
+    } catch (imgErr) {
+      console.warn("[serviceGeneratorEngine] Safe warning attaching image prompt:", imgErr.message);
+    }
   }
 
   // Ensure metadata holds opportunity ID and version

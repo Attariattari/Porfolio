@@ -3,6 +3,7 @@ import { getAuthSession, checkPermission } from "@/lib/auth";
 import dbConnect from "@/lib/dbConnect";
 import { ServiceOpportunity } from "@/models/ServiceOpportunity";
 import { generateServiceDraft } from "@/lib/ai/intelligence/services/serviceGeneratorEngine";
+import { ensureServiceImage } from "@/lib/ai/intelligence/services/ensureServiceImage";
 
 export async function POST(request) {
   try {
@@ -39,6 +40,36 @@ export async function POST(request) {
     }
 
     const result = await generateServiceDraft(targetOpportunity);
+
+    const autoGenerateImage = body.autoGenerateImage === true || body.generateImage === true;
+    const sendEmailPrompt = body.sendEmailPrompt === true;
+
+    if (result.success && result.draft?.service && (autoGenerateImage || sendEmailPrompt)) {
+      const baseUrl = new URL(request.url).origin;
+      try {
+        const imgResult = await ensureServiceImage(result.draft.service, {
+          autoGenerate: autoGenerateImage,
+          baseUrl,
+        });
+        if (imgResult.imageUrl) {
+          result.draft.service.heroImage = imgResult.imageUrl;
+          result.draft.service.banner = imgResult.imageUrl;
+          result.draft.service.image = imgResult.imageUrl;
+          result.draft.service.imageGenerated = true;
+          result.draft.service.imageStatus = "generated";
+          if (result.data) {
+            result.data.heroImage = imgResult.imageUrl;
+            result.data.banner = imgResult.imageUrl;
+            result.data.image = imgResult.imageUrl;
+            result.data.imageGenerated = true;
+            result.data.imageStatus = "generated";
+          }
+        }
+        result.imageResult = imgResult;
+      } catch (imgErr) {
+        console.warn("[services/generate/route] Safe image attachment catch:", imgErr.message);
+      }
+    }
 
     return NextResponse.json(result);
   } catch (error) {

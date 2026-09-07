@@ -8,7 +8,7 @@ import { SystemEmail } from "../models/SystemEmail.js";
  */
 
 let transporter = null;
-const SEND_TIMEOUT_MS = Number(process.env.SMTP_SEND_TIMEOUT_MS || 8000);
+const SEND_TIMEOUT_MS = Number(process.env.SMTP_SEND_TIMEOUT_MS || 25000);
 
 function withTimeout(promise, timeoutMs) {
   return Promise.race([
@@ -32,9 +32,9 @@ const getTransporter = () => {
       user: process.env.SMTP_USER,
       pass: smtpPassword,
     },
-    connectionTimeout: Number(process.env.SMTP_CONNECTION_TIMEOUT_MS || 5000),
-    greetingTimeout: Number(process.env.SMTP_GREETING_TIMEOUT_MS || 5000),
-    socketTimeout: Number(process.env.SMTP_SOCKET_TIMEOUT_MS || 10000),
+    connectionTimeout: Number(process.env.SMTP_CONNECTION_TIMEOUT_MS || 15000),
+    greetingTimeout: Number(process.env.SMTP_GREETING_TIMEOUT_MS || 15000),
+    socketTimeout: Number(process.env.SMTP_SOCKET_TIMEOUT_MS || 25000),
   };
 
   console.log(`[Mailer] Initializing transporter for ${config.host}:${config.port} (Secure: ${config.secure})`);

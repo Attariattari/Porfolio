@@ -9,6 +9,8 @@ import { derivePrimaryTechnology, evaluateTopicCooldown, recordCooldownDecision 
 import { generateDynamicClusterPacks, getEngineMode, logTopicDecision, normalizeLegacyTopic } from "../intelligence/topicIntelligenceFacade";
 import { enrichTopicWithIntelligence } from "../intelligence/topicIntelligence";
 import { buildWriterContextFromTopicPlan } from "../intelligence/blogIntelligenceBridge";
+import { sanitizeTopicTitle } from "./titleSanitizer";
+export { sanitizeTopicTitle };
 
 const PILLARS = [
   "Web Development",
@@ -56,12 +58,41 @@ const ALLOWED_SERVICES = new Set([
   "maintenance-support",
 ]);
 
+const TARGET_INDUSTRIES = [
+  { key: "ai_saas_tools", label: "AI SaaS & Micro-SaaS Platforms" },
+  { key: "home_services_contractors", label: "Home Services & Contractors" },
+  { key: "edtech_coaching", label: "EdTech & Online Course Platforms" },
+  { key: "legal_tech", label: "Law Firms & Legal Tech" },
+  { key: "b2b_wholesale", label: "B2B Wholesale & Inventory Portals" },
+  { key: "ecommerce", label: "E-Commerce & Retail" },
+  { key: "real_estate", label: "Real Estate & Property" },
+  { key: "healthcare", label: "Healthcare & Telehealth" },
+  { key: "seo_digital_marketing", label: "SEO & Digital Marketing Agencies" },
+  { key: "developer_portfolios", label: "Developer & Career Portfolios" },
+  { key: "student_fyps", label: "Academic Projects & BSCS FYP" },
+  { key: "beauty_wellness", label: "Beauty, Salons & Wellness" },
+  { key: "fitness_gyms", label: "Fitness & Gyms" },
+  { key: "automotive", label: "Automotive & Dealerships" },
+  { key: "travel_tourism", label: "Travel & Tourism" },
+  { key: "education", label: "Education & EdTech" },
+  { key: "hospitality", label: "Hospitality & Booking" },
+  { key: "restaurants", label: "Restaurants & Dining" },
+  { key: "professional_services", label: "Professional Services & Consulting" },
+  { key: "logistics", label: "Logistics & Supply Chain" },
+  { key: "finance", label: "Fintech & Financial Services" },
+  { key: "saas", label: "SaaS & Subscription Platforms" },
+  { key: "startups", label: "Startups & Emerging Tech" },
+  { key: "local_business", label: "Local Businesses & Stores" },
+  { key: "general_technology", label: "Core Software & Web Engineering" }
+];
+
 const normalize = (value = "") => String(value).toLowerCase().replace(/[^a-z0-9+#.\s-]/g, " ").replace(/\s+/g, " ").trim();
 export const buildTopicFingerprint = (plan = {}) => [plan.articleType, plan.contentCategory, plan.topicFamily, plan.clusterKey, plan.pillar, plan.subtopic, plan.problem, plan.solutionAngle, plan.focusKeyword].map(normalize).filter(Boolean).join("::");
 
 function planAsBlog(plan) {
   return { slug: plan.fingerprint || buildTopicFingerprint(plan), title: plan.title, summary: [plan.problem, plan.solutionAngle, plan.businessValue].filter(Boolean).join(" "), category: plan.pillar, focusKeyword: plan.focusKeyword, tags: [plan.subtopic, plan.audience, plan.format].filter(Boolean) };
 }
+
 
 function cleanPlan(plan, source = "ai") {
   const articleType = ["pillar", "supporting", "standalone_authority", "verified_trend"].includes(plan.articleType) ? plan.articleType : "supporting";
@@ -74,7 +105,7 @@ function cleanPlan(plan, source = "ai") {
   };
 
   const cleaned = {
-    title: String(plan.title || "").trim(),
+    title: sanitizeTopicTitle(plan.title || "", plan),
     articleType,
     contentCategory: String(plan.contentCategory || (["pillar", "supporting"].includes(articleType) ? "core_web_engineering" : "software_architecture")).trim(),
     topicFamily: String(plan.topicFamily || plan.subtopic || "").trim(),
@@ -90,7 +121,13 @@ function cleanPlan(plan, source = "ai") {
     businessValue: String(plan.businessValue || "").trim(),
     audience: String(plan.audience || "Founders and developers").trim(),
     focusKeyword: String(plan.focusKeyword || "").trim(),
-    searchIntent: ["informational", "commercial", "transactional", "navigational", "problem_solving", "pricing", "comparison"].includes(plan.searchIntent || plan.intent) ? (plan.searchIntent || plan.intent) : "informational",
+    searchIntent: ((raw) => {
+      const norm = String(raw || "").toLowerCase().trim();
+      if (["commercial", "commercial_investigation", "comparison"].includes(norm)) return "commercial";
+      if (["transactional", "pricing"].includes(norm)) return "transactional";
+      if (["navigational", "local"].includes(norm)) return "navigational";
+      return "informational";
+    })(plan.searchIntent || plan.intent),
     format: String(plan.format || "Problem-solution guide").trim(),
     relatedServiceSlugs: Array.isArray(plan.relatedServiceSlugs) ? [...new Set(plan.relatedServiceSlugs)].filter((slug) => ALLOWED_SERVICES.has(slug)).slice(0, 3) : [],
     priority: toSafeNum(plan.priority, 50, 0, 100),
@@ -184,10 +221,13 @@ function buildFallbackClusterPacks() {
 }
 
 function flattenClusterPack(pack, source, status) {
-  const pillar = cleanPlan({ ...pack.pillar, clusterKey: pack.clusterKey, clusterTitle: pack.clusterTitle, articleType: "pillar", clusterOrder: 0, status }, source);
+  const packIndustry = pack.industry || pack.pillar?.industry || null;
+  const packProblem = pack.businessProblem || pack.pillar?.businessProblem || null;
+  const packAudience = pack.audienceProfile || pack.pillar?.audienceProfile || null;
+  const pillar = cleanPlan({ industry: packIndustry, businessProblem: packProblem, audienceProfile: packAudience, ...pack.pillar, clusterKey: pack.clusterKey, clusterTitle: pack.clusterTitle, articleType: "pillar", clusterOrder: 0, status }, source);
   const supportingStatus = source === "ai" && status === "planned" ? "ready" : status;
   const maxDepth = typeof pack.pillar?.clusterDepth === "number" ? pack.pillar.clusterDepth : 8;
-  const supporting = (pack.supporting || []).slice(0, Math.max(0, maxDepth)).map((topic, index) => cleanPlan({ ...topic, clusterKey: pack.clusterKey, clusterTitle: pack.clusterTitle, articleType: "supporting", clusterOrder: index + 1, status: supportingStatus }, source));
+  const supporting = (pack.supporting || []).slice(0, Math.max(0, maxDepth)).map((topic, index) => cleanPlan({ industry: topic.industry || packIndustry, businessProblem: topic.businessProblem || packProblem, audienceProfile: topic.audienceProfile || packAudience, ...topic, clusterKey: pack.clusterKey, clusterTitle: pack.clusterTitle, articleType: "supporting", clusterOrder: index + 1, status: supportingStatus }, source));
   return { pillar, supporting };
 }
 
@@ -294,30 +334,45 @@ export async function rebuildClusterTopicCatalog({ targetClusters = 10 } = {}) {
   for (let b = 0; b < batches.length; b += 1) {
     const count = batches[b];
     const rotatedPillars = PILLARS.slice((b * 4) % PILLARS.length).concat(PILLARS.slice(0, (b * 4) % PILLARS.length));
-    const prompt = `Create ${count} unique topical-authority cluster candidates for Muhyo Tech. Muhyo Tech is a professional web engineering and software brand.
+    const rotatedIndustries = TARGET_INDUSTRIES.slice((b * 5) % TARGET_INDUSTRIES.length).concat(TARGET_INDUSTRIES.slice(0, (b * 5) % TARGET_INDUSTRIES.length));
+    const prompt = `Create ${count} unique topical-authority cluster candidates for Muhyo Tech. Muhyo Tech is a professional web engineering, cloud, software, and digital services brand.
 
-STRICT NICHE MANDATE: ALL generated topics MUST be strictly in these web development niches:
-- Web Development, Next.js, React, MERN, Node.js, MongoDB, APIs, Performance, Technical SEO, Security, Deployment, UI/UX, Website cost/planning, AI for web development.
+70% CLIENT & INDUSTRY ACQUISITION / 30% TECHNICAL AUTHORITY MANDATE:
+- Target 70% Business Clients & Decision-Makers (Small Business Owners, Founders, Clinic/Contractor/Store Operators) by solving concrete digital bottlenecks in specific industries.
+- Target 30% Technical Leaders (CTOs, Senior Engineers) for technical authority, performance, and Google E-E-A-T.
 
-STRICT NEGATIVE CONSTRAINT: Absolutely DO NOT generate technology news, mobile phone reviews, crypto, gaming, gadget reviews, or unrelated topics.
+ROTATE ACROSS THESE TARGET COMMERCIAL INDUSTRIES FOR THIS BATCH:
+${rotatedIndustries.slice(0, 5).map((ind) => `${ind.label} (${ind.key})`).join(", ")}
+(Also allowed: core web engineering across ${rotatedPillars.slice(0, 3).join(", ")})
+
+ALLOWED SERVICES FOR SERVICE LINKING:
+custom-website-development, mern-stack-web-development, nextjs-website-development, full-stack-web-app-development, admin-dashboard-development, e-commerce-website-development, portfolio-website-development, landing-page-design, website-redesign, api-integration, database-integration, seo-friendly-website-setup, website-speed-optimization, maintenance-support.
 
 Each cluster MUST contain:
-- Exactly 1 Pillar topic: articleType "pillar", clusterOrder 0, suitable for a detailed 2,000-3,500 word authority guide, status "planned".
-- Exactly 2 Supporting topics: articleType "supporting", clusterOrder 1 and 2, suitable for focused 900-1,200 word practical guides, status "ready".
-
-Rotate across: ${rotatedPillars.slice(0, 5).join(", ")}.
+- Exactly 1 Pillar topic: articleType "pillar", clusterOrder 0, suitable for a detailed 2,000-3,500 word strategic guide, status "planned".
+DYNAMIC HEADLINE CRAFTING MANDATE:
+- CONTEXT-DRIVEN TITLES: Every Pillar and Supporting topic title MUST be organically crafted around its specific technical mechanism, business bottleneck, and developer/client outcome.
+- STRICTLY FORBIDDEN STOCK OPENERS (DO NOT START ANY TITLE WITH THESE WORDS):
+  * "Beyond..." or "Beyond the..." (STRICTLY FORBIDDEN — NEVER start any title with Beyond)
+  * "Engineering..." or "Engineering for..." (STRICTLY FORBIDDEN as opener)
+  * "Architecting..." or "Architecting for..." (STRICTLY FORBIDDEN as opener)
+  * "Mastering..." (STRICTLY FORBIDDEN as opener)
+  * "Demystifying..." / "Unlocking..." / "Navigating..." (STRICTLY FORBIDDEN)
+  * "The Complete Guide..." / "A Comprehensive Guide..." (STRICTLY FORBIDDEN)
+  * "The Hidden Cost of..." (STRICTLY FORBIDDEN)
+- Every title must read like a world-class article from Stripe, Vercel, or Figma: direct, punchy, and unique.
 
 CRITICAL FIELD CONSTRAINTS (MANDATORY FOR VALID JSON):
-- "problem": 1-2 clear, specific sentences defining the core technical bottleneck (max 30 words).
-- "solutionAngle": 1-2 concise sentences outlining the architectural decision (max 30 words).
-- "businessValue": 1 concise sentence describing the outcome (max 20 words).
+- "problem": 1-2 clear, specific sentences defining the core technical or business bottleneck (max 30 words).
+- "solutionAngle": 1-2 concise sentences outlining the web architecture or digital solution (max 30 words).
+- "businessValue": 1 concise sentence describing the outcome or client ROI (max 20 words).
 - Keep each plan compact and punchy. Do NOT write long paragraphs.
 
 EXISTING BLOGS AND USED TOPICS TO AVOID:
 ${avoid}
 ${aiPacks.map((p) => `${p?.pillar?.title || ""} | ${p?.pillar?.focusKeyword || ""}`).filter(Boolean).join("\n")}
 
-Return strict JSON: {"clusters":[{"clusterKey":"","clusterTitle":"","pillar":{"title":"","pillar":"","subtopic":"","problem":"","solutionAngle":"","businessValue":"","audience":"Developers and technical founders","focusKeyword":"","searchIntent":"informational","format":"Premium pillar guide","relatedServiceSlugs":[],"priority":80},"supporting":[{"title":"","pillar":"","subtopic":"","problem":"","solutionAngle":"","businessValue":"","audience":"Developers and technical founders","focusKeyword":"","searchIntent":"informational","format":"Focused supporting guide","relatedServiceSlugs":[],"priority":70},{"title":"","pillar":"","subtopic":"","problem":"","solutionAngle":"","businessValue":"","audience":"Developers and technical founders","focusKeyword":"","searchIntent":"informational","format":"Focused supporting guide","relatedServiceSlugs":[],"priority":69}]}]}`;
+Return strict JSON: {"clusters":[{"clusterKey":"","clusterTitle":"","industry":{"key":"home_services_contractors","label":"Home Services & Contractors"} or null,"businessProblem":{"key":"slow_quotes","label":"Manual Estimation Delays"} or null,"pillar":{"title":"","pillar":"","subtopic":"","problem":"","solutionAngle":"","businessValue":"","audience":"Contractors and Business Owners","audienceProfile":{"type":"business_owner","label":"Contractor / Business Owner"},"industry":{"key":"home_services_contractors","label":"Home Services & Contractors"} or null,"businessProblem":{"key":"slow_quotes","label":"Manual Estimation Delays"} or null,"solutionType":"custom_web_app","serviceIntent":{"relevant":true,"serviceKey":"custom-website-development","confidence":0.9},"focusKeyword":"","searchIntent":"commercial|problem_solving|pricing|informational","format":"Comprehensive industry guide","relatedServiceSlugs":["custom-website-development"],"priority":85},"supporting":[{"title":"","pillar":"","subtopic":"","problem":"","solutionAngle":"","businessValue":"","audience":"Contractors and Business Owners","audienceProfile":{"type":"business_owner","label":"Contractor / Business Owner"},"industry":{"key":"home_services_contractors","label":"Home Services & Contractors"} or null,"businessProblem":{"key":"slow_quotes","label":"Manual Estimation Delays"} or null,"solutionType":"instant_quote_calculator","serviceIntent":{"relevant":true,"serviceKey":"custom-website-development","confidence":0.85},"focusKeyword":"","searchIntent":"problem_solving|commercial","format":"Practical implementation guide","relatedServiceSlugs":["custom-website-development"],"priority":75},{"title":"","pillar":"","subtopic":"","problem":"","solutionAngle":"","businessValue":"","audience":"Contractors and Business Owners","audienceProfile":{"type":"business_owner","label":"Contractor / Business Owner"},"industry":{"key":"home_services_contractors","label":"Home Services & Contractors"} or null,"businessProblem":{"key":"slow_quotes","label":"Manual Estimation Delays"} or null,"solutionType":"custom_web_app","serviceIntent":{"relevant":true,"serviceKey":"custom-website-development","confidence":0.85},"focusKeyword":"","searchIntent":"problem_solving|commercial","format":"Practical implementation guide","relatedServiceSlugs":["custom-website-development"],"priority":70}]}]}`;
 
     try {
       const raw = await generateGeminiResponse(prompt, {
@@ -407,8 +462,13 @@ Each cluster MUST contain:
 Rotate across: ${PILLARS.join(", ")}.
 
 DYNAMIC HEADLINE CRAFTING MANDATE:
-- CONTEXT-DRIVEN TITLES: Every Pillar and Supporting topic title MUST be dynamically crafted around its specific core technical problem, technology framework, and developer outcome.
-- ZERO ROBOTIC TEMPLATES: Never use repetitive stock prefixes like "Engineering for...", "Engineering [X]...", "Architecting...", "AI in...", "AI's Role in...", "An Engineering Guide to...", or "The Complete Guide to...".
+- ZERO ROBOTIC TEMPLATES (STRICTLY FORBIDDEN STOCK OPENERS): NEVER start titles with repetitive clichés like:
+  * "Beyond..." or "Beyond the..." (STRICTLY FORBIDDEN)
+  * "Engineering for..." or "Engineering [X]..." (STRICTLY FORBIDDEN as opener)
+  * "Architecting..." or "Architecting for..." (STRICTLY FORBIDDEN as opener)
+  * "Mastering..." (STRICTLY FORBIDDEN as opener)
+  * "Demystifying..." / "Unlocking..." / "Navigating..." (STRICTLY FORBIDDEN)
+  * "An Engineering Guide to..." or "The Complete Guide to..." (STRICTLY FORBIDDEN)
 - Craft authentic, diverse, natural headlines that directly highlight the specific challenge or solution (e.g. cold starts, query optimization, connection pooling, caching strategies, zero-downtime migrations).
 
 EXISTING BLOGS AND QUEUED TOPICS TO AVOID:

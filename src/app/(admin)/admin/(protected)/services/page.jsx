@@ -13,7 +13,7 @@ import ImageUploader from "@/components/admin/ImageUploader";
 import { Controller } from "react-hook-form";
 import { useFieldArray } from "react-hook-form";
 import { AnimatePresence } from "framer-motion";
-import { Download, Plus, Trash2, BriefcaseBusiness, Search, Pencil, ExternalLink, Star, Layers3, BrainCircuit, Sparkles, Target, CheckCircle2, BookOpen, X } from "lucide-react";
+import { Download, Plus, Trash2, BriefcaseBusiness, Search, Pencil, ExternalLink, Star, Layers3, BrainCircuit, Sparkles, Target, CheckCircle2, BookOpen, X, Mail, Loader2, Image as ImageIcon, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import StatusBadge from "@/components/ui/StatusBadge";
@@ -134,7 +134,11 @@ export default function ServicesPage() {
   const [inspectedService, setInspectedService] = useState(null);
   const [isProposalsModalOpen, setIsProposalsModalOpen] = useState(false);
   const [generatingOpportunityId, setGeneratingOpportunityId] = useState(null);
+  const [generatingImageSlug, setGeneratingImageSlug] = useState(null);
+  const [sendingPromptSlug, setSendingPromptSlug] = useState(null);
+  const [regeneratingPromptSlug, setRegeneratingPromptSlug] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [autoGenerateImages, setAutoGenerateImages] = useState(false);
 
   const candidateOpportunities = [
     {
@@ -254,6 +258,83 @@ export default function ServicesPage() {
     }
   };
 
+  const handleSendServicePromptEmail = async (service) => {
+    const id = service._id || service.slug;
+    try {
+      setSendingPromptSlug(id);
+      const toastId = toast.loading(`Sending 4K image prompt email for '${service.title}'...`);
+      const res = await fetch(`/api/admin/services/${encodeURIComponent(id)}/image`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "send_prompt" }),
+      });
+      const data = await res.json();
+      setSendingPromptSlug(null);
+      if (data.success) {
+        toast.success(`✓ 4K Image prompt email sent for '${service.title}'!`, { id: toastId });
+        fetchServices({ force: true });
+      } else {
+        toast.error(data.message || "Failed to send prompt email.", { id: toastId });
+      }
+    } catch (err) {
+      setSendingPromptSlug(null);
+      toast.error(err.message || "Error sending prompt email.");
+    }
+  };
+
+  const handleGenerateServiceAiImage = async (service) => {
+    const id = service._id || service.slug;
+    try {
+      setGeneratingImageSlug(id);
+      const toastId = toast.loading(`Generating 4K AI Cover Image for '${service.title}' via Flux...`);
+      const res = await fetch(`/api/admin/services/${encodeURIComponent(id)}/image`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "generate_ai" }),
+      });
+      const data = await res.json();
+      setGeneratingImageSlug(null);
+      if (data.success && data.imageUrl) {
+        toast.success(`✓ 4K AI Cover Image generated & attached to '${service.title}'!`, { id: toastId });
+        fetchServices({ force: true });
+      } else {
+        toast.error(data.message || "AI image generation failed.", { id: toastId });
+      }
+    } catch (err) {
+      setGeneratingImageSlug(null);
+      toast.error(err.message || "Error generating AI image.");
+    }
+  };
+
+  const handleRegenerateServicePrompt = async (service) => {
+    const id = service._id || service.slug;
+    try {
+      setRegeneratingPromptSlug(id);
+      const toastId = toast.loading(`Regenerating professional 4K prompt for '${service.title}'...`);
+      const res = await fetch(`/api/admin/services/${encodeURIComponent(id)}/image`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "regenerate_prompt" }),
+      });
+      const data = await res.json();
+      setRegeneratingPromptSlug(null);
+      if (data.success && data.imagePrompt?.prompt) {
+        try {
+          await navigator.clipboard.writeText(data.imagePrompt.prompt);
+          toast.success(`✓ Fresh 4K prompt regenerated & copied to clipboard!`, { id: toastId });
+        } catch {
+          toast.success(`✓ Fresh 4K prompt regenerated for '${service.title}'!`, { id: toastId });
+        }
+        fetchServices({ force: true });
+      } else {
+        toast.error(data.message || "Failed to regenerate prompt.", { id: toastId });
+      }
+    } catch (err) {
+      setRegeneratingPromptSlug(null);
+      toast.error(err.message || "Error regenerating prompt.");
+    }
+  };
+
   const handleGenerateAIServiceProposal = async (opportunity) => {
     try {
       setGeneratingOpportunityId(opportunity.opportunityId);
@@ -317,6 +398,30 @@ export default function ServicesPage() {
       mounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem("admin:autoGenerateServiceImages");
+      if (saved === "true") {
+        setAutoGenerateImages(true);
+      }
+    } catch {}
+  }, []);
+
+  const handleAutoImageToggle = () => {
+    setAutoGenerateImages((current) => {
+      const next = !current;
+      try {
+        window.localStorage.setItem("admin:autoGenerateServiceImages", String(next));
+      } catch {}
+      toast.success(
+        next
+          ? "✓ AI Image generation turned ON! Both 'Gen 4K AI Pic' & 'Send Prompt' buttons are now visible."
+          : "AI Image generation turned OFF. Only 'Send Prompt' button is now visible.",
+      );
+      return next;
+    });
+  };
 
   const columns = [
     {
@@ -926,6 +1031,44 @@ export default function ServicesPage() {
               <BrainCircuit className="size-4 text-emerald-400" />
               {upgradingSlug === "all" ? "Upgrading All Services..." : "AI Upgrade All Services"}
             </button>
+
+            {/* Auto Image Toggle */}
+            <label
+              className={`flex h-11 cursor-pointer select-none items-center justify-between gap-3 whitespace-nowrap rounded-xl border px-3.5 text-xs font-bold shadow-sm transition-all duration-200 ${
+                autoGenerateImages
+                  ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shadow-emerald-500/10"
+                  : "border-border bg-background/60 text-muted-foreground hover:border-accent/30 hover:text-foreground"
+              }`}
+              title="Toggle automatic AI service image generation"
+            >
+              <input
+                type="checkbox"
+                checked={autoGenerateImages}
+                onChange={handleAutoImageToggle}
+                className="sr-only"
+                aria-label="Toggle automatic service image generation"
+              />
+              <span className="flex items-center gap-2">
+                {autoGenerateImages ? (
+                  <Sparkles className="size-4 text-emerald-500 dark:text-emerald-400 animate-pulse" />
+                ) : (
+                  <Mail className="size-4 text-muted-foreground" />
+                )}
+                <span className={autoGenerateImages ? "text-emerald-700 dark:text-emerald-300 font-bold" : "text-foreground font-semibold"}>Auto image</span>
+              </span>
+              <span
+                className={`relative h-5 w-9 rounded-full p-0.5 transition-colors duration-200 ${
+                  autoGenerateImages ? "bg-emerald-500" : "bg-muted border border-border"
+                }`}
+              >
+                <span
+                  className={`block size-4 rounded-full bg-foreground shadow-md transition-transform duration-200 ease-out ${
+                    autoGenerateImages ? "translate-x-4" : "translate-x-0"
+                  }`}
+                />
+              </span>
+            </label>
+
             {isSuperAdmin && (
               <button
                 type="button"
@@ -945,7 +1088,25 @@ export default function ServicesPage() {
 
       <section data-columns={columns.length} className="overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#0d1727]">
         <div className="flex flex-col justify-between gap-4 border-b border-white/[0.07] p-4 sm:flex-row sm:items-center sm:p-5"><div><p className="text-sm font-semibold text-slate-200">Your service catalog</p><p className="mt-1 text-xs text-slate-600">{services.length} services · {services.filter((item) => (item.status || item.publishStatus) === "published").length} published</p></div><label className="relative w-full sm:w-72"><Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-600" /><input value={serviceSearch} onChange={(event) => setServiceSearch(event.target.value)} placeholder="Search services..." className="w-full rounded-xl border border-white/[0.08] bg-slate-950/35 py-3 pl-10 pr-4 text-sm outline-none placeholder:text-slate-700 focus:border-indigo-400/40" /></label></div>
-        <div className="grid gap-4 p-4 sm:p-5 md:grid-cols-2 xl:grid-cols-3">{visibleServices.map((service) => <ServiceCard key={service._id || service.slug} service={service} onEdit={() => handleEdit(service)} onDelete={() => handleDelete(service)} onInspect={() => setInspectedService(service)} onUpgrade={() => handleUpgradeService(service)} />)}</div>
+        <div className="grid gap-4 p-4 sm:p-5 md:grid-cols-2 xl:grid-cols-3">
+          {visibleServices.map((service) => (
+            <ServiceCard
+              key={service._id || service.slug}
+              service={service}
+              autoGenerateImages={autoGenerateImages}
+              onEdit={() => handleEdit(service)}
+              onDelete={() => handleDelete(service)}
+              onInspect={() => setInspectedService(service)}
+              onUpgrade={() => handleUpgradeService(service)}
+              onSendPrompt={() => handleSendServicePromptEmail(service)}
+              onGenImage={() => handleGenerateServiceAiImage(service)}
+              onRegenPrompt={() => handleRegenerateServicePrompt(service)}
+              isSendingPrompt={sendingPromptSlug === (service._id || service.slug)}
+              isGeneratingImage={generatingImageSlug === (service._id || service.slug)}
+              isRegeneratingPrompt={regeneratingPromptSlug === (service._id || service.slug)}
+            />
+          ))}
+        </div>
         {visibleServices.length === 0 && <div className="grid min-h-72 place-items-center text-center"><div><Layers3 className="mx-auto size-9 text-slate-700" /><p className="mt-4 text-sm font-semibold text-slate-300">No matching services</p><p className="mt-1 text-xs text-slate-600">Try a different search term.</p></div></div>}
       </section>
 
@@ -1345,7 +1506,20 @@ export default function ServicesPage() {
   );
 }
 
-function ServiceCard({ service, onEdit, onDelete, onInspect, onUpgrade }) {
+function ServiceCard({
+  service,
+  autoGenerateImages,
+  onEdit,
+  onDelete,
+  onInspect,
+  onUpgrade,
+  onSendPrompt,
+  onGenImage,
+  onRegenPrompt,
+  isSendingPrompt,
+  isGeneratingImage,
+  isRegeneratingPrompt,
+}) {
   const image = service.heroImage || service.banner || service.images?.[0] || service.gallery?.[0];
   const status = service._isFromDataJs ? "template" : service.status || service.publishStatus || "draft";
   const technologies = (Array.isArray(service.techStack) && service.techStack.length ? service.techStack : service.technologies || []).slice(0, 3);
@@ -1353,8 +1527,8 @@ function ServiceCard({ service, onEdit, onDelete, onInspect, onUpgrade }) {
   const score = service.intelligence?.health?.scores?.overallServiceHealthScore || 78;
 
   return (
-    <article className="group overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.025] transition hover:border-indigo-400/20 hover:bg-indigo-400/[0.025]">
-      <div className="relative aspect-[16/8] overflow-hidden bg-slate-950/50">
+    <article className="group overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-sm transition hover:border-accent/40 hover:shadow-md">
+      <div className="relative aspect-[16/8] overflow-hidden bg-muted/40">
         {image ? (
           <Image
             src={getSafeImageSrc(image, "/portfolio-hero.png")}
@@ -1364,40 +1538,127 @@ function ServiceCard({ service, onEdit, onDelete, onInspect, onUpgrade }) {
             className="object-cover transition duration-500 group-hover:scale-[1.03]"
           />
         ) : (
-          <div className="grid size-full place-items-center"><BriefcaseBusiness className="size-8 text-slate-700" /></div>
+          <div className="grid size-full place-items-center"><BriefcaseBusiness className="size-8 text-muted-foreground/50" /></div>
         )}
-        <div className="absolute inset-x-0 top-0 flex items-start justify-between p-3"><span className={`rounded-full border px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider backdrop-blur-md ${status === "published" ? "border-emerald-300/20 bg-emerald-400/15 text-emerald-200" : status === "pending" ? "border-amber-300/20 bg-amber-400/15 text-amber-200" : "border-white/10 bg-slate-950/60 text-slate-400"}`}>{status}</span>{(service.featured || service.isFeatured) && <span className="grid size-8 place-items-center rounded-full bg-amber-300 text-slate-950"><Star className="size-3.5 fill-current" /></span>}</div>
+        <div className="absolute inset-x-0 top-0 flex items-start justify-between p-3">
+          <span className={`rounded-full border px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider backdrop-blur-md ${status === "published" ? "border-emerald-400/40 bg-emerald-500/20 text-emerald-800 dark:text-emerald-200" : status === "pending" ? "border-amber-400/40 bg-amber-500/20 text-amber-800 dark:text-amber-200" : "border-border bg-background/80 text-muted-foreground"}`}>{status}</span>
+          {(service.featured || service.isFeatured) && <span className="grid size-8 place-items-center rounded-full bg-amber-400 text-slate-950"><Star className="size-3.5 fill-current" /></span>}
+        </div>
       </div>
       <div className="p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-[9px] font-bold uppercase tracking-[.16em] text-indigo-300/70">{service.category || "Digital service"}</p>
-            <h2 className="mt-2 truncate text-base font-semibold text-slate-100">{service.title}</h2>
-            <p className="mt-1 truncate text-[10px] text-slate-600">/services/{service.slug}</p>
+            <p className="text-[9px] font-bold uppercase tracking-[.16em] text-accent">{service.category || "Digital service"}</p>
+            <h2 className="mt-2 truncate text-base font-semibold text-foreground group-hover:text-primary transition-colors">{service.title}</h2>
+            <p className="mt-1 truncate text-[10px] text-muted-foreground">/services/{service.slug}</p>
           </div>
         </div>
         
         {/* Intelligence Badges */}
         <div className="mt-3 flex flex-wrap items-center gap-1.5">
-          <span className={`rounded border px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider ${healthClass === "EXCELLENT" ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30" : healthClass === "HEALTHY" ? "bg-cyan-500/15 text-cyan-300 border-cyan-500/30" : healthClass === "NEEDS_ATTENTION" ? "bg-amber-500/15 text-amber-300 border-amber-500/30" : "bg-rose-500/15 text-rose-300 border-rose-500/30"}`}>
+          <span className={`rounded border px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider ${healthClass === "EXCELLENT" ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30" : healthClass === "HEALTHY" ? "bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 border-cyan-500/30" : healthClass === "NEEDS_ATTENTION" ? "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30" : "bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/30"}`}>
             ⚡ Health: {score}%
           </span>
-          <span className="rounded border border-white/[0.08] bg-slate-950/50 px-2 py-0.5 text-[8px] font-semibold text-slate-300">
+          <span className="rounded border border-border bg-muted/60 px-2 py-0.5 text-[8px] font-semibold text-foreground">
             🎯 Topic: {service.intelligence?.topicCoverage?.coverageScore || 80}%
           </span>
-          <span className="rounded border border-white/[0.08] bg-slate-950/50 px-2 py-0.5 text-[8px] font-semibold text-slate-300">
+          <span className="rounded border border-border bg-muted/60 px-2 py-0.5 text-[8px] font-semibold text-foreground">
             📚 {service.intelligence?.blogSupport?.totalCount || 0} Blogs
           </span>
         </div>
 
-        <p className="mt-4 line-clamp-2 min-h-10 text-xs leading-5 text-slate-500">{service.shortDescription || service.description || "No service summary added yet."}</p>
-        <div className="mt-4 flex min-h-6 flex-wrap gap-1.5">{technologies.map((tech) => <span key={typeof tech === "string" ? tech : tech?.name} className="rounded-md bg-white/[0.045] px-2 py-1 text-[9px] text-slate-500">{typeof tech === "string" ? tech : tech?.name || tech?.title}</span>)}</div>
-        <div className="mt-5 flex items-center gap-2 border-t border-white/[0.06] pt-4">
-          <button onClick={onEdit} className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-indigo-400/10 py-2.5 text-[10px] font-bold uppercase tracking-wider text-indigo-300 hover:bg-indigo-400/15"><Pencil className="size-3.5" />Edit</button>
-          <button onClick={onInspect} className="inline-flex items-center justify-center gap-1 rounded-lg border border-violet-400/30 bg-violet-400/10 px-2.5 py-2.5 text-[10px] font-bold uppercase tracking-wider text-violet-300 hover:bg-violet-400/20 transition-all" title="Inspect Topic, Blog, SEO & Conversion Intelligence"><BrainCircuit className="size-3.5 text-violet-300" />Inspect</button>
-          <button onClick={onUpgrade} className="inline-flex items-center justify-center gap-1 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-2.5 text-[10px] font-bold uppercase tracking-wider text-emerald-300 hover:bg-emerald-500/20 transition-all" title="Upgrade & Enrich Service Content via AI"><Sparkles className="size-3.5 text-emerald-400" />AI Upgrade</button>
-          {!service._isFromDataJs && <button onClick={onDelete} className="grid size-9 place-items-center rounded-lg text-slate-600 hover:bg-rose-400/10 hover:text-rose-300"><Trash2 className="size-3.5" /></button>}
-          <Link href={`/services/${service.slug}`} target="_blank" className="grid size-9 place-items-center rounded-lg border border-white/[0.07] text-slate-500 hover:text-white"><ExternalLink className="size-3.5" /></Link>
+        {/* 4K Image Action Strip */}
+        <div className="mt-4 rounded-xl border border-border bg-muted/35 dark:bg-slate-900/50 p-3 space-y-2.5 shadow-sm">
+          <div className="flex items-center justify-between">
+            <span className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-sky-600 dark:text-sky-400">
+              <ImageIcon className="size-3.5" />
+              4K Visual Studio
+            </span>
+            <span className={`text-[8px] font-bold uppercase px-2 py-0.5 rounded-full border ${service.imageGenerated ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300" : image ? "border-cyan-500/40 bg-cyan-500/15 text-cyan-700 dark:text-cyan-300" : "border-amber-500/40 bg-amber-500/15 text-amber-700 dark:text-amber-300"}`}>
+              {service.imageGenerated ? "✓ AI 4K Active" : image ? "Active Visual" : "Needs Visual"}
+            </span>
+          </div>
+
+          <div className="space-y-2">
+            <div className="grid grid-cols-2 gap-2">
+              {autoGenerateImages ? (
+                <>
+                  <button
+                    type="button"
+                    disabled={isGeneratingImage || isSendingPrompt || isRegeneratingPrompt}
+                    onClick={onGenImage}
+                    className="admin-btn-cyan inline-flex items-center justify-center gap-1.5 rounded-xl py-2.5 px-2 text-[9px] font-black uppercase tracking-wider transition shadow-sm disabled:opacity-50"
+                    title="Generate 4K AI Cover Photo via Pollinations Flux & save to Cloudinary"
+                  >
+                    {isGeneratingImage ? <Loader2 className="size-3 animate-spin shrink-0" /> : <Sparkles className="size-3 shrink-0" />}
+                    <span>{isGeneratingImage ? "Generating..." : "⚡ Gen 4K AI Pic"}</span>
+                  </button>
+                  <button
+                    type="button"
+                    disabled={isGeneratingImage || isSendingPrompt || isRegeneratingPrompt}
+                    onClick={onSendPrompt}
+                    className="admin-btn-amber inline-flex items-center justify-center gap-1.5 rounded-xl py-2.5 px-2 text-[9px] font-black uppercase tracking-wider transition shadow-sm disabled:opacity-50"
+                    title="Send 4K Image Prompt to Super Admin Email with Secure Upload Link"
+                  >
+                    {isSendingPrompt ? <Loader2 className="size-3 animate-spin shrink-0" /> : <Mail className="size-3 shrink-0" />}
+                    <span>{isSendingPrompt ? "Sending..." : "📧 Send Prompt"}</span>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    disabled={isGeneratingImage || isSendingPrompt || isRegeneratingPrompt}
+                    onClick={onSendPrompt}
+                    className="admin-btn-amber inline-flex items-center justify-center gap-1.5 rounded-xl py-2.5 px-2 text-[9px] font-black uppercase tracking-wider transition shadow-sm disabled:opacity-50"
+                    title="Send 4K Image Prompt to Super Admin Email with Secure Upload Link"
+                  >
+                    {isSendingPrompt ? <Loader2 className="size-3 animate-spin shrink-0" /> : <Mail className="size-3 shrink-0" />}
+                    <span>{isSendingPrompt ? "Sending..." : "📧 Send Prompt"}</span>
+                  </button>
+                  <button
+                    type="button"
+                    disabled={isGeneratingImage || isSendingPrompt || isRegeneratingPrompt}
+                    onClick={onRegenPrompt}
+                    className="admin-btn-violet inline-flex items-center justify-center gap-1.5 rounded-xl py-2.5 px-2 text-[9px] font-black uppercase tracking-wider transition shadow-sm disabled:opacity-50"
+                    title="Regenerate high-definition 4K image prompt via Gemini AI and copy to clipboard"
+                  >
+                    {isRegeneratingPrompt ? <Loader2 className="size-3 animate-spin shrink-0" /> : <RefreshCw className="size-3 shrink-0" />}
+                    <span>{isRegeneratingPrompt ? "Regenerating..." : "🔄 Regen Prompt"}</span>
+                  </button>
+                </>
+              )}
+            </div>
+
+            {autoGenerateImages && (
+              <button
+                type="button"
+                disabled={isGeneratingImage || isSendingPrompt || isRegeneratingPrompt}
+                onClick={onRegenPrompt}
+                className="admin-btn-violet inline-flex w-full items-center justify-center gap-1.5 rounded-xl py-2 px-2 text-[9px] font-black uppercase tracking-wider transition shadow-sm disabled:opacity-50"
+                title="Regenerate high-definition 4K image prompt via Gemini AI and copy to clipboard"
+              >
+                {isRegeneratingPrompt ? <Loader2 className="size-3 animate-spin shrink-0" /> : <RefreshCw className="size-3 shrink-0" />}
+                <span>{isRegeneratingPrompt ? "Regenerating Prompt..." : "🔄 Regen 4K Prompt"}</span>
+              </button>
+            )}
+          </div>
+
+          <p className="text-[9px] text-muted-foreground text-center leading-tight">
+            {autoGenerateImages
+              ? "Generate 4K AI visual, send prompt email, or click 'Regen' for a new prompt"
+              : "Send 4K prompt email or click 'Regen Prompt' to re-create a better prompt"}
+          </p>
+        </div>
+
+        <p className="mt-4 line-clamp-2 min-h-10 text-xs leading-5 text-muted-foreground">{service.shortDescription || service.description || "No service summary added yet."}</p>
+        <div className="mt-4 flex min-h-6 flex-wrap gap-1.5">{technologies.map((tech) => <span key={typeof tech === "string" ? tech : tech?.name} className="rounded-md border border-border bg-muted/60 px-2 py-1 text-[9px] text-muted-foreground">{typeof tech === "string" ? tech : tech?.name || tech?.title}</span>)}</div>
+        <div className="mt-5 flex items-center gap-2 border-t border-border pt-4">
+          <button onClick={onEdit} className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-indigo-500/30 bg-indigo-500/10 py-2.5 text-[10px] font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-300 hover:bg-indigo-500/20"><Pencil className="size-3.5" />Edit</button>
+          <button onClick={onInspect} className="inline-flex items-center justify-center gap-1 rounded-lg border border-violet-500/30 bg-violet-500/10 px-2.5 py-2.5 text-[10px] font-bold uppercase tracking-wider text-violet-700 dark:text-violet-300 hover:bg-violet-500/20 transition-all" title="Inspect Topic, Blog, SEO & Conversion Intelligence"><BrainCircuit className="size-3.5 text-violet-600 dark:text-violet-300" />Inspect</button>
+          <button onClick={onUpgrade} className="inline-flex items-center justify-center gap-1 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-2.5 text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/20 transition-all" title="Upgrade & Enrich Service Content via AI"><Sparkles className="size-3.5 text-emerald-600 dark:text-emerald-400" />AI Upgrade</button>
+          {!service._isFromDataJs && <button onClick={onDelete} className="grid size-9 place-items-center rounded-lg border border-border text-muted-foreground hover:bg-destructive/15 hover:text-destructive"><Trash2 className="size-3.5" /></button>}
+          <Link href={`/services/${service.slug}`} target="_blank" className="grid size-9 place-items-center rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-muted"><ExternalLink className="size-3.5" /></Link>
         </div>
       </div>
     </article>

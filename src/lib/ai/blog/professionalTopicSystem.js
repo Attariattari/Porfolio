@@ -1,4 +1,5 @@
 import { generateGeminiResponse } from "@/lib/geminiService";
+import { sanitizeTopicTitle } from "./titleSanitizer";
 
 export const CONTENT_CATEGORIES = Object.freeze({
   core_web_engineering: { label: "Core Web Engineering", targetPercent: 30, articleType: "cluster" },
@@ -66,36 +67,47 @@ export async function generateAuthorityCandidates({ count = 14, avoid = "", cove
     const config = CONTENT_CATEGORIES[key];
     return `- ${key}: ${config.label}; rolling target ${config.targetPercent}%; current coverage ${Number(coverage[key] || 0)}%.`;
   }).join("\n");
-  const raw = await generateGeminiResponse(`Create ${count + 2} candidate standalone authority article plans for Muhyo Tech, a professional web engineering and software brand.
+  const raw = await generateGeminiResponse(`Create ${count + 2} candidate standalone authority article plans for Muhyo Tech, a professional web engineering and digital services brand.
 
-These are NOT Core Web Engineering clusters. Every accepted plan becomes exactly one complete, deeply useful authority article with no supporting children.
+These are NOT Core Web Engineering clusters. Every accepted plan becomes exactly one complete, deeply useful authority guide with no supporting children.
+
+AUDIENCE SPLIT & CLIENT ACQUISITION MANDATE:
+- Target 70% Business Decision-Makers & Founders (Small Business Owners, Startup Founders, E-Commerce Operators, Service Contractors) facing real digital bottlenecks, and 30% Senior Technical Leaders (CTOs, Tech Leads).
+- Connect technical depth directly to business ROI, client conversion, operational reliability, and Muhyo Tech digital services.
+
+SUPPORTED INDUSTRIES TO ROTATE ACROSS:
+ai_saas_tools, home_services_contractors, edtech_coaching, legal_tech, b2b_wholesale, ecommerce, real_estate, healthcare, seo_digital_marketing, developer_portfolios, student_fyps, beauty_wellness, fitness_gyms, automotive, travel_tourism, education, hospitality, restaurants, professional_services, logistics, finance, saas, startups, local_business, general_technology.
+
+ALLOWED SERVICES FOR SERVICE INTENT:
+custom-website-development, mern-stack-web-development, nextjs-website-development, full-stack-web-app-development, admin-dashboard-development, e-commerce-website-development, portfolio-website-development, landing-page-design, website-redesign, api-integration, database-integration, seo-friendly-website-setup, website-speed-optimization, maintenance-support.
 
 CATEGORIES:
 ${categoryBrief}
 
 DYNAMIC HEADLINE CRAFTING MANDATE:
-- CONTEXT-DRIVEN TITLES: Every title MUST be dynamically engineered to reflect the exact technical problem, technology stack, and real-world outcome of that specific topic.
-- NO ROBOTIC TEMPLATES OR FIXED FORMULAS: Write organic, authentic, high-impact headlines just like top engineering publications (Stripe, Netflix, Figma, Vercel) write.
-- STRICTLY FORBIDDEN STOCK OPENERS: NEVER start titles with repetitive stock prefixes like "Engineering for...", "Engineering [Topic]...", "Architecting for...", "Architecting...", "AI in...", "AI's Role in...", "An Engineering Guide to...", "The Complete Guide to...", or "A Deep Dive into...".
-- Focus the headline on the actual technical mechanism, architecture decision, bottleneck, trade-off, or practical outcome unique to this subject.
+- CONTEXT-DRIVEN TITLES: Every title MUST be dynamically engineered to reflect the exact technical problem, technology stack, industry context, and real-world business outcome.
+- NO ROBOTIC TEMPLATES OR FIXED FORMULAS: Write organic, authentic, high-impact headlines just like top engineering & business publications write.
+- STRICTLY FORBIDDEN STOCK OPENERS: NEVER start titles with repetitive stock prefixes like "Beyond...", "Beyond the...", "Engineering for...", "Engineering [Topic]...", "Architecting for...", "Architecting...", "Mastering...", "AI in...", "AI's Role in...", "An Engineering Guide to...", "The Complete Guide to...", or "A Deep Dive into...".
+- Focus the headline on the actual technical mechanism, business bottleneck, trade-off, or practical commercial outcome.
 
 CRITICAL FIELD CONSTRAINTS (MANDATORY FOR VALID JSON):
-- "problem": 1-2 clear, specific sentences defining the technical problem (max 30 words).
+- "problem": 1-2 clear, specific sentences defining the technical/business problem (max 30 words).
 - "solutionAngle": 1-2 concise sentences outlining the decision or solution (max 30 words).
 - "businessValue": 1 concise sentence describing the practical business value (max 20 words).
 - Keep each plan compact and punchy.
 
-Every candidate must have a concrete problem, a distinct solution/decision angle, practical value, and truthful language without guaranteed outcomes or invented statistics. Scores are 0-100 assessments; do not inflate weak ideas. Only candidates whose weighted professional score should genuinely reach 70 may be returned.
+Every candidate must have a concrete problem, a distinct solution/decision angle, practical value, and truthful language. Scores are 0-100 assessments; do not inflate weak ideas. Only candidates whose weighted professional score should genuinely reach 70 may be returned.
 
 EXISTING OR QUEUED CONTENT TO AVOID:
 ${avoid || "None supplied."}
 
 Return strict JSON only:
-{"topics":[{"title":"","contentCategory":"software_architecture","topicFamily":"","pillar":"","subtopic":"","problem":"","solutionAngle":"","businessValue":"","audience":"CTOs and engineering leads","audienceProfile":{"type":"cto","label":"CTO"},"industry":null,"businessProblem":null,"solutionType":"architecture_decision","serviceIntent":{"relevant":false,"serviceKey":null,"confidence":0},"geoContext":{"type":"global"},"focusKeyword":"","searchIntent":"informational","format":"Decision framework","relatedServiceSlugs":[],"priority":70,"selectionReason":"","audienceRelevance":0,"practicalUsefulness":0,"expertiseFit":0,"searchOpportunity":0,"originalAngle":0,"coverageNeed":0,"serviceConnection":0}]}`,
-  { temperature: 0.6, responseMimeType: "application/json", maxOutputTokens: 8000, thinkingBudget: 0, timeoutMs: 35000 });
+{"topics":[{"title":"","contentCategory":"software_architecture","topicFamily":"","pillar":"","subtopic":"","problem":"","solutionAngle":"","businessValue":"","audience":"Business owners and technical founders","audienceProfile":{"type":"business_owner|founder|cto","label":"Small Business Owner | Founder | CTO"},"industry":{"key":"ecommerce","label":"E-Commerce"} or null,"businessProblem":{"key":"cart_abandonment","label":"High Checkout Abandonment"} or null,"solutionType":"custom_web_app|architecture_decision|framework","serviceIntent":{"relevant":true,"serviceKey":"e-commerce-website-development","confidence":0.85},"geoContext":{"type":"global"},"focusKeyword":"","searchIntent":"commercial|informational|transactional","format":"Decision framework","relatedServiceSlugs":["e-commerce-website-development"],"priority":75,"selectionReason":"","audienceRelevance":80,"practicalUsefulness":80,"expertiseFit":80,"searchOpportunity":75,"originalAngle":75,"coverageNeed":70,"serviceConnection":80}]}`,
+  { temperature: 0.65, responseMimeType: "application/json", maxOutputTokens: 8000, thinkingBudget: 0, timeoutMs: 35000 });
   const topics = parseTopicsSafe(raw);
   return topics
     .filter((topic) => AUTHORITY_CATEGORY_KEYS.includes(topic.contentCategory))
+    .map((topic) => ({ ...topic, title: sanitizeTopicTitle(topic.title, topic) }))
     .map((topic) => ({ ...topic, ...scoreProfessionalTopic(topic, 0) }))
     .filter((topic) => topic.score >= 70)
     .slice(0, count);

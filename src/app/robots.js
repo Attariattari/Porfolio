@@ -14,6 +14,8 @@ const PRIVATE_ROUTES = [
   "/projects-management/*",
   "/blog-image-upload",
   "/blog-image-upload/*",
+  "/service-image-upload",
+  "/service-image-upload/*",
 ];
 
 function isPublicProductionDeployment() {

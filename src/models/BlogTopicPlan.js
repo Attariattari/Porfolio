@@ -19,7 +19,20 @@ const BlogTopicPlanSchema = new mongoose.Schema({
   businessValue: { type: String, trim: true },
   audience: { type: String, trim: true },
   focusKeyword: { type: String, required: true, trim: true },
-  searchIntent: { type: String, enum: ["informational", "commercial", "transactional", "navigational"], default: "informational" },
+  searchIntent: {
+    type: String,
+    enum: [
+      "informational",
+      "commercial",
+      "transactional",
+      "navigational",
+      "problem_solving",
+      "pricing",
+      "comparison",
+      "commercial_investigation",
+    ],
+    default: "informational",
+  },
   format: { type: String, trim: true },
   relatedServiceSlugs: [{ type: String }],
   fingerprint: { type: String, required: true, unique: true, index: true },
@@ -133,6 +146,21 @@ const BlogTopicPlanSchema = new mongoose.Schema({
     criticVersion: { type: String, default: "1.0.0" },
   },
 }, { timestamps: true });
+
+BlogTopicPlanSchema.pre("validate", function normalizeSearchIntent() {
+  if (this.searchIntent) {
+    const norm = String(this.searchIntent).toLowerCase().trim();
+    if (["commercial", "commercial_investigation", "comparison"].includes(norm)) {
+      this.searchIntent = "commercial";
+    } else if (["transactional", "pricing"].includes(norm)) {
+      this.searchIntent = "transactional";
+    } else if (["navigational", "local"].includes(norm)) {
+      this.searchIntent = "navigational";
+    } else if (["informational", "problem_solving", "trend_news", "tutorial"].includes(norm)) {
+      this.searchIntent = "informational";
+    }
+  }
+});
 
 BlogTopicPlanSchema.index({ status: 1, scheduledFor: 1, priority: -1, createdAt: 1 });
 BlogTopicPlanSchema.index({ clusterKey: 1, articleType: 1, clusterOrder: 1 });

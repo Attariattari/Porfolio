@@ -262,3 +262,101 @@
     }
 }
 
+/* ==========================================================================
+   4K Studio Action Buttons & Badges (Adaptive Across Light, Dark, Black Themes)
+   Guarantees 100% solid, crisp, and WCAG high-contrast text in all themes
+   ========================================================================== */
+.admin-btn-cyan {
+    border: 1px solid rgba(14, 165, 233, 0.45) !important;
+    background-color: rgba(14, 165, 233, 0.08) !important;
+    color: #0284c7 !important; /* Rich deep ocean cyan for light theme */
+}
+.admin-btn-cyan:hover:not(:disabled) {
+    border-color: rgba(14, 165, 233, 0.8) !important;
+    background-color: rgba(14, 165, 233, 0.18) !important;
+    color: #0369a1 !important;
+}
+html.dark .admin-btn-cyan {
+    border-color: rgba(56, 189, 248, 0.5) !important;
+    background-color: rgba(14, 165, 233, 0.15) !important;
+    color: #38bdf8 !important; /* Glowing electric cyan for dark navy theme */
+}
+html.dark .admin-btn-cyan:hover:not(:disabled) {
+    border-color: rgba(56, 189, 248, 0.9) !important;
+    background-color: rgba(14, 165, 233, 0.28) !important;
+    color: #7dd3fc !important;
+}
+html.black .admin-btn-cyan {
+    border-color: rgba(34, 211, 255, 0.6) !important;
+    background-color: rgba(34, 211, 255, 0.16) !important;
+    color: #22d3ff !important; /* Pure neon cyan for true black OLED */
+}
+html.black .admin-btn-cyan:hover:not(:disabled) {
+    border-color: #22d3ff !important;
+    background-color: rgba(34, 211, 255, 0.28) !important;
+    color: #ffffff !important;
+}
+
+.admin-btn-amber {
+    border: 1px solid rgba(217, 119, 6, 0.45) !important;
+    background-color: rgba(245, 158, 11, 0.08) !important;
+    color: #b45309 !important; /* Rich deep bronze amber for light theme */
+}
+.admin-btn-amber:hover:not(:disabled) {
+    border-color: rgba(217, 119, 6, 0.8) !important;
+    background-color: rgba(245, 158, 11, 0.18) !important;
+    color: #92400e !important;
+}
+html.dark .admin-btn-amber {
+    border-color: rgba(251, 191, 36, 0.5) !important;
+    background-color: rgba(245, 158, 11, 0.15) !important;
+    color: #fbbf24 !important; /* Radiant solid gold for dark navy theme */
+}
+html.dark .admin-btn-amber:hover:not(:disabled) {
+    border-color: rgba(251, 191, 36, 0.9) !important;
+    background-color: rgba(245, 158, 11, 0.28) !important;
+    color: #fde047 !important;
+}
+html.black .admin-btn-amber {
+    border-color: rgba(255, 209, 102, 0.6) !important;
+    background-color: rgba(255, 209, 102, 0.16) !important;
+    color: #ffd166 !important; /* Radiant pure gold for true black OLED */
+}
+html.black .admin-btn-amber:hover:not(:disabled) {
+    border-color: #ffd166 !important;
+    background-color: rgba(255, 209, 102, 0.28) !important;
+    color: #ffffff !important;
+}
+
+.admin-btn-violet {
+    border: 1px solid rgba(124, 58, 237, 0.45) !important;
+    background-color: rgba(139, 92, 246, 0.08) !important;
+    color: #6d28d9 !important; /* Royal deep violet for light theme */
+}
+.admin-btn-violet:hover:not(:disabled) {
+    border-color: rgba(124, 58, 237, 0.8) !important;
+    background-color: rgba(139, 92, 246, 0.18) !important;
+    color: #5b21b6 !important;
+}
+html.dark .admin-btn-violet {
+    border-color: rgba(167, 139, 250, 0.5) !important;
+    background-color: rgba(139, 92, 246, 0.15) !important;
+    color: #c084fc !important; /* Luminous vibrant lavender/violet for dark navy theme */
+}
+html.dark .admin-btn-violet:hover:not(:disabled) {
+    border-color: rgba(167, 139, 250, 0.9) !important;
+    background-color: rgba(139, 92, 246, 0.28) !important;
+    color: #e9d5ff !important;
+}
+html.black .admin-btn-violet {
+    border-color: rgba(189, 156, 255, 0.6) !important;
+    background-color: rgba(189, 156, 255, 0.16) !important;
+    color: #d8b4fe !important; /* Electric neon violet for true black OLED */
+}
+html.black .admin-btn-violet:hover:not(:disabled) {
+    border-color: #bd9cff !important;
+    background-color: rgba(189, 156, 255, 0.28) !important;
+    color: #ffffff !important;
+}
+
+

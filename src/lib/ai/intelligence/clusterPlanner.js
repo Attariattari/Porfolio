@@ -6,6 +6,7 @@
  */
 
 import { generateGeminiResponse } from "../../geminiService.js";
+import { sanitizeTopicTitle } from "../blog/titleSanitizer.js";
 
 const normalize = (val = "") => String(val).toLowerCase().replace(/[^a-z0-9+#.\s-]/g, " ").replace(/\s+/g, " ").trim();
 
@@ -81,6 +82,10 @@ ${avoid || "None"}
 
 Generate EXACTLY ONE replacement supporting topic that covers a distinct, practical engineering or business subproblem for this cluster.
 
+DYNAMIC TITLE MANDATE:
+- NEVER start the title with "Beyond...", "Beyond the...", "Engineering...", "Architecting...", "Mastering...", "Demystifying...", or "The Complete Guide to...".
+- Write a direct, unique, actionable title focused on the specific subproblem or solution.
+
 Return strict JSON only:
 {
   "title": "Clear actionable supporting guide title",
@@ -110,6 +115,7 @@ Return strict JSON only:
 
     return {
       ...parsed,
+      title: sanitizeTopicTitle(parsed.title, parsed),
       articleType: "supporting",
       clusterKey: pillar.clusterKey,
       clusterTitle: pillar.clusterTitle || pillar.title,

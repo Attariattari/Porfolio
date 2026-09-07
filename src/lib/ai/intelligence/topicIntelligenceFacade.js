@@ -22,6 +22,7 @@ import { filterAndValidateClusterPack } from "./clusterValidator.js";
 import { evaluateTopicKillCritic } from "./topicKillCritic.js";
 import { evaluateBlogServiceRelevance } from "./blogServiceRelevanceEngine.js";
 import { classifyConversionIntent, generateBlogToServiceLinkRecommendation } from "./conversionLinkingEngine.js";
+import { sanitizeTopicTitle } from "../blog/titleSanitizer.js";
 
 export function getEngineMode() {
   const mode = String(process.env.THINK10X_ENGINE_MODE || "OFF").toUpperCase();
@@ -112,13 +113,21 @@ export async function generateDynamicClusterPacks({ targetClusters = 5, avoidTex
   const prompt = `Create ${targetClusters + 1} unique topical-authority cluster candidates for Muhyo Tech.
 Muhyo Tech is a professional web engineering, cloud, software, and digital services brand.
 
-Target multiple audience personas: Developers, Tech Leads, CTOs, Startup Founders, Business Owners, E-Commerce Owners, Growth Leads.
-Rotate search intents: Informational, Problem-solving, Commercial investigation, Pricing, Comparison.
-Supported Industries: ai_saas_tools, home_services_contractors, edtech_coaching, legal_tech, b2b_wholesale, ecommerce, real_estate, healthcare, seo_digital_marketing, developer_portfolios, student_fyps, beauty_wellness, fitness_gyms, automotive, travel_tourism, education, hospitality, restaurants, professional_services, logistics, finance, saas, startups, local_business, general_technology.
+70% CLIENT & INDUSTRY ACQUISITION / 30% TECHNICAL AUTHORITY MANDATE:
+- Exactly 70% of the clusters MUST be anchored in a specific commercial industry chosen from the Supported Industries below.
+  These industry clusters target Business Owners, Founders, Clinic Operators, Contractors, and Store Owners.
+  They must address high-value business bottlenecks (e.g. lost leads, manual quoting, low mobile conversion, slow appointment booking, MLS lag) and show how Muhyo Tech's custom web applications, Next.js engineering, or custom dashboards definitively solve them.
+- The remaining 30% of clusters must be deep technical and software architecture authority topics (targeting CTOs, Tech Leads, and Senior Developers for Google E-E-A-T and technical trust).
+
+SUPPORTED COMMERCIAL INDUSTRIES TO ACTIVELY ROTATE:
+ai_saas_tools, home_services_contractors, edtech_coaching, legal_tech, b2b_wholesale, ecommerce, real_estate, healthcare, seo_digital_marketing, developer_portfolios, student_fyps, beauty_wellness, fitness_gyms, automotive, travel_tourism, education, hospitality, restaurants, professional_services, logistics, finance, saas, startups, local_business, general_technology.
+
+ALLOWED SERVICES FOR SERVICE INTENT:
+custom-website-development, mern-stack-web-development, nextjs-website-development, full-stack-web-app-development, admin-dashboard-development, e-commerce-website-development, portfolio-website-development, landing-page-design, website-redesign, api-integration, database-integration, seo-friendly-website-setup, website-speed-optimization, maintenance-support.
 
 Each cluster MUST contain:
 - 1 Pillar topic: articleType "pillar", clusterOrder 0.
-- Dynamic Supporting topics: 0 to 6 supporting topics depending on topic depth, search intent diversity, and commercial relevance. (Simple topics = 0-1, standard = 2, deep commercial/industry = 3-5).
+- Dynamic Supporting topics: 1 to 4 supporting topics that directly expand the pillar's domain. For industry pillars, supporting topics must explore specific workflows, features, or technical sub-problems within that same industry.
 
 EXISTING CONTENT TO AVOID:
 ${avoidText || "None"}
@@ -129,63 +138,72 @@ Return strict JSON only:
     {
       "clusterKey": "unique-kebab-slug",
       "clusterTitle": "Title",
-      "industry": { "key": "real_estate", "label": "Real Estate" } or null,
-      "businessProblem": { "key": "lead_generation", "label": "Poor Property Lead Management" } or null,
+      "industry": { "key": "home_services_contractors", "label": "Home Services & Contractors" },
+      "businessProblem": { "key": "slow_quoting", "label": "Manual Quoting and Missed Estimate Leads" },
       "pillar": {
         "title": "Full Guide Title",
-        "topicType": "technical_pillar|commercial_pillar|industry_pillar",
+        "topicType": "commercial_pillar|industry_pillar|technical_pillar",
         "pillar": "Category Label",
         "subtopic": "subtopic",
-        "problem": "problem",
-        "solutionAngle": "solution",
-        "businessValue": "business value",
-        "audience": "Founders and developers",
-        "audienceProfile": { "type": "business_owner", "label": "Small Business Owner" },
-        "industry": { "key": "real_estate", "label": "Real Estate" } or null,
-        "businessProblem": { "key": "lead_generation", "label": "Poor Property Lead Management" } or null,
+        "problem": "Specific commercial or technical problem",
+        "solutionAngle": "Specific web engineering solution",
+        "businessValue": "Measurable business ROI or operational benefit",
+        "audience": "Contractors and business owners",
+        "audienceProfile": { "type": "business_owner", "label": "Contractor & Business Owner" },
+        "industry": { "key": "home_services_contractors", "label": "Home Services & Contractors" },
+        "businessProblem": { "key": "slow_quoting", "label": "Manual Quoting and Missed Estimate Leads" },
         "solutionType": "custom_web_application",
         "serviceIntent": { "relevant": true, "serviceKey": "custom-website-development", "confidence": 0.9 },
         "geoContext": { "type": "global" },
         "focusKeyword": "focus keyword",
-        "searchIntent": "informational|commercial_investigation|problem_solving|pricing",
-        "format": "Premium pillar guide",
+        "searchIntent": "commercial|problem_solving|pricing",
+        "format": "Comprehensive industry solution guide",
         "relatedServiceSlugs": ["custom-website-development"],
-        "priority": 80
+        "priority": 85
       },
       "supporting": [
         {
-          "title": "Supporting Title",
-          "topicType": "technical_supporting|service_supporting",
+          "title": "Supporting Title within Same Industry",
+          "topicType": "service_supporting|technical_supporting",
           "pillar": "Category Label",
           "subtopic": "subtopic",
           "problem": "problem",
           "solutionAngle": "solution",
           "businessValue": "business value",
-          "audience": "Founders and developers",
-          "audienceProfile": { "type": "developer", "label": "Senior Developer" },
-          "industry": null,
-          "businessProblem": null,
-          "solutionType": "technical_fix",
-          "serviceIntent": { "relevant": false, "serviceKey": null, "confidence": 0 },
+          "audience": "Contractors and business owners",
+          "audienceProfile": { "type": "business_owner", "label": "Contractor & Business Owner" },
+          "industry": { "key": "home_services_contractors", "label": "Home Services & Contractors" },
+          "businessProblem": { "key": "slow_quoting", "label": "Manual Quoting and Missed Estimate Leads" },
+          "solutionType": "instant_quote_calculator",
+          "serviceIntent": { "relevant": true, "serviceKey": "custom-website-development", "confidence": 0.85 },
           "geoContext": { "type": "global" },
           "focusKeyword": "focus keyword",
-          "searchIntent": "informational|problem_solving",
-          "format": "Focused supporting guide",
-          "relatedServiceSlugs": [],
-          "priority": 70
+          "searchIntent": "problem_solving|commercial",
+          "format": "Practical implementation guide",
+          "relatedServiceSlugs": ["custom-website-development"],
+          "priority": 75
         }
       ]
     }
   ]
 }
 
+DYNAMIC & UNIQUE TITLE CRAFTING MANDATE (CRITICAL):
+- ABSOLUTELY ZERO ROBOTIC TEMPLATES OR FORMULAIC STOCK OPENERS:
+  * NEVER start any title with "Beyond..." or "Beyond the..." (STRICTLY PROHIBITED for both pillars and supporting topics).
+  * NEVER use robotic formulas like "Beyond [X]: Engineering [Y] for [Z]" or "[Concept]: Engineering a [Thing]".
+  * NEVER start titles with "Engineering...", "Architecting...", "Mastering...", "Demystifying...", "Unlocking...", "Navigating...", "The Complete Guide...", or "A Deep Dive into...".
+  * DO NOT stuff the word "Engineering" or "Architecting" repeatedly into titles or subtitles (e.g. avoid ": Engineering an?...", ": An Engineering Guide for..."). Use diverse, dynamic verbs and nouns: "Building", "Scaling", "Deploying", "Solving", "Automating", "Fixing", "Eliminating", "Real-Time Pipeline", "Production Blueprint", "Architecture Decisions".
+- UNIQUE, BESPOKE HEADLINES FOR EVERY TOPIC:
+  * Every pillar parent AND supporting child must have a completely unique, natural, human headline that feels like an article from Stripe, Vercel, or Figma.
+  * Pillar titles must be authoritative, comprehensive, and commercially compelling.
+  * Child/supporting titles must be specific, actionable, and focus directly on a distinct technical mechanism, concrete sub-problem, or client workflow without repeating words from the pillar title.
+  * Dynamically vary headline styles across clusters (problem-to-outcome, automation ROI, system design deep-dives, metric-driven case studies).
+
 STRICT INTELLIGENCE RULES:
-- DO NOT force an industry when none exists (set industry to null for purely technical topics like "Fixing Next.js Hydration Errors").
-- DO NOT force a business problem into purely technical articles.
-- DO NOT force a service connection merely to sell something (set serviceIntent.relevant to false if connection is forced).
-- DO NOT turn every technical article into a commercial article.
-- DO NOT generate promotional topics disguised as educational content.
-- Service relevance must be genuine and semantically justified.`;
+- When an industry is selected, ensure the problem and solution are tailored specifically to that sector's operational reality.
+- Maintain high engineering credibility: explain the actual tech stack, database, or API mechanism that makes the business solution reliable.
+- Service relevance must be genuine and semantically justified without hollow marketing slogans.`;
 
   try {
     const raw = await generateGeminiResponse(prompt, {
@@ -216,11 +234,15 @@ STRICT INTELLIGENCE RULES:
         serviceRelevance: pillarService.serviceRelevance,
       });
 
+      const sanitizedPillarTitle = sanitizeTopicTitle(pack.pillar.title, pack.pillar);
+      const sanitizedClusterTitle = sanitizeTopicTitle(pack.clusterTitle || sanitizedPillarTitle, pack.pillar);
+
       const processedPillar = {
         ...pack.pillar,
+        title: sanitizedPillarTitle,
         articleType: "pillar",
         clusterKey: pack.clusterKey,
-        clusterTitle: pack.clusterTitle || pack.pillar.title,
+        clusterTitle: sanitizedClusterTitle,
         clusterOrder: 0,
         topicType: pack.pillar.topicType || "technical_pillar",
         audience: pillarIntent.audienceLabel,
@@ -247,12 +269,14 @@ STRICT INTELLIGENCE RULES:
         const supIntent = classifyIntentAndAudience(sup);
         const supService = evaluateServiceRelevance(sup);
         const supScore = scoreTopicOpportunity({ ...sup, serviceRelevance: supService.serviceRelevance }, signals);
+        const sanitizedSupTitle = sanitizeTopicTitle(sup.title, sup);
 
         processedSupporting.push({
           ...sup,
+          title: sanitizedSupTitle,
           articleType: "supporting",
           clusterKey: pack.clusterKey,
-          clusterTitle: pack.clusterTitle || pack.pillar.title,
+          clusterTitle: sanitizedClusterTitle,
           clusterOrder: idx + 1,
           topicType: sup.topicType || "technical_supporting",
           audience: supIntent.audienceLabel,

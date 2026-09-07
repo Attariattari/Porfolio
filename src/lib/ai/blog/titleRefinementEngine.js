@@ -2,6 +2,7 @@ import dbConnect from "@/lib/dbConnect";
 import { Blog } from "@/models/Portfolio";
 import { BlogTopicPlan } from "@/models/BlogTopicPlan";
 import { generateGeminiResponse } from "@/lib/geminiService";
+import { sanitizeTopicTitle } from "./titleSanitizer";
 
 /**
  * Modernizes and refines titles of today's generated blogs and/or queued topic plans
@@ -69,7 +70,7 @@ export async function refineAndModernizeTitles({
 Refine and modernize these repetitive blog and topic titles into natural, human, punchy, and compelling tech titles.
 
 STRICT TITLE RULES:
-- NEVER start titles with repetitive clichés like "Engineering for...", "Engineering [X]...", "Architecting for...", "Architecting...", "AI in...", "AI's Role in...", "An Engineering Guide to...", or "The Complete Guide to...".
+- NEVER start titles with repetitive clichés like "Beyond...", "Beyond the...", "Engineering for...", "Engineering [X]...", "Architecting for...", "Architecting...", "Mastering...", "Demystifying...", "AI in...", "AI's Role in...", "An Engineering Guide to...", or "The Complete Guide to...".
 - Each title must be bespoke and dynamically centered on the specific technical problem, technology stack, architecture pattern, or trade-off.
 - Keep titles professional, concise (under 75 characters), and developer-focused.
 
@@ -98,7 +99,11 @@ Return strict JSON:
       timeoutMs: 60000,
     });
     const parsed = JSON.parse(raw.replace(/```json/gi, "").replace(/```/g, "").trim());
-    refinedList = Array.isArray(parsed.refined) ? parsed.refined : [];
+    const rawList = Array.isArray(parsed.refined) ? parsed.refined : [];
+    refinedList = rawList.map((item) => ({
+      ...item,
+      newTitle: sanitizeTopicTitle(item.newTitle || item.oldTitle),
+    }));
   } catch (err) {
     console.error("[TitleRefinementEngine] Gemini refinement failed:", err);
     throw new Error(`Failed to generate refined titles: ${err.message}`);

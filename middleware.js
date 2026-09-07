@@ -38,7 +38,8 @@ function applySecurityHeaders(response, request) {
     pathname.startsWith("/api/admin") ||
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/messages") ||
-    pathname.startsWith("/blog-image-upload");
+    pathname.startsWith("/blog-image-upload") ||
+    pathname.startsWith("/service-image-upload");
 
   if (isPrivatePath) {
     response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive, nosnippet, noimageindex");
