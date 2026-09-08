@@ -9,7 +9,13 @@ export async function GET(request) {
     try {
         if (process.env.CRON_SECRET) {
             const authorization = request.headers.get("authorization");
-            if (authorization !== `Bearer ${process.env.CRON_SECRET}`) {
+            const url = new URL(request.url);
+            const queryKey = url.searchParams.get("key") || url.searchParams.get("secret") || url.searchParams.get("token");
+            const isAuthorized =
+                authorization === `Bearer ${process.env.CRON_SECRET}` ||
+                queryKey === process.env.CRON_SECRET;
+
+            if (!isAuthorized) {
                 return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
             }
         }

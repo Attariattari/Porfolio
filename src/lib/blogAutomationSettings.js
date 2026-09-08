@@ -37,30 +37,20 @@ export function getNextAutomationAt({ settings, lastGeneratedAt = null } = {}) {
   const settingsUpdatedAt = settings?.updatedAt ? new Date(settings.updatedAt) : null;
   const validSettingsUpdatedAt = settingsUpdatedAt && Number.isFinite(settingsUpdatedAt.getTime());
 
-  // 1. If a blog was previously generated, check the natural next interval
+  // 1. If a blog was previously generated:
+  // Next eligible time is dynamically (last blog timestamp + intervalPerBlogMs).
+  // - If that time is in the past (<= now), returning it signals DUE NOW to cron & UI.
+  // - If that time is in the future (> now), it gives the exact dynamic countdown target.
   if (validGeneratedAt) {
-    const normalNext = new Date(generatedAt.getTime() + intervalPerBlogMs);
-
-    // If the natural interval is still in the future, honor it
-    if (normalNext > new Date()) {
-      return normalNext;
-    }
-
-    // If settings were updated AFTER the last blog and the natural next has already elapsed:
-    // schedule exactly one equal interval from when settings were updated, NOT immediately.
-    if (validSettingsUpdatedAt && settingsUpdatedAt > generatedAt) {
-      const scheduledFromUpdate = new Date(settingsUpdatedAt.getTime() + intervalPerBlogMs);
-      if (scheduledFromUpdate > new Date()) {
-        return scheduledFromUpdate;
-      }
-    }
+    return new Date(generatedAt.getTime() + intervalPerBlogMs);
   }
 
-  // 2. If no blog has ever been generated (or baseline time needed):
-  // Schedule exactly one equal interval from when settings were saved/updated (or from now)
-  const baseTime = validSettingsUpdatedAt ? settingsUpdatedAt : new Date();
-  const scheduledFromBase = new Date(baseTime.getTime() + intervalPerBlogMs);
+  // 2. If no blog has ever been generated:
+  // Schedule from when admin settings were updated
+  if (validSettingsUpdatedAt) {
+    return new Date(settingsUpdatedAt.getTime() + intervalPerBlogMs);
+  }
 
-  return scheduledFromBase > new Date() ? scheduledFromBase : new Date(Date.now() + intervalPerBlogMs);
+  return new Date(0);
 }
 
