@@ -33,6 +33,7 @@ async function enrichWithScheduleTimes(settings) {
   const nextEligibleAt = getNextAutomationAt({ settings, lastGeneratedAt });
   return {
     ...settings,
+    customScheduledAt: settings.customScheduledAt ? new Date(settings.customScheduledAt).toISOString() : null,
     generatedTodayCount: automatedToday.length,
     lastGeneratedAt: lastGeneratedAt ? new Date(lastGeneratedAt).toISOString() : null,
     nextEligibleAt: nextEligibleAt ? nextEligibleAt.toISOString() : null,
@@ -61,11 +62,17 @@ export async function PATCH(request) {
   if (!Number.isInteger(intervalHours) || intervalHours < 1 || intervalHours > 168) {
     return NextResponse.json({ success: false, error: "Interval must be a whole number from 1 to 168 hours." }, { status: 400 });
   }
+
+  const customScheduledAt = body.customScheduledAt !== undefined
+    ? (body.customScheduledAt ? new Date(body.customScheduledAt) : null)
+    : currentSettings.customScheduledAt;
+
   await dbConnect();
   const value = sanitizeBlogAutomationSettings({
     enabled: body.enabled !== false,
     dailyQuantity,
     intervalHours,
+    customScheduledAt,
     updatedAt: new Date(),
     updatedBy: session.email,
   });

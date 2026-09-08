@@ -472,8 +472,8 @@ async function generateEditorialContent(
     const officialSourceUrls = Array.isArray(options.officialSources) ? options.officialSources.map((source) => source?.url).filter(Boolean) : [];
     const isPillar = articleType === "pillar";
     const isAuthority = isPillar || articleType === "standalone_authority" || articleType === "verified_trend";
-    const targetWords = isPillar ? "2,000-3,500 words when the topic requires that depth" : isAuthority ? "1,800-3,000 words, or more only when the subject genuinely requires it" : "900-1,200 words";
-    const minimumWords = isPillar ? 1800 : isAuthority ? 1600 : 700;
+    const targetWords = isPillar ? "2,000-3,500 words when the topic requires that depth" : isAuthority ? "1,500-2,500 words, or more only when the subject genuinely requires it" : "900-1,200 words";
+    const minimumWords = isPillar ? 1500 : isAuthority ? 1200 : 650;
     const minimumSections = isAuthority ? 8 : 5;
     const blueprintPromptContext = options.articleBlueprint ? formatBlueprintForWriter(options.articleBlueprint) : "";
     const prompt = `

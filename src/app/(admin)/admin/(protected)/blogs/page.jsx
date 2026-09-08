@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import useAdminStore from "@/lib/store/adminStore";
 import { getSafeImageSrc } from "@/lib/images/getSafeImageSrc";
@@ -77,7 +77,21 @@ export default function BlogsPage() {
   const [automationSettings, setAutomationSettings] = useState({ enabled: true, dailyQuantity: 1, intervalHours: 24 });
   const [automationSettingsLoading, setAutomationSettingsLoading] = useState(true);
   const [automationSettingsSaving, setAutomationSettingsSaving] = useState(false);
+  const [customScheduleInput, setCustomScheduleInput] = useState("");
   const [importing, setImporting] = useState(false);
+
+  useEffect(() => {
+    if (automationSettings?.customScheduledAt) {
+      try {
+        const d = new Date(automationSettings.customScheduledAt);
+        const pad = (n) => String(n).padStart(2, "0");
+        const localIso = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+        setCustomScheduleInput(localIso);
+      } catch {}
+    } else {
+      setCustomScheduleInput("");
+    }
+  }, [automationSettings?.customScheduledAt]);
 
   const [selectedBloggerBlog, setSelectedBloggerBlog] = useState(null);
   const [isBloggerModalOpen, setIsBloggerModalOpen] = useState(false);
@@ -544,7 +558,7 @@ export default function BlogsPage() {
       if (!response.ok) throw new Error(result.error || "Failed to update AI Engine setting.");
       setAutomationSettings(result.data);
       if (newEnabled) {
-        toast.success("🟢 AI Blog Automation is now ACTIVE across all pipelines & crons.");
+        toast.success("🟢 AI Blog Automation is now ACTIVE.");
       } else {
         toast.warning("🛑 AI Blog Automation is STOPPED in Database (All background AI generation paused).");
       }
@@ -576,7 +590,94 @@ export default function BlogsPage() {
   };
 
   const resetAutomationSettings = () => {
-    saveAutomationSettings({ enabled: true, dailyQuantity: 1, intervalHours: 24 });
+    saveAutomationSettings({ enabled: true, dailyQuantity: 1, intervalHours: 24, customScheduledAt: null });
+  };
+
+  const handleSetCustomSchedule = async () => {
+    if (!customScheduleInput) {
+      toast.error("Please pick a valid date and time.");
+      return;
+    }
+    const targetDate = new Date(customScheduleInput);
+    if (isNaN(targetDate.getTime())) {
+      toast.error("Invalid date or time selected.");
+      return;
+    }
+    setAutomationSettingsSaving(true);
+    try {
+      const response = await fetch("/api/admin/blog-automation-settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customScheduledAt: targetDate.toISOString(),
+          enabled: true,
+        }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Failed to set custom schedule.");
+      setAutomationSettings(result.data);
+      toast.success(`🎯 Custom blog generation target set for ${format(targetDate, "MMM d, yyyy 'at' h:mm a")}.`);
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setAutomationSettingsSaving(false);
+    }
+  };
+
+  const handleClearCustomSchedule = async () => {
+    setAutomationSettingsSaving(true);
+    try {
+      const response = await fetch("/api/admin/blog-automation-settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ customScheduledAt: null }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Failed to clear custom schedule.");
+      setAutomationSettings(result.data);
+      setCustomScheduleInput("");
+      toast.success("Custom target cleared. Reverted to standard daily schedule.");
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setAutomationSettingsSaving(false);
+    }
+  };
+
+  const [isDueTriggering, setIsDueTriggering] = useState(false);
+
+  const fetchAutomationSettings = async () => {
+    try {
+      const response = await fetch("/api/admin/blog-automation-settings", { cache: "no-store" });
+      const result = await response.json();
+      if (response.ok && result.data) {
+        setAutomationSettings(result.data);
+      }
+    } catch {}
+  };
+
+  const handleTriggerDueBlog = async () => {
+    if (isDueTriggering) return;
+    setIsDueTriggering(true);
+    const toastId = toast.loading("⚡ Target time reached! AI generating scheduled blog...");
+    try {
+      const res = await fetch("/api/cron/blog-pipeline");
+      const data = await res.json();
+      if (data.success && data.dailyBlogId) {
+        toast.success("🎉 Scheduled AI blog generated successfully!", { id: toastId });
+        await fetchBlogs({ force: true });
+        await fetchAutomationSettings();
+      } else if (data.success && data.results?.step1?.skipped) {
+        toast.info(data.results.step1.message || "Schedule updated.", { id: toastId });
+        await fetchAutomationSettings();
+      } else {
+        toast.error(data.message || "Automated generation encountered an issue.", { id: toastId });
+      }
+    } catch (err) {
+      toast.error("Network error executing scheduled generation.", { id: toastId });
+    } finally {
+      setIsDueTriggering(false);
+    }
   };
 
   const handleExport = () => {
@@ -977,7 +1078,16 @@ export default function BlogsPage() {
 
       {/* AI Publishing Schedule Section - Theme Aligned */}
       <section className="overflow-hidden rounded-[1.75rem] border border-border/70 bg-card p-5 sm:p-7 shadow-sm">
-        <BlogPublishCountdown settings={automationSettings} />
+        <BlogPublishCountdown
+          settings={automationSettings}
+          customScheduleInput={customScheduleInput}
+          onCustomScheduleChange={setCustomScheduleInput}
+          onSetCustomSchedule={handleSetCustomSchedule}
+          onClearCustomSchedule={handleClearCustomSchedule}
+          onTriggerDue={handleTriggerDueBlog}
+          isDueTriggering={isDueTriggering}
+          saving={automationSettingsSaving || automationSettingsLoading}
+        />
         <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
           <div>
             <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.24em] text-accent">
@@ -1104,6 +1214,57 @@ export default function BlogsPage() {
               <Save className="size-4" />
               <span>{automationSettingsSaving ? "Saving..." : "Save schedule"}</span>
             </button>
+          </div>
+        </div>
+
+        {/* Custom Target Schedule Row */}
+        <div className="mt-6 pt-5 border-t border-border/60 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.2em] text-accent">
+              <Target className="size-3.5 text-accent" />
+              <span>Target One-Off Generation Timer</span>
+              {automationSettings.customScheduledAt && (
+                <span className="rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-400">
+                  Target Active
+                </span>
+              )}
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Schedule a specific date and time for the next article. Once executed, normal daily frequency resumes.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <input
+              type="datetime-local"
+              disabled={automationSettingsLoading || automationSettingsSaving}
+              value={customScheduleInput}
+              onChange={(e) => setCustomScheduleInput(e.target.value)}
+              className="h-11 rounded-xl border border-border bg-background/50 px-3.5 text-xs font-bold text-foreground outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+            />
+
+            <button
+              type="button"
+              onClick={handleSetCustomSchedule}
+              disabled={automationSettingsLoading || automationSettingsSaving || !customScheduleInput}
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-accent px-4 text-xs font-bold text-accent-foreground shadow-lg shadow-accent/20 transition hover:bg-accent/90 disabled:opacity-50"
+            >
+              <Clock3 className="size-4" />
+              <span>Set Target Timer</span>
+            </button>
+
+            {automationSettings.customScheduledAt && (
+              <button
+                type="button"
+                onClick={handleClearCustomSchedule}
+                disabled={automationSettingsLoading || automationSettingsSaving}
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-background/60 px-3.5 text-xs font-bold text-muted-foreground transition hover:border-rose-500/40 hover:text-rose-400 disabled:opacity-50"
+                title="Clear custom target and return to regular interval"
+              >
+                <X className="size-4" />
+                <span>Clear Timer</span>
+              </button>
+            )}
           </div>
         </div>
       </section>
@@ -1614,7 +1775,8 @@ export default function BlogsPage() {
   const generatedTodayCount = Number(settings?.generatedTodayCount || 0);
   const now = Date.now();
   const targetTime = settings?.nextEligibleAt ? new Date(settings.nextEligibleAt).getTime() : 0;
-  const isQuotaComplete = generatedTodayCount >= dailyQuantity;
+  const isCustomTimer = Boolean(settings?.customScheduledAt);
+  const isQuotaComplete = !isCustomTimer && generatedTodayCount >= dailyQuantity;
   const diff = targetTime - now;
 
   if (isQuotaComplete) {
@@ -1629,8 +1791,26 @@ export default function BlogsPage() {
   }
 };
 
-function BlogPublishCountdown({ settings }) {
+function BlogPublishCountdown({
+  settings,
+  customScheduleInput,
+  onCustomScheduleChange,
+  onSetCustomSchedule,
+  onClearCustomSchedule,
+  onTriggerDue,
+  isDueTriggering = false,
+  saving = false,
+}) {
   const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft(settings));
+  const [isLocalHost, setIsLocalHost] = useState(false);
+  const autoTriggerRef = useRef(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const host = window.location.hostname;
+      setIsLocalHost(host === "localhost" || host === "127.0.0.1" || host.startsWith("192.168."));
+    }
+  }, []);
 
   useEffect(() => {
     if (settings?.enabled === false) return;
@@ -1641,20 +1821,66 @@ function BlogPublishCountdown({ settings }) {
     return () => clearInterval(interval);
   }, [settings]);
 
+  // Automatically trigger blog generation when time is due and dashboard is open
+  useEffect(() => {
+    if (!settings?.enabled) return;
+    if (timeLeft.isDue && onTriggerDue && !isDueTriggering) {
+      const triggerKey = settings.customScheduledAt || settings.nextEligibleAt || "due";
+      if (autoTriggerRef.current !== triggerKey) {
+        autoTriggerRef.current = triggerKey;
+        onTriggerDue();
+      }
+    }
+  }, [timeLeft.isDue, settings?.enabled, settings?.customScheduledAt, settings?.nextEligibleAt, onTriggerDue, isDueTriggering]);
+
   if (settings?.enabled === false) {
     return (
-      <div className="mb-5 flex items-center justify-between rounded-2xl border border-amber-400/20 bg-amber-400/10 p-4 text-xs font-semibold text-amber-200">
-        <div className="flex items-center gap-2">
-          <span className="relative flex size-2.5">
-            <span className="size-2.5 rounded-full bg-amber-400"></span>
-          </span>
-          AI Publishing Automation is currently disabled.
+      <div className="mb-6 rounded-[20px] border border-amber-400/25 bg-[#070d18] p-5 shadow-2xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-semibold text-amber-200">
+          <div className="flex items-center gap-2">
+            <span className="relative flex size-2.5">
+              <span className="size-2.5 rounded-full bg-amber-400"></span>
+            </span>
+            AI Publishing Automation is currently paused. Set a custom target timer or save settings to activate.
+          </div>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-amber-300/80">Paused</span>
         </div>
-        <span className="text-[10px] font-bold uppercase tracking-wider text-amber-300/70">Paused</span>
+
+        {/* Custom Target Timer Control Bar even when paused */}
+        <div className="mt-4 pt-4 border-t border-white/[0.08] flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <div className="grid size-7 place-items-center rounded-lg bg-amber-400/10 text-amber-300 ring-1 ring-inset ring-amber-400/20">
+              <Target className="size-3.5 text-amber-300" />
+            </div>
+            <div>
+              <span className="text-xs font-bold text-white">Set Target Time for Next AI Article:</span>
+              <p className="text-[11px] text-slate-400">Setting a timer activates automation for that target run.</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+            <input
+              type="datetime-local"
+              value={customScheduleInput || ""}
+              onChange={(e) => onCustomScheduleChange?.(e.target.value)}
+              disabled={saving}
+              className="h-9 rounded-xl border border-white/20 bg-slate-900/90 px-3 text-xs font-medium text-white shadow-inner outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-400/25 [color-scheme:dark]"
+            />
+            <button
+              type="button"
+              onClick={onSetCustomSchedule}
+              disabled={saving || !customScheduleInput}
+              className="inline-flex h-9 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl bg-amber-500 hover:bg-amber-400 active:scale-95 px-3.5 text-xs font-bold text-slate-950 shadow-lg shadow-amber-500/20 transition disabled:opacity-40 disabled:pointer-events-none"
+            >
+              <Clock3 className="size-3.5" />
+              <span>{saving ? "Saving..." : "Set Target Timer"}</span>
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
 
+  const isCustomTimer = Boolean(settings?.customScheduledAt);
   const targetDateFormatted = settings?.nextEligibleAt
     ? format(new Date(settings.nextEligibleAt), "h:mm:ss a (MMM d, yyyy)")
     : "Calculating schedule...";
@@ -1675,15 +1901,23 @@ function BlogPublishCountdown({ settings }) {
           </div>
           <div>
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.24em] text-violet-300">
-              Next Publication Schedule
+              {isCustomTimer ? "Custom Target Schedule Active" : "Next Publication Schedule"}
+              {isCustomTimer && (
+                <span className="rounded-full border border-violet-400/40 bg-violet-400/15 px-2 py-0.5 text-[8px] font-extrabold tracking-wider text-violet-200">
+                  Target Override
+                </span>
+              )}
             </div>
             <p className="mt-1 text-xs text-slate-400">
-              {timeLeft.isQuotaComplete ? (
+              {timeLeft.isQuotaComplete && !isCustomTimer ? (
                 <span className="font-semibold text-emerald-300">✓ Today&apos;s daily quota ({settings.generatedTodayCount || 0}/{settings.dailyQuantity}) complete</span>
               ) : timeLeft.isDue ? (
-                <span className="font-semibold text-emerald-300">⚡ Eligible for publication now (Will execute on next Vercel cron run)</span>
+                <span className="font-semibold text-emerald-300">
+                  ⚡ {isCustomTimer ? "Custom target eligible now" : "Eligible for publication now"}
+                  {!isLocalHost ? " (Will execute on next scheduled cron)" : ""}
+                </span>
               ) : (
-                <span>Next automated article will run at <span className="font-semibold text-white">{targetDateFormatted}</span></span>
+                <span>Next {isCustomTimer ? "custom target" : "automated"} article will run at <span className="font-semibold text-white">{targetDateFormatted}</span></span>
               )}
             </p>
           </div>
@@ -1691,15 +1925,36 @@ function BlogPublishCountdown({ settings }) {
 
         {/* Animated Digital Flip-Clock Display */}
         <div className="flex items-center gap-2">
-          {timeLeft.isQuotaComplete ? (
+          {timeLeft.isQuotaComplete && !isCustomTimer ? (
             <div className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-2.5 text-xs font-bold text-emerald-400 shadow-md">
               <CheckCircle2 className="size-4 text-emerald-400" />
               Daily Quota Complete
             </div>
           ) : timeLeft.isDue ? (
-            <div className="flex items-center gap-2 rounded-xl border border-emerald-400/40 bg-emerald-500/20 px-4 py-2.5 text-xs font-bold text-emerald-300 shadow-md shadow-emerald-500/10 animate-pulse">
-              <Sparkles className="size-4 text-emerald-300" />
-              Eligible Now (Vercel Cron)
+            <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+              <div className="flex items-center gap-2 rounded-xl border border-emerald-400/40 bg-emerald-500/20 px-3.5 py-2.5 text-xs font-bold text-emerald-300 shadow-md shadow-emerald-500/10 animate-pulse">
+                <Sparkles className="size-4 text-emerald-300" />
+                {isCustomTimer ? "Custom Target Due" : isLocalHost ? "Eligible Now" : "Eligible Now (Cron)"}
+              </div>
+              <button
+                type="button"
+                onClick={onTriggerDue}
+                disabled={isDueTriggering}
+                className="inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-95 px-4 text-xs font-bold text-slate-950 shadow-lg shadow-emerald-500/30 transition disabled:opacity-50"
+                title="Generate scheduled blog now"
+              >
+                {isDueTriggering ? (
+                  <>
+                    <RefreshCcw className="size-3.5 animate-spin" />
+                    <span>Generating AI Blog...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="size-3.5" />
+                    <span>Generate Due Blog</span>
+                  </>
+                )}
+              </button>
             </div>
           ) : (
             <div className="flex items-center gap-2">
@@ -1724,6 +1979,64 @@ function BlogPublishCountdown({ settings }) {
                 <span className="mt-1 text-[9px] font-bold uppercase tracking-[.18em] text-slate-500">Secs</span>
               </div>
             </div>
+          )}
+        </div>
+      </div>
+
+      {/* Custom Target Timer Control Bar - Integrated Directly on Countdown Card */}
+      <div className="mt-5 pt-4 border-t border-white/[0.08] -mx-5 -mb-5 px-5 py-3.5 bg-slate-950/60 backdrop-blur-md rounded-b-[20px] flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="grid size-8 place-items-center rounded-xl bg-violet-400/10 text-violet-300 ring-1 ring-inset ring-violet-400/20 shadow-inner shrink-0">
+            <Target className="size-4 text-violet-300" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-white tracking-wide">Set Custom Scheduled Timer</span>
+              {isCustomTimer && (
+                <span className="rounded-full border border-emerald-400/40 bg-emerald-500/15 px-2 py-0.5 text-[8px] font-extrabold uppercase tracking-wider text-emerald-300">
+                  Target Active
+                </span>
+              )}
+            </div>
+            <p className="text-[11px] text-slate-400">
+              {isCustomTimer
+                ? `Custom target active for ${targetDateFormatted}. Daily frequency resumes after.`
+                : "Pick a date & time for the next article. Daily interval will resume after."}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+          <input
+            type="datetime-local"
+            value={customScheduleInput || ""}
+            onChange={(e) => onCustomScheduleChange?.(e.target.value)}
+            disabled={saving}
+            aria-label="Pick date and time for custom blog generation"
+            className="h-9 rounded-xl border border-white/20 bg-slate-900/90 px-3 text-xs font-medium text-white shadow-inner outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-400/25 [color-scheme:dark]"
+          />
+
+          <button
+            type="button"
+            onClick={onSetCustomSchedule}
+            disabled={saving || !customScheduleInput}
+            className="inline-flex h-9 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl bg-violet-600 px-3.5 text-xs font-bold text-white shadow-lg shadow-violet-600/30 transition hover:bg-violet-500 active:scale-95 disabled:opacity-40 disabled:pointer-events-none"
+          >
+            <Clock3 className="size-3.5" />
+            <span>{saving ? "Saving..." : isCustomTimer ? "Update Timer" : "Set Timer"}</span>
+          </button>
+
+          {isCustomTimer && (
+            <button
+              type="button"
+              onClick={onClearCustomSchedule}
+              disabled={saving}
+              className="inline-flex h-9 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 text-xs font-bold text-rose-300 transition hover:bg-rose-500/20 active:scale-95 disabled:opacity-40"
+              title="Reset to default daily interval schedule"
+            >
+              <X className="size-3.5" />
+              <span>Clear</span>
+            </button>
           )}
         </div>
       </div>

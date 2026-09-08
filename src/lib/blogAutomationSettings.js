@@ -5,13 +5,23 @@ export const BLOG_AUTOMATION_DEFAULTS = Object.freeze({
   enabled: true,
   dailyQuantity: 1,
   intervalHours: 24,
+  customScheduledAt: null,
 });
 
 export function sanitizeBlogAutomationSettings(value = {}) {
+  const customScheduledAt = value.customScheduledAt
+    ? new Date(value.customScheduledAt)
+    : null;
+  const validCustomScheduledAt =
+    customScheduledAt && Number.isFinite(customScheduledAt.getTime())
+      ? customScheduledAt
+      : null;
+
   return {
     enabled: value.enabled !== false,
     dailyQuantity: Math.min(12, Math.max(1, Math.trunc(Number(value.dailyQuantity) || BLOG_AUTOMATION_DEFAULTS.dailyQuantity))),
     intervalHours: Math.min(168, Math.max(1, Math.trunc(Number(value.intervalHours) || BLOG_AUTOMATION_DEFAULTS.intervalHours))),
+    customScheduledAt: validCustomScheduledAt,
     updatedAt: value.updatedAt ? new Date(value.updatedAt) : null,
     updatedBy: value.updatedBy || null,
   };
@@ -24,6 +34,14 @@ export async function getBlogAutomationSettings() {
 }
 
 export function getNextAutomationAt({ settings, lastGeneratedAt = null } = {}) {
+  // 0. Priority One-Off Custom Scheduled Timer
+  if (settings?.customScheduledAt) {
+    const customTime = new Date(settings.customScheduledAt);
+    if (Number.isFinite(customTime.getTime())) {
+      return customTime;
+    }
+  }
+
   const intervalHours = Number(settings?.intervalHours || 24);
   const dailyQuantity = Math.max(1, Number(settings?.dailyQuantity || 1));
 

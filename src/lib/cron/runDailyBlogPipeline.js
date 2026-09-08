@@ -1,5 +1,5 @@
 import dbConnect from "@/lib/dbConnect";
-import { Blog } from "@/models/Portfolio";
+import { Blog, SiteConfig } from "@/models/Portfolio";
 import { BlogImageUploadLink } from "@/models/BlogImageUploadLink";
 import { processDailyBloggerBacklog } from "../ai/blog/bloggerBacklogEngine.js";
 import {
@@ -103,7 +103,11 @@ export async function runDailyBlogPipeline({
     .select("createdAt generatedAt")
     .lean();
   const nextEligibleAt = getNextAutomationAt({ settings, lastGeneratedAt: lastAutomatedBlog?.generatedAt || lastAutomatedBlog?.createdAt });
-  const due = settings.enabled && automatedToday.length < settings.dailyQuantity && nextEligibleAt <= new Date();
+  const hasCustomScheduleDue = Boolean(
+    settings.customScheduledAt &&
+    nextEligibleAt <= new Date()
+  );
+  const due = settings.enabled && (hasCustomScheduleDue || (automatedToday.length < settings.dailyQuantity && nextEligibleAt <= new Date()));
   const highestSlotOrdinal = automatedToday.reduce((highest, blog) => {
     const match = String(blog.automationSlot || "").match(new RegExp(`^${slot}-(\\d+)$`));
     return match ? Math.max(highest, Number(match[1]) || 0) : highest;
@@ -145,6 +149,11 @@ export async function runDailyBlogPipeline({
             workerId: lock.workerId,
             blogId: results.step1.blogId,
           });
+
+          // Auto-clear custom timer once fulfilled so it resumes normal daily frequency
+          if (settings.customScheduledAt && new Date(settings.customScheduledAt) <= new Date()) {
+            await SiteConfig.updateOne({}, { $unset: { "blogAutomation.customScheduledAt": 1 } }).catch(() => {});
+          }
         } else if (results.step1?.success === false) {
           await failJobSlot({
             jobId: lock.job._id,
@@ -167,7 +176,7 @@ export async function runDailyBlogPipeline({
       skipped: true,
       message: !settings.enabled
         ? "Automatic blog generation is disabled."
-        : automatedToday.length >= settings.dailyQuantity
+        : automatedToday.length >= settings.dailyQuantity && !hasCustomScheduleDue
           ? `Daily limit of ${settings.dailyQuantity} automated blogs is complete.`
           : `Next automated blog is eligible after ${nextEligibleAt.toISOString()}.`,
     };

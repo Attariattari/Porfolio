@@ -20,7 +20,7 @@ function scoreFeaturedCandidate(blog, now) {
     const words = wordCount(content);
     const isPillar = blog.articleType === "pillar";
     const isAuthority = isPillar || ["standalone_authority", "verified_trend"].includes(blog.articleType);
-    const minimumWords = isPillar ? 1800 : isAuthority ? 1600 : 700;
+    const minimumWords = isPillar ? 1500 : isAuthority ? 1200 : 650;
     const quality = Number(blog.qualityScore || 0);
     const seoDescriptionLength = String(blog.seoDescription || "").trim().length;
     const summaryLength = String(blog.summary || "").trim().length;

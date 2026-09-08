@@ -537,6 +537,7 @@ const SiteConfigSchema = new mongoose.Schema({
         enabled: { type: Boolean, default: true },
         dailyQuantity: { type: Number, min: 1, max: 12, default: 1 },
         intervalHours: { type: Number, min: 1, max: 168, default: 24 },
+        customScheduledAt: { type: Date, default: null },
         updatedAt: { type: Date, default: Date.now },
         updatedBy: { type: String },
     },
