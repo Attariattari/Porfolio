@@ -21,7 +21,16 @@ function isVercelDeploymentUrl(value = "") {
 }
 
 function getAppUrl(baseUrl = "") {
-  if (isLocalUrl(baseUrl)) return PUBLIC_SITE_URL;
+  // If an active baseUrl was supplied by the caller (e.g. localhost during development or custom domain in staging/prod),
+  // honor it directly so that email links preserve the originating environment and login cookies.
+  if (baseUrl && !isVercelDeploymentUrl(baseUrl)) {
+    return baseUrl;
+  }
+
+  // During local development, allow localhost baseUrl or dev APP_URL so the developer can access the upload page immediately
+  if (process.env.NODE_ENV === "development") {
+    return baseUrl || process.env.APP_URL || "http://localhost:3000";
+  }
 
   const explicitUrl =
     process.env.APP_URL ||
@@ -35,8 +44,6 @@ function getAppUrl(baseUrl = "") {
   ) {
     return explicitUrl;
   }
-
-  if (baseUrl && !isVercelDeploymentUrl(baseUrl)) return baseUrl;
 
   return isLocalUrl(SITE_URL) || isVercelDeploymentUrl(SITE_URL)
     ? PUBLIC_SITE_URL

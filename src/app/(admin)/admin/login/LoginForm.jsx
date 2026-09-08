@@ -39,7 +39,7 @@ function playSuccessSound() {
   }
 }
 
-export default function LoginForm() {
+export default function LoginForm({ callbackUrl = "/admin/dashboard" } = {}) {
   const [view, setView] = useState("login"); // login, setup, verify, pending, success, denied, reverify
   const [email, setEmail] = useState("");
   const [passkey, setPasskey] = useState("");
@@ -174,7 +174,7 @@ export default function LoginForm() {
 
         // Redirect after success (longer delay to ensure token is stored)
         setTimeout(() => {
-          window.location.href = "/admin/dashboard";
+          window.location.href = callbackUrl || "/admin/dashboard";
         }, 800);
       } else {
         // Log error details to console for debugging
@@ -483,7 +483,7 @@ export default function LoginForm() {
                   }
                   onClick={(e) => {
                     if (view === "success") {
-                      window.location.href = "/admin/dashboard";
+                      window.location.href = callbackUrl || "/admin/dashboard";
                     } else if (view === "pending") {
                       setView("login");
                     }

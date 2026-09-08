@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ShieldCheck, AlertTriangle, Lock } from "lucide-react";
+import { redirect } from "next/navigation";
+import { ShieldCheck, AlertTriangle } from "lucide-react";
 import { getAuthSession } from "@/lib/auth";
 import { validateBlogImageUploadToken } from "@/lib/server/blogImageUploadToken";
 import { Blog } from "@/models/Portfolio";
@@ -49,30 +50,21 @@ export default async function SocialKitPage({ params }) {
   const session = await getAuthSession();
   const callbackUrl = `/blog-image-upload/${token}/social-kit`;
 
+  // If no session exists, seamlessly redirect to login with the callbackUrl attached
   if (!session) {
-    return (
-      <Panel icon={<Lock className="h-6 w-6" />} title="Admin Login Required">
-        <p className="leading-7">
-          Please log in as Admin to access the Social Share Kit.
-        </p>
-        <Link
-          href={`/admin/login?callbackUrl=${encodeURIComponent(callbackUrl)}`}
-          className="mt-6 inline-flex rounded-2xl bg-accent px-5 py-3 text-sm font-black uppercase tracking-[0.2em] text-accent-foreground"
-        >
-          Login and Return
-        </Link>
-      </Panel>
-    );
+    redirect(`/admin/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
   }
 
-  const isAuthorizedAdmin =
-    session.role === "admin" ||
+  const isSuperAdminRole =
     session.role === "super-admin" ||
     session.role === "root-super-admin";
+  const isAuthorizedAdmin =
+    isSuperAdminRole ||
+    session.role === "admin";
   const emailMatches =
-    !tokenResult.link.targetEmail ||
-    session.role === "root-super-admin" ||
-    session.email?.toLowerCase() === tokenResult.link.targetEmail.toLowerCase();
+    !tokenResult.link?.targetEmail ||
+    isSuperAdminRole ||
+    session.email?.toLowerCase() === tokenResult.link?.targetEmail?.toLowerCase();
 
   if (!isAuthorizedAdmin || !emailMatches) {
     return (

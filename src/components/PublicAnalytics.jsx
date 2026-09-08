@@ -16,7 +16,11 @@ const VercelSpeedInsights = dynamic(
   { ssr: false },
 );
 
-const EXCLUDED_ROUTE_PREFIXES = ["/admin", "/blog-image-upload"];
+const EXCLUDED_ROUTE_PREFIXES = [
+  "/admin",
+  "/blog-image-upload",
+  "/service-image-upload",
+];
 
 export default function PublicAnalytics({
   enableVercelAnalytics,
