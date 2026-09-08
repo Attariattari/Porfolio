@@ -263,30 +263,3 @@ export async function reviewContentWithGemini(prompt, imageUrl) {
 
     throw lastError || new Error("All configured Gemini API keys failed during image review.");
 }
-
-/**
- * Validates image buffer directly using Gemini multimodal capabilities
- */
-export async function reviewImageBufferWithGemini(prompt, buffer, mimeType = "image/jpeg") {
-    const modelName = process.env.GEMINI_PRIMARY_MODEL || "gemini-2.5-flash";
-    const parts = [{ text: prompt }, { inlineData: { data: Buffer.from(buffer).toString("base64"), mimeType } }];
-    let lastError;
-
-    for (const apiKey of getOrderedApiKeys()) {
-        try {
-            const client = new GoogleGenerativeAI(apiKey.key);
-            const model = client.getGenerativeModel({ model: modelName });
-            const result = await callGeminiWithRetry(() => model.generateContent(parts), 2, 2000);
-            keyCooldowns.delete(apiKey.key);
-            preferredKeyIndex = apiKey.index;
-            return result.response.text();
-        } catch (error) {
-            lastError = error;
-            if (!isKeyRotationError(error) && !isModelFallbackError(error)) throw error;
-            coolDownKey(apiKey.key, error);
-            console.warn(`[Gemini] Multimodal buffer review failed on ${apiKey.label}; rotating API key...`);
-        }
-    }
-
-    throw lastError || new Error("All configured Gemini API keys failed during buffer image review.");
-}
