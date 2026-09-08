@@ -82,6 +82,8 @@ export async function ensureBlogImage(blogId, options = {}) {
             negativePrompt: imagePrompt.negativePrompt,
             maxRetries: maxImageRetries,
             providerTimeoutMs: Number(options.providerTimeoutMs || 12000),
+            blog,
+            visualDirection: imagePrompt.visualDirection,
           });
         })();
 
@@ -98,6 +100,10 @@ export async function ensureBlogImage(blogId, options = {}) {
       };
       blog.imageGenerated = true;
       blog.imageStatus = "generated";
+      if (imageResult.audit) {
+        blog.imageAuditScore = imageResult.audit.score;
+        blog.imageAuditFeedback = imageResult.audit.critique;
+      }
 
       if (process.env.AUTO_PUBLISH_AI_BLOGS === "true") {
         blog.publishStatus = "published";
@@ -114,7 +120,9 @@ export async function ensureBlogImage(blogId, options = {}) {
         startedAt,
         finishedAt: new Date(),
         status: "success",
-        message: "AI blog image generated and attached.",
+        message: imageResult.audit?.score
+          ? `AI blog image generated (QC Score: ${imageResult.audit.score}/10) and attached.`
+          : "AI blog image generated and attached.",
       });
 
       if (blog.publishStatus === "published") {

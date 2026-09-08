@@ -7,18 +7,21 @@ export async function generateBlogImage({
   negativePrompt = "",
   maxRetries = 1,
   providerTimeoutMs = 12000,
+  blog = null,
+  visualDirection = "",
 }) {
-  const safePrompt = [prompt, negativePrompt ? `Avoid: ${negativePrompt}` : ""]
-    .filter(Boolean)
-    .join("\n");
-
   for (let attempt = 1; attempt <= maxRetries; attempt += 1) {
     try {
-      const result = await generateBlogCoverImage(safePrompt, {
+      const result = await generateBlogCoverImage(prompt, {
+        negativePrompt,
         maxRetries: 1,
         timeoutMs: providerTimeoutMs,
         retryDelayMs: 1000,
+        blog,
+        visualDirection,
+        auditQuality: true,
       });
+
       if (result?.url) {
         return {
           success: true,
@@ -27,10 +30,11 @@ export async function generateBlogImage({
             url: result.url,
             publicId: result.publicId,
           },
+          audit: result.audit,
         };
       }
     } catch (error) {
-      console.warn(`[BlogImage] Provider failed on attempt ${attempt}.`);
+      console.warn(`[BlogImage] Provider failed on attempt ${attempt}:`, error?.message || error);
     }
 
     if (attempt < maxRetries) await sleep(1000);

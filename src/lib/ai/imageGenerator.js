@@ -1,18 +1,28 @@
 /**
  * AI Blog Cover Image Generator
- * Uses Pollinations.ai free API (flux model) to generate cover images
- * Handles rate-limiting detection and retries with different seeds
- * Uploads generated images to Cloudinary using signed server-side upload
+ * Uses Pollinations.ai API (flux model) to generate cover images
+ * Aligned with Muhyo Tech 16:9 true widescreen standards and closed-loop vision auditing
+ * Uploads verified images to Cloudinary using signed server-side upload
  */
 
 import crypto from "crypto";
+import { auditBlogImageQuality } from "@/lib/ai/imageAuditor";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
- * Generate a blog cover image from a concept/prompt
+ * Generate a blog cover image from a concept/prompt with optional vision quality audit
  * @param {string} imageConcept - The image concept/prompt from Gemini
- * @returns {Promise<{url: string, publicId: string} | null>} - Image URL and publicId, or null if all retries fail
+ * @param {Object} [options]
+ * @param {string} [options.negativePrompt] - Negative prompt string to avoid
+ * @param {Object} [options.blog] - Blog document for multimodal vision validation
+ * @param {string} [options.visualDirection] - Visual direction summary
+ * @param {boolean} [options.auditQuality=true] - Whether to run Gemini Vision QC before Cloudinary upload
+ * @param {number} [options.maxRetries=1] - Maximum retries
+ * @param {number} [options.timeoutMs=12000] - Provider timeout in ms
+ * @param {number} [options.width=1200] - Target image width
+ * @param {number} [options.height=675] - Target image height (true 16:9)
+ * @returns {Promise<{url: string, publicId: string, audit?: Object} | null>}
  */
 export async function generateBlogCoverImage(imageConcept, options = {}) {
   if (!imageConcept) {
@@ -23,29 +33,37 @@ export async function generateBlogCoverImage(imageConcept, options = {}) {
   const MAX_RETRIES = Number(options.maxRetries || 1);
   const RETRY_DELAY = Number(options.retryDelayMs || 1000);
   const TIMEOUT_MS = Number(options.timeoutMs || 12000);
-  const MIN_VALID_IMAGE_SIZE = 50000; // 50KB - tiny responses are usually placeholders/errors
+  const MIN_VALID_IMAGE_SIZE = 40000; // 40KB minimum for valid render
 
-  // Enhance the prompt with quality keywords
-  const enhancedPrompt = `${imageConcept}. professional photography, high quality, detailed, 4k, clean composition`;
+  const width = options.width || 1200;
+  const height = options.height || 675; // 16:9 widescreen standard
+  const negativePrompt = options.negativePrompt || "";
+  const auditQuality = options.auditQuality !== false;
+
+  // If prompt is already an ultra-detailed 600+ char prompt, avoid diluting it with repetitive text
+  let effectivePrompt = imageConcept.trim();
+  if (effectivePrompt.length < 300) {
+    effectivePrompt = `${effectivePrompt}. 16:9 widescreen, professional editorial photography, clean architectural composition, studio lighting`;
+  }
 
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     try {
-      console.log(`[ImageGen] Attempt ${attempt}/${MAX_RETRIES}: Generating image from Pollinations...`);
+      console.log(`[ImageGen] Attempt ${attempt}/${MAX_RETRIES}: Requesting flux render (${width}x${height})...`);
 
       const uniqueSeed = Math.floor(Math.random() * 1000000);
-      const encodedPrompt = encodeURIComponent(enhancedPrompt);
+      const encodedPrompt = encodeURIComponent(effectivePrompt);
+      const encodedAvoid = negativePrompt ? `&avoid=${encodeURIComponent(negativePrompt.slice(0, 400))}` : "";
 
-      // Call Pollinations.ai flux model — correct endpoint: image.pollinations.ai/prompt/
-      const pollUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?model=flux&nologo=true&width=1200&height=630&seed=${uniqueSeed}`;
+      const pollUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?model=flux&nologo=true&width=${width}&height=${height}&seed=${uniqueSeed}${encodedAvoid}`;
 
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
       let response;
       try {
         response = await fetch(pollUrl, {
-          method: 'GET',
+          method: "GET",
           headers: {
-            'User-Agent': 'Muhyo-Tech-Blog-Pipeline',
+            "User-Agent": "Muhyo-Tech-Visual-Engine",
           },
           signal: controller.signal,
         });
@@ -54,10 +72,8 @@ export async function generateBlogCoverImage(imageConcept, options = {}) {
       }
 
       if (!response.ok) {
-        console.warn(`[ImageGen] Pollinations returned ${response.status}, retrying...`);
-        if (attempt < MAX_RETRIES) {
-          await sleep(RETRY_DELAY);
-        }
+        console.warn(`[ImageGen] Provider returned ${response.status}, retrying...`);
+        if (attempt < MAX_RETRIES) await sleep(RETRY_DELAY);
         continue;
       }
 
@@ -65,39 +81,56 @@ export async function generateBlogCoverImage(imageConcept, options = {}) {
       const buffer = Buffer.from(arrayBuffer);
       const bufferSize = buffer.length;
 
-      console.log(`[ImageGen] Received image: ${(bufferSize / 1024 / 1024).toFixed(2)}MB`);
+      console.log(`[ImageGen] Received buffer: ${(bufferSize / 1024).toFixed(1)}KB`);
 
-      // Check if this is a placeholder/error response.
       if (bufferSize < MIN_VALID_IMAGE_SIZE) {
-        console.warn(
-          `[ImageGen] Detected tiny placeholder response (${(bufferSize / 1024).toFixed(1)}KB). Retrying with new seed...`
-        );
-        if (attempt < MAX_RETRIES) {
-          await sleep(RETRY_DELAY);
-        }
+        console.warn(`[ImageGen] Detected tiny placeholder (${(bufferSize / 1024).toFixed(1)}KB). Retrying with new seed...`);
+        if (attempt < MAX_RETRIES) await sleep(RETRY_DELAY);
         continue;
       }
 
+      // Pre-Upload Vision Quality Audit (Gemini Multimodal)
+      let auditResult = null;
+      if (auditQuality && (options.blog || options.visualDirection)) {
+        console.log("[ImageGen] Running pre-upload multimodal vision audit...");
+        auditResult = await auditBlogImageQuality({
+          imageBuffer: buffer,
+          blog: options.blog || {},
+          prompt: effectivePrompt,
+          visualDirection: options.visualDirection || "",
+        });
+
+        console.log(`[ImageGen] Vision Audit Score: ${auditResult.score}/10 (Passed: ${auditResult.passed})`);
+
+        if (!auditResult.passed && attempt < MAX_RETRIES) {
+          console.warn(`[ImageGen] Quality check rejected image: ${auditResult.critique}. Retrying...`);
+          // Enrich prompt slightly with auditor recommendations if available
+          if (auditResult.recommendations && auditResult.recommendations !== "None") {
+            effectivePrompt = `${effectivePrompt}. Note: ${auditResult.recommendations.slice(0, 150)}`;
+          }
+          await sleep(RETRY_DELAY);
+          continue;
+        }
+      }
+
       // Upload to Cloudinary using signed server-side upload
-      console.log("[ImageGen] Uploading to Cloudinary...");
+      console.log("[ImageGen] Uploading verified image to Cloudinary...");
       const result = await uploadImageBufferToCloudinary(buffer, "blog-cover");
 
       if (result && result.url) {
-        console.log(`[ImageGen] ✅ Successfully generated and uploaded cover image: ${result.url}`);
+        console.log(`[ImageGen] ✅ Successfully uploaded to Cloudinary: ${result.url}`);
         return {
           url: result.url,
           publicId: result.publicId,
+          audit: auditResult,
+          bufferSize,
         };
       }
 
-      if (attempt < MAX_RETRIES) {
-        await sleep(RETRY_DELAY);
-      }
+      if (attempt < MAX_RETRIES) await sleep(RETRY_DELAY);
     } catch (error) {
-      console.error(`[ImageGen] Attempt ${attempt} failed:`, error.message);
-      if (attempt < MAX_RETRIES) {
-        await sleep(RETRY_DELAY);
-      }
+      console.error(`[ImageGen] Attempt ${attempt} failed:`, error?.message || error);
+      if (attempt < MAX_RETRIES) await sleep(RETRY_DELAY);
     }
   }
 
@@ -107,16 +140,14 @@ export async function generateBlogCoverImage(imageConcept, options = {}) {
 
 /**
  * Upload image buffer to Cloudinary using signed server-side upload.
- * Unsigned presets do not allow folder overrides — we must sign the request
- * with CLOUDINARY_API_KEY + CLOUDINARY_API_SECRET for server-side cron use.
  * @param {Buffer} imageBuffer - Image data as buffer
  * @param {string} filename - Filename for the upload
  * @returns {Promise<{url: string, publicId: string} | null>}
  */
-async function uploadImageBufferToCloudinary(imageBuffer, filename = "blog-cover") {
+export async function uploadImageBufferToCloudinary(imageBuffer, filename = "blog-cover") {
   try {
     const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-    const apiKey    = process.env.CLOUDINARY_API_KEY;
+    const apiKey = process.env.CLOUDINARY_API_KEY;
     const apiSecret = process.env.CLOUDINARY_API_SECRET;
 
     if (!cloudName || !apiKey || !apiSecret) {
@@ -125,7 +156,7 @@ async function uploadImageBufferToCloudinary(imageBuffer, filename = "blog-cover
       );
     }
 
-    const folder    = "Muhyo-Tech/blog/ai-generated";
+    const folder = "Muhyo-Tech/blog/ai-generated";
     const timestamp = Math.floor(Date.now() / 1000).toString();
 
     // Build the signature string (params must be alphabetically sorted)
