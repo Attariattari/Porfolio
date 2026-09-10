@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server";
+import dbConnect from "@/lib/dbConnect";
+import { SiteConfig } from "@/models/Portfolio";
+import { verifyCronCaller } from "@/lib/cron/cronAuth";
 import { runDailyBlogPipeline } from "@/lib/cron/runDailyBlogPipeline";
 
 export const dynamic = "force-dynamic";
@@ -7,22 +10,29 @@ export const maxDuration = 60;
 
 export async function GET(request) {
     try {
-        if (process.env.CRON_SECRET) {
-            const authorization = request.headers.get("authorization");
-            const url = new URL(request.url);
-            const queryKey = url.searchParams.get("key") || url.searchParams.get("secret") || url.searchParams.get("token");
-            const isAuthorized =
-                authorization === `Bearer ${process.env.CRON_SECRET}` ||
-                queryKey === process.env.CRON_SECRET;
+        await dbConnect();
 
-            if (!isAuthorized) {
-                return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
-            }
+        const auth = await verifyCronCaller(request, { permissionModule: "blogs" });
+        if (!auth.authorized) {
+            return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+        }
+
+        // Record Cron heartbeat if triggered by scheduler or cron service
+        if (auth.source === "vercel-cron" || auth.source === "external-cron" || auth.source === "cron-service") {
+            await SiteConfig.updateOne(
+                {},
+                {
+                    $set: {
+                        "blogAutomation.lastVercelCronAt": new Date(),
+                        "blogAutomation.lastVercelCronStatus": "active",
+                    },
+                }
+            ).catch((err) => console.error("[Cron Heartbeat Record Error]:", err.message));
         }
 
         const result = await runDailyBlogPipeline({
             baseUrl: new URL(request.url).origin,
-            source: "primary",
+            source: auth.source,
             backlogLimit: 2,
         });
 

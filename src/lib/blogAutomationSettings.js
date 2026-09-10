@@ -22,6 +22,8 @@ export function sanitizeBlogAutomationSettings(value = {}) {
     dailyQuantity: Math.min(12, Math.max(1, Math.trunc(Number(value.dailyQuantity) || BLOG_AUTOMATION_DEFAULTS.dailyQuantity))),
     intervalHours: Math.min(168, Math.max(1, Math.trunc(Number(value.intervalHours) || BLOG_AUTOMATION_DEFAULTS.intervalHours))),
     customScheduledAt: validCustomScheduledAt,
+    lastVercelCronAt: value.lastVercelCronAt ? new Date(value.lastVercelCronAt) : null,
+    lastVercelCronStatus: value.lastVercelCronStatus || null,
     updatedAt: value.updatedAt ? new Date(value.updatedAt) : null,
     updatedBy: value.updatedBy || null,
   };

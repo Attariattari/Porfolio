@@ -538,6 +538,8 @@ const SiteConfigSchema = new mongoose.Schema({
         dailyQuantity: { type: Number, min: 1, max: 12, default: 1 },
         intervalHours: { type: Number, min: 1, max: 168, default: 24 },
         customScheduledAt: { type: Date, default: null },
+        lastVercelCronAt: { type: Date, default: null },
+        lastVercelCronStatus: { type: String, default: null },
         updatedAt: { type: Date, default: Date.now },
         updatedBy: { type: String },
     },

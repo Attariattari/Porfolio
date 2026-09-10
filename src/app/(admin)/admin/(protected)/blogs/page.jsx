@@ -14,7 +14,7 @@ import ImageUploader from "@/components/admin/ImageUploader";
 import { Controller } from "react-hook-form";
 import { AnimatePresence, motion } from "framer-motion";
 import { format } from "date-fns";
-import { Sparkles, CheckCircle2, Mail, RefreshCcw, Copy, BookOpen, Search, Pencil, Trash2, ExternalLink, Star, Plus, Download, Upload, Share2, Clock3, Save, X, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, BrainCircuit, Target, CheckSquare, Square, Check } from "lucide-react";
+import { Sparkles, CheckCircle2, Mail, RefreshCcw, Copy, BookOpen, Search, Pencil, Trash2, ExternalLink, Star, Plus, Download, Upload, Share2, Clock3, Save, X, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, BrainCircuit, Target, CheckSquare, Square, Check, AlertCircle } from "lucide-react";
 import AIBlogProgress from "@/components/admin/AIBlogProgress";
 import SocialShareKitModal from "@/components/admin/SocialShareKitModal";
 import BloggerPostModal from "@/components/admin/BloggerPostModal";
@@ -661,7 +661,12 @@ export default function BlogsPage() {
     setIsDueTriggering(true);
     const toastId = toast.loading("⚡ Target time reached! AI generating scheduled blog...");
     try {
-      const res = await fetch("/api/cron/blog-pipeline");
+      const res = await fetch("/api/cron/blog-pipeline", {
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+        },
+      });
       const data = await res.json();
       if (data.success && data.dailyBlogId) {
         toast.success("🎉 Scheduled AI blog generated successfully!", { id: toastId });
@@ -671,7 +676,7 @@ export default function BlogsPage() {
         toast.info(data.results.step1.message || "Schedule updated.", { id: toastId });
         await fetchAutomationSettings();
       } else {
-        toast.error(data.message || "Automated generation encountered an issue.", { id: toastId });
+        toast.error(data.message || data.error || "Automated generation encountered an issue.", { id: toastId });
       }
     } catch (err) {
       toast.error("Network error executing scheduled generation.", { id: toastId });
@@ -1802,13 +1807,13 @@ function BlogPublishCountdown({
   saving = false,
 }) {
   const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft(settings));
-  const [isLocalHost, setIsLocalHost] = useState(false);
+  const [clientIsLocalHost, setClientIsLocalHost] = useState(false);
   const autoTriggerRef = useRef(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const host = window.location.hostname;
-      setIsLocalHost(host === "localhost" || host === "127.0.0.1" || host.startsWith("192.168."));
+      setClientIsLocalHost(host === "localhost" || host === "127.0.0.1" || host.startsWith("192.168."));
     }
   }, []);
 
@@ -1832,6 +1837,13 @@ function BlogPublishCountdown({
       }
     }
   }, [timeLeft.isDue, settings?.enabled, settings?.customScheduledAt, settings?.nextEligibleAt, onTriggerDue, isDueTriggering]);
+
+  const isLocal = Boolean(
+    settings?.isLocalHost !== undefined ? settings.isLocalHost : clientIsLocalHost
+  );
+  const cronStatus = settings?.cronStatus || (isLocal ? "local" : "not_configured");
+  const isCronActive = cronStatus === "active";
+  const isCronMissing = !isLocal && cronStatus === "not_configured";
 
   if (settings?.enabled === false) {
     return (
@@ -1900,11 +1912,27 @@ function BlogPublishCountdown({
             </span>
           </div>
           <div>
-            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.24em] text-violet-300">
-              {isCustomTimer ? "Custom Target Schedule Active" : "Next Publication Schedule"}
+            <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[.24em] text-violet-300">
+              <span>{isCustomTimer ? "Custom Target Schedule Active" : "Next Publication Schedule"}</span>
               {isCustomTimer && (
                 <span className="rounded-full border border-violet-400/40 bg-violet-400/15 px-2 py-0.5 text-[8px] font-extrabold tracking-wider text-violet-200">
                   Target Override
+                </span>
+              )}
+              {/* Clean 3-State Status Badge */}
+              {isLocal ? (
+                <span className="rounded-full border border-sky-400/40 bg-sky-400/15 px-2 py-0.5 text-[8px] font-extrabold tracking-wider text-sky-200">
+                  Local Dev Mode
+                </span>
+              ) : isCronActive ? (
+                <span className="rounded-full border border-emerald-400/40 bg-emerald-500/20 px-2 py-0.5 text-[8px] font-extrabold tracking-wider text-emerald-300 inline-flex items-center gap-1">
+                  <span className="size-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                  Cron Active
+                </span>
+              ) : (
+                <span className="rounded-full border border-amber-400/40 bg-amber-400/15 px-2 py-0.5 text-[8px] font-extrabold tracking-wider text-amber-300 inline-flex items-center gap-1">
+                  <AlertCircle className="size-2.5 text-amber-400" />
+                  Cron Pending
                 </span>
               )}
             </div>
@@ -1913,11 +1941,20 @@ function BlogPublishCountdown({
                 <span className="font-semibold text-emerald-300">✓ Today&apos;s daily quota ({settings.generatedTodayCount || 0}/{settings.dailyQuantity}) complete</span>
               ) : timeLeft.isDue ? (
                 <span className="font-semibold text-emerald-300">
-                  ⚡ {isCustomTimer ? "Custom target eligible now" : "Eligible for publication now"}
-                  {!isLocalHost ? " (Will execute on next scheduled cron)" : ""}
+                  ⚡ {isCustomTimer
+                    ? "Custom target eligible now"
+                    : isLocal
+                    ? "Eligible for publication now (Local trigger ready)"
+                    : isCronActive
+                    ? "Eligible for publication now (Will execute on next scheduled cron)"
+                    : "Eligible for publication now (Cron pending setup — trigger manually below)"}
                 </span>
               ) : (
-                <span>Next {isCustomTimer ? "custom target" : "automated"} article will run at <span className="font-semibold text-white">{targetDateFormatted}</span></span>
+                <span>
+                  Next {isCustomTimer ? "custom target" : "automated"} article scheduled for{" "}
+                  <span className="font-semibold text-white">{targetDateFormatted}</span>
+                  {isCronActive ? " (via Scheduled Cron)" : isLocal ? " (Local Dev)" : ""}
+                </span>
               )}
             </p>
           </div>
@@ -1934,7 +1971,13 @@ function BlogPublishCountdown({
             <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
               <div className="flex items-center gap-2 rounded-xl border border-emerald-400/40 bg-emerald-500/20 px-3.5 py-2.5 text-xs font-bold text-emerald-300 shadow-md shadow-emerald-500/10 animate-pulse">
                 <Sparkles className="size-4 text-emerald-300" />
-                {isCustomTimer ? "Custom Target Due" : isLocalHost ? "Eligible Now" : "Eligible Now (Cron)"}
+                {isCustomTimer
+                  ? "Custom Target Due"
+                  : isLocal
+                  ? "Eligible Now (Local)"
+                  : isCronActive
+                  ? "Eligible Now (Vercel Cron)"
+                  : "Eligible Now (Manual Trigger)"}
               </div>
               <button
                 type="button"
@@ -1982,6 +2025,17 @@ function BlogPublishCountdown({
           )}
         </div>
       </div>
+
+      {/* Online Environment Warning if Cron is not active/configured */}
+      {isCronMissing && !timeLeft.isQuotaComplete && (
+        <div className="mt-4 flex items-center gap-2.5 rounded-xl border border-amber-400/25 bg-amber-500/10 px-4 py-2.5 text-xs text-amber-200">
+          <AlertCircle className="size-4 shrink-0 text-amber-400" />
+          <p className="leading-relaxed">
+            <strong className="font-semibold text-amber-300">Automated Cron is not active / configured yet:</strong>{" "}
+            Background publishing will run automatically once cron jobs (Vercel Cron or external cron service) start hitting the API. In the meantime, you can trigger articles using the timer or manual generate button above.
+          </p>
+        </div>
+      )}
 
       {/* Custom Target Timer Control Bar - Integrated Directly on Countdown Card */}
       <div className="mt-5 pt-4 border-t border-white/[0.08] -mx-5 -mb-5 px-5 py-3.5 bg-slate-950/60 backdrop-blur-md rounded-b-[20px] flex flex-col md:flex-row md:items-center md:justify-between gap-3">

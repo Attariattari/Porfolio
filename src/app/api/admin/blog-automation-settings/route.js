@@ -31,8 +31,29 @@ async function enrichWithScheduleTimes(settings) {
     .lean();
   const lastGeneratedAt = lastAutomatedBlog?.generatedAt || lastAutomatedBlog?.createdAt || null;
   const nextEligibleAt = getNextAutomationAt({ settings, lastGeneratedAt });
+
+  const isVercelDeployment = Boolean(process.env.VERCEL || process.env.NEXT_PUBLIC_VERCEL_ENV);
+  const isLocalHost = !isVercelDeployment;
+
+  let cronStatus = "local";
+  if (isVercelDeployment) {
+    const lastCronTime = settings.lastVercelCronAt ? new Date(settings.lastVercelCronAt).getTime() : 0;
+    const nowTime = Date.now();
+    // If Vercel Cron ran within the last 48 hours or CRON_SECRET is configured with active heartbeat
+    if (lastCronTime > 0 && (nowTime - lastCronTime) < 48 * 3600 * 1000) {
+      cronStatus = "active";
+    } else {
+      cronStatus = "not_configured";
+    }
+  }
+
   return {
     ...settings,
+    isLocalHost,
+    isVercelDeployment,
+    cronStatus,
+    lastVercelCronAt: settings.lastVercelCronAt ? new Date(settings.lastVercelCronAt).toISOString() : null,
+    lastVercelCronStatus: settings.lastVercelCronStatus || null,
     customScheduledAt: settings.customScheduledAt ? new Date(settings.customScheduledAt).toISOString() : null,
     generatedTodayCount: automatedToday.length,
     lastGeneratedAt: lastGeneratedAt ? new Date(lastGeneratedAt).toISOString() : null,

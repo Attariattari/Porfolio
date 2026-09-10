@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { verifyCronCaller } from "@/lib/cron/cronAuth";
 import { updateFeaturedRankings } from "@/lib/ai/featuredEngine";
 import { runDailyBlogPipeline } from "@/lib/cron/runDailyBlogPipeline";
 
@@ -7,14 +8,12 @@ export const runtime = "nodejs";
 export const maxDuration = 60;
 
 export async function GET(request) {
-  if (process.env.CRON_SECRET) {
-    const authorization = request.headers.get("authorization");
-    if (authorization !== `Bearer ${process.env.CRON_SECRET}`) {
-      return NextResponse.json(
-        { success: false, message: "Unauthorized" },
-        { status: 401 },
-      );
-    }
+  const auth = await verifyCronCaller(request, { permissionModule: "blogs" });
+  if (!auth.authorized) {
+    return NextResponse.json(
+      { success: false, message: "Unauthorized" },
+      { status: 401 },
+    );
   }
 
   // This second cron doubles as a safe catch-up. The shared workflow enforces
