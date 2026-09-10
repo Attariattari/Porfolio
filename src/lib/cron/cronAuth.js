@@ -52,6 +52,7 @@ export async function verifyCronCaller(request, { permissionModule = "blogs" } =
       return {
         authorized: true,
         source: "admin-ui",
+        actorEmail: session.email,
       };
     }
   } catch (authErr) {

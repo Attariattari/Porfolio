@@ -201,7 +201,7 @@ export default function AuthContainer({
         setView("pending");
       } else {
         setNewPasskey(data.passkey);
-        toast.success("Your account is ready.");
+        toast.success("Your account is ready. Your new passkey has been emailed to you!");
         setView("success");
       }
     } catch {
@@ -451,7 +451,7 @@ export default function AuthContainer({
                 <motion.div key="success" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="text-center">
                   <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-300"><CheckCircle2 className="h-8 w-8" /></div>
                   <h2 className="text-3xl font-semibold tracking-[-0.035em]">Account ready</h2>
-                  <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-muted-foreground">Save this passkey securely. You’ll need it when signing in manually.</p>
+                  <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-muted-foreground">Save this passkey securely. A copy has also been sent to your email address.</p>
                   <div className="mt-7 rounded-2xl border border-border bg-muted/50 p-5 text-left">
                     <div className="mb-3 flex items-center justify-between"><span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Your passkey</span><ShieldCheck className="h-4 w-4 text-emerald-500" /></div>
                     <div className="flex items-center gap-3"><code className="min-w-0 flex-1 overflow-x-auto rounded-lg border border-border bg-background px-3 py-3 text-center text-lg font-semibold tracking-wider text-foreground">{newPasskey}</code><button onClick={copyPasskey} aria-label="Copy passkey" className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-border text-muted-foreground transition hover:bg-background hover:text-foreground">{copied ? <Check className="h-5 w-5 text-emerald-500" /> : <Copy className="h-5 w-5" />}</button></div>

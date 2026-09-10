@@ -36,7 +36,7 @@ async function hasActiveEmailedPrompt(blogId, now = new Date()) {
   }));
 }
 
-async function sendPromptWhenRequired(blog, baseUrl) {
+async function sendPromptWhenRequired(blog, baseUrl, actorEmail = null) {
   if (!blog || hasImage(blog)) {
     return {
       id: blog?._id,
@@ -58,6 +58,7 @@ async function sendPromptWhenRequired(blog, baseUrl) {
   const result = await finalizeBlogPipeline(blog._id, {
     generateImage: false,
     baseUrl,
+    actorEmail,
   });
 
   return {
@@ -77,6 +78,7 @@ async function sendPromptWhenRequired(blog, baseUrl) {
 export async function runDailyBlogPipeline({
   baseUrl,
   source = "primary",
+  actorEmail = null,
   backlogLimit = 2,
 } = {}) {
   await dbConnect();
@@ -183,7 +185,7 @@ export async function runDailyBlogPipeline({
   }
 
   if (dailyBlog) {
-    results.step2.push(await sendPromptWhenRequired(dailyBlog, baseUrl));
+    results.step2.push(await sendPromptWhenRequired(dailyBlog, baseUrl, actorEmail));
   }
 
   const activePromptBlogIds = await BlogImageUploadLink.distinct("blogId", {

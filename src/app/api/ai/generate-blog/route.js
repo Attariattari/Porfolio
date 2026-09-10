@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { runBlogAutomationPipeline, finalizeBlogPipeline } from "@/lib/blogAutomation";
 import { getBlogAutomationSettings } from "@/lib/blogAutomationSettings";
+import { getAuthSession } from "@/lib/auth";
+import { verifyAuth } from "@/lib/adminAuth";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -12,6 +14,17 @@ export async function GET(request) {
     const action = searchParams.get("action"); // 'init' or 'finalize'
     const blogId = searchParams.get("id");
     const generateImage = searchParams.get("generateImage") === "true";
+
+    let session = await getAuthSession();
+    if (!session) {
+        try {
+            const authResult = await verifyAuth(request);
+            if (authResult?.authorized && authResult.user) {
+                session = authResult.user;
+            }
+        } catch (_) {}
+    }
+    const actorEmail = session?.email || null;
 
     const encoder = new TextEncoder();
 
@@ -41,7 +54,7 @@ export async function GET(request) {
 
                         const result = await finalizeBlogPipeline(
                             blogId,
-                            { generateImage: true, baseUrl },
+                            { generateImage: true, baseUrl, actorEmail },
                             (progress) => sendUpdate(progress),
                         );
 
@@ -51,16 +64,19 @@ export async function GET(request) {
                                 message: result.status === "generated"
                                     ? "Blog image generated successfully."
                                     : result.emailSent
-                                      ? "Image generation failed; secure upload email sent."
+                                      ? (actorEmail
+                                          ? `Image generation failed; secure upload email sent to ${actorEmail}.`
+                                          : "Image generation failed; secure upload email sent to Super Admin.")
                                       : "Image generation failed and email was not confirmed.",
                                 emailSent: !!result.emailSent,
                                 workflowStatus: result.status,
+                                targetEmail: actorEmail,
                             },
                         });
                     } else {
                         const result = await finalizeBlogPipeline(
                             blogId,
-                            { generateImage: false, baseUrl },
+                            { generateImage: false, baseUrl, actorEmail },
                             (progress) => {
                                 sendUpdate(progress);
                             }
@@ -70,11 +86,14 @@ export async function GET(request) {
                             status: "COMPLETED",
                             details: {
                                 message: result.emailSent
-                                    ? "Secure image prompt email sent."
+                                    ? (actorEmail
+                                        ? `Secure image prompt email sent to ${actorEmail}.`
+                                        : "Secure image prompt email sent.")
                                     : "Manual image upload is required, but email was not confirmed.",
                                 emailSent: !!result.emailSent,
                                 workflowStatus: "manual_required",
                                 uploadLinkId: result.uploadLinkId,
+                                targetEmail: actorEmail,
                             },
                         });
                     }
@@ -93,9 +112,18 @@ export async function GET(request) {
                         return;
                     }
 
-                    const result = await runBlogAutomationPipeline(0, (progress) => {
-                        sendUpdate(progress);
-                    });
+                    const result = await runBlogAutomationPipeline(
+                        0,
+                        (progress) => {
+                            sendUpdate(progress);
+                        },
+                        null,
+                        null,
+                        {
+                            actorEmail,
+                            force: searchParams.get("force") === "true",
+                        }
+                    );
 
                     if (!result?.success) {
                         const rawMsg = result?.error || result?.details?.message || "AI blog generation failed.";

@@ -1671,11 +1671,14 @@ export async function finalizeBlogPipeline(
       const ensured = await ensureBlogImage(blogId, {
         skipGeneration: true,
         baseUrl: options.baseUrl,
+        actorEmail: options.actorEmail,
       });
 
       report("MANUAL_IMAGE_REQUIRED", {
         message: ensured.emailSent
-          ? "Secure upload email sent to Super Admin."
+          ? options.actorEmail
+            ? `Secure upload email sent to ${options.actorEmail}.`
+            : "Secure upload email sent to Super Admin."
           : "Manual upload is required, but email could not be sent.",
         emailSent: !!ensured.emailSent,
         uploadLinkId: ensured.uploadLinkId,
@@ -1687,6 +1690,7 @@ export async function finalizeBlogPipeline(
       maxImageRetries: 1,
       providerTimeoutMs: 12000,
       baseUrl: options.baseUrl,
+      actorEmail: options.actorEmail,
     });
     report(
       ensured.status === "generated" ? "IMAGE_COMPLETED" : "MANUAL_IMAGE_REQUIRED",
@@ -1695,7 +1699,9 @@ export async function finalizeBlogPipeline(
           ensured.status === "generated"
             ? "AI image generated and attached to the blog."
             : ensured.emailSent
-              ? "AI image failed. Secure upload email sent to Super Admin."
+              ? options.actorEmail
+                ? `AI image failed. Secure upload email sent to ${options.actorEmail}.`
+                : "AI image failed. Secure upload email sent to Super Admin."
               : "AI image failed. Manual upload is required, but email could not be sent.",
         emailSent: !!ensured.emailSent,
         uploadLinkId: ensured.uploadLinkId,

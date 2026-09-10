@@ -130,7 +130,7 @@ export async function ensureBlogImage(blogId, options = {}) {
       return { success: true, status: "generated", blog };
     }
 
-    const targetEmail = getSuperAdminEmail();
+    const targetEmail = options.actorEmail || getSuperAdminEmail();
     blog.imageStatus = "manual_required";
     blog.imageGenerated = false;
     blog.imageGenerationError = skipGeneration
@@ -144,7 +144,7 @@ export async function ensureBlogImage(blogId, options = {}) {
       const { rawToken, link } = await createBlogImageUploadLink({
         blog,
         targetEmail,
-        createdBy: "ai-blog-automation",
+        createdBy: options.actorEmail || "ai-blog-automation",
       });
       uploadLink = link;
       blog.manualImageUploadTokenId = link._id;
@@ -180,7 +180,7 @@ export async function ensureBlogImage(blogId, options = {}) {
       finishedAt: new Date(),
       status: "partial_success",
       message: emailSent
-        ? "AI blog generated; manual image upload email sent."
+        ? `AI blog generated; manual image upload email sent to ${targetEmail}.`
         : "AI blog generated; manual image upload required.",
     });
 
@@ -189,6 +189,7 @@ export async function ensureBlogImage(blogId, options = {}) {
       status: "manual_required",
       emailSent,
       uploadLinkId: uploadLink?._id?.toString(),
+      targetEmail,
       blog,
     };
   } catch (error) {

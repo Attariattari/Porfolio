@@ -165,7 +165,7 @@ export async function addNotification(payload) {
 export async function sendVerificationCode(email, type = "setup") {
     if (!email) return { success: false, message: "Email required." };
     await dbConnect();
-    const normalizedEmail = email.toLowerCase();
+    const normalizedEmail = email.toLowerCase().trim();
     const code = Math.floor(100000 + Math.random() * 900000).toString();
 
     // Upsert pending code
@@ -174,7 +174,7 @@ export async function sendVerificationCode(email, type = "setup") {
     const subject =
         type === "setup" ?
         "Admin Identity Verification" :
-        "Passkey Reset Verification";
+        "Passkey Reset Verification Code";
     try {
         const mailResult = await sendEmail({
             to: normalizedEmail,
@@ -182,7 +182,7 @@ export async function sendVerificationCode(email, type = "setup") {
             fromName: "Muhyo Tech Security",
             html: generateEmailTemplate({
                 userName: formatName(normalizedEmail.split("@")[0]),
-                type: "VERIFICATION",
+                type: type === "reset" ? "RESET_VERIFICATION" : "VERIFICATION",
                 actionData: { code },
                 ctaUrl: `${SITE_URL}/admin/login`,
             }),
@@ -197,12 +197,14 @@ export async function sendVerificationCode(email, type = "setup") {
 export async function verifyAndHandleRequest(email, code) {
     if (!email) return { success: false, message: "Email required." };
     await dbConnect();
-    const normalizedEmail = email.toLowerCase();
+    const normalizedEmail = email.toLowerCase().trim();
     const pending = await PendingCode.findOne({ email: normalizedEmail, code });
 
     if (!pending || new Date() > pending.expiry) {
         return { success: false, message: "Invalid or expired token sequence." };
     }
+
+    const isReset = pending.type === "reset";
 
     // ⭐ PROFESSIONAL: Dynamically resolve Super Admin from Database or Environment
     const { getSuperAdminConfigWithFallback } =
@@ -213,7 +215,9 @@ export async function verifyAndHandleRequest(email, code) {
     const { superAdminEmail, superAdminName } =
     await getSuperAdminConfigWithFallback(dbConnect, SiteConfig);
 
-    const isSuperAdmin = normalizedEmail === superAdminEmail;
+    const isSuperAdmin =
+        normalizedEmail === superAdminEmail?.toLowerCase() ||
+        normalizedEmail === ROOT_ADMIN_EMAIL?.toLowerCase();
 
     // Check Blacklist (24h for removed users)
     const existingUser = await User.findOne({ email: normalizedEmail });
@@ -233,21 +237,51 @@ export async function verifyAndHandleRequest(email, code) {
 
     await PendingCode.deleteOne({ _id: pending._id });
 
-    if (isSuperAdmin) {
+    // Handle Reset for Super Admin OR existing approved admin/user
+    if (isSuperAdmin || (isReset && existingUser && existingUser.status === "approved")) {
         const passkey = Math.random().toString(36).slice(-10).toUpperCase();
         const hashedPasskey = hashPasskey(passkey);
-        const user = await User.findOneAndUpdate({ email: normalizedEmail }, {
-            name: superAdminName,
-            passkey: hashedPasskey,
-            role: "super-admin",
-            status: "approved",
-            createdAt: new Date(),
-        }, { upsert: true, new: true }, );
+
+        let targetRole = isSuperAdmin ? "super-admin" : (existingUser?.role || "admin");
+        let targetName = isSuperAdmin ? (superAdminName || "Super Admin") : (existingUser?.name || formatName(normalizedEmail.split("@")[0]));
+
+        const user = await User.findOneAndUpdate(
+            { email: normalizedEmail },
+            {
+                name: targetName,
+                passkey: hashedPasskey,
+                role: targetRole,
+                status: "approved",
+                lastPasswordChangedAt: new Date(),
+            },
+            { upsert: true, new: true }
+        );
+
+        // Always send email with the new passkey so user receives it in their inbox!
+        try {
+            await sendEmail({
+                to: normalizedEmail,
+                subject: "[Muhyo] Your New Admin Passkey",
+                fromName: "Muhyo Tech Security",
+                html: generateEmailTemplate({
+                    userName: formatName(targetName),
+                    type: "PASSKEY_RESET",
+                    actionData: { passkey },
+                    ctaUrl: `${SITE_URL}/admin/login`,
+                }),
+            });
+        } catch (mailErr) {
+            console.warn("[Auth] Failed to send new passkey email:", mailErr.message);
+        }
+
         // Auto-login on verification for Super Admin
-        await login(normalizedEmail, passkey);
-        return { success: true, role: "super-admin", passkey };
+        if (isSuperAdmin) {
+            await login(normalizedEmail, passkey);
+        }
+
+        return { success: true, role: targetRole, passkey };
     } else {
-        // Check if user already exists
+        // Setup flow for new or pending user
         const isReverify = !!existingUser;
         let user;
         const generatedName = normalizedEmail.split("@")[0];
@@ -778,7 +812,11 @@ export async function getAllNotifications() {
 export async function isUserActive(email) {
     if (!email) return false;
     await dbConnect();
-    const user = await User.findOne({ email, status: "approved" });
+    const normalizedEmail = email.toLowerCase().trim();
+    if (normalizedEmail === ROOT_ADMIN_EMAIL?.toLowerCase()) {
+        return true;
+    }
+    const user = await User.findOne({ email: normalizedEmail, status: "approved" });
     return !!user;
 }
 

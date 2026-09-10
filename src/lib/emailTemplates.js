@@ -200,8 +200,23 @@ export const generateIdentityTemplate = ({ userName, type, actionData, ctaUrl })
             highlightBoxHtml = `
                 <div style="background-color: #f8fafc; border: 2px dashed ${BRAND_ACCENT}; border-radius: 16px; padding: 24px; text-align: center; margin-bottom: 32px;">
                     <div style="font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.2em; color: ${BRAND_GRAY}; margin-bottom: 8px;">AUTHORITY CODE</div>
-                    <div style="font-size: 32px; font-weight: 800; letter-spacing: 0.3em; color: ${BRAND_DARK};">${actionData.code}</div>
-                    <div style="font-size: 11px; color: ${BRAND_GRAY}; margin-top: 8px;">Expired in 5 minutes. Use promptly.</div>
+                    <div style="font-size: 32px; font-weight: 800; letter-spacing: 0.3em; color: ${BRAND_DARK}; font-family: monospace;">${actionData?.code || ""}</div>
+                    <div style="font-size: 11px; color: ${BRAND_GRAY}; margin-top: 8px;">Expires in 5 minutes. Enter this code on the admin screen.</div>
+                </div>
+            `;
+            break;
+
+        case "RESET_VERIFICATION":
+            title = "Passkey Reset Code";
+            preheader = "Your 6-digit passkey reset verification code.";
+            icon = "🔐";
+            message = `Greetings <b>${userName}</b>. A password reset was requested for your administrator account. Enter the 6-digit verification code below on the recovery screen to obtain your new passkey.`;
+            ctaLabel = "Go to Login";
+            highlightBoxHtml = `
+                <div style="background-color: #f8fafc; border: 2px dashed ${BRAND_ACCENT}; border-radius: 16px; padding: 24px; text-align: center; margin-bottom: 32px;">
+                    <div style="font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.2em; color: ${BRAND_GRAY}; margin-bottom: 8px;">RESET VERIFICATION CODE</div>
+                    <div style="font-size: 32px; font-weight: 800; letter-spacing: 0.3em; color: ${BRAND_DARK}; font-family: monospace;">${actionData?.code || ""}</div>
+                    <div style="font-size: 11px; color: ${BRAND_GRAY}; margin-top: 8px;">Expires in 5 minutes. Enter this code on the login page to proceed.</div>
                 </div>
             `;
             break;
@@ -214,8 +229,24 @@ export const generateIdentityTemplate = ({ userName, type, actionData, ctaUrl })
             highlightBoxHtml = `
                 <div style="background-color: #f0fdf9; border: 1px solid #14b8a6; border-radius: 16px; padding: 24px; text-align: center; margin-bottom: 32px;">
                     <div style="font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.2em; color: #134e4a; margin-bottom: 8px;">SECURE PASSKEY</div>
-                    <div style="font-size: 20px; font-weight: 800; letter-spacing: 0.1em; color: #0f766e; font-family: monospace;">${actionData.passkey}</div>
-                    <div style="font-size: 11px; color: #115e59; margin-top: 8px;">Save this record. Keys are not cached after initial deployment.</div>
+                    <div style="font-size: 22px; font-weight: 800; letter-spacing: 0.15em; color: #0f766e; font-family: monospace;">${actionData?.passkey || ""}</div>
+                    <div style="font-size: 11px; color: #115e59; margin-top: 8px;">Save this record securely. Keys are not cached after initial deployment.</div>
+                </div>
+            `;
+            break;
+
+        case "REVERIFY_APPROVED":
+        case "PASSKEY_RESET":
+            title = "New Passkey Generated";
+            preheader = "Your administrative passkey has been successfully updated.";
+            icon = "🔑";
+            message = `Greetings <b>${userName}</b>. Your administrator passkey has been successfully reset. Please use your new secure passkey below to sign in to the Control Center.`;
+            ctaLabel = "Sign In with New Passkey";
+            highlightBoxHtml = `
+                <div style="background-color: #f0fdf9; border: 1px solid #14b8a6; border-radius: 16px; padding: 24px; text-align: center; margin-bottom: 32px;">
+                    <div style="font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.2em; color: #134e4a; margin-bottom: 8px;">YOUR NEW PASSKEY</div>
+                    <div style="font-size: 24px; font-weight: 800; letter-spacing: 0.15em; color: #0f766e; font-family: monospace;">${actionData?.passkey || ""}</div>
+                    <div style="font-size: 11px; color: #115e59; margin-top: 8px;">Save this record securely. For your security, passkeys are not stored in plain text.</div>
                 </div>
             `;
             break;
@@ -234,6 +265,27 @@ export const generateIdentityTemplate = ({ userName, type, actionData, ctaUrl })
             message = `Security Alert: Your administrative authority associated with <b>${userName}</b> has been revoked. All active sessions have been terminated.`;
             ctaLabel = "Contact Muhyo Tech Security";
             icon = "⚠️";
+            break;
+
+        default:
+            title = actionData?.passkey ? "Your Admin Passkey" : "Security Notification";
+            preheader = "Important update regarding your administrator account.";
+            message = `Greetings <b>${userName}</b>. You have an administrative security update regarding your account.`;
+            if (actionData?.passkey) {
+                highlightBoxHtml = `
+                    <div style="background-color: #f0fdf9; border: 1px solid #14b8a6; border-radius: 16px; padding: 24px; text-align: center; margin-bottom: 32px;">
+                        <div style="font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.2em; color: #134e4a; margin-bottom: 8px;">SECURE PASSKEY</div>
+                        <div style="font-size: 22px; font-weight: 800; letter-spacing: 0.15em; color: #0f766e; font-family: monospace;">${actionData.passkey}</div>
+                    </div>
+                `;
+            } else if (actionData?.code) {
+                highlightBoxHtml = `
+                    <div style="background-color: #f8fafc; border: 2px dashed ${BRAND_ACCENT}; border-radius: 16px; padding: 24px; text-align: center; margin-bottom: 32px;">
+                        <div style="font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.2em; color: ${BRAND_GRAY}; margin-bottom: 8px;">VERIFICATION CODE</div>
+                        <div style="font-size: 32px; font-weight: 800; letter-spacing: 0.3em; color: ${BRAND_DARK}; font-family: monospace;">${actionData.code}</div>
+                    </div>
+                `;
+            }
             break;
     }
 

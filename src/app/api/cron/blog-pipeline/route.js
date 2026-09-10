@@ -33,6 +33,7 @@ export async function GET(request) {
         const result = await runDailyBlogPipeline({
             baseUrl: new URL(request.url).origin,
             source: auth.source,
+            actorEmail: auth.actorEmail || null,
             backlogLimit: 2,
         });
 

@@ -32,7 +32,19 @@ export default function AIBlogProgress({
   const activeSourceRef = useRef(null);
 
   const startPipeline = (url) => {
-    const eventSource = new EventSource(url);
+    let targetUrl = url;
+    if (typeof window !== "undefined") {
+      const storedToken =
+        localStorage.getItem("admin_token") ||
+        localStorage.getItem("token") ||
+        "";
+      if (storedToken && !targetUrl.includes("token=")) {
+        const separator = targetUrl.includes("?") ? "&" : "?";
+        targetUrl = `${targetUrl}${separator}token=${encodeURIComponent(storedToken)}`;
+      }
+    }
+
+    const eventSource = new EventSource(targetUrl, { withCredentials: true });
     activeSourceRef.current = eventSource;
     let finished = false;
 
@@ -87,7 +99,8 @@ export default function AIBlogProgress({
         if (data.details?.workflowStatus === "blog_completed") {
           toast.success("✅ Blog created! Image generating in background (~2 min)");
         } else if (data.details?.emailSent) {
-          toast.success("Secure upload email sent to Super Admin.");
+          const recipient = data.details?.targetEmail ? ` to ${data.details.targetEmail}` : " to Super Admin";
+          toast.success(`Secure upload email sent${recipient}.`);
         } else if (data.details?.workflowStatus === "manual_required") {
           toast.warning("Manual upload required. Email was not confirmed.");
         } else {
@@ -101,7 +114,7 @@ export default function AIBlogProgress({
       }
 
       if (data.status === "MANUAL_IMAGE_REQUIRED" && data.details?.emailSent) {
-        toast.success("Image email sent. Waiting for manual upload.");
+        toast.success(data.details?.message || "Image email sent. Waiting for manual upload.");
       }
 
       if (data.status === "IMAGE_READY") {

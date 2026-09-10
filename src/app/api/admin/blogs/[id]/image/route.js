@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { Blog } from "@/models/Portfolio";
 import { getAuthSession, checkPermission } from "@/lib/auth";
+import { verifyAuth } from "@/lib/adminAuth";
 import { checkRateLimit, getClientIP } from "@/lib/rateLimit";
 import { ensureBlogImage } from "@/lib/ai/blog/ensureBlogImage";
 import {
@@ -33,7 +34,15 @@ export async function POST(request, { params }) {
     );
   }
 
-  const session = await getAuthSession();
+  let session = await getAuthSession();
+  if (!session) {
+    try {
+      const auth = await verifyAuth(request);
+      if (auth?.authorized && auth?.user) {
+        session = auth.user;
+      }
+    } catch (_) {}
+  }
   if (!isSuperAdmin(session) && !checkPermission(session, "blogs", "edit")) {
     return NextResponse.json(
       { success: false, message: "Access denied." },
@@ -59,7 +68,10 @@ export async function POST(request, { params }) {
     blog.imageGenerated = false;
     blog.imageStatus = "pending";
     await blog.save();
-    const result = await ensureBlogImage(blog._id, { baseUrl });
+    const result = await ensureBlogImage(blog._id, {
+      baseUrl,
+      actorEmail: session?.email,
+    });
     return NextResponse.json({ success: true, status: result.status });
   }
 
@@ -83,7 +95,7 @@ export async function POST(request, { params }) {
   }
 
   if (action === "send_prompt_email" || action === "create_upload_link") {
-    const targetEmail = getSuperAdminEmail();
+    const targetEmail = session?.email || getSuperAdminEmail();
     if (!targetEmail) {
       return NextResponse.json(
         { success: false, message: "Super Admin email is not configured." },
@@ -114,7 +126,7 @@ export async function POST(request, { params }) {
     const { rawToken, link } = await createBlogImageUploadLink({
       blog,
       targetEmail,
-      createdBy: session.email,
+      createdBy: session?.email || "system",
     });
 
     if (action === "send_prompt_email") {
@@ -145,10 +157,11 @@ export async function POST(request, { params }) {
       success: true,
       message:
         action === "send_prompt_email"
-          ? "Secure upload prompt email sent."
+          ? `Secure upload prompt email sent to ${targetEmail}.`
           : "Secure upload link created.",
       uploadLinkId: link._id.toString(),
       expiresAt: link.expiresAt,
+      targetEmail,
     });
   }
 
