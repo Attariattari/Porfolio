@@ -4,6 +4,8 @@ import { SiteConfig } from "@/models/Portfolio";
 import { verifyCronCaller } from "@/lib/cron/cronAuth";
 import { runDailyBlogPipeline } from "@/lib/cron/runDailyBlogPipeline";
 
+import { revalidatePath } from "next/cache";
+
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -36,6 +38,16 @@ export async function GET(request) {
             actorEmail: auth.actorEmail || null,
             backlogLimit: 2,
         });
+
+        if (result?.success) {
+            try {
+                revalidatePath("/");
+                revalidatePath("/blog");
+                revalidatePath("/sitemap.xml");
+            } catch (rErr) {
+                console.warn("[Cron Revalidate Warning]:", rErr.message);
+            }
+        }
 
         return NextResponse.json(result, { status: result.success ? 200 : 500 });
 

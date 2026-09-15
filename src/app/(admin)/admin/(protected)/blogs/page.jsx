@@ -79,6 +79,7 @@ export default function BlogsPage() {
   const [automationSettingsSaving, setAutomationSettingsSaving] = useState(false);
   const [customScheduleInput, setCustomScheduleInput] = useState("");
   const [importing, setImporting] = useState(false);
+  const [isSyncingPublic, setIsSyncingPublic] = useState(false);
 
   useEffect(() => {
     if (automationSettings?.customScheduledAt) {
@@ -764,6 +765,27 @@ export default function BlogsPage() {
     }
   };
 
+  const handleSyncPublicCache = async () => {
+    setIsSyncingPublic(true);
+    try {
+      const response = await fetch("/api/admin/blogs/revalidate", {
+        method: "POST",
+      });
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || "Public cache synchronization failed.");
+      }
+      toast.success(
+        `Public blog page synced live! (${result.liveData?.totalPublished || 0} published articles live)`,
+      );
+      fetchBlogs({ force: true });
+    } catch (err) {
+      toast.error(err.message || "Failed to sync public cache.");
+    } finally {
+      setIsSyncingPublic(false);
+    }
+  };
+
   const handleView = (blog) => {
     if (!blog.slug) {
       toast.error("Entry has no identifier for indexing.");
@@ -1019,6 +1041,17 @@ export default function BlogsPage() {
             >
               <Upload className="size-4 text-muted-foreground transition group-hover:-translate-y-0.5" />
               <span>{importing ? "Importing..." : "Import JSON"}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleSyncPublicCache}
+              disabled={isSyncingPublic}
+              className="group inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-accent/40 bg-accent/10 px-4 text-xs font-bold text-accent shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-accent/20 hover:border-accent disabled:opacity-50"
+              title="Purge static cache and synchronize live article counts to public blog"
+            >
+              <RefreshCcw className={`size-4 text-accent transition duration-500 ${isSyncingPublic ? "animate-spin" : "group-hover:rotate-180"}`} />
+              <span>{isSyncingPublic ? "Syncing..." : "Sync Public"}</span>
             </button>
 
             <button

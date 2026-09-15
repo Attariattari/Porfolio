@@ -13,6 +13,7 @@ export default function Blog({
   initialHasMore = false,
   initialTotal = 0,
   initialCategories = [],
+  latestPublishedDate = null,
 }) {
   if (!data) return null;
 
@@ -58,6 +59,7 @@ export default function Blog({
       trendingTags={trendingTags}
       homeBlogs={homeBlogs}
       showingFeatured={showingFeatured}
+      latestPublishedDate={latestPublishedDate}
     />
   );
 }

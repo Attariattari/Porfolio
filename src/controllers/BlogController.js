@@ -10,7 +10,7 @@ import {
     updateFeaturedRankings,
     triggerFeaturedUpdate,
 } from "@/lib/ai/featuredEngine";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { isLegacyBlogSlug, normalizeBlogServiceLinks } from "@/lib/blogSeo";
 import { scheduleInternalLinkAudit } from "@/lib/ai/blog/internalLinkingEngine";
 import { InternalLinkSuggestion } from "@/models/InternalLinkSuggestion";
@@ -87,13 +87,17 @@ const isPublicBlog = (blog = {}) => {
     return status === "published";
 };
 
-const revalidatePublicBlogPaths = (slug) => {
+export const revalidatePublicBlogPaths = (slug) => {
     try {
         revalidatePath("/");
         revalidatePath("/blog");
         revalidatePath("/sitemap.xml");
         revalidatePath("/llms.txt");
         if (slug) revalidatePath(`/blog/${slug}`);
+        try {
+            revalidateTag("blogs");
+            revalidateTag("public:blogs");
+        } catch {}
     } catch {
         // Revalidation is unavailable when controllers run outside a Next.js
         // request (for example, maintenance scripts). The database write must
@@ -143,10 +147,11 @@ export const BlogController = {
             }
 
             const projection = "title slug summary image featuredImage category tags date createdAt updatedAt generatedAt featured featuredOrder featuredScore qualityScore order publishStatus author readTime views";
-            const [rows, total, rawCategories] = await Promise.all([
+            const [rows, total, rawCategories, latestDoc] = await Promise.all([
                 Blog.find(query).select(projection).sort({ featured: -1, featuredOrder: 1, createdAt: -1, order: 1 }).skip(safeOffset).limit(safeLimit + 1).lean(),
                 Blog.countDocuments(query),
                 Blog.distinct("category", statusCondition),
+                Blog.findOne(statusCondition).sort({ createdAt: -1, generatedAt: -1, date: -1 }).select("date createdAt generatedAt").lean(),
             ]);
             const serialized = serializeDoc(rows).filter((blog) => !isLegacyBlogSlug(blog.slug));
             const cleanCategories = [
@@ -156,11 +161,13 @@ export const BlogController = {
                         .flatMap((c) => String(c).split(/[|,/]/).map((s) => s.trim()).filter(Boolean))
                 ),
             ].sort();
+            const latestPublishedDate = latestDoc?.date || (latestDoc?.createdAt ? new Date(latestDoc.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : null);
             return {
                 items: serialized.slice(0, safeLimit),
                 hasMore: safeOffset + safeLimit < total && serialized.length > safeLimit,
                 total,
                 categories: cleanCategories,
+                latestPublishedDate,
             };
         } catch (error) {
             const fallback = portfolioData.blogs.filter((blog) => isPublicBlog(blog) && !isLegacyBlogSlug(blog.slug));
@@ -173,6 +180,7 @@ export const BlogController = {
                 hasMore: safeOffset + safeLimit < filtered.length,
                 total: filtered.length,
                 categories: [...new Set(fallback.map((blog) => blog.category).filter(Boolean))].sort(),
+                latestPublishedDate: fallback[0]?.date || null,
             };
         }
     },

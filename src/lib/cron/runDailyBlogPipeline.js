@@ -13,6 +13,7 @@ import {
   failJobSlot,
 } from "./distributedLock.js";
 import { getWorkerId } from "./workerIdentity.js";
+import { revalidatePublicBlogPaths } from "@/controllers/BlogController";
 
 function getUtcDay() {
   const start = new Date();
@@ -227,6 +228,14 @@ export async function runDailyBlogPipeline({
   processDailyBloggerBacklog({ baseUrl }).catch((bErr) =>
     console.error("[Blogger Drip Engine Cron Safe Catch]:", bErr.message)
   );
+
+  if (dailyBlog?.slug) {
+    try {
+      revalidatePublicBlogPaths(dailyBlog.slug);
+    } catch (revalErr) {
+      console.warn("[Pipeline] Revalidation warning:", revalErr.message);
+    }
+  }
 
   return {
     success: !failed,

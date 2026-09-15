@@ -121,7 +121,13 @@ export default async function BlogPage() {
         ]}
       />
       <div className="pt-0">
-        <Blog data={publicBlogCards} initialHasMore={initialPage.hasMore} initialTotal={initialPage.total} initialCategories={initialPage.categories} />
+        <Blog
+          data={publicBlogCards}
+          initialHasMore={initialPage.hasMore}
+          initialTotal={initialPage.total}
+          initialCategories={initialPage.categories}
+          latestPublishedDate={initialPage.latestPublishedDate}
+        />
       </div>
     </>
   );

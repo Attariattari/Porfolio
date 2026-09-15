@@ -14,6 +14,7 @@ import { triggerBloggerPublishIfReady } from "./bloggerAutomationHook";
 import { triggerFeaturedUpdate } from "@/lib/ai/featuredEngine";
 import { ensureBlogImageAlt } from "@/lib/blogImageAlt";
 import { scheduleInternalLinkAudit } from "./internalLinkingEngine";
+import { revalidatePublicBlogPaths } from "@/controllers/BlogController";
 
 function safeErrorMessage(error) {
   if (!error) return "Image generation failed.";
@@ -120,6 +121,7 @@ export async function ensureBlogImage(blogId, options = {}) {
       if (blog.publishStatus === "published") {
         await triggerFeaturedUpdate(blog);
         await scheduleInternalLinkAudit(blog._id);
+        revalidatePublicBlogPaths(blog.slug);
       }
 
       // Safe trigger for Google Blogger supporting post publish check

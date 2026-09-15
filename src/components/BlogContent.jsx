@@ -667,6 +667,7 @@ export default function BlogContent({
   trendingTags,
   homeBlogs,
   showingFeatured,
+  latestPublishedDate,
 }) {
   const [loadedBlogs, setLoadedBlogs] = useState(data || []);
   const [hasMoreBlogs, setHasMoreBlogs] = useState(initialHasMore);
@@ -995,7 +996,7 @@ export default function BlogContent({
       <EditorialHeader
         totalArticles={initialTotal || loadedBlogs.length}
         totalCategories={categories.length - 1}
-        latestUpdate={data[0]?.date || "Updated recently"}
+        latestUpdate={latestPublishedDate || data[0]?.date || "Updated recently"}
         featuredBlogs={featuredBlogs}
         trendingTags={trendingTags}
         onImageClick={(idx) => {

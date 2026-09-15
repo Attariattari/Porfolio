@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import { getAuthSession, checkPermission } from "@/lib/auth";
 import { Blog } from "@/models/Portfolio";
+import { cacheManager } from "@/lib/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -99,6 +101,22 @@ export async function POST(request) {
 
       const newBlog = await Blog.create(doc);
       importedBlogs.push(newBlog);
+    }
+
+    if (importedBlogs.length > 0) {
+      await cacheManager.invalidateByTag("blogs").catch(() => {});
+      try {
+        revalidatePath("/");
+        revalidatePath("/blog");
+        revalidatePath("/sitemap.xml");
+        revalidatePath("/llms.txt");
+        try {
+          revalidateTag("blogs");
+          revalidateTag("public:blogs");
+        } catch {}
+      } catch (err) {
+        console.warn("[Blog Import] Revalidation warning:", err.message);
+      }
     }
 
     return NextResponse.json({
