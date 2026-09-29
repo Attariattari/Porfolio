@@ -381,6 +381,10 @@ export const BlogController = {
                     .replace(/(^-|-$)+/g, "");
             }
 
+            if ((data.publishStatus === "published" || data.status === "published") && !data.date) {
+                data.date = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+            }
+
             const savedBlog = await Blog.create(data);
             const serialized = serializeDoc(savedBlog);
 
@@ -412,6 +416,25 @@ export const BlogController = {
         try {
             await dbConnect();
             if (typeof data.content === "string") data.content = normalizeBlogServiceLinks(data.content);
+
+            const existing = await Blog.findById(id).select("publishStatus status date createdAt").lean();
+            if (existing) {
+                const wasPublished = existing.publishStatus === "published" || existing.status === "published";
+                const isNowPublished = data.publishStatus === "published" || data.status === "published";
+
+                // If moving from draft/pending to published for the first time, auto-refresh to today's date
+                if (!wasPublished && isNowPublished) {
+                    data.createdAt = new Date();
+                    if (!data.date || data.date === existing.date) {
+                        data.date = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+                    }
+                } else if (data.date && data.date !== existing.date) {
+                    // If author explicitly changed the publication date, update createdAt to match
+                    const parsed = new Date(data.date);
+                    data.createdAt = !isNaN(parsed.getTime()) ? parsed : new Date();
+                }
+            }
+
             const updated = await Blog.findByIdAndUpdate(id, {
                 ...data,
                 updatedAt: new Date(),
