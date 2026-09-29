@@ -223,7 +223,8 @@ ${listItems(socialProfiles, (profile) => `- ${cleanText(profile.platform || prof
 - WhatsApp: ${whatsappUrl}
 
 ## Blog And Learning Resources
-${listItems(blogs.slice(0, 20), (blog) => {
+- Total Published Articles: ${blogs.length} articles published on technical engineering, performance, architecture, and web development.
+${listItems(blogs, (blog) => {
   const slug = getSafeSitemapSlug(blog);
   return `- ${blog.title}: ${cleanText(blog.summary || blog.excerpt || blog.description || "")} ${absoluteUrl(`/blog/${slug}`)}`;
 })}
