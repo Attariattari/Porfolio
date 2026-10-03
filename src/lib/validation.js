@@ -30,24 +30,53 @@ export const ContactFormSchema = z.object({
     .string()
     .min(10, 'Message must be at least 10 characters')
     .max(5000, 'Message must not exceed 5000 characters')
-    .trim(),
+    .trim()
+    .refine(
+      (val) => {
+        const words = val
+          .split(/[\s,.-]+/)
+          .map((w) => w.replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, ""))
+          .filter(Boolean);
+        const lettersOnly = (val.match(/[a-zA-Z]/g) || []).join("");
+        const vowels = (val.match(/[aeiouAEIOU]/g) || []).length;
+        const vowelRatio =
+          lettersOnly.length > 0 ? vowels / lettersOnly.length : 0;
+        const allowedVowelless =
+          /^(rhythm|crypt|lynx|sync|gym|fly|dry|cry|spy|shy|why|myth|hymn|lynch|tryst|by|my)s?$/i;
+
+        // Check for words with 5+ consonants or 4+ letters with 0 vowels (e.g. 'hsdfhskjhf', 'hjdhf,jsdhkjd')
+        const hasVowellessWord = words.some((w) => {
+          const l = (w.match(/[a-zA-Z]/g) || []).join("");
+          return (
+            (l.length >= 4 &&
+              (l.match(/[aeiouAEIOU]/g) || []).length === 0 &&
+              !allowedVowelless.test(l)) ||
+            (/[bcdfghjklmnpqrstvwxyz]{5,}/i.test(l) &&
+              !allowedVowelless.test(l))
+          );
+        });
+
+        if (hasVowellessWord) return false;
+        if (lettersOnly.length >= 10 && vowelRatio < 0.16) return false;
+        return true;
+      },
+      {
+        message:
+          "Please provide a clear and professional description of your project. Random characters or keyboard mash are not accepted.",
+      }
+    ),
   
+  /**
+   * Accepts predefined service slugs OR any custom free-text service
+   * (e.g. when a user selects "Other" and types their own requirement).
+   * Empty / null values are normalised to 'general'.
+   */
   service: z
-    .union([
-      z.enum([
-        'general', 
-        'web-development', 
-        'ui-ux-design', 
-        'api-development', 
-        'mobile-app-development', 
-        'cloud-devops', 
-        'seo-optimization',
-        'other'
-      ]),
-      z.literal(''),
-      z.null()
-    ])
-    .transform((val) => (val === '' || val === null ? 'general' : val))
+    .union([z.string().trim().max(200), z.literal(''), z.null()])
+    .transform((val) => {
+      if (val === '' || val === null || val === undefined) return 'general';
+      return val.trim();
+    })
     .default('general'),
 });
 

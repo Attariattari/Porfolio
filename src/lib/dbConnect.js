@@ -120,7 +120,7 @@ async function dbConnect() {
       bufferCommands: false,
       maxPoolSize: 10,
       family: 4,
-      serverSelectionTimeoutMS: 5000, // Fail fast if unreachable (e.g. whitelist issues)
+      serverSelectionTimeoutMS: 10_000, // 10s — tolerates Atlas cold-start & brief network blips
     };
 
     cached.promise = connectWithDnsFallback(opts).then((mongoose) => {
