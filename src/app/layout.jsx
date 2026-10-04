@@ -90,7 +90,8 @@ export default function RootLayout({ children }) {
                   root.style.colorScheme = theme === 'light' ? 'light' : 'dark';
 
                   // 2. Instant Public Website Sidebar Layout Synchronization
-                  var isWebCollapsed = localStorage.getItem('muhyo:sidebar-collapsed') === 'true';
+                  var savedSidebar = localStorage.getItem('muhyo:sidebar-collapsed');
+                  var isWebCollapsed = savedSidebar === null ? true : savedSidebar === 'true';
                   if (window.innerWidth >= 768) {
                     if (isWebCollapsed) {
                       root.classList.add('sidebar-collapsed');

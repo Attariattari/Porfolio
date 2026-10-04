@@ -201,7 +201,7 @@
     }
     @media (min-width: 768px) {
         :root {
-            --sidebar-width: 288px;
+            --sidebar-width: 112px;
         }
         :root.sidebar-collapsed {
             --sidebar-width: 112px;

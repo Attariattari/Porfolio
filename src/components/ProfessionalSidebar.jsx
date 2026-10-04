@@ -44,14 +44,15 @@ const SIDEBAR_STORAGE_KEY = "muhyo:sidebar-collapsed";
 
 let sidebarListeners = [];
 const getSidebarSnapshot = () => {
-  if (typeof window === "undefined") return false;
+  if (typeof window === "undefined") return true;
   try {
-    return window.localStorage.getItem(SIDEBAR_STORAGE_KEY) === "true";
+    const saved = window.localStorage.getItem(SIDEBAR_STORAGE_KEY);
+    return saved === null ? true : saved === "true";
   } catch {
-    return false;
+    return true;
   }
 };
-const getServerSidebarSnapshot = () => false;
+const getServerSidebarSnapshot = () => true;
 
 const subscribeSidebar = (callback) => {
   sidebarListeners.push(callback);

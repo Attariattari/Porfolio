@@ -94,7 +94,7 @@ function ThemeButtons({ theme, onChange, compact = false }) {
 export default function Sidebar({ data }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const about = data || portfolioData.about;
   const { theme, setTheme } = useTheme();
@@ -130,8 +130,8 @@ export default function Sidebar({ data }) {
     const restoreFrame = window.requestAnimationFrame(() => {
       try {
         const savedState = window.localStorage.getItem(SIDEBAR_STORAGE_KEY);
-        if (savedState === "true") setIsCollapsed(true);
         if (savedState === "false") setIsCollapsed(false);
+        else setIsCollapsed(true);
       } catch {}
     });
 

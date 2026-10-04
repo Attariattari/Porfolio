@@ -289,7 +289,7 @@ export default function ContactFormClient() {
     (formData.service !== "other" || formData.otherService?.trim())
   );
   const hasSubjectFilled = Boolean(formData.subject?.trim());
-  const canShowAiButton = hasServiceSelected && hasSubjectFilled;
+  const canShowAiButton = !submitted && hasServiceSelected && hasSubjectFilled;
 
   // Cleanup debounce timer on unmount
   useEffect(() => {
@@ -457,6 +457,37 @@ export default function ContactFormClient() {
     }
   };
 
+  /**
+   * Resets form and completely closes the AI template and hides the AI template button
+   * when a message is successfully sent.
+   */
+  const resetFormStateAfterSend = () => {
+    setFormData({
+      name: "",
+      email: "",
+      subject: "",
+      service: "",
+      otherService: "",
+      message: "",
+    });
+    // Immediately close AI template proposal card and hide AI button
+    setMessageQuality(null);
+    setAiTemplate("");
+    setIsAiButtonGlowing(false);
+    setIsDropdownOpen(false);
+    hasEverSetupContextRef.current = false;
+    prevContextRef.current = { service: "", otherService: "", subject: "" };
+    lastAiParamsRef.current = "";
+    if (aiDebounceTimerRef.current) {
+      clearTimeout(aiDebounceTimerRef.current);
+    }
+    try {
+      localStorage.removeItem(CONTACT_DRAFT_KEY);
+    } catch {}
+    setSubmitted(true);
+    setTimeout(() => setSubmitted(false), 5000);
+  };
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -525,23 +556,11 @@ export default function ContactFormClient() {
         payload: submissionData,
         label: "Contact Message",
       });
-      try {
-        localStorage.removeItem(CONTACT_DRAFT_KEY);
-      } catch {}
+      resetFormStateAfterSend();
       toast.success(
         "Saved to Outbox: You're currently offline. Your message is safely stored and will be sent automatically as soon as you reconnect!",
         { duration: 6000 }
       );
-      setFormData({
-        name: "",
-        email: "",
-        subject: "",
-        service: "",
-        otherService: "",
-        message: "",
-      });
-      setSubmitted(true);
-      setTimeout(() => setSubmitted(false), 5000);
       setLoading(false);
       return;
     }
@@ -575,19 +594,7 @@ export default function ContactFormClient() {
       }
 
       toast.success("Message sent successfully! We'll be in touch soon.");
-      try {
-        localStorage.removeItem(CONTACT_DRAFT_KEY);
-      } catch {}
-      setFormData({
-        name: "",
-        email: "",
-        subject: "",
-        service: "",
-        otherService: "",
-        message: "",
-      });
-      setSubmitted(true);
-      setTimeout(() => setSubmitted(false), 5000);
+      resetFormStateAfterSend();
     } catch (error) {
       console.error("Form submission error:", error);
 
@@ -604,23 +611,11 @@ export default function ContactFormClient() {
           payload: submissionData,
           label: "Contact Message",
         });
-        try {
-          localStorage.removeItem(CONTACT_DRAFT_KEY);
-        } catch {}
+        resetFormStateAfterSend();
         toast.success(
           "Connection Interrupted: Your message was safely saved to the offline outbox and will be delivered automatically upon reconnection!",
           { duration: 6000 }
         );
-        setFormData({
-          name: "",
-          email: "",
-          subject: "",
-          service: "",
-          otherService: "",
-          message: "",
-        });
-        setSubmitted(true);
-        setTimeout(() => setSubmitted(false), 5000);
       } else {
         toast.error(error.message || "Failed to send message. Please try again.");
       }
@@ -640,10 +635,10 @@ export default function ContactFormClient() {
         <div className="absolute -inset-0.5 bg-gradient-to-r from-accent/20 to-accent/20 rounded-[2.8rem] opacity-0 group-hover/form:opacity-100 blur-2xl transition-all duration-700" />
 
         {/* Form Content */}
-        <div className="theme-surface-depth relative z-10 p-8 md:p-12 bg-card backdrop-blur-3xl rounded-[2.8rem] border border-slate-300 dark:border-border/50 shadow-xl shadow-slate-200/40 dark:shadow-none h-full flex flex-col">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
+        <div className="theme-surface-depth relative z-10 p-5 sm:p-7 md:p-10 lg:p-12 bg-card backdrop-blur-3xl rounded-[2rem] sm:rounded-[2.4rem] md:rounded-[2.8rem] border border-slate-300 dark:border-border/50 shadow-xl shadow-slate-200/40 dark:shadow-none h-full flex flex-col">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sm:gap-6 mb-8 sm:mb-10 md:mb-12">
             <div>
-              <h2 className="text-3xl font-bold tracking-tight text-foreground italic">
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground italic">
                 Send a message
               </h2>
               <p className="text-accent text-xs font-semibold tracking-normal mt-1">
@@ -655,7 +650,7 @@ export default function ContactFormClient() {
             </div>
           </div>
 
-          <form id="contact-form" className="space-y-8" onSubmit={handleSubmit}>
+          <form id="contact-form" className="space-y-6 sm:space-y-8" onSubmit={handleSubmit}>
             <div className="grid md:grid-cols-2 gap-8">
               <div className="space-y-3">
                 <label className="text-xs font-semibold tracking-normal text-accent/80 ml-2">
@@ -842,9 +837,9 @@ export default function ContactFormClient() {
                           {/* Custom Input Section */}
                           <div
                             id="other-service-option"
-                            className={`mt-2 p-5 bg-accent/5 rounded-2xl border border-accent/10 transition-all ${formData.service === "other" ? "border-accent/30 bg-accent/[0.08]" : "opacity-60 hover:opacity-100"}`}
+                            className={`mt-2 p-3.5 sm:p-5 bg-accent/5 rounded-2xl border border-accent/10 transition-all ${formData.service === "other" ? "border-accent/30 bg-accent/[0.08]" : "opacity-60 hover:opacity-100"}`}
                           >
-                            <div className="flex items-center gap-2 mb-3">
+                            <div className="flex items-center gap-2 mb-2.5 sm:mb-3">
                               <Plus className="w-3 h-3 text-accent" />
                               <p className="text-[10px] font-black text-accent/60 uppercase tracking-widest">
                                 Tailored Solution
@@ -869,7 +864,7 @@ export default function ContactFormClient() {
                                     otherService: e.target.value,
                                   }));
                                 }}
-                                className="w-full bg-slate-100/90 dark:bg-background/50 border-[1.5px] border-slate-300 dark:border-border/60 rounded-2xl px-5 py-4 text-xs font-bold focus:border-accent focus:bg-white dark:focus:bg-accent/5 focus:ring-4 focus:ring-accent/10 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-muted-foreground/50 pr-24"
+                                className="w-full bg-slate-100/90 dark:bg-background/50 border-[1.5px] border-slate-300 dark:border-border/60 rounded-xl sm:rounded-2xl px-3.5 sm:px-5 py-3 sm:py-4 text-xs font-bold focus:border-accent focus:bg-white dark:focus:bg-accent/5 focus:ring-4 focus:ring-accent/10 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-muted-foreground/50 pr-20 sm:pr-24"
                               />
                               <AnimatePresence>
                                 {formData.service === "other" &&
@@ -883,7 +878,7 @@ export default function ContactFormClient() {
                                       animate={{
                                         opacity: 1,
                                         scale: 1,
-                                        x: -8,
+                                        x: -6,
                                       }}
                                       exit={{
                                         opacity: 0,
@@ -895,7 +890,7 @@ export default function ContactFormClient() {
                                         e.stopPropagation();
                                         setIsDropdownOpen(false);
                                       }}
-                                      className="absolute right-0 bg-accent text-white h-10 px-6 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-accent/20 hover:scale-105 active:scale-95 transition-all z-20"
+                                      className="absolute right-0 bg-accent text-white h-8 sm:h-10 px-3.5 sm:px-6 rounded-lg sm:rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-wider sm:tracking-widest shadow-xl shadow-accent/20 hover:scale-105 active:scale-95 transition-all z-20"
                                     >
                                       Confirm
                                     </motion.button>
@@ -919,14 +914,14 @@ export default function ContactFormClient() {
             </div>
 
             <div className="space-y-3">
-              <div className="flex items-center justify-between ml-2">
-                <label className="text-xs font-semibold tracking-normal text-accent/80">
+              <div className="flex flex-wrap items-center justify-between gap-2 px-0.5 sm:px-2">
+                <label className="text-xs font-semibold tracking-normal text-accent/80 whitespace-nowrap">
                   Your message <span className="text-red-500">*</span>
                 </label>
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap sm:flex-nowrap justify-end ml-auto">
                   {formData.message.trim().length > 0 && (
                     <span
-                      className={`text-[11px] font-medium transition-colors ${
+                      className={`text-[10px] sm:text-[11px] font-medium transition-colors whitespace-nowrap ${
                         messageQuality?.level === "warn"
                           ? "text-amber-500 font-bold"
                           : "text-muted-foreground/60"
@@ -949,14 +944,14 @@ export default function ContactFormClient() {
                         onClick={handleUseAiTemplateClick}
                         disabled={isAiLoading}
                         title="Generate project description using Gemini AI based on selected service and subject"
-                        className={`relative inline-flex items-center gap-1.5 text-[11px] font-bold rounded-full transition-all duration-300 cursor-pointer ${
+                        className={`relative inline-flex items-center gap-1.5 text-[10.5px] sm:text-[11px] font-bold rounded-full transition-all duration-300 cursor-pointer shrink-0 max-w-full ${
                           isAiButtonGlowing
                             ? "bg-gradient-to-r from-accent via-accent to-accent/90 text-white border-2 border-accent shadow-[0_0_24px_rgba(var(--accent-rgb),0.65)] ring-4 ring-accent/35 animate-pulse scale-105"
                             : "bg-accent/10 hover:bg-accent text-accent hover:text-white border border-accent/25 hover:border-accent shadow-sm hover:shadow-accent/20 active:scale-95"
-                        } px-3.5 py-1.5`}
+                        } px-2.5 py-1 sm:px-3.5 sm:py-1.5`}
                       >
                         <Sparkles
-                          className={`w-3.5 h-3.5 ${
+                          className={`w-3.5 h-3.5 shrink-0 ${
                             isAiLoading
                               ? "animate-spin"
                               : isAiButtonGlowing
@@ -964,7 +959,7 @@ export default function ContactFormClient() {
                               : ""
                           }`}
                         />
-                        <span>
+                        <span className="truncate">
                           {isAiLoading
                             ? "Generating..."
                             : isAiButtonGlowing
@@ -972,7 +967,7 @@ export default function ContactFormClient() {
                             : "Use our AI template"}
                         </span>
                         {isAiButtonGlowing && (
-                          <span className="relative flex h-2 w-2 ml-0.5">
+                          <span className="relative flex h-2 w-2 ml-0.5 shrink-0">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-80" />
                             <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
                           </span>
@@ -992,14 +987,14 @@ export default function ContactFormClient() {
                 onChange={handleChange}
                 disabled={loading}
                 required
-                className={`w-full bg-slate-100/90 dark:bg-background/50 border-[1.5px] rounded-2xl px-6 py-5 text-foreground focus:bg-white dark:focus:bg-accent/5 focus:ring-4 transition-all outline-none placeholder:text-slate-400 dark:placeholder:text-muted-foreground/50 font-semibold text-sm resize-none disabled:opacity-50 ${
+                className={`w-full bg-slate-100/90 dark:bg-background/50 border-[1.5px] rounded-2xl px-4 py-3.5 sm:px-6 sm:py-5 text-foreground focus:bg-white dark:focus:bg-accent/5 focus:ring-4 transition-all outline-none placeholder:text-slate-400 dark:placeholder:text-muted-foreground/50 font-semibold text-sm resize-none disabled:opacity-50 ${
                   messageQuality?.level === "warn"
                     ? "border-amber-400 focus:border-amber-400 focus:ring-amber-400/10 shadow-sm shadow-amber-500/10"
                     : "border-slate-300 dark:border-border/60 focus:border-accent focus:ring-accent/10"
                 }`}
               />
 
-              {/* Message quality inline notification */}
+              {/* Message quality & AI proposal assistant card */}
               <AnimatePresence>
                 {messageQuality && (
                   <motion.div
@@ -1008,7 +1003,7 @@ export default function ContactFormClient() {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -6, scale: 0.97 }}
                     transition={{ duration: 0.25, ease: "easeOut" }}
-                    className={`flex items-start gap-3 rounded-2xl px-4 py-3.5 border ${
+                    className={`flex items-start gap-2.5 sm:gap-3.5 rounded-2xl p-3.5 sm:p-4.5 border overflow-hidden ${
                       messageQuality.level === "warn"
                         ? "bg-amber-500/10 border-amber-400/40 text-amber-900 dark:text-amber-100"
                         : "bg-accent/[0.08] dark:bg-accent/[0.12] border-accent/30 text-foreground"
@@ -1016,22 +1011,22 @@ export default function ContactFormClient() {
                   >
                     {/* Icon */}
                     <div
-                      className={`mt-0.5 flex-shrink-0 w-8 h-8 rounded-xl flex items-center justify-center ${
+                      className={`mt-0.5 shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl flex items-center justify-center ${
                         messageQuality.level === "warn"
                           ? "bg-amber-500/20 text-amber-600 dark:text-amber-300"
                           : "bg-accent/20 text-accent"
                       }`}
                     >
                       {messageQuality.level === "warn" ? (
-                        <AlertTriangle className="w-4 h-4" />
+                        <AlertTriangle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       ) : (
-                        <Sparkles className="w-4 h-4" />
+                        <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       )}
                     </div>
 
-                    {/* Text */}
+                    {/* Text & Proposal Content */}
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-2 mb-1">
+                      <div className="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2 mb-1.5">
                         <p
                           className={`text-xs font-black uppercase tracking-wider ${
                             messageQuality.level === "warn"
@@ -1044,17 +1039,17 @@ export default function ContactFormClient() {
                             : "AI Proposal Assistant"}
                         </p>
                         {messageQuality.level === "warn" ? (
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-800 dark:text-amber-200 border border-amber-500/30">
+                          <span className="text-[9.5px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-800 dark:text-amber-200 border border-amber-500/30 shrink-0">
                             Clear words required
                           </span>
                         ) : (
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-accent/20 text-accent border border-accent/30">
+                          <span className="text-[9.5px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full bg-accent/20 text-accent border border-accent/30 shrink-0">
                             Google Gemini AI
                           </span>
                         )}
                       </div>
                       <p
-                        className={`text-xs font-semibold leading-relaxed ${
+                        className={`text-[11.5px] sm:text-xs font-semibold leading-relaxed break-words ${
                           messageQuality.level === "warn"
                             ? "text-amber-900 dark:text-amber-200"
                             : "text-blue-900 dark:text-blue-200"
@@ -1064,40 +1059,45 @@ export default function ContactFormClient() {
                       </p>
 
                       {/* AI Generated Tailored Proposal Box */}
-                      <div className="mt-3 pt-3 border-t border-amber-500/20 dark:border-amber-500/30 space-y-2.5">
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-accent/15 border border-accent/25 text-accent text-[10px] font-extrabold tracking-wide uppercase">
-                            <Sparkles className="w-3 h-3 text-accent" />
-                            AI-Tailored Proposal ({formData.service === "other" && formData.otherService ? formData.otherService : formData.service ? SERVICE_OPTIONS.find((s) => s.value === formData.service)?.label || formData.service : "Web Development"})
+                      <div className="mt-3 pt-3 border-t border-amber-500/20 dark:border-border/60 space-y-2.5">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent/15 border border-accent/25 text-accent text-[9px] sm:text-[10px] font-extrabold tracking-wide uppercase max-w-full">
+                            <Sparkles className="w-3 h-3 shrink-0 text-accent" />
+                            <span className="truncate max-w-[160px] xs:max-w-[220px] sm:max-w-xs md:max-w-sm">
+                              AI-Tailored Proposal ({formData.service === "other" && formData.otherService ? formData.otherService : formData.service ? SERVICE_OPTIONS.find((s) => s.value === formData.service)?.label || formData.service : "Web Development"})
+                            </span>
                           </div>
                           <button
                             type="button"
                             onClick={() => fetchAiTemplate(true)}
                             disabled={isAiLoading}
                             title="Regenerate with Gemini AI"
-                            className="inline-flex items-center gap-1 text-[10px] font-bold text-accent hover:underline transition-colors disabled:opacity-50 cursor-pointer"
+                            className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-bold text-accent hover:text-accent/80 active:scale-95 transition-all disabled:opacity-50 cursor-pointer shrink-0 py-0.5 px-1.5 rounded-md hover:bg-accent/10"
                           >
-                            <RefreshCw className={`w-3 h-3 ${isAiLoading ? "animate-spin" : ""}`} />
-                            Regenerate
+                            <RefreshCw className={`w-3 h-3 shrink-0 ${isAiLoading ? "animate-spin" : ""}`} />
+                            <span>Regenerate</span>
                           </button>
                         </div>
 
                         {/* Proposal Text Display */}
-                        <div className="relative rounded-xl bg-background/70 dark:bg-background/50 border border-border/70 p-3.5 shadow-inner">
+                        <div className="relative rounded-xl bg-background/70 dark:bg-background/50 border border-border/70 p-3 sm:p-3.5 shadow-inner">
                           {isAiLoading ? (
                             <div className="flex items-center gap-2 py-1 text-xs font-semibold text-accent animate-pulse">
-                              <Sparkles className="w-3.5 h-3.5 animate-spin text-accent" />
-                              <span>Gemini AI is crafting a tailored proposal...</span>
+                              <Sparkles className="w-3.5 h-3.5 shrink-0 animate-spin text-accent" />
+                              <span className="text-[11px] sm:text-xs">Gemini AI is crafting a tailored proposal...</span>
                             </div>
                           ) : (
-                            <p className="text-xs font-medium text-foreground/90 dark:text-foreground/95 leading-relaxed italic border-l-2 border-accent pl-3 py-0.5">
+                            <p className="text-[11.5px] sm:text-xs font-medium text-foreground/90 dark:text-foreground/95 leading-relaxed italic border-l-2 border-accent pl-2.5 sm:pl-3 py-0.5 break-words">
                               &ldquo;{aiTemplate || getFallbackAiTemplate(formData.service, formData.otherService, formData.subject)}&rdquo;
                             </p>
                           )}
                         </div>
 
                         {/* Action: Use this AI template */}
-                        <div className="flex items-center justify-end">
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pt-1">
+                          <p className="text-[10px] text-muted-foreground/70 hidden sm:block">
+                            Click to apply this proposal directly to your message
+                          </p>
                           <button
                             type="button"
                             onClick={() => {
@@ -1116,7 +1116,7 @@ export default function ContactFormClient() {
                               setMessageQuality(null);
                               toast.success("AI project template applied!");
                             }}
-                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-accent text-white text-xs font-bold shadow-md shadow-accent/20 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
+                            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 sm:py-1.5 rounded-xl bg-accent hover:bg-accent/90 text-white text-xs font-bold shadow-md shadow-accent/20 hover:shadow-accent/30 hover:scale-[1.01] active:scale-95 transition-all cursor-pointer"
                           >
                             <span>Use this AI template</span>
                             <ArrowRight className="w-3.5 h-3.5" />
