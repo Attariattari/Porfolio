@@ -27,7 +27,14 @@ export const POST = withErrorHandling(async (req) => {
   }
 
   const body = await req.json();
-  const { sourceCloudName, targetAccountId, dryRun = true, collectionFilter = null } = body;
+  const {
+    sourceCloudName,
+    targetAccountId,
+    dryRun = true,
+    deleteFromSource = false,
+    cleanBackupOnSuccess = true,
+    collectionFilter = null,
+  } = body;
 
   if (!targetAccountId) {
     return apiResponse.error("Target account ID is required for migration.", 400);
@@ -37,6 +44,8 @@ export const POST = withErrorHandling(async (req) => {
     sourceCloudName,
     targetAccountId,
     dryRun: Boolean(dryRun),
+    deleteFromSource: Boolean(deleteFromSource),
+    cleanBackupOnSuccess: Boolean(cleanBackupOnSuccess),
     collectionFilter,
   });
 

@@ -135,6 +135,8 @@ export default function MediaPoolPage() {
     sourceCloud: "",
     targetAccountId: "",
     dryRun: true,
+    deleteFromSource: false,
+    cleanBackupOnSuccess: true,
   });
   const [migrationRunning, setMigrationRunning] = useState(false);
   const [migrationProgress, setMigrationProgress] = useState(null);
@@ -166,7 +168,7 @@ export default function MediaPoolPage() {
   };
 
   const handleClearLocalFiles = async () => {
-    if (!confirm("Are you sure you want to clean local media cache files from disk?\n\nThis will safely free up ~400+ MB of local storage.\nAll 174 assets remain live and active on Cloudinary across your 3 accounts, and the metadata registry is preserved.")) return;
+    if (!confirm(`Are you sure you want to clean local media cache files from disk?\n\nThis will safely free up local storage.\nAll ${vaultStats?.totalAssets ?? 260} assets remain live and active on Cloudinary across your ${accounts?.length || 1} accounts, and the metadata registry is preserved.`)) return;
     setClearingLocalFiles(true);
     try {
       const res = await fetch("/api/admin/cloudinary-pool/vault", { method: "DELETE" });
@@ -217,6 +219,8 @@ export default function MediaPoolPage() {
           sourceCloudName: migrateConfig.sourceCloud || null,
           targetAccountId: migrateConfig.targetAccountId,
           dryRun: migrateConfig.dryRun,
+          deleteFromSource: migrateConfig.deleteFromSource,
+          cleanBackupOnSuccess: migrateConfig.cleanBackupOnSuccess,
         }),
       });
       const json = await res.json();
@@ -233,7 +237,11 @@ export default function MediaPoolPage() {
             if (!pollJson.data.isRunning) {
               clearInterval(pollTimer);
               setMigrationRunning(false);
-              toast.success("Migration process completed!");
+              if (pollJson.data.errorCount === 0) {
+                toast.success(pollJson.data.dryRun ? "Dry run simulation completed successfully!" : "0-Loss Migration & Deep Verification 100% Successful!");
+              } else {
+                toast.warning(`Migration finished with ${pollJson.data.errorCount} warnings. Check logs.`);
+              }
               fetchPoolData();
               fetchVaultStats();
             }
@@ -621,13 +629,13 @@ export default function MediaPoolPage() {
               {/* Stats Pills */}
               <div className="flex flex-wrap items-center gap-2 mt-3 text-[11px] font-mono text-muted-foreground">
                 <span className="px-2 py-0.5 rounded-md bg-secondary/30 border border-border/70">
-                  Total Assets: <strong className="text-foreground">{vaultStats?.totalAssets ?? 174}</strong>
+                  Total Assets: <strong className="text-foreground">{vaultStats?.totalAssets ?? 260}</strong>
                 </span>
                 <span className="px-2 py-0.5 rounded-md bg-secondary/30 border border-border/70">
                   Local Disk Files: <strong className={vaultStats?.verifiedOnDisk > 0 ? "text-amber-500" : "text-emerald-500"}>{vaultStats?.verifiedOnDisk ?? 0} ({vaultStats?.verifiedOnDisk === 0 ? "Clean 0 MB" : `${((vaultStats?.totalSizeBytes || 0) / (1024 * 1024)).toFixed(1)} MB`})</strong>
                 </span>
                 <span className="px-2 py-0.5 rounded-md bg-secondary/30 border border-border/70">
-                  Cloud State: <strong className="text-emerald-500">Live on 3 Accounts</strong>
+                  Cloud State: <strong className="text-emerald-500">Live on {accounts?.length || 1} Accounts</strong>
                 </span>
                 <span className="px-2 py-0.5 rounded-md bg-secondary/30 border border-border/70">
                   Registry: <strong className="text-foreground">Identified & Protected</strong>
@@ -668,6 +676,8 @@ export default function MediaPoolPage() {
                   sourceCloud: accounts[0]?.cloudName || "",
                   targetAccountId: accounts.find(a => !a.isMaster)?._id || "",
                   dryRun: true,
+                  deleteFromSource: false,
+                  cleanBackupOnSuccess: true,
                 });
               }}
               className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-accent hover:bg-accent/90 text-accent-foreground text-xs font-bold shadow-sm transition-all duration-150"
@@ -1478,7 +1488,7 @@ export default function MediaPoolPage() {
                       Dry Run Simulation Mode
                     </span>
                     <span className="text-xs text-muted-foreground block mt-0.5">
-                      Simulates the full migration process and verifies every local file without uploading or touching the database.
+                      Simulates the full migration process and verifies every file without uploading or touching the database.
                     </span>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer shrink-0">
@@ -1493,15 +1503,71 @@ export default function MediaPoolPage() {
                   </label>
                 </div>
 
+                {/* Pre-Flight Safe Snapshot & Auto-Clean Toggle */}
+                <div className="p-4 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 flex items-center justify-between">
+                  <div className="pr-4">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-foreground">
+                        Pre-Flight Safe Snapshot & Auto-Clean
+                      </span>
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-500">
+                        RECOMMENDED
+                      </span>
+                    </div>
+                    <span className="text-xs text-muted-foreground block mt-0.5">
+                      Creates an isolated local disk snapshot of all assets before migrating. Deep-verifies all links after migration, then safely removes the temporary snapshot only after 100% verified success.
+                    </span>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                    <input
+                      type="checkbox"
+                      disabled={migrationRunning}
+                      checked={migrateConfig.cleanBackupOnSuccess}
+                      onChange={(e) => setMigrateConfig({ ...migrateConfig, cleanBackupOnSuccess: e.target.checked })}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-secondary/60 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                  </label>
+                </div>
+
+                {/* Delete from Source Cloudinary Toggle */}
+                <div className="p-4 rounded-2xl border border-border/70 bg-background/50 flex items-center justify-between">
+                  <div className="pr-4">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-foreground">
+                        Delete From Source Cloudinary (Free Credits)
+                      </span>
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-500">
+                        SAFE CLEANUP
+                      </span>
+                    </div>
+                    <span className="text-xs text-muted-foreground block mt-0.5">
+                      Deletes original images from the source Cloudinary account to free up credits and storage. Strictly executes ONLY after target upload and database update are 100% verified.
+                    </span>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                    <input
+                      type="checkbox"
+                      disabled={migrationRunning}
+                      checked={migrateConfig.deleteFromSource}
+                      onChange={(e) => setMigrateConfig({ ...migrateConfig, deleteFromSource: e.target.checked })}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-secondary/60 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-500"></div>
+                  </label>
+                </div>
+
                 {/* Live Progress Bar & Status */}
                 {migrationProgress && (
                   <div className="space-y-3 p-4 rounded-2xl border border-border/70 bg-card">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-bold text-foreground flex items-center gap-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                      <div className="flex items-center gap-2">
                         {migrationRunning && <RefreshCw className="w-3.5 h-3.5 animate-spin text-accent" />}
-                        {migrationRunning ? "Migration in Progress..." : "Migration Status"}
-                      </span>
-                      <span className="font-mono text-accent font-extrabold">
+                        <span className="font-bold text-foreground">
+                          {migrationProgress.phaseLabel || (migrationRunning ? "Migration in Progress..." : "Migration Status")}
+                        </span>
+                      </div>
+                      <span className="font-mono text-accent font-extrabold shrink-0">
                         {migrationProgress.percentage}% ({migrationProgress.current} / {migrationProgress.total})
                       </span>
                     </div>

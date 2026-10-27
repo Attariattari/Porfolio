@@ -62,6 +62,14 @@ const CloudinaryAccountSchema = new mongoose.Schema(
       transformations: { type: Number, default: 0 },
       lastSyncedAt: { type: Date, default: null },
     },
+    cooldownUntil: {
+      type: Date,
+      default: null,
+    },
+    notes: {
+      type: String,
+      default: "",
+    },
     // Audit & failure tracking
     errorLogs: [
       {

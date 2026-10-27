@@ -50,7 +50,7 @@ async function main() {
   }
 
   if (command === "restore") {
-    console.log("⚡ Launching 3-way equal balance restore to Cloudinary accounts...");
+    console.log("⚡ Launching equal balance restore across connected Cloudinary accounts...");
     const { execSync } = await import("child_process");
     execSync("node --env-file=.env.local scratch/balance_migration_3_accounts.mjs", {
       stdio: "inherit",
@@ -63,7 +63,7 @@ async function main() {
   console.log(`  node scripts/vault-manager.mjs status   - Check vault & disk stats`);
   console.log(`  node scripts/vault-manager.mjs clean    - Free local disk space (delete local images, keep registry)`);
   console.log(`  node scripts/vault-manager.mjs backup   - Download structured backup of all assets from DB to disk`);
-  console.log(`  node scripts/vault-manager.mjs restore  - Restore & equally balance across 3 Cloudinary accounts`);
+  console.log(`  node scripts/vault-manager.mjs restore  - Restore & equally balance across connected Cloudinary accounts`);
   process.exit(1);
 }
 

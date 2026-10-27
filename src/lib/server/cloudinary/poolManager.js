@@ -351,7 +351,7 @@ export async function getOptimalAccount({ purpose = "general", forceRefresh = fa
         apiKey: bestCandidate.apiKey,
         apiSecret: bestCandidate.apiSecret,
         uploadPreset: bestCandidate.uploadPreset || "ml_default",
-        isMaster: false,
+        isMaster: !!bestCandidate.isMaster,
         status: bestCandidate.status || "healthy",
         remainingCredits: bestCandidate.usage?.remainingCredits ?? 25,
       };
@@ -362,11 +362,91 @@ export async function getOptimalAccount({ purpose = "general", forceRefresh = fa
     }
   } catch (err) {
     console.warn(
-      `⚠️ [CloudinaryPoolArbiter] Database pool lookup failed (${err.message}). Safe fallback to Master.`
+      `⚠️ [CloudinaryPoolArbiter] Database pool lookup failed (${err.message}). Safe secondary fallback.`
     );
   }
 
-  // Fail-Safe: Return Root Master Account from environment
+  // Safe Fallback Selection
+  try {
+    await dbConnect();
+    // 1. Check if Root Master is in active 30-day cooldown
+    const masterDb = await CloudinaryAccount.findOne({
+      $or: [
+        { isMaster: true },
+        { cloudName: (process.env.CLOUDINARY_CLOUD_NAME || "").toLowerCase() }
+      ]
+    }).lean();
+
+    const now = Date.now();
+    const isMasterInCooldown = masterDb && masterDb.cooldownUntil && new Date(masterDb.cooldownUntil).getTime() > now;
+
+    if (!isMasterInCooldown && masterDb && masterDb.cooldownUntil && new Date(masterDb.cooldownUntil).getTime() <= now) {
+      // 30 days have elapsed: probe root account health before allowing uploads
+      try {
+        const probe = await validateCredentials({
+          cloudName: masterDb.cloudName,
+          apiKey: masterDb.apiKey,
+          apiSecret: masterDb.apiSecret,
+        });
+
+        if (probe.ok && (probe.usage?.remainingCredits ?? 0) > 1) {
+          // Healthy and has credits! Reactivate
+          await CloudinaryAccount.updateOne(
+            { _id: masterDb._id },
+            { $set: { status: "healthy", isActive: true, cooldownUntil: null, "usage": probe.usage } }
+          );
+          const masterFallback = {
+            accountId: masterDb._id.toString(),
+            label: masterDb.label,
+            cloudName: masterDb.cloudName,
+            apiKey: masterDb.apiKey,
+            apiSecret: masterDb.apiSecret,
+            uploadPreset: masterDb.uploadPreset || "ml_default",
+            isMaster: true,
+            status: "healthy",
+            remainingCredits: probe.usage?.remainingCredits ?? 25,
+          };
+          return masterFallback;
+        } else {
+          // Post-30-day check hit an error or no headroom: extend cooldown by 7 days and DO NOT send data
+          const extended = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+          await CloudinaryAccount.updateOne(
+            { _id: masterDb._id },
+            { $set: { status: "paused", isActive: false, cooldownUntil: extended, notes: "Post-30-day probe failed: credit limit or error. Cooldown extended." } }
+          );
+        }
+      } catch (probeErr) {
+        console.warn(`⚠️ [CloudinaryPool] Post-30-day probe failed (${probeErr.message}). Master remains paused.`);
+      }
+    }
+
+    // 2. If Master is in cooldown or errored, pick any active secondary account
+    const secondaryFallback = await CloudinaryAccount.findOne({
+      isActive: true,
+      isMaster: { $ne: true },
+      status: { $ne: "paused" }
+    }).sort({ "usage.remainingCredits": -1 }).lean();
+
+    if (secondaryFallback) {
+      const fallbackObj = {
+        accountId: secondaryFallback._id.toString(),
+        label: secondaryFallback.label,
+        cloudName: secondaryFallback.cloudName,
+        apiKey: secondaryFallback.apiKey,
+        apiSecret: secondaryFallback.apiSecret,
+        uploadPreset: secondaryFallback.uploadPreset || "ml_default",
+        isMaster: false,
+        status: secondaryFallback.status || "healthy",
+        remainingCredits: secondaryFallback.usage?.remainingCredits ?? 25,
+      };
+      setCache(CACHE_KEY_OPTIMAL_ACCOUNT, fallbackObj, 300, ["cloudinary_pool"]).catch(() => {});
+      return fallbackObj;
+    }
+  } catch (err) {
+    console.warn("⚠️ [CloudinaryPool] Fallback resolution warning:", err.message);
+  }
+
+  // Final emergency fallback
   const master = getMasterAccount();
   const fallback = {
     accountId: "master_env_account",
@@ -376,7 +456,7 @@ export async function getOptimalAccount({ purpose = "general", forceRefresh = fa
     apiSecret: master.apiSecret,
     uploadPreset: master.uploadPreset,
     isMaster: true,
-    status: "healthy",
+    status: master.status || "healthy",
     remainingCredits: 25,
   };
   setCache(CACHE_KEY_OPTIMAL_ACCOUNT, fallback, 300, ["cloudinary_pool"]).catch(() => {});
