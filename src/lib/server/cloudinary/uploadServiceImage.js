@@ -1,17 +1,8 @@
 import crypto from "crypto";
+import { getOptimalAccount, getMasterAccount, invalidateCloudinaryCache } from "./poolManager";
 
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
-
-function getCloudinaryConfig() {
-  return {
-    cloudName:
-      process.env.CLOUDINARY_CLOUD_NAME ||
-      process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-    apiKey: process.env.CLOUDINARY_API_KEY,
-    apiSecret: process.env.CLOUDINARY_API_SECRET,
-  };
-}
 
 function signCloudinaryParams(params, apiSecret) {
   const signatureBase = Object.keys(params)
@@ -37,7 +28,22 @@ export function validateServiceImageFile(file) {
 }
 
 export async function uploadServiceImageToCloudinary(fileOrBuffer, options = {}) {
-  const { cloudName, apiKey, apiSecret } = getCloudinaryConfig();
+  // 1. Resolve optimal account dynamically from pool with unshakeable Master fallback
+  let activeAccount;
+  try {
+    activeAccount = await getOptimalAccount({ purpose: "service" });
+  } catch (err) {
+    console.warn("⚠️ [uploadServiceImage] Arbiter lookup failed, using master fallback:", err.message);
+    activeAccount = getMasterAccount();
+  }
+
+  const cloudName =
+    activeAccount.cloudName ||
+    process.env.CLOUDINARY_CLOUD_NAME ||
+    process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const apiKey = activeAccount.apiKey || process.env.CLOUDINARY_API_KEY;
+  const apiSecret = activeAccount.apiSecret || process.env.CLOUDINARY_API_SECRET;
+
   if (!cloudName || !apiKey || !apiSecret) {
     throw new Error("Cloudinary server credentials are not configured.");
   }
@@ -74,8 +80,11 @@ export async function uploadServiceImageToCloudinary(fileOrBuffer, options = {})
 
   const data = await response.json();
   if (!response.ok || !data.secure_url) {
-    throw new Error(data.error?.message || "Cloudinary upload failed.");
+    throw new Error(data.error?.message || `Cloudinary upload failed (${response.status})`);
   }
+
+  // Purge Redis cache so new service image is cached and telemetry updates immediately
+  invalidateCloudinaryCache(cloudName).catch(() => {});
 
   return {
     url: data.secure_url,
@@ -83,5 +92,8 @@ export async function uploadServiceImageToCloudinary(fileOrBuffer, options = {})
     width: data.width,
     height: data.height,
     format: data.format,
+    cloudName,
+    accountLabel: activeAccount.label,
   };
 }
+

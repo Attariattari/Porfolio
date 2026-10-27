@@ -6,6 +6,7 @@
  */
 
 import crypto from "crypto";
+import { getOptimalAccount, getMasterAccount } from "../server/cloudinary/poolManager.js";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -115,9 +116,17 @@ export async function generateBlogCoverImage(imageConcept, options = {}) {
  */
 async function uploadImageBufferToCloudinary(imageBuffer, filename = "blog-cover") {
   try {
-    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-    const apiKey    = process.env.CLOUDINARY_API_KEY;
-    const apiSecret = process.env.CLOUDINARY_API_SECRET;
+    let activeAccount;
+    try {
+      activeAccount = await getOptimalAccount({ purpose: "ai-blog" });
+    } catch {
+      activeAccount = getMasterAccount();
+    }
+
+    const cloudName =
+      activeAccount.cloudName || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+    const apiKey = activeAccount.apiKey || process.env.CLOUDINARY_API_KEY;
+    const apiSecret = activeAccount.apiSecret || process.env.CLOUDINARY_API_SECRET;
 
     if (!cloudName || !apiKey || !apiSecret) {
       throw new Error(

@@ -430,6 +430,32 @@ export const ServiceController = {
 
       if (!updated) return null;
 
+      // Auto-cleanup orphan images on Cloudinary and sync vault
+      if (existing?.heroImage && data.heroImage !== undefined && existing.heroImage !== data.heroImage) {
+        setImmediate(async () => {
+          try {
+            const { cleanupOrphanCloudinaryAsset } = await import("@/lib/server/cloudinary/poolManager");
+            const { updateVaultAsset, deleteVaultAsset } = await import("@/lib/server/cloudinary/assetVault");
+            await cleanupOrphanCloudinaryAsset(existing.heroImage);
+            if (data.heroImage) {
+              await updateVaultAsset({
+                collection: "services",
+                documentId: updated._id.toString(),
+                field: "heroImage",
+                newUrl: data.heroImage,
+                oldUrl: existing.heroImage,
+                title: updated.title,
+                slug: updated.slug,
+              });
+            } else {
+              await deleteVaultAsset({ url: existing.heroImage, collection: "services", documentId: updated._id.toString(), field: "heroImage" });
+            }
+          } catch (e) {
+            console.warn("[ServiceController] Media auto-cleanup notice:", e.message);
+          }
+        });
+      }
+
       const serialized = normalizeServiceData(serializeDoc(updated));
       emitSocketEvent(SOCKET_EVENTS.STATS_UPDATED);
       emitSocketEvent("service:updated", serialized);
@@ -446,6 +472,19 @@ export const ServiceController = {
       await dbConnect();
       const deleted = await Service.findByIdAndDelete(id).lean();
       if (deleted) {
+        if (deleted.heroImage) {
+          setImmediate(async () => {
+            try {
+              const { cleanupOrphanCloudinaryAsset } = await import("@/lib/server/cloudinary/poolManager");
+              const { deleteVaultAsset } = await import("@/lib/server/cloudinary/assetVault");
+              await cleanupOrphanCloudinaryAsset(deleted.heroImage);
+              await deleteVaultAsset({ url: deleted.heroImage, collection: "services", documentId: deleted._id.toString() });
+            } catch (e) {
+              console.warn("[ServiceController.deleteOne] Media cleanup notice:", e.message);
+            }
+          });
+        }
+
         emitSocketEvent(SOCKET_EVENTS.STATS_UPDATED);
         emitSocketEvent("public-data:updated", { type: "service" });
         await invalidateServices();

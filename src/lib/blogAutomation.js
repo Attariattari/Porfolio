@@ -1609,8 +1609,23 @@ async function callGeminiImageREST(apiKey, model, prompt) {
  * Shared: Upload a Blob directly to Cloudinary via multipart form upload.
  */
 async function uploadBlobToCloudinary(blob, filename = "image.png") {
-  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-  const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+  let activeAccount;
+  try {
+    const { getOptimalAccount, getMasterAccount } = await import("./server/cloudinary/poolManager.js");
+    activeAccount = await getOptimalAccount({ purpose: "automation-blob" });
+  } catch {
+    activeAccount = {
+      cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+      uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "ml_default",
+    };
+  }
+
+  const cloudName =
+    activeAccount.cloudName || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const uploadPreset =
+    activeAccount.uploadPreset ||
+    process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET ||
+    "ml_default";
 
   if (!cloudName || !uploadPreset) {
     throw new Error(
@@ -1620,10 +1635,27 @@ async function uploadBlobToCloudinary(blob, filename = "image.png") {
 
   const formData = new FormData();
   formData.append("file", blob, filename);
-  formData.append("upload_preset", uploadPreset);
+
+  if (activeAccount.apiKey && activeAccount.apiSecret) {
+    const timestamp = Math.floor(Date.now() / 1000).toString();
+    const folder = "Muhyo-Tech/blog/ai-generated";
+    const crypto = await import("crypto");
+    const paramsToSign = `folder=${folder}&timestamp=${timestamp}`;
+    const signature = crypto.default
+      .createHash("sha256")
+      .update(paramsToSign + activeAccount.apiSecret)
+      .digest("hex");
+
+    formData.append("api_key", activeAccount.apiKey);
+    formData.append("timestamp", timestamp);
+    formData.append("folder", folder);
+    formData.append("signature", signature);
+  } else {
+    formData.append("upload_preset", uploadPreset);
+  }
 
   console.log(
-    `[Pipeline] Uploading ${(blob.size / 1024).toFixed(1)}KB blob to Cloudinary...`,
+    `[Pipeline] Uploading ${(blob.size / 1024).toFixed(1)}KB blob to Cloudinary (${cloudName})...`,
   );
 
   const controller = new AbortController();
@@ -1646,6 +1678,10 @@ async function uploadBlobToCloudinary(blob, filename = "image.png") {
   }
 
   console.log("[Pipeline] Cloudinary blob-upload succeeded.");
+  try {
+    const { invalidateCloudinaryCache } = await import("./server/cloudinary/poolManager.js");
+    invalidateCloudinaryCache(cloudName).catch(() => {});
+  } catch {}
   return data.secure_url;
 }
 

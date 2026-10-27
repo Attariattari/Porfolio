@@ -417,7 +417,7 @@ export const BlogController = {
             await dbConnect();
             if (typeof data.content === "string") data.content = normalizeBlogServiceLinks(data.content);
 
-            const existing = await Blog.findById(id).select("publishStatus status date createdAt").lean();
+            const existing = await Blog.findById(id).select("publishStatus status date createdAt image featuredImage title slug").lean();
             if (existing) {
                 const wasPublished = existing.publishStatus === "published" || existing.status === "published";
                 const isNowPublished = data.publishStatus === "published" || data.status === "published";
@@ -444,6 +444,38 @@ export const BlogController = {
             }).lean();
 
             if (!updated) return null;
+
+            // Auto-cleanup orphan images on Cloudinary and sync vault
+            if (existing) {
+                setImmediate(async () => {
+                    try {
+                        const { cleanupOrphanCloudinaryAsset } = await import("@/lib/server/cloudinary/poolManager");
+                        const { updateVaultAsset, deleteVaultAsset } = await import("@/lib/server/cloudinary/assetVault");
+
+                        const oldImg = existing.image || existing.featuredImage?.url;
+                        const newImg = updated.image || updated.featuredImage?.url;
+
+                        if (oldImg && newImg !== undefined && oldImg !== newImg) {
+                            await cleanupOrphanCloudinaryAsset(oldImg);
+                            if (newImg) {
+                                await updateVaultAsset({
+                                    collection: "blogs",
+                                    documentId: updated._id.toString(),
+                                    field: "image",
+                                    newUrl: newImg,
+                                    oldUrl: oldImg,
+                                    title: updated.title,
+                                    slug: updated.slug,
+                                });
+                            } else {
+                                await deleteVaultAsset({ url: oldImg, collection: "blogs", documentId: updated._id.toString() });
+                            }
+                        }
+                    } catch (e) {
+                        console.warn("[BlogController] Media auto-cleanup notice:", e.message);
+                    }
+                });
+            }
 
             // Refresh discovery even when a post is unpublished: its URL must
             // then disappear from the public listing and XML sitemap.
@@ -503,6 +535,21 @@ export const BlogController = {
                         console.error("[BlogController.deleteOne] TopicPlan cascade cleanup error:", err.message);
                     }
                 })();
+
+                // Auto-cleanup deleted blog image from Cloudinary and vault
+                const blogImg = deleted.image || deleted.featuredImage?.url;
+                if (blogImg) {
+                    setImmediate(async () => {
+                        try {
+                            const { cleanupOrphanCloudinaryAsset } = await import("@/lib/server/cloudinary/poolManager");
+                            const { deleteVaultAsset } = await import("@/lib/server/cloudinary/assetVault");
+                            await cleanupOrphanCloudinaryAsset(blogImg);
+                            await deleteVaultAsset({ url: blogImg, collection: "blogs", documentId: deleted._id.toString() });
+                        } catch (e) {
+                            console.warn("[BlogController.deleteOne] Media cleanup notice:", e.message);
+                        }
+                    });
+                }
 
                 // Immediate cache invalidation & socket sync
                 await cacheManager.invalidateByTag("blogs").catch(() => {});

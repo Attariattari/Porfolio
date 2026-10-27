@@ -52,6 +52,55 @@ export const AboutController = {
             upsert: true,
             runValidators: true,
         }).lean();
+
+        // Auto-cleanup orphan images on Cloudinary and sync vault
+        if (existing) {
+            setImmediate(async () => {
+                try {
+                    const { cleanupOrphanCloudinaryAsset } = await import("@/lib/server/cloudinary/poolManager");
+                    const { updateVaultAsset, deleteVaultAsset } = await import("@/lib/server/cloudinary/assetVault");
+
+                    if (existing.avatar && data.avatar !== undefined && existing.avatar !== data.avatar) {
+                        await cleanupOrphanCloudinaryAsset(existing.avatar);
+                        if (data.avatar) {
+                            await updateVaultAsset({
+                                collection: "abouts",
+                                documentId: updated._id.toString(),
+                                field: "avatar",
+                                newUrl: data.avatar,
+                                oldUrl: existing.avatar,
+                                title: "About Profile Avatar",
+                                slug: "about-avatar",
+                            });
+                        } else {
+                            await deleteVaultAsset({ url: existing.avatar, collection: "abouts", documentId: updated._id.toString(), field: "avatar" });
+                        }
+                    }
+
+                    const oldHeroImg = existing.hero?.image;
+                    const newHeroImg = data.hero?.image;
+                    if (oldHeroImg && newHeroImg !== undefined && oldHeroImg !== newHeroImg) {
+                        await cleanupOrphanCloudinaryAsset(oldHeroImg);
+                        if (newHeroImg) {
+                            await updateVaultAsset({
+                                collection: "abouts",
+                                documentId: updated._id.toString(),
+                                field: "hero.image",
+                                newUrl: newHeroImg,
+                                oldUrl: oldHeroImg,
+                                title: "About Hero Portrait",
+                                slug: "about-hero",
+                            });
+                        } else {
+                            await deleteVaultAsset({ url: oldHeroImg, collection: "abouts", documentId: updated._id.toString(), field: "hero.image" });
+                        }
+                    }
+                } catch (e) {
+                    console.warn("[AboutController] Media auto-cleanup notice:", e.message);
+                }
+            });
+        }
+
         await cacheManager.invalidateByTag("about");
         return serializeDoc(updated);
     },

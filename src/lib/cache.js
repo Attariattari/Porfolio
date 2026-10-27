@@ -57,9 +57,9 @@ const canCacheValue = (value) => value !== undefined && value !== null;
 if (isServer && process.env.REDIS_URL && !redis) {
   try {
     redis = new Redis(process.env.REDIS_URL, {
-      maxRetriesPerRequest: 1,
-      connectTimeout: 3000,
-      enableOfflineQueue: false,
+      maxRetriesPerRequest: 2,
+      connectTimeout: 5000,
+      enableOfflineQueue: true,
       retryStrategy(times) {
         if (times > 3) return null;
         return Math.min(times * 100, 1000);
@@ -103,12 +103,29 @@ if (isServer && process.env.REDIS_URL && !redis) {
 }
 
 export const isRedisAvailable = () =>
-  Boolean(isServer && redis && redisStatus.connected);
+  Boolean(
+    isServer &&
+      redis &&
+      (redisStatus.connected || redis.status === "ready" || redis.status === "connecting")
+  );
 
 export const getCache = async (key) => {
   const cacheKey = safeCacheKey(key);
   if (!cacheKey) return null;
 
+  // L1 Check: Memory Cache (Instant 0ms lookup)
+  const memoryItem = localCache.get(cacheKey);
+  if (memoryItem) {
+    if (Date.now() <= memoryItem.expiry) {
+      cacheMetrics.hits += 1;
+      safeLog("debug", "L1 hit", cacheKey);
+      return memoryItem.value;
+    }
+    localCache.delete(cacheKey);
+    cacheMetrics.memoryCacheSize = localCache.size;
+  }
+
+  // L2 Check: Redis Cache
   if (isRedisAvailable()) {
     try {
       const data = await redis.get(cacheKey);
@@ -119,40 +136,29 @@ export const getCache = async (key) => {
       }
 
       try {
+        const parsed = JSON.parse(data);
         cacheMetrics.hits += 1;
-        safeLog("debug", "hit", cacheKey);
-        return JSON.parse(data);
+        safeLog("debug", "L2 hit", cacheKey);
+        // Backfill L1 Memory Cache with remaining TTL
+        localCache.set(cacheKey, {
+          value: parsed,
+          expiry: Date.now() + 60 * 1000, // 1 min short L1 cache
+        });
+        cacheMetrics.memoryCacheSize = localCache.size;
+        return parsed;
       } catch {
         await redis.del(cacheKey).catch(() => {});
         markError("Invalid JSON cache payload");
         return null;
       }
     } catch (error) {
-      redisStatus.connected = false;
-      redisStatus.error = error?.message || "Redis get failed";
-      markError("Redis get failed");
-      safeLog("warn", "Redis unavailable, using direct data source fallback.");
+      safeLog("warn", `Redis get failed: ${error.message}`);
     }
   }
 
-  const item = localCache.get(cacheKey);
-  if (!item) {
-    cacheMetrics.misses += 1;
-    safeLog("debug", "miss", cacheKey);
-    return null;
-  }
-
-  if (Date.now() > item.expiry) {
-    localCache.delete(cacheKey);
-    cacheMetrics.memoryCacheSize = localCache.size;
-    cacheMetrics.misses += 1;
-    safeLog("debug", "expired", cacheKey);
-    return null;
-  }
-
-  cacheMetrics.hits += 1;
-  safeLog("debug", "hit", cacheKey);
-  return item.value;
+  cacheMetrics.misses += 1;
+  safeLog("debug", "miss", cacheKey);
+  return null;
 };
 
 export const setCache = async (key, value, ttl = DEFAULT_TTL, tags = []) => {
@@ -162,6 +168,19 @@ export const setCache = async (key, value, ttl = DEFAULT_TTL, tags = []) => {
 
   if (!cacheKey || !canCacheValue(value)) return;
 
+  // L1 Memory Set (instant zero-latency access)
+  try {
+    localCache.set(cacheKey, {
+      value,
+      expiry: Date.now() + Math.min(ttlSeconds, 300) * 1000,
+      tags: cacheTags,
+    });
+    cacheMetrics.memoryCacheSize = localCache.size;
+  } catch {
+    markError("Memory cache set failed");
+  }
+
+  // L2 Distributed Set (Redis)
   if (isRedisAvailable()) {
     try {
       const pipeline = redis.pipeline();
@@ -172,28 +191,15 @@ export const setCache = async (key, value, ttl = DEFAULT_TTL, tags = []) => {
       });
       await pipeline.exec();
       cacheMetrics.sets += 1;
-      safeLog("debug", "set", cacheKey);
+      safeLog("debug", "set L2", cacheKey);
       return;
     } catch (error) {
-      redisStatus.connected = false;
-      redisStatus.error = error?.message || "Redis set failed";
-      markError("Redis set failed");
-      safeLog("warn", "Redis unavailable, using direct data source fallback.");
+      safeLog("warn", `Redis set failed: ${error.message}`);
     }
   }
 
-  try {
-    localCache.set(cacheKey, {
-      value,
-      expiry: Date.now() + ttlSeconds * 1000,
-      tags: cacheTags,
-    });
-    cacheMetrics.sets += 1;
-    cacheMetrics.memoryCacheSize = localCache.size;
-    safeLog("debug", "set", cacheKey);
-  } catch {
-    markError("Memory cache set failed");
-  }
+  cacheMetrics.sets += 1;
+  safeLog("debug", "set L1", cacheKey);
 };
 
 export const deleteCache = async (key) => {

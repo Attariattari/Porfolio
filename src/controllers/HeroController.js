@@ -43,6 +43,39 @@ export const HeroController = {
                 runValidators: true,
             }).lean();
 
+            // Auto-Cleanup: If image changed or deleted, delete old Cloudinary image to free credits and update/delete in local vault
+            if (existing?.visualImage && existing.visualImage !== data.visualImage) {
+                setImmediate(async () => {
+                    try {
+                        const { cleanupOrphanCloudinaryAsset } = await import("@/lib/server/cloudinary/poolManager");
+                        await cleanupOrphanCloudinaryAsset(existing.visualImage);
+
+                        if (data.visualImage) {
+                            const { updateVaultAsset } = await import("@/lib/server/cloudinary/assetVault");
+                            await updateVaultAsset({
+                                collection: "heros",
+                                documentId: hero._id.toString(),
+                                field: "visualImage",
+                                newUrl: data.visualImage,
+                                oldUrl: existing.visualImage,
+                                title: data.title || "Home Hero Visual",
+                                slug: "home-hero",
+                            });
+                        } else {
+                            const { deleteVaultAsset } = await import("@/lib/server/cloudinary/assetVault");
+                            await deleteVaultAsset({
+                                url: existing.visualImage,
+                                collection: "heros",
+                                documentId: hero._id.toString(),
+                                field: "visualImage",
+                            });
+                        }
+                    } catch (e) {
+                        console.warn("[HeroController] Media auto-cleanup notice:", e.message);
+                    }
+                });
+            }
+
             await cacheManager.invalidateByTag("hero");
             return serializeDoc(hero);
         } catch (error) {

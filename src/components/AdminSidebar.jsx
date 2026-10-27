@@ -29,6 +29,7 @@ import {
   FileBadge2,
   Settings,
   Inbox,
+  Cloud,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -70,6 +71,7 @@ const ICON_MAP = {
   UsersRound,
   Settings,
   Inbox,
+  Cloud,
 };
 
 export default function AdminSidebar() {
@@ -225,6 +227,7 @@ export default function AdminSidebar() {
           "AI Blog Optimizer",
           "Editorial Planner",
           "Internal Links",
+          "Media Pool",
           "Skills",
           "Resume",
           "Social Links",
@@ -240,7 +243,7 @@ export default function AdminSidebar() {
     {
       label: "System",
       links: filteredLinks.filter((l) =>
-        ["Notifications", "Users", "Settings"].includes(l.name),
+        ["Media Pool", "Notifications", "Users", "Settings"].includes(l.name),
       ),
     },
   ].filter((section) => section.links.length > 0);

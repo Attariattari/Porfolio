@@ -48,6 +48,11 @@ export const ADMIN_NAVIGATION_LINKS = [
     role: "super-admin",
   },
   {
+    name: "Media Pool",
+    href: "/admin/media-pool",
+    icon: "Cloud",
+  },
+  {
     name: "Settings",
     href: "/admin/settings",
     icon: "Settings",

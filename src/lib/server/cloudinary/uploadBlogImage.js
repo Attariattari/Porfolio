@@ -1,17 +1,8 @@
 import crypto from "crypto";
+import { getOptimalAccount, getMasterAccount, invalidateCloudinaryCache } from "./poolManager";
 
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 const MAX_IMAGE_SIZE = 8 * 1024 * 1024;
-
-function getCloudinaryConfig() {
-  return {
-    cloudName:
-      process.env.CLOUDINARY_CLOUD_NAME ||
-      process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-    apiKey: process.env.CLOUDINARY_API_KEY,
-    apiSecret: process.env.CLOUDINARY_API_SECRET,
-  };
-}
 
 function signCloudinaryParams(params, apiSecret) {
   const signatureBase = Object.keys(params)
@@ -37,7 +28,22 @@ export function validateBlogImageFile(file) {
 }
 
 export async function uploadBlogImageToCloudinary(fileOrBuffer, options = {}) {
-  const { cloudName, apiKey, apiSecret } = getCloudinaryConfig();
+  // 1. Resolve optimal account dynamically from pool with unshakeable Master fallback
+  let activeAccount;
+  try {
+    activeAccount = await getOptimalAccount({ purpose: "blog" });
+  } catch (err) {
+    console.warn("⚠️ [uploadBlogImage] Arbiter lookup failed, using master fallback:", err.message);
+    activeAccount = getMasterAccount();
+  }
+
+  const cloudName =
+    activeAccount.cloudName ||
+    process.env.CLOUDINARY_CLOUD_NAME ||
+    process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const apiKey = activeAccount.apiKey || process.env.CLOUDINARY_API_KEY;
+  const apiSecret = activeAccount.apiSecret || process.env.CLOUDINARY_API_SECRET;
+
   if (!cloudName || !apiKey || !apiSecret) {
     throw new Error("Cloudinary server credentials are not configured.");
   }
@@ -68,15 +74,19 @@ export async function uploadBlogImageToCloudinary(fileOrBuffer, options = {}) {
 
   const response = await fetch(
     `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-    { method: "POST", body: formData },
+    { method: "POST", body: formData }
   );
 
   if (!response.ok) {
-    throw new Error("Cloudinary upload failed.");
+    const errText = await response.text().catch(() => "");
+    throw new Error(`Cloudinary upload failed (${response.status}): ${errText}`);
   }
 
   const data = await response.json();
   if (!data.secure_url) throw new Error("Cloudinary did not return an image URL.");
+
+  // Bust cache so the new image and updated pool usage reflect across Redis instantly
+  invalidateCloudinaryCache(cloudName).catch(() => {});
 
   return {
     url: data.secure_url,
@@ -84,6 +94,8 @@ export async function uploadBlogImageToCloudinary(fileOrBuffer, options = {}) {
     width: data.width,
     height: data.height,
     format: data.format,
+    cloudName,
+    accountLabel: activeAccount.label,
   };
 }
 

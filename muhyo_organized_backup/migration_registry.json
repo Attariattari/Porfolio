@@ -1,0 +1,2990 @@
+[
+  {
+    "registryIndex": 1,
+    "collection": "blogs",
+    "documentId": "6a44837d49c03e1b553a4372",
+    "title": "MongoDB Aggregation: When Simple Queries Just Aren't Enough for Production",
+    "slug": "mongodb-aggregation-complex-data-production",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1782875482/Muhyo-Tech/blogs/jaggazog0e4n71j8qc7v.png",
+    "filename": "jaggazog0e4n71j8qc7v.png",
+    "localRelativePath": "blogs/6a44837d49c03e1b553a4372__mongodb-aggregation-complex-data-production/cover__jaggazog0e4n71j8qc7v.png",
+    "fileSizeBytes": 1724868,
+    "sha256": "3c2289a3b359899c54080a5b2be623df0d03765ec1043f6d29aceab8124f3a70",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 2,
+    "collection": "blogs",
+    "documentId": "6a456fa7e07ef502e22c887e",
+    "title": "Node.js Backend Scaling: The Day Our Launch Almost Broke",
+    "slug": "nodejs-backend-scaling-stressful-launch-lessons",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1782935983/Muhyo-Tech/blogs/bdcomaje15dlw3uavic6.png",
+    "filename": "bdcomaje15dlw3uavic6.png",
+    "localRelativePath": "blogs/6a456fa7e07ef502e22c887e__nodejs-backend-scaling-stressful-launch-lessons/cover__bdcomaje15dlw3uavic6.png",
+    "fileSizeBytes": 1800570,
+    "sha256": "8882a121e2e92f00fd65d3e3012d935acc5ce27d35f425b4b6713c53a9e7b530",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 3,
+    "collection": "blogs",
+    "documentId": "6a4573e1d1361df44b1b521d",
+    "title": "The Unbearable Weight: When Database Sharding Became Our Only Path Forward",
+    "slug": "database-sharding-when-and-why-we-finally-pulled-the-trigger",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1782937604/Muhyo-Tech/blogs/yaflnq6bo81tld4lnict.png",
+    "filename": "yaflnq6bo81tld4lnict.png",
+    "localRelativePath": "blogs/6a4573e1d1361df44b1b521d__database-sharding-when-and-why-we-finally-pulled-the-trigger/cover__yaflnq6bo81tld4lnict.png",
+    "fileSizeBytes": 2173834,
+    "sha256": "78217f1a6352fac68f19683eb7892829f4620b75f9f16f4596bdd889c0e14114",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 4,
+    "collection": "blogs",
+    "documentId": "6a45794ed1361df44b1b93db",
+    "title": "From Fear to Flow: How Muhyo Tech Automated Away Deployment Anxiety",
+    "slug": "deployment-anxiety-devops-automation",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1782938359/Muhyo-Tech/blogs/pxwee8fz6ixulqmhxpfg.png",
+    "filename": "pxwee8fz6ixulqmhxpfg.png",
+    "localRelativePath": "blogs/6a45794ed1361df44b1b93db__deployment-anxiety-devops-automation/cover__pxwee8fz6ixulqmhxpfg.png",
+    "fileSizeBytes": 2315375,
+    "sha256": "8746cba86a714c5dfbec6ac10ca302b61a5a5f08f841f9708ce80d7dd74e1e18",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 5,
+    "collection": "blogs",
+    "documentId": "6a46c58b2eba4444b81e5594",
+    "title": "The AI Copy-Paste Trap: Engineering Seamless LLM Workflows for Your Digital Services",
+    "slug": "ai-copy-paste-trap-seamless-llm-workflows",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1783023224/Muhyo-Tech/blogs/vuniwd04pl5cznnzcdgx.png",
+    "filename": "vuniwd04pl5cznnzcdgx.png",
+    "localRelativePath": "blogs/6a46c58b2eba4444b81e5594__ai-copy-paste-trap-seamless-llm-workflows/cover__vuniwd04pl5cznnzcdgx.png",
+    "fileSizeBytes": 1785012,
+    "sha256": "fb9bf700e5aa3e93d1d614c6aff51b9ff62a746312f302444c788c500cfe0f9c",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 6,
+    "collection": "blogs",
+    "documentId": "6a46c71c2eba4444b81e6482",
+    "title": "Beyond the Spreadsheet: Engineering Admin Dashboards That Scale Your Business Operations",
+    "slug": "engineering-admin-dashboards-scale-business-operations",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1783023597/Muhyo-Tech/blogs/kvnimbg507vygebzexqm.png",
+    "filename": "kvnimbg507vygebzexqm.png",
+    "localRelativePath": "blogs/6a46c71c2eba4444b81e6482__engineering-admin-dashboards-scale-business-operations/cover__kvnimbg507vygebzexqm.png",
+    "fileSizeBytes": 1834034,
+    "sha256": "26d43d9214f6f267a64fbea959b62d6579b820d9c9edc4b816b47658e5b6135f",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 7,
+    "collection": "blogs",
+    "documentId": "6a46ca162eba4444b81e83b7",
+    "title": "The Content Update Bottleneck: How Headless CMS Engineering Unlocks Marketing Agility",
+    "slug": "content-update-bottleneck-headless-cms-engineering-marketing-agility",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1783024332/Muhyo-Tech/blogs/a5kh8ilwegokzmac06s3.png",
+    "filename": "a5kh8ilwegokzmac06s3.png",
+    "localRelativePath": "blogs/6a46ca162eba4444b81e83b7__content-update-bottleneck-headless-cms-engineering-marketing-agility/cover__a5kh8ilwegokzmac06s3.png",
+    "fileSizeBytes": 1940109,
+    "sha256": "cd8f4d563c10049c6b8725111dad764f615877042ad86ef1e3d99e2a7f9baafb",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 8,
+    "collection": "blogs",
+    "documentId": "6a4706cc115da9e1b5f426c4",
+    "title": "React 19 Actions: Streamlining Form Management and Web Engineering Best Practices",
+    "slug": "react-19-actions-pragmatic-guide-senior-developers",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1783053001/Muhyo-Tech/blogs/xek42gl3uuutg1rjmjwf.png",
+    "filename": "xek42gl3uuutg1rjmjwf.png",
+    "localRelativePath": "blogs/6a4706cc115da9e1b5f426c4__react-19-actions-pragmatic-guide-senior-developers/cover__xek42gl3uuutg1rjmjwf.png",
+    "fileSizeBytes": 1781040,
+    "sha256": "7148ffad24b3b45fe0afcb21bfaa87b3228b9d7b2f86bdff4568d67b9a4078d7",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 9,
+    "collection": "blogs",
+    "documentId": "6a473b9fec255426186e8727",
+    "title": "The Silent Killer: Debugging NGINX Configuration Errors Before They Cripple Your App",
+    "slug": "debugging-nginx-configuration-errors",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1783054102/Muhyo-Tech/blogs/hhke3hhimknjokwhu4dj.png",
+    "filename": "hhke3hhimknjokwhu4dj.png",
+    "localRelativePath": "blogs/6a473b9fec255426186e8727__debugging-nginx-configuration-errors/cover__hhke3hhimknjokwhu4dj.png",
+    "fileSizeBytes": 1708277,
+    "sha256": "5bee608bae8b48efdb1ce4b02f9b16cb80e447d45525d5e195c4a4e5d8860cc6",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 10,
+    "collection": "blogs",
+    "documentId": "6a49e2cf5807276e06e091c0",
+    "title": "Beyond the Green Score: Engineering Core Web Vitals for Real Business Impact",
+    "slug": "engineering-core-web-vitals-real-business-impact",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1783227417/Muhyo-Tech/blogs/fxrp2l1jzabugtijnr1x.png",
+    "filename": "fxrp2l1jzabugtijnr1x.png",
+    "localRelativePath": "blogs/6a49e2cf5807276e06e091c0__engineering-core-web-vitals-real-business-impact/cover__fxrp2l1jzabugtijnr1x.png",
+    "fileSizeBytes": 1581492,
+    "sha256": "29356472b5ee29afd7041f3801f089fb49ebf00d2a948c16e8fc2d1a647c0fa9",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 11,
+    "collection": "blogs",
+    "documentId": "6a49e77b5807276e06e0abb4",
+    "title": "Beyond Green: Engineering Observability to Predict and Prevent Production Issues",
+    "slug": "engineering-observability-predict-prevent-production-issues",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1783228567/Muhyo-Tech/blogs/j5aoflxsqf0ztamq54wm.png",
+    "filename": "j5aoflxsqf0ztamq54wm.png",
+    "localRelativePath": "blogs/6a49e77b5807276e06e0abb4__engineering-observability-predict-prevent-production-issues/cover__j5aoflxsqf0ztamq54wm.png",
+    "fileSizeBytes": 1762862,
+    "sha256": "e19603442025ef90d93e6e74e9e43b7390a000cd0d936c83e2268d17824684f9",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 12,
+    "collection": "blogs",
+    "documentId": "6a4afb4dac8d9d33abcc47d9",
+    "title": "The Startup Paradox: Shipping Fast Without Drowning in Technical Debt",
+    "slug": "startup-paradox-speed-tech-debt",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1783538692/Muhyo-Tech/blogs/ak2yawh41exwvvynabhk.png",
+    "filename": "ak2yawh41exwvvynabhk.png",
+    "localRelativePath": "blogs/6a4afb4dac8d9d33abcc47d9__startup-paradox-speed-tech-debt/cover__ak2yawh41exwvvynabhk.png",
+    "fileSizeBytes": 1753836,
+    "sha256": "2ca218712ebfedabf9f01f15ea944ac672ef783d7cc8bc2587a91f26521c33f6",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 13,
+    "collection": "blogs",
+    "documentId": "6a4ea6db78183fe744bfbbd0",
+    "title": "SEO Engineering: Diving Deep to Drive Real, Sustainable Traffic",
+    "slug": "seo-engineering-technical-deep-dives-real-traffic",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1783539840/Muhyo-Tech/blogs/k5amzjsqj4hze3oikikn.png",
+    "filename": "k5amzjsqj4hze3oikikn.png",
+    "localRelativePath": "blogs/6a4ea6db78183fe744bfbbd0__seo-engineering-technical-deep-dives-real-traffic/cover__k5amzjsqj4hze3oikikn.png",
+    "fileSizeBytes": 1691616,
+    "sha256": "f80e66b0f122d34cf9edda7d3341dd73fb40ba1ba2d44f25686c11b766eb070b",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 14,
+    "collection": "blogs",
+    "documentId": "6a4fea31899a69717e5a4654",
+    "title": "Navigating the Serverless Sinkhole: Avoiding Cost Overruns and Performance Pitfalls",
+    "slug": "serverless-sinkhole-cost-performance",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1783622642/Muhyo-Tech/blogs/hnft42uhpk6ayr1243q8.png",
+    "filename": "hnft42uhpk6ayr1243q8.png",
+    "localRelativePath": "blogs/6a4fea31899a69717e5a4654__serverless-sinkhole-cost-performance/cover__hnft42uhpk6ayr1243q8.png",
+    "fileSizeBytes": 2660648,
+    "sha256": "6066b2daf9c42d44f3b56112e530280e382742265a4920c51125494d677f891e",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 15,
+    "collection": "blogs",
+    "documentId": "6a547127cf005cd835bbe5ea",
+    "title": "Automating API Key Rotation: Fortifying Your Systems Against Silent Threats",
+    "slug": "automating-api-key-rotation-security-resilience",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1783919850/Muhyo-Tech/blogs/vlx4u9oudz3mzq525ntw.png",
+    "filename": "vlx4u9oudz3mzq525ntw.png",
+    "localRelativePath": "blogs/6a547127cf005cd835bbe5ea__automating-api-key-rotation-security-resilience/cover__vlx4u9oudz3mzq525ntw.png",
+    "fileSizeBytes": 1831434,
+    "sha256": "b4268965db36d6ac5843d3e70dd9c56985cb3f2a0f231a1d34aa801b91592cc5",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 16,
+    "collection": "blogs",
+    "documentId": "6a552c10e23e458534ea059c",
+    "title": "Beyond the Demo: Engineering Reliable LLM Workflows in Production",
+    "slug": "engineering-reliable-llm-workflows-production",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1783966996/Muhyo-Tech/blogs/zlchsgrxhc6sua47xbkw.png",
+    "filename": "zlchsgrxhc6sua47xbkw.png",
+    "localRelativePath": "blogs/6a552c10e23e458534ea059c__engineering-reliable-llm-workflows-production/cover__zlchsgrxhc6sua47xbkw.png",
+    "fileSizeBytes": 1779863,
+    "sha256": "cd8f08309ff66b498add25eec5cbaefe5a8c405a1038bf5fde616351ec45bb45",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 17,
+    "collection": "blogs",
+    "documentId": "6a55b84537f8dfeca311c909",
+    "title": "Cybersecurity for Startups: Practical Hardening for Real Teams",
+    "slug": "cybersecurity-startups-practical-hardening",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1784002879/Muhyo-Tech/blogs/njb2gjauk4i0yljkcega.png",
+    "filename": "njb2gjauk4i0yljkcega.png",
+    "localRelativePath": "blogs/6a55b84537f8dfeca311c909__cybersecurity-startups-practical-hardening/cover__njb2gjauk4i0yljkcega.png",
+    "fileSizeBytes": 1716735,
+    "sha256": "ba47671ba7af383af7efe1b490dd5333ba1c47c64d497ca6fba13b37e94b58cb",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 18,
+    "collection": "blogs",
+    "documentId": "6a55cc63c46c314016334426",
+    "title": "The Sweet Spot: Why We Retired Our Custom Auth Systems",
+    "slug": "why-we-retired-custom-auth-systems",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1784007989/Muhyo-Tech/blogs/lu1lbhtxc55zf47qeulv.png",
+    "filename": "lu1lbhtxc55zf47qeulv.png",
+    "localRelativePath": "blogs/6a55cc63c46c314016334426__why-we-retired-custom-auth-systems/cover__lu1lbhtxc55zf47qeulv.png",
+    "fileSizeBytes": 1841079,
+    "sha256": "acf9201146afb9804752d23cb477513d93f1d712d0a607668edad70432950b4a",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 19,
+    "collection": "blogs",
+    "documentId": "6a55d3cd5aa030abfd0daeef",
+    "title": "Beyond the Surface: Engineering the Digital Foundations Clients Trust",
+    "slug": "beyond-the-surface-engineering-digital-foundations",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1784009908/Muhyo-Tech/blogs/mm9dscpxjqszlba11kum.png",
+    "filename": "mm9dscpxjqszlba11kum.png",
+    "localRelativePath": "blogs/6a55d3cd5aa030abfd0daeef__beyond-the-surface-engineering-digital-foundations/cover__mm9dscpxjqszlba11kum.png",
+    "fileSizeBytes": 1912174,
+    "sha256": "bbe6da8323f8d53d8411db09357639d15db7dbfdae2496702ea778e4c8c55f21",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 20,
+    "collection": "blogs",
+    "documentId": "6a585034e3c58f89b91ed41d",
+    "title": "Beyond the Hype: The Hidden Costs of Multi-Tenancy in SaaS Engineering",
+    "slug": "hidden-costs-multi-tenancy-saas-engineering",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1784172838/Muhyo-Tech/blogs/db3s7gg6cglzodiw7mmg.png",
+    "filename": "db3s7gg6cglzodiw7mmg.png",
+    "localRelativePath": "blogs/6a585034e3c58f89b91ed41d__hidden-costs-multi-tenancy-saas-engineering/cover__db3s7gg6cglzodiw7mmg.png",
+    "fileSizeBytes": 1693842,
+    "sha256": "92301ca4c99cccdf14bddfe73138c1e8c82ec0cbc06a82e7ece036502de3c211",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 21,
+    "collection": "blogs",
+    "documentId": "6a585882ee4e34d19e8c402d",
+    "title": "Forms That Work: Engineering Reliability Beyond Basic Validation",
+    "slug": "engineering-reliable-web-form-submissions",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1784175955/Muhyo-Tech/blogs/nauuoqcwnmrpxrinpvvu.png",
+    "filename": "nauuoqcwnmrpxrinpvvu.png",
+    "localRelativePath": "blogs/6a585882ee4e34d19e8c402d__engineering-reliable-web-form-submissions/cover__nauuoqcwnmrpxrinpvvu.png",
+    "fileSizeBytes": 1647120,
+    "sha256": "fbf3581db05f8fc58bfbda3869c9693a0cd05fc91e9a4d65a801831d784e276e",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 22,
+    "collection": "blogs",
+    "documentId": "6a597cd07d9a8b6cc588208f",
+    "title": "Taming the Cache Invalidation Beast: Strategies for Real-Time Data Consistency",
+    "slug": "taming-cache-invalidation-beast-real-time-data-consistency",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1784314891/Muhyo-Tech/blogs/jrsxokkh21hjbnfyvcc3.png",
+    "filename": "jrsxokkh21hjbnfyvcc3.png",
+    "localRelativePath": "blogs/6a597cd07d9a8b6cc588208f__taming-cache-invalidation-beast-real-time-data-consistency/cover__jrsxokkh21hjbnfyvcc3.png",
+    "fileSizeBytes": 1523205,
+    "sha256": "b57947479eea75ca53022365f5e27b53c3fb303472181e61dbd7c6e747cc8d7e",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 23,
+    "collection": "blogs",
+    "documentId": "6a5ace4551a35faac92be322",
+    "title": "The Silent Performance Killer: Diagnosing and Defeating N+1 Queries",
+    "slug": "n-plus-one-query-problem-performance",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1784538822/Muhyo-Tech/blogs/v7ksmqlopl7vcvuvmqni.png",
+    "filename": "v7ksmqlopl7vcvuvmqni.png",
+    "localRelativePath": "blogs/6a5ace4551a35faac92be322__n-plus-one-query-problem-performance/cover__v7ksmqlopl7vcvuvmqni.png",
+    "fileSizeBytes": 1576886,
+    "sha256": "6179e02c3cbf935fdc632776e03e8af0d65128042406fdfd3b4d5c51cbc2cbf5",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 24,
+    "collection": "blogs",
+    "documentId": "6a5c1fcf48897a4a71b42ac4",
+    "title": "Decoding the 'Too Many Redirects' Error: Engineering for Seamless User Journeys",
+    "slug": "too-many-redirects-error-engineering",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1784450131/Muhyo-Tech/blogs/x0kmtrn7jogo3z41ippj.png",
+    "filename": "x0kmtrn7jogo3z41ippj.png",
+    "localRelativePath": "blogs/6a5c1fcf48897a4a71b42ac4__too-many-redirects-error-engineering/cover__x0kmtrn7jogo3z41ippj.png",
+    "fileSizeBytes": 1649170,
+    "sha256": "3291b32f9c095eb1a97e4d60536cc26733c1c7e54c7bdb66c170e4ce3ce7d5a6",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 25,
+    "collection": "blogs",
+    "documentId": "6a5de8458b0c36cdc888bda4",
+    "title": "TypeScript Patterns That Saved Our Production Builds",
+    "slug": "typescript-advanced-patterns-production-builds",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1784606873/Muhyo-Tech/blogs/kr3kkdeynmt7vlnuhpsh.png",
+    "filename": "kr3kkdeynmt7vlnuhpsh.png",
+    "localRelativePath": "blogs/6a5de8458b0c36cdc888bda4__typescript-advanced-patterns-production-builds/cover__kr3kkdeynmt7vlnuhpsh.png",
+    "fileSizeBytes": 1913266,
+    "sha256": "49038b224a990e17ca17eddc60896be95bbd17e6eb7e788fec4880b168485a67",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 26,
+    "collection": "blogs",
+    "documentId": "6a5edb027124042fcd506404",
+    "title": "When Your 'Simple' AI Automation Breaks: Engineering Robustness for Production Workflows",
+    "slug": "ai-automation-robustness-production-workflows",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1784606967/Muhyo-Tech/blogs/hni1vh5dkrcpjytogwuk.png",
+    "filename": "hni1vh5dkrcpjytogwuk.png",
+    "localRelativePath": "blogs/6a5edb027124042fcd506404__ai-automation-robustness-production-workflows/cover__hni1vh5dkrcpjytogwuk.png",
+    "fileSizeBytes": 1906199,
+    "sha256": "e93f0ee395444f142df2137be12024a88a513fe3a4e8a79073c35321910bf769",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 27,
+    "collection": "blogs",
+    "documentId": "6a611bc46b80b386659c5f2d",
+    "title": "The Silent Killer: How Stale Content Undermines Trust (And How Next.js Revalidation Fixes It)",
+    "slug": "nextjs-cache-revalidation-stale-content-fix",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1784749654/Muhyo-Tech/blogs/lauv8vl4ujiq5am29ulm.png",
+    "filename": "lauv8vl4ujiq5am29ulm.png",
+    "localRelativePath": "blogs/6a611bc46b80b386659c5f2d__nextjs-cache-revalidation-stale-content-fix/cover__lauv8vl4ujiq5am29ulm.png",
+    "fileSizeBytes": 1858954,
+    "sha256": "ab21a8ddca42cc3e3cab241288647ff00819c8646a348d676a76044ecbf38016",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 28,
+    "collection": "blogs",
+    "documentId": "6a61250c6b80b386659c7267",
+    "title": "When Your MongoDB Queries Slow Down: A Practical Indexing Strategy",
+    "slug": "mongodb-query-performance-indexing-strategy",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1784752106/Muhyo-Tech/blogs/ar3groxylzczngspttrd.png",
+    "filename": "ar3groxylzczngspttrd.png",
+    "localRelativePath": "blogs/6a61250c6b80b386659c7267__mongodb-query-performance-indexing-strategy/cover__ar3groxylzczngspttrd.png",
+    "fileSizeBytes": 1621763,
+    "sha256": "b0802d7e85ee315e04f5bdadc73d21794e4cad8c54411f4a01fd10ae17a010c1",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 29,
+    "collection": "blogs",
+    "documentId": "6a615baa7b96ce2c8a996c9c",
+    "title": "Webhook Reliability: Preventing Lost and Duplicated Business Events",
+    "slug": "webhook-reliability-lost-duplicated-events",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1784782668/Muhyo-Tech/blogs/gqdqhymwqlzhxxlpqptd.png",
+    "filename": "gqdqhymwqlzhxxlpqptd.png",
+    "localRelativePath": "blogs/6a615baa7b96ce2c8a996c9c__webhook-reliability-lost-duplicated-events/cover__gqdqhymwqlzhxxlpqptd.png",
+    "fileSizeBytes": 1725706,
+    "sha256": "b9b5103364a2196a93b3f23ab92a9dc6a408e91edfef05c10f9b15f3f0ac57bd",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 30,
+    "collection": "blogs",
+    "documentId": "6a62ad27649ec685523a085f",
+    "title": "The Silent Killer of Website Speed: Taming Large Media Files",
+    "slug": "website-image-optimization-strategy",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1784876948/Muhyo-Tech/blogs/meyqib3w8h0lq7etheux.png",
+    "filename": "meyqib3w8h0lq7etheux.png",
+    "localRelativePath": "blogs/6a62ad27649ec685523a085f__website-image-optimization-strategy/cover__meyqib3w8h0lq7etheux.png",
+    "fileSizeBytes": 1528258,
+    "sha256": "01ce0b7e1ace90a66beed37378ffea5e31e96d996ebf4311a6df0b5701b048a6",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 31,
+    "collection": "blogs",
+    "documentId": "6a64241152a0f4a03626b769",
+    "title": "Decoding Website Development Cost in Pakistan (2026): Beyond the Quote",
+    "slug": "website-development-cost-pakistan-2026-guide",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1784963916/Muhyo-Tech/blogs/b5nrdemf0owqbafqm9be.png",
+    "filename": "b5nrdemf0owqbafqm9be.png",
+    "localRelativePath": "blogs/6a64241152a0f4a03626b769__website-development-cost-pakistan-2026-guide/cover__b5nrdemf0owqbafqm9be.png",
+    "fileSizeBytes": 1840109,
+    "sha256": "419e8a7fec1f0acfe9c97b5bbd99cfb6a7ddd679583bebc88e20eb764e3e5f70",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 32,
+    "collection": "blogs",
+    "documentId": "6a6557259df3404fea5ee23f",
+    "title": "Beyond the Portfolio: How to Vet a Next.js Developer in Pakistan",
+    "slug": "hire-nextjs-developer-pakistan-buyer-guide",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1785043318/Muhyo-Tech/blogs/sbbhnxjuoyfuijnxs5w8.png",
+    "filename": "sbbhnxjuoyfuijnxs5w8.png",
+    "localRelativePath": "blogs/6a6557259df3404fea5ee23f__hire-nextjs-developer-pakistan-buyer-guide/cover__sbbhnxjuoyfuijnxs5w8.png",
+    "fileSizeBytes": 1827244,
+    "sha256": "7e199c7d67b3bbe2c2d87205b41970cd4cf5f58e3e9e3ac5b131805dc2c090d1",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 33,
+    "collection": "blogs",
+    "documentId": "6a66a2345eab824abe93dd54",
+    "title": "Beyond the Resume: How to Hire a MERN Stack Developer Who Delivers in Pakistan",
+    "slug": "how-to-hire-mern-stack-developer-pakistan",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1785126721/Muhyo-Tech/blogs/lqczbfhseodkxfpgoijf.png",
+    "filename": "lqczbfhseodkxfpgoijf.png",
+    "localRelativePath": "blogs/6a66a2345eab824abe93dd54__how-to-hire-mern-stack-developer-pakistan/cover__lqczbfhseodkxfpgoijf.png",
+    "fileSizeBytes": 1633391,
+    "sha256": "4c5e82c80dfe7eaa0fdddf13428e34726f49e55990839a039f563d3d8c58c827",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 34,
+    "collection": "blogs",
+    "documentId": "6a67702efb29e4de855aa0da",
+    "title": "The Technical SEO Playbook: Engineering for Organic Growth",
+    "slug": "technical-seo-playbook-engineering-organic-growth",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1785164570/Muhyo-Tech/blogs/zotsbvxhwomkkedfj9xb.png",
+    "filename": "zotsbvxhwomkkedfj9xb.png",
+    "localRelativePath": "blogs/6a67702efb29e4de855aa0da__technical-seo-playbook-engineering-organic-growth/cover__zotsbvxhwomkkedfj9xb.png",
+    "fileSizeBytes": 2474102,
+    "sha256": "043b183375f9aa3a084c4676b78130fbc958405dcfeee7597b1868e226bd6a7f",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 35,
+    "collection": "blogs",
+    "documentId": "6a67fdff36d034da8f26fdf3",
+    "title": "Canonical URLs: Engineering One Identity for Every Page",
+    "slug": "canonical-url-strategy-duplicate-content",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1785209585/Muhyo-Tech/blogs/dkjpwzr4pvfhj9fyhmzg.png",
+    "filename": "dkjpwzr4pvfhj9fyhmzg.png",
+    "localRelativePath": "blogs/6a67fdff36d034da8f26fdf3__canonical-url-strategy-duplicate-content/cover__dkjpwzr4pvfhj9fyhmzg.png",
+    "fileSizeBytes": 1283479,
+    "sha256": "947213b9fc99c8e5bb0c5d6ebc6a98d9535b691991cc1e3af5288c5b5a9474c8",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 36,
+    "collection": "blogs",
+    "documentId": "6a68fef62b0483190598e39f",
+    "title": "When Search Engines Miss the Point: Structured Data in Practice",
+    "slug": "structured-data-in-practice",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1785266186/Muhyo-Tech/blogs/vw6gx7gmw9qy4yqyxxda.png",
+    "filename": "vw6gx7gmw9qy4yqyxxda.png",
+    "localRelativePath": "blogs/6a68fef62b0483190598e39f__structured-data-in-practice/cover__vw6gx7gmw9qy4yqyxxda.png",
+    "fileSizeBytes": 1763226,
+    "sha256": "5792143e7d1b8df7c1cb218d2234cb70c13d418d88a64f24da12e18afe88a429",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 37,
+    "collection": "blogs",
+    "documentId": "6a696ed1e354a98acc5a8a8d",
+    "title": "From Manual Checks to Automated Trust: Engineering Robust Form Validations",
+    "slug": "automated-form-validation-engineering",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1785294979/Muhyo-Tech/blogs/qreg6xemhvn3rzoonpi0.png",
+    "filename": "qreg6xemhvn3rzoonpi0.png",
+    "localRelativePath": "blogs/6a696ed1e354a98acc5a8a8d__automated-form-validation-engineering/cover__qreg6xemhvn3rzoonpi0.png",
+    "fileSizeBytes": 1720848,
+    "sha256": "8cc2fd53a97b07e5d183c6810ff562c9ef9e129857d83a5c064dcb82c5be6155",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 38,
+    "collection": "blogs",
+    "documentId": "6a69cbf52c9422bd10e5cca5",
+    "title": "The Production Playbook: A Complete Guide to DevOps & Deployment for Web Systems",
+    "slug": "devops-deployment-guide",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1785318652/Muhyo-Tech/blogs/sa5jul6tic8qsybojc97.png",
+    "filename": "sa5jul6tic8qsybojc97.png",
+    "localRelativePath": "blogs/6a69cbf52c9422bd10e5cca5__devops-deployment-guide/cover__sa5jul6tic8qsybojc97.png",
+    "fileSizeBytes": 2033100,
+    "sha256": "033a6e82c335b0dd1d222b119d589b27f7bb7e256171fc8a40f47f9bc4c65210",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 39,
+    "collection": "blogs",
+    "documentId": "6a6ab1f979d51eda9363d0a7",
+    "title": "Engineering Blazing-Fast Next.js Applications: A Deep Dive",
+    "slug": "nextjs-performance-optimization-deep-dive",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1785386744/Muhyo-Tech/blogs/l0oa6vid9hn7dpxeoacq.png",
+    "filename": "l0oa6vid9hn7dpxeoacq.png",
+    "localRelativePath": "blogs/6a6ab1f979d51eda9363d0a7__nextjs-performance-optimization-deep-dive/cover__l0oa6vid9hn7dpxeoacq.png",
+    "fileSizeBytes": 2037557,
+    "sha256": "b136514d92eeb705d0f1a4b67264ac19746ef6cb5f7a1f508aca6277f913ca08",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 40,
+    "collection": "blogs",
+    "documentId": "6a6bea05c8ff2e777d126c31",
+    "title": "Optimizing Next.js Data Fetching: Speed, Efficiency, and User Experience",
+    "slug": "nextjs-data-fetching-optimization",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1785468246/Muhyo-Tech/blogs/jzhtudrcp71vozyuvsjw.png",
+    "filename": "jzhtudrcp71vozyuvsjw.png",
+    "localRelativePath": "blogs/6a6bea05c8ff2e777d126c31__nextjs-data-fetching-optimization/cover__jzhtudrcp71vozyuvsjw.png",
+    "fileSizeBytes": 1971930,
+    "sha256": "fa53868ad0f69a11ebe29c2a9ee8a1e1a153cbdcf0fa986af002e6ab366f5446",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 41,
+    "collection": "blogs",
+    "documentId": "6a6d3b83e2085419d2d75d96",
+    "title": "Image Optimization in Next.js: Delivering Visuals Without Sacrificing Speed",
+    "slug": "nextjs-image-optimization-speed",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1785556987/Muhyo-Tech/blogs/l8rtas0vnpaphwewtfy6.png",
+    "filename": "l8rtas0vnpaphwewtfy6.png",
+    "localRelativePath": "blogs/6a6d3b83e2085419d2d75d96__nextjs-image-optimization-speed/cover__l8rtas0vnpaphwewtfy6.png",
+    "fileSizeBytes": 2115985,
+    "sha256": "f97b25daf64a6e1a6b2dae333b74ceb3f2dfc044792be60a44723c35ea08860f",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 42,
+    "collection": "blogs",
+    "documentId": "6a6e8d0c0302111a3711d64f",
+    "title": "Mastering React State Management: A Guide to Scalable Architectures",
+    "slug": "react-state-management-scalable-architectures",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1785633769/Muhyo-Tech/blogs/mxkowpnvyk3mdjy4ni54.png",
+    "filename": "mxkowpnvyk3mdjy4ni54.png",
+    "localRelativePath": "blogs/6a6e8d0c0302111a3711d64f__react-state-management-scalable-architectures/cover__mxkowpnvyk3mdjy4ni54.png",
+    "fileSizeBytes": 2057639,
+    "sha256": "1c3c9e8cbcc3ff3a5fc3a75293494670d1a4a3ae0bd98024a3bafce3167fae2b",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 43,
+    "collection": "blogs",
+    "documentId": "6a6fde8e9e1a24ab38526219",
+    "title": "Beyond Prop Drilling: Mastering React Context API for Global State",
+    "slug": "react-context-api-global-state",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1785741547/Muhyo-Tech/blogs/zugwmep1pdwoabcnbvf8.jpg",
+    "filename": "zugwmep1pdwoabcnbvf8.jpg",
+    "localRelativePath": "blogs/6a6fde8e9e1a24ab38526219__react-context-api-global-state/cover__zugwmep1pdwoabcnbvf8.jpg",
+    "fileSizeBytes": 809958,
+    "sha256": "5fdeef9eed169e0c1e7d35208da62b2bf537ff108299135654a6c3e4787d8a94",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 44,
+    "collection": "blogs",
+    "documentId": "6a70d5edc5c7b9bdf2a264f4",
+    "title": "Simplifying React State: An Introduction to Redux Toolkit",
+    "slug": "redux-toolkit-introduction-react",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1785780613/Muhyo-Tech/blogs/ufh08rktidp4iukm8aq8.jpg",
+    "filename": "ufh08rktidp4iukm8aq8.jpg",
+    "localRelativePath": "blogs/6a70d5edc5c7b9bdf2a264f4__redux-toolkit-introduction-react/cover__ufh08rktidp4iukm8aq8.jpg",
+    "fileSizeBytes": 3139032,
+    "sha256": "e6ee2064d8e754a26d106e5b3911d087823c02d88a2aeef37f12ca4b57e1df88",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 45,
+    "collection": "blogs",
+    "documentId": "6a715572467d2f64c92acc97",
+    "title": "Fortifying Your Node.js Applications: An Engineering Guide to Web Security Best Practices",
+    "slug": "nodejs-application-security-best-practices",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1785833453/Muhyo-Tech/blogs/jceruaj0331x5luoqnki.jpg",
+    "filename": "jceruaj0331x5luoqnki.jpg",
+    "localRelativePath": "blogs/6a715572467d2f64c92acc97__nodejs-application-security-best-practices/cover__jceruaj0331x5luoqnki.jpg",
+    "fileSizeBytes": 3624423,
+    "sha256": "07108ed3fba7a336ae0812896e2b95b5e07453de0062b7466f8ad35cbdce620a",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 46,
+    "collection": "blogs",
+    "documentId": "6a7287bfc305b3554c702ca1",
+    "title": "Securing Node.js APIs: Hardening Endpoints Against Real-World Threats",
+    "slug": "securing-nodejs-apis-hardening-endpoints-against-real-world-threats",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1785898631/Muhyo-Tech/blogs/o1hukctijs2i8knbikjy.jpg",
+    "filename": "o1hukctijs2i8knbikjy.jpg",
+    "localRelativePath": "blogs/6a7287bfc305b3554c702ca1__securing-nodejs-apis-hardening-endpoints-against-real-world-threats/cover__o1hukctijs2i8knbikjy.jpg",
+    "fileSizeBytes": 3369926,
+    "sha256": "02ed253e37b801d82b642de9fe3b853be9715085139677e48a0dababf4997dbd",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 47,
+    "collection": "blogs",
+    "documentId": "6a73d946e170fee91cc53164",
+    "title": "Node.js Dependency Risks: Securing Your Supply Chain",
+    "slug": "nodejs-dependency-security-supply-chain",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1785978824/Muhyo-Tech/blogs/cisodiojsefai8tipmpv.jpg",
+    "filename": "cisodiojsefai8tipmpv.jpg",
+    "localRelativePath": "blogs/6a73d946e170fee91cc53164__nodejs-dependency-security-supply-chain/cover__cisodiojsefai8tipmpv.jpg",
+    "fileSizeBytes": 3244220,
+    "sha256": "70f55227b25367135e985313eaf93ea3b567f12e50f88649e46fd8cb46b3cd1c",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 48,
+    "collection": "blogs",
+    "documentId": "6a752ac997334cbdd53efbb3",
+    "title": "MERN Stack Blueprint: Building Robust & Scalable Web Applications",
+    "slug": "mern-stack-scalable-web-applications-blueprint",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1786085057/Muhyo-Tech/blogs/hcosk9nfd6ly7wnyy1lq.jpg",
+    "filename": "hcosk9nfd6ly7wnyy1lq.jpg",
+    "localRelativePath": "blogs/6a752ac997334cbdd53efbb3__mern-stack-scalable-web-applications-blueprint/cover__hcosk9nfd6ly7wnyy1lq.jpg",
+    "fileSizeBytes": 3603263,
+    "sha256": "c00c9af8f7fe85bc51bff314fef2d6a000f9fb95dbdc618592d0be0898d50953",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 49,
+    "collection": "blogs",
+    "documentId": "6a764e33205bcb28f97ced15",
+    "title": "Unleashing Next.js Server Components: An Engineering Deep Dive",
+    "slug": "nextjs-server-components-engineering-guide",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1786140624/Muhyo-Tech/blogs/nyxearz10tnveiffkngv.jpg",
+    "filename": "nyxearz10tnveiffkngv.jpg",
+    "localRelativePath": "blogs/6a764e33205bcb28f97ced15__nextjs-server-components-engineering-guide/cover__nyxearz10tnveiffkngv.jpg",
+    "fileSizeBytes": 3428784,
+    "sha256": "ee13b9deaa0f18a488994510f0247477f03f3642eca66d65f8b8c75e043cd6aa",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 50,
+    "collection": "blogs",
+    "documentId": "6a767c43246e5fe4e18984f5",
+    "title": "Integrating Data Fetching with Next.js Server Components: Best Practices",
+    "slug": "nextjs-server-components-data-fetching-best-practices",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1786160775/Muhyo-Tech/blogs/lecwzbxkfjajhbqelomz.jpg",
+    "filename": "lecwzbxkfjajhbqelomz.jpg",
+    "localRelativePath": "blogs/6a767c43246e5fe4e18984f5__nextjs-server-components-data-fetching-best-practices/cover__lecwzbxkfjajhbqelomz.jpg",
+    "fileSizeBytes": 3377853,
+    "sha256": "d158c408d4187bef07f7a9d370b44b4d94e20bf9b7d9ff83f76a02f480569153",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 51,
+    "collection": "blogs",
+    "documentId": "6a76a6eba67e70025b71bc55",
+    "title": "Client vs. Server Components: When and How to Choose in Next.js",
+    "slug": "nextjs-client-server-components-guide",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1786161200/Muhyo-Tech/blogs/iloa96fc2ezsxruoyr41.jpg",
+    "filename": "iloa96fc2ezsxruoyr41.jpg",
+    "localRelativePath": "blogs/6a76a6eba67e70025b71bc55__nextjs-client-server-components-guide/cover__iloa96fc2ezsxruoyr41.jpg",
+    "fileSizeBytes": 3260879,
+    "sha256": "72a8fbb0a0eed5db55cbd799bd8f166b15bed47596accf3c88656b41fd5d70e1",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 52,
+    "collection": "blogs",
+    "documentId": "6a76a92f203ac91d279a48a5",
+    "title": "Building for Resilience: Engineering Multi-Tenant SaaS with Fault Tolerance",
+    "slug": "multi-tenant-saas-fault-tolerance",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1786161872/Muhyo-Tech/blogs/ta7scwunziqzsfktabrb.jpg",
+    "filename": "ta7scwunziqzsfktabrb.jpg",
+    "localRelativePath": "blogs/6a76a92f203ac91d279a48a5__multi-tenant-saas-fault-tolerance/cover__ta7scwunziqzsfktabrb.jpg",
+    "fileSizeBytes": 4146141,
+    "sha256": "b6f587736adabd4946f159803931c016a4c61a91332f75d949a80b2acd728648",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 53,
+    "collection": "blogs",
+    "documentId": "6a78719a205bcb28f97cfeb9",
+    "title": "When Microservices Become a Micro-Problem: Deciding on Monolith vs. Microservices for Scale",
+    "slug": "monolith-vs-microservices-decision-framework",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1786282726/Muhyo-Tech/blogs/ldtrckm3biq7yyu5xcqu.jpg",
+    "filename": "ldtrckm3biq7yyu5xcqu.jpg",
+    "localRelativePath": "blogs/6a78719a205bcb28f97cfeb9__monolith-vs-microservices-decision-framework/cover__ldtrckm3biq7yyu5xcqu.jpg",
+    "fileSizeBytes": 3320407,
+    "sha256": "83b0eb3e3ac6669b81e177ad6feebfe5626a1c905e0e782af22d69a9c14f9f5f",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 54,
+    "collection": "blogs",
+    "documentId": "6a788f1a6e648ff6619399c5",
+    "title": "Engineering for Trust: A Data Privacy & Security Blueprint for SaaS Products",
+    "slug": "saas-data-privacy-security-engineering-blueprint",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1786286732/Muhyo-Tech/blogs/pccak4tz7a4l4bb9peko.jpg",
+    "filename": "pccak4tz7a4l4bb9peko.jpg",
+    "localRelativePath": "blogs/6a788f1a6e648ff6619399c5__saas-data-privacy-security-engineering-blueprint/cover__pccak4tz7a4l4bb9peko.jpg",
+    "fileSizeBytes": 3405881,
+    "sha256": "cb7145d3c58afece1a245850e04be87b2cafb6e0d24cc036c1cc18b4b9754d59",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 55,
+    "collection": "blogs",
+    "documentId": "6a78b243c9d8b80db27db71e",
+    "title": "Beyond 'Lift and Shift': Re-architecting for Cloud-Native Cost Efficiency and Performance",
+    "slug": "cloud-native-rearchitecture-cost-optimization",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1786343647/Muhyo-Tech/blogs/gpb0dylaqq9h76pqnxmu.jpg",
+    "filename": "gpb0dylaqq9h76pqnxmu.jpg",
+    "localRelativePath": "blogs/6a78b243c9d8b80db27db71e__cloud-native-rearchitecture-cost-optimization/cover__gpb0dylaqq9h76pqnxmu.jpg",
+    "fileSizeBytes": 3405006,
+    "sha256": "da5aede1104dbb13d526de8a067b5a11d261adf4766b82c1b86abc518a1a24cd",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 56,
+    "collection": "blogs",
+    "documentId": "6a7901efcee4e2f7af474275",
+    "title": "When Your Database Becomes a Bottleneck: Engineering for Scalability with Sharding and Replication",
+    "slug": "database-sharding-replication-scalability",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1786350240/Muhyo-Tech/blogs/nx3fp6tniorcxwbnyvsq.jpg",
+    "filename": "nx3fp6tniorcxwbnyvsq.jpg",
+    "localRelativePath": "blogs/6a7901efcee4e2f7af474275__database-sharding-replication-scalability/cover__nx3fp6tniorcxwbnyvsq.jpg",
+    "fileSizeBytes": 3752175,
+    "sha256": "57bc2adaae8f46cbae5b431be9f0ead99ec36ff005a536793ce82763c77ad08b",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 57,
+    "collection": "blogs",
+    "documentId": "6a7925042a01c6113c92284c",
+    "title": "The Silent Cost of Cloud Lock-in: Engineering for Portability and Strategic Flexibility",
+    "slug": "cloud-lock-in-portability-strategic-flexibility",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1786365244/Muhyo-Tech/blogs/hznscgkt67c4ddnub9oo.jpg",
+    "filename": "hznscgkt67c4ddnub9oo.jpg",
+    "localRelativePath": "blogs/6a7925042a01c6113c92284c__cloud-lock-in-portability-strategic-flexibility/cover__hznscgkt67c4ddnub9oo.jpg",
+    "fileSizeBytes": 3817987,
+    "sha256": "0142cf68f809cb1437688e102a91b5271b442bf585367177941b380ba907f116",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 58,
+    "collection": "blogs",
+    "documentId": "6a7941564c1110a2cf8d2494",
+    "title": "Beyond the 200 OK: Engineering Robust API Error Handling for Production Systems",
+    "slug": "api-error-handling-best-practices",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087474/Muhyo-Tech/blogs/cover__ycmgsxiywc2mothmwicr_s55i3f.jpg",
+    "filename": "ycmgsxiywc2mothmwicr.jpg",
+    "localRelativePath": "blogs/6a7941564c1110a2cf8d2494__api-error-handling-best-practices/cover__ycmgsxiywc2mothmwicr.jpg",
+    "fileSizeBytes": 3840308,
+    "sha256": "92b6bdec51c5be344e46f3d21c17c9fe783f4677cb26e3253e084091976f4dcf",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:51:17.700Z"
+  },
+  {
+    "registryIndex": 59,
+    "collection": "blogs",
+    "documentId": "6a795fcf5abf0bde951df3fb",
+    "title": "Core Web Vitals for E-commerce: Engineering for Conversion & Reliability",
+    "slug": "core-web-vitals-e-commerce-optimization-guide",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087480/Muhyo-Tech/blogs/cover__gxz4qbtadfzzij3esvod_i8zlui.jpg",
+    "filename": "gxz4qbtadfzzij3esvod.jpg",
+    "localRelativePath": "blogs/6a795fcf5abf0bde951df3fb__core-web-vitals-e-commerce-optimization-guide/cover__gxz4qbtadfzzij3esvod.jpg",
+    "fileSizeBytes": 3322672,
+    "sha256": "943577c0bcb1fd0e93dad577b5ef5a9bf137b6b3c547b61e9eeea27d135cd568",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:51:23.676Z"
+  },
+  {
+    "registryIndex": 60,
+    "collection": "blogs",
+    "documentId": "6a797e5223c18f2b9e83bdd2",
+    "title": "The Hidden Costs of Client-Side Rendering: When SSR/SSG Becomes a Technical SEO Imperative",
+    "slug": "ssr-ssg-technical-seo-imperative",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087486/Muhyo-Tech/blogs/cover__oh7pvnl4e9t43v5odqgq_snlta8.jpg",
+    "filename": "oh7pvnl4e9t43v5odqgq.jpg",
+    "localRelativePath": "blogs/6a797e5223c18f2b9e83bdd2__ssr-ssg-technical-seo-imperative/cover__oh7pvnl4e9t43v5odqgq.jpg",
+    "fileSizeBytes": 3116043,
+    "sha256": "b10b4e6eefbc2c8891a18226ffc8853b2ecec5830abd085ce30b9892f30fa7c3",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:51:29.000Z"
+  },
+  {
+    "registryIndex": 61,
+    "collection": "blogs",
+    "documentId": "6a799a9dd22235dfab07662d",
+    "title": "When Your CMS Becomes a Performance Bottleneck: Engineering for Speed with Headless Architectures",
+    "slug": "headless-cms-performance-optimization",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087495/Muhyo-Tech/blogs/cover__rrdgs2egxohd3ram0krm_zoyhwc.jpg",
+    "filename": "rrdgs2egxohd3ram0krm.jpg",
+    "localRelativePath": "blogs/6a799a9dd22235dfab07662d__headless-cms-performance-optimization/cover__rrdgs2egxohd3ram0krm.jpg",
+    "fileSizeBytes": 4177746,
+    "sha256": "da47c1c3cf6dd5f7ce28e2d1ee9da30300ceaf731d81dffc5d81e7a911c5d270",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:51:38.088Z"
+  },
+  {
+    "registryIndex": 62,
+    "collection": "blogs",
+    "documentId": "6a79b8ee574d3c93668d9bf8",
+    "title": "The Hidden Accessibility Debt: Auditing and Remediating Legacy Web Applications",
+    "slug": "legacy-web-accessibility-remediation",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087503/Muhyo-Tech/blogs/cover__oa0zpgsxhxqjpi1zs7hh_wn7kqj.jpg",
+    "filename": "oa0zpgsxhxqjpi1zs7hh.jpg",
+    "localRelativePath": "blogs/6a79b8ee574d3c93668d9bf8__legacy-web-accessibility-remediation/cover__oa0zpgsxhxqjpi1zs7hh.jpg",
+    "fileSizeBytes": 3743198,
+    "sha256": "fb3f7de69235986b2df4c212460f3acd531c83451ab4f08b7a1126b3e966e9b9",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:51:46.598Z"
+  },
+  {
+    "registryIndex": 63,
+    "collection": "blogs",
+    "documentId": "6a79d76123ea3293076e07b4",
+    "title": "MongoDB Schema Design: Engineering for Scalability and Performance in MERN Stacks",
+    "slug": "mongodb-schema-design-mern-scalability",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087511/Muhyo-Tech/blogs/cover__towrj0xcc2wn0mfzovje_fab3rd.jpg",
+    "filename": "towrj0xcc2wn0mfzovje.jpg",
+    "localRelativePath": "blogs/6a79d76123ea3293076e07b4__mongodb-schema-design-mern-scalability/cover__towrj0xcc2wn0mfzovje.jpg",
+    "fileSizeBytes": 3492511,
+    "sha256": "a4c7307270c952d556af37a66999ef4ff385e9d995bfaca8e3139c2b02c34921",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:51:54.671Z"
+  },
+  {
+    "registryIndex": 64,
+    "collection": "blogs",
+    "documentId": "6a79f5b483f8e34549e01adb",
+    "title": "Embedded vs. Referenced Data Models in MongoDB: A Practical Guide",
+    "slug": "mongodb-embedded-vs-referenced-data-models",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087515/Muhyo-Tech/blogs/cover__yh2pz60di4ugiozswiaf_mgski5.jpg",
+    "filename": "yh2pz60di4ugiozswiaf.jpg",
+    "localRelativePath": "blogs/6a79f5b483f8e34549e01adb__mongodb-embedded-vs-referenced-data-models/cover__yh2pz60di4ugiozswiaf.jpg",
+    "fileSizeBytes": 1270810,
+    "sha256": "accd9371b4641e56c175dd24d47845b3d9a06d11145e59f254304318e17363dd",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:51:58.356Z"
+  },
+  {
+    "registryIndex": 65,
+    "collection": "blogs",
+    "documentId": "6a7a14379f52c80934c4a123",
+    "title": "Designing Flexible MongoDB Schemas for Evolving MERN Application Requirements",
+    "slug": "flexible-mongodb-schemas-mern-apps",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087522/Muhyo-Tech/blogs/cover__v4uabjkj2jiut0riculy_vifzcx.jpg",
+    "filename": "v4uabjkj2jiut0riculy.jpg",
+    "localRelativePath": "blogs/6a7a14379f52c80934c4a123__flexible-mongodb-schemas-mern-apps/cover__v4uabjkj2jiut0riculy.jpg",
+    "fileSizeBytes": 2913964,
+    "sha256": "603751dc988203379d258ee1728e2594cb657b5ae3836c8ee3698955c2862657",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:52:04.671Z"
+  },
+  {
+    "registryIndex": 66,
+    "collection": "blogs",
+    "documentId": "6a7c3a59dbf6df17bd70d814",
+    "title": "Engineering High-Performance React Applications: A Deep Dive into Optimization Techniques",
+    "slug": "react-performance-optimization-techniques",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087545/Muhyo-Tech/blogs/cover__e20fygwilfdelp6kjinf_hqokji.jpg",
+    "filename": "e20fygwilfdelp6kjinf.jpg",
+    "localRelativePath": "blogs/6a7c3a59dbf6df17bd70d814__react-performance-optimization-techniques/cover__e20fygwilfdelp6kjinf.jpg",
+    "fileSizeBytes": 3265004,
+    "sha256": "6af0bfea21e66d6aef0c948f23f49fd267f37438847b9bfaf29a9f6f25d6b5f3",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:52:28.229Z"
+  },
+  {
+    "registryIndex": 67,
+    "collection": "blogs",
+    "documentId": "6a7c8f3f84af7fc301379236",
+    "title": "When to Memoize: Practical React.memo and useCallback for UI Performance",
+    "slug": "react-memo-usecallback-performance-optimization",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087558/Muhyo-Tech/blogs/cover__gefc9bryvgeq31gohprr_kvclsb.jpg",
+    "filename": "gefc9bryvgeq31gohprr.jpg",
+    "localRelativePath": "blogs/6a7c8f3f84af7fc301379236__react-memo-usecallback-performance-optimization/cover__gefc9bryvgeq31gohprr.jpg",
+    "fileSizeBytes": 3025586,
+    "sha256": "f39139d57c69ec5926e97eba581857e5c6cf8ce8249d2ec0d725f0870cb20c84",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:52:40.538Z"
+  },
+  {
+    "registryIndex": 68,
+    "collection": "blogs",
+    "documentId": "6a7ce865305cc1429beac9c6",
+    "title": "Code Splitting in React: Reducing Bundle Size for Faster Initial Loads",
+    "slug": "react-code-splitting-optimization",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087563/Muhyo-Tech/blogs/cover__wvfvvxefwajfcjnhbtpt_ofzua2.jpg",
+    "filename": "wvfvvxefwajfcjnhbtpt.jpg",
+    "localRelativePath": "blogs/6a7ce865305cc1429beac9c6__react-code-splitting-optimization/cover__wvfvvxefwajfcjnhbtpt.jpg",
+    "fileSizeBytes": 3432034,
+    "sha256": "5e83b4a2e4d3ab6ad4126aa2d00a3b9b88d1fc578b4e8ceeba6156a20c8c746a",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:52:45.708Z"
+  },
+  {
+    "registryIndex": 69,
+    "collection": "blogs",
+    "documentId": "6a7e5d1704a84b18ff651369",
+    "title": "Fortifying Your APIs: A Comprehensive Engineering Guide to Modern Security Best Practices",
+    "slug": "api-security-best-practices",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087570/Muhyo-Tech/blogs/cover__mg0d35dgzt9w2u4qvvbi_pazglk.jpg",
+    "filename": "mg0d35dgzt9w2u4qvvbi.jpg",
+    "localRelativePath": "blogs/6a7e5d1704a84b18ff651369__api-security-best-practices/cover__mg0d35dgzt9w2u4qvvbi.jpg",
+    "fileSizeBytes": 4168635,
+    "sha256": "334494d008f61e881f0420f15a182de1ae75109deb8bf3abc6dcea74324575a5",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:52:54.656Z"
+  },
+  {
+    "registryIndex": 70,
+    "collection": "blogs",
+    "documentId": "6a7ee74b3693668ef25463ea",
+    "title": "Implementing Robust API Authentication and Authorization with JWTs",
+    "slug": "api-jwt-authentication",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087577/Muhyo-Tech/blogs/cover__pitfv4ksjypksk7ya6un_y7a6gw.jpg",
+    "filename": "pitfv4ksjypksk7ya6un.jpg",
+    "localRelativePath": "blogs/6a7ee74b3693668ef25463ea__api-jwt-authentication/cover__pitfv4ksjypksk7ya6un.jpg",
+    "fileSizeBytes": 2546263,
+    "sha256": "0b565ad1315aab353e91e18df8759f2c77fe09fbbfce58ca6e8bbf9ae35d8ab2",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:52:59.709Z"
+  },
+  {
+    "registryIndex": 71,
+    "collection": "blogs",
+    "documentId": "6a7f1fac0bded6ca96936b26",
+    "title": "Defending Against Common API Attacks: OWASP Top 10 for Web APIs",
+    "slug": "owasp-api-security-top-10",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087583/Muhyo-Tech/blogs/cover__vu6i16lunwhd4czmzpin_ydw4hl.jpg",
+    "filename": "vu6i16lunwhd4czmzpin.jpg",
+    "localRelativePath": "blogs/6a7f1fac0bded6ca96936b26__owasp-api-security-top-10/cover__vu6i16lunwhd4czmzpin.jpg",
+    "fileSizeBytes": 4242634,
+    "sha256": "53dd7e64a70a9a62b233da98d078abb939a83fdd04f13ae13ff3e9e39b32656c",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:53:05.887Z"
+  },
+  {
+    "registryIndex": 72,
+    "collection": "blogs",
+    "documentId": "6a7f581f9cd820c26c0f23c6",
+    "title": "Beyond Autocomplete: Engineering LLMs for Advanced Developer Productivity",
+    "slug": "llm-advanced-developer-productivity",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087588/Muhyo-Tech/blogs/cover__znypjeq3vaj4a8zjqsfx_tgilss.jpg",
+    "filename": "znypjeq3vaj4a8zjqsfx.jpg",
+    "localRelativePath": "blogs/6a7f581f9cd820c26c0f23c6__llm-advanced-developer-productivity/cover__znypjeq3vaj4a8zjqsfx.jpg",
+    "fileSizeBytes": 3416883,
+    "sha256": "fd9bd0e0d8f2f70c31c360cf6ed8c462f797387a7238524ad426b58c5424743f",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:53:10.851Z"
+  },
+  {
+    "registryIndex": 73,
+    "collection": "blogs",
+    "documentId": "6a7f92752afb886e68569b54",
+    "title": "Mastering Next.js Caching Strategies: An Engineering Guide to Performance and Scalability",
+    "slug": "nextjs-caching-strategies-performance-scalability",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087593/Muhyo-Tech/blogs/cover__kqvbt0musmifk8m7k4fz_da7thn.jpg",
+    "filename": "kqvbt0musmifk8m7k4fz.jpg",
+    "localRelativePath": "blogs/6a7f92752afb886e68569b54__nextjs-caching-strategies-performance-scalability/cover__kqvbt0musmifk8m7k4fz.jpg",
+    "fileSizeBytes": 3402076,
+    "sha256": "5828d527ed4ff66e45a408e43afb38b7d1487f0105ba6fbb8f503c9a614b327a",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:53:16.438Z"
+  },
+  {
+    "registryIndex": 74,
+    "collection": "blogs",
+    "documentId": "6a7fcbce91180f9c695012a8",
+    "title": "Leveraging Vercel Cache for Next.js: Engineering for Global Performance and Reliability",
+    "slug": "vercel-cache-nextjs-global-performance",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087599/Muhyo-Tech/blogs/cover__tieaslko7jx6adeeoclx_j3x8qo.jpg",
+    "filename": "tieaslko7jx6adeeoclx.jpg",
+    "localRelativePath": "blogs/6a7fcbce91180f9c695012a8__vercel-cache-nextjs-global-performance/cover__tieaslko7jx6adeeoclx.jpg",
+    "fileSizeBytes": 3152066,
+    "sha256": "ba65077162d46b1e8ee146a600240d931ab817b694a8900e947ece44b12ab6b2",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:53:22.088Z"
+  },
+  {
+    "registryIndex": 75,
+    "collection": "blogs",
+    "documentId": "6a8005486c94d8212df59814",
+    "title": "Next.js Client-Side Caching: Building Robust Offline Experiences and Instant UIs",
+    "slug": "nextjs-client-side-caching-offline-ui-updates",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087604/Muhyo-Tech/blogs/cover__akmbhzjtaca8m2mfyane_zlvvgx.jpg",
+    "filename": "akmbhzjtaca8m2mfyane.jpg",
+    "localRelativePath": "blogs/6a8005486c94d8212df59814__nextjs-client-side-caching-offline-ui-updates/cover__akmbhzjtaca8m2mfyane.jpg",
+    "fileSizeBytes": 3047547,
+    "sha256": "46a19c6d1ded807c5ed01912e53f2a42b34e8ee92cb2fca0a8310edf29e84627",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:53:26.985Z"
+  },
+  {
+    "registryIndex": 76,
+    "collection": "blogs",
+    "documentId": "6a8100132c41d52ad14552c6",
+    "title": "Beyond MVP: Engineering a Scalable SaaS Architecture from Day One",
+    "slug": "scalable-saas-architecture-early-stage",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087610/Muhyo-Tech/blogs/cover__ectcsc0na5ydro27ibvo_nw2pdr.jpg",
+    "filename": "ectcsc0na5ydro27ibvo.jpg",
+    "localRelativePath": "blogs/6a8100132c41d52ad14552c6__scalable-saas-architecture-early-stage/cover__ectcsc0na5ydro27ibvo.jpg",
+    "fileSizeBytes": 4361769,
+    "sha256": "af40bb9dabf7568e725fde700573d97a76ce1702e4837e2176389aaa491dbcc1",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:53:33.193Z"
+  },
+  {
+    "registryIndex": 77,
+    "collection": "blogs",
+    "documentId": "6a813aabbea5c6786a93837d",
+    "title": "MERN Stack Authentication & Authorization: An Engineering Deep Dive",
+    "slug": "mern-stack-authentication-authorization-engineering-deep-dive",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087615/Muhyo-Tech/blogs/cover__lmlzb5b1ppcn81pwpcpe_ruv6oz.jpg",
+    "filename": "lmlzb5b1ppcn81pwpcpe.jpg",
+    "localRelativePath": "blogs/6a813aabbea5c6786a93837d__mern-stack-authentication-authorization-engineering-deep-dive/cover__lmlzb5b1ppcn81pwpcpe.jpg",
+    "fileSizeBytes": 2901260,
+    "sha256": "1e415418b2b42c9bb00ec607bae97bec434c815971a798ce9210b2b3b969ed28",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:53:37.726Z"
+  },
+  {
+    "registryIndex": 78,
+    "collection": "blogs",
+    "documentId": "6a817535d71c242867ca3e0f",
+    "title": "Implementing JWT-Based Authentication in MERN: An Engineering Guide",
+    "slug": "jwt-authentication-mern-engineering-guide",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087619/Muhyo-Tech/blogs/cover__ik3uwfajtxna7zfgwlfx_gwfrzh.jpg",
+    "filename": "ik3uwfajtxna7zfgwlfx.jpg",
+    "localRelativePath": "blogs/6a817535d71c242867ca3e0f__jwt-authentication-mern-engineering-guide/cover__ik3uwfajtxna7zfgwlfx.jpg",
+    "fileSizeBytes": 2880087,
+    "sha256": "4f06ff01a0e188225f2e5a810bd4c84cb77a6ffeb3ae95833a607df4e230e6bb",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:53:42.337Z"
+  },
+  {
+    "registryIndex": 79,
+    "collection": "blogs",
+    "documentId": "6a81ad9575d2a63914708d77",
+    "title": "Role-Based Access Control (RBAC) in MERN: Engineering Fine-Grained Authorization",
+    "slug": "rbac-mern-stack-fine-grained-authorization",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087625/Muhyo-Tech/blogs/cover__yoskmg4riymzntbxzhio_zo19gv.jpg",
+    "filename": "yoskmg4riymzntbxzhio.jpg",
+    "localRelativePath": "blogs/6a81ad9575d2a63914708d77__rbac-mern-stack-fine-grained-authorization/cover__yoskmg4riymzntbxzhio.jpg",
+    "fileSizeBytes": 3409204,
+    "sha256": "2aa4a6361a69f6eb7f2d8ebc4257ad66a3e3030a7fd288313fd37e4ca5aab755",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:53:47.070Z"
+  },
+  {
+    "registryIndex": 80,
+    "collection": "blogs",
+    "documentId": "6a81e8192fe2e29158cdd66e",
+    "title": "Beyond the 'Build vs. Buy' Dilemma: Engineering Strategic SaaS Integrations for Growth",
+    "slug": "saas-integrations-strategy-engineering",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087629/Muhyo-Tech/blogs/cover__mvdhvcamxhlfejqn8gyu_hxetkh.jpg",
+    "filename": "mvdhvcamxhlfejqn8gyu.jpg",
+    "localRelativePath": "blogs/6a81e8192fe2e29158cdd66e__saas-integrations-strategy-engineering/cover__mvdhvcamxhlfejqn8gyu.jpg",
+    "fileSizeBytes": 3361460,
+    "sha256": "29517b4b810a6531d81741242b22bb067b10cbd6a2672dd0139465570823c73d",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:53:52.053Z"
+  },
+  {
+    "registryIndex": 81,
+    "collection": "blogs",
+    "documentId": "6a8222b75fa1c36ddd90fe3d",
+    "title": "Beyond Lighthouse: Engineering for Real User Performance with RUM and Synthetic Monitoring",
+    "slug": "real-user-monitoring-performance-optimization",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087634/Muhyo-Tech/blogs/cover__quwi9rnncjnl15ytjfiz_cinpux.jpg",
+    "filename": "quwi9rnncjnl15ytjfiz.jpg",
+    "localRelativePath": "blogs/6a8222b75fa1c36ddd90fe3d__real-user-monitoring-performance-optimization/cover__quwi9rnncjnl15ytjfiz.jpg",
+    "fileSizeBytes": 3099195,
+    "sha256": "f27538134be5c6bc7f89770f514e054abcadccd0ad1101587759d4b46cb7b202",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:53:56.300Z"
+  },
+  {
+    "registryIndex": 82,
+    "collection": "blogs",
+    "documentId": "6a825d5147ff2dc501c1dedb",
+    "title": "Optimizing Node.js Performance: An Engineering Guide to High-Scale Backends",
+    "slug": "nodejs-performance-optimization-guide",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087639/Muhyo-Tech/blogs/cover__oyuft9p5v72ja3oyoysd_thfdtk.jpg",
+    "filename": "oyuft9p5v72ja3oyoysd.jpg",
+    "localRelativePath": "blogs/6a825d5147ff2dc501c1dedb__nodejs-performance-optimization-guide/cover__oyuft9p5v72ja3oyoysd.jpg",
+    "fileSizeBytes": 3747136,
+    "sha256": "99ab49085e30cf41e1cec20432dc7729cf062f0f18cd5aaab46e43f4f5704dd2",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:54:01.633Z"
+  },
+  {
+    "registryIndex": 83,
+    "collection": "blogs",
+    "documentId": "6a8298fbbbad893ff3476593",
+    "title": "Unpacking the Node.js Event Loop: A Deep Dive for High-Throughput Applications",
+    "slug": "nodejs-event-loop-optimization",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087644/Muhyo-Tech/blogs/cover__cjyo4gdrewt47qkji3io_vxxzmw.jpg",
+    "filename": "cjyo4gdrewt47qkji3io.jpg",
+    "localRelativePath": "blogs/6a8298fbbbad893ff3476593__nodejs-event-loop-optimization/cover__cjyo4gdrewt47qkji3io.jpg",
+    "fileSizeBytes": 3373265,
+    "sha256": "ae1fb28d345e8a45519ceb39e7428888df4dd5addd862266425142b274cd8e67",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:54:07.019Z"
+  },
+  {
+    "registryIndex": 84,
+    "collection": "blogs",
+    "documentId": "6a82d50486564bef2ab5e279",
+    "title": "Scaling Node.js: Unlocking Multi-Core Power with Clustering and Worker Threads",
+    "slug": "nodejs-clustering-worker-threads-scaling",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087649/Muhyo-Tech/blogs/cover__odf3kwhjehpgrs84en9j_idqubo.jpg",
+    "filename": "odf3kwhjehpgrs84en9j.jpg",
+    "localRelativePath": "blogs/6a82d50486564bef2ab5e279__nodejs-clustering-worker-threads-scaling/cover__odf3kwhjehpgrs84en9j.jpg",
+    "fileSizeBytes": 3009483,
+    "sha256": "5b3230453226a328433ac18ecb089eb29bd17508aa6b78cf63b2b03dbbaa247c",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:54:11.376Z"
+  },
+  {
+    "registryIndex": 85,
+    "collection": "blogs",
+    "documentId": "6a8efdef956b27da851ff4c8",
+    "title": "Web Development with AI: Boost Efficiency & Drive Innovation",
+    "slug": "ai-web-development-efficiency-innovation-guide",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087654/Muhyo-Tech/blogs/cover__udhhokaziesojaul0wu9_f2f7qu.jpg",
+    "filename": "udhhokaziesojaul0wu9.jpg",
+    "localRelativePath": "blogs/6a8efdef956b27da851ff4c8__ai-web-development-efficiency-innovation-guide/cover__udhhokaziesojaul0wu9.jpg",
+    "fileSizeBytes": 3588200,
+    "sha256": "b2f34aa44e6ab4fc725c93e2cd1de9e42559a6fe36a757dddf63091f0978b0fc",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:54:16.482Z"
+  },
+  {
+    "registryIndex": 86,
+    "collection": "blogs",
+    "documentId": "6a8f0abc956b27da85200af8",
+    "title": "Automating UI/UX Design: AI from Concept to Code",
+    "slug": "ai-ui-ux-design-automation",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087658/Muhyo-Tech/blogs/cover__bvxounh6y7aky8jc0ye2_khqzjy.jpg",
+    "filename": "bvxounh6y7aky8jc0ye2.jpg",
+    "localRelativePath": "blogs/6a8f0abc956b27da85200af8__ai-ui-ux-design-automation/cover__bvxounh6y7aky8jc0ye2.jpg",
+    "fileSizeBytes": 3308240,
+    "sha256": "df87c1322b93ff7385597c8432262691105376a1debf0ad6f452ab102c1defbb",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:54:20.849Z"
+  },
+  {
+    "registryIndex": 87,
+    "collection": "blogs",
+    "documentId": "6a8f0ae9956b27da85200ba1",
+    "title": "Accelerating Node.js with AI: From Boilerplate to Breakthroughs",
+    "slug": "ai-code-generation-refactoring-nodejs",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087663/Muhyo-Tech/blogs/cover__bcvek5dls88tv8usl5nm_buyxdt.jpg",
+    "filename": "bcvek5dls88tv8usl5nm.jpg",
+    "localRelativePath": "blogs/6a8f0ae9956b27da85200ba1__ai-code-generation-refactoring-nodejs/cover__bcvek5dls88tv8usl5nm.jpg",
+    "fileSizeBytes": 3546629,
+    "sha256": "c3f6930af514f346576556af10f57fa6ac754f33fc49a4eb0f99588ce77680c7",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:54:25.561Z"
+  },
+  {
+    "registryIndex": 88,
+    "collection": "blogs",
+    "documentId": "6a8f0b6a956b27da85200f47",
+    "title": "Evolutionary Design: Adaptable Software for Modern Architectures",
+    "slug": "evolutionary-architecture-practice",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087668/Muhyo-Tech/blogs/cover__d9wkootpdptlsn1zdtca_eqoduw.jpg",
+    "filename": "d9wkootpdptlsn1zdtca.jpg",
+    "localRelativePath": "blogs/6a8f0b6a956b27da85200f47__evolutionary-architecture-practice/cover__d9wkootpdptlsn1zdtca.jpg",
+    "fileSizeBytes": 3629730,
+    "sha256": "3f3ce2d7c12be872ead4825ffd9aa07299da0ce2791eb7ab364d78f3f2e3cfc4",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:54:30.350Z"
+  },
+  {
+    "registryIndex": 89,
+    "collection": "blogs",
+    "documentId": "6a8f0cf6956b27da852014fe",
+    "title": "Multi-Region SaaS: Architecting for Global Scale & Disaster Recovery",
+    "slug": "multi-region-saas-architecture",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087670/Muhyo-Tech/blogs/cover__bffh9nve1gizxuz4xjsh_aw6cjp.jpg",
+    "filename": "bffh9nve1gizxuz4xjsh.jpg",
+    "localRelativePath": "blogs/6a8f0cf6956b27da852014fe__multi-region-saas-architecture/cover__bffh9nve1gizxuz4xjsh.jpg",
+    "fileSizeBytes": 1208953,
+    "sha256": "0a2e486072565dd44c0dac36160240671e0de91b83b00e0c2b7c1f88520b11a1",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:54:32.507Z"
+  },
+  {
+    "registryIndex": 90,
+    "collection": "blogs",
+    "documentId": "6a8f0cfb956b27da85201522",
+    "title": "Zero Downtime Deployments: High-Availability SaaS Strategies",
+    "slug": "zero-downtime-deployments-saas-strategies",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087674/Muhyo-Tech/blogs/cover__yxbzqj95jeuwr5rgplpl_yeljhq.jpg",
+    "filename": "yxbzqj95jeuwr5rgplpl.jpg",
+    "localRelativePath": "blogs/6a8f0cfb956b27da85201522__zero-downtime-deployments-saas-strategies/cover__yxbzqj95jeuwr5rgplpl.jpg",
+    "fileSizeBytes": 3380444,
+    "sha256": "979780995c4a1346add2ab4ce62772794b2a92933d710b15c3ae7204301310ad",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:54:37.018Z"
+  },
+  {
+    "registryIndex": 91,
+    "collection": "blogs",
+    "documentId": "6a8f0e45956b27da85201925",
+    "title": "Multi-Region SaaS Data: Optimize Locality for Performance & Compliance",
+    "slug": "engineering-for-data-locality-optimizing-multi-region-saas-performance-and-compliance",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087680/Muhyo-Tech/blogs/cover__eht4jwms4agahsuyo1c2_zlbodi.jpg",
+    "filename": "eht4jwms4agahsuyo1c2.jpg",
+    "localRelativePath": "blogs/6a8f0e45956b27da85201925__engineering-for-data-locality-optimizing-multi-region-saas-performance-and-compl/cover__eht4jwms4agahsuyo1c2.jpg",
+    "fileSizeBytes": 3947524,
+    "sha256": "301600c9a61f1dac1f170e291663439a791dcacb6232b4e8ea1eff20c2481be1",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:54:42.290Z"
+  },
+  {
+    "registryIndex": 92,
+    "collection": "blogs",
+    "documentId": "6a8f80ab8d23385e24b3b3c2",
+    "title": "Engineering Trust: A Defense-in-Depth Strategy for Software Supply Chain Security",
+    "slug": "engineering-trust-software-supply-chain-security",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087682/Muhyo-Tech/blogs/cover__ereaowevqckmvsscxkv4_kicqsr.jpg",
+    "filename": "ereaowevqckmvsscxkv4.jpg",
+    "localRelativePath": "blogs/6a8f80ab8d23385e24b3b3c2__engineering-trust-software-supply-chain-security/cover__ereaowevqckmvsscxkv4.jpg",
+    "fileSizeBytes": 1180550,
+    "sha256": "e0a74044eada769f92ccbc2c1452bea1bb167f0178ae6b869c3b5d0fe351e908",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:54:44.357Z"
+  },
+  {
+    "registryIndex": 93,
+    "collection": "blogs",
+    "documentId": "6a8fbb34ba7554d29cf8e289",
+    "title": "Design Systems: Scaling UI/UX for Consistent Brand Experience",
+    "slug": "design-systems-ui-ux-scalability",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087686/Muhyo-Tech/blogs/cover__gfzgcvnr20fc4dkwsiwo_ujlugy.jpg",
+    "filename": "gfzgcvnr20fc4dkwsiwo.jpg",
+    "localRelativePath": "blogs/6a8fbb34ba7554d29cf8e289__design-systems-ui-ux-scalability/cover__gfzgcvnr20fc4dkwsiwo.jpg",
+    "fileSizeBytes": 3176437,
+    "sha256": "a48132424929155642c17cc73f6ccb6b898a51f534634f962692fa4a639dd256",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:54:48.646Z"
+  },
+  {
+    "registryIndex": 94,
+    "collection": "blogs",
+    "documentId": "6a8ff5d441a4e166d23caf7e",
+    "title": "Chaos Engineering: Building True Resilience in Cloud Systems",
+    "slug": "chaos-engineering-cloud-systems-resilience",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087691/Muhyo-Tech/blogs/cover__zkf4ehwzoo54pksxqs1d_jvvyeh.jpg",
+    "filename": "zkf4ehwzoo54pksxqs1d.jpg",
+    "localRelativePath": "blogs/6a8ff5d441a4e166d23caf7e__chaos-engineering-cloud-systems-resilience/cover__zkf4ehwzoo54pksxqs1d.jpg",
+    "fileSizeBytes": 4047272,
+    "sha256": "e697b5d56e3735707191b6e9f817b411a4f74de8dc558e75e5f3c65ce95fc1d1",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:54:54.037Z"
+  },
+  {
+    "registryIndex": 95,
+    "collection": "blogs",
+    "documentId": "6a90305487fddbf51d572207",
+    "title": "Boosting React LCP: Strategic SSR for Dynamic Web Apps",
+    "slug": "boost-react-lcp-ssr-strategies",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087694/Muhyo-Tech/blogs/cover__p1nazwpmlsmiy2auaqmf_cdo1xg.jpg",
+    "filename": "p1nazwpmlsmiy2auaqmf.jpg",
+    "localRelativePath": "blogs/6a90305487fddbf51d572207__boost-react-lcp-ssr-strategies/cover__p1nazwpmlsmiy2auaqmf.jpg",
+    "fileSizeBytes": 1164101,
+    "sha256": "814a74f38a80561310d5694765b9be7bf5e5282e29a1ef3ff97a3eccdb7de602",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:54:56.509Z"
+  },
+  {
+    "registryIndex": 96,
+    "collection": "blogs",
+    "documentId": "6a906fb1afc0fc3460a22efb",
+    "title": "Semantic SEO for Web Apps: Beyond Keyword Stuffing",
+    "slug": "semantic-seo-web-applications",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087698/Muhyo-Tech/blogs/cover__nd2bikznemddwcrznl0m_rldg5d.jpg",
+    "filename": "nd2bikznemddwcrznl0m.jpg",
+    "localRelativePath": "blogs/6a906fb1afc0fc3460a22efb__semantic-seo-web-applications/cover__nd2bikznemddwcrznl0m.jpg",
+    "fileSizeBytes": 3514595,
+    "sha256": "162e9b48a32b659e2aa7137abbb59f42a3b47dfa81a5b2d0ac5439c911d8c715",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:55:00.926Z"
+  },
+  {
+    "registryIndex": 97,
+    "collection": "blogs",
+    "documentId": "6a90aa4dac30aec7c1e8eec7",
+    "title": "Architecting Scalable Node.js APIs: An Engineering Guide to API Gateway Patterns",
+    "slug": "nodejs-api-gateway-architecture-guide",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087702/Muhyo-Tech/blogs/cover__l5wrzauqofe21bnwhcys_ypeafy.jpg",
+    "filename": "l5wrzauqofe21bnwhcys.jpg",
+    "localRelativePath": "blogs/6a90aa4dac30aec7c1e8eec7__nodejs-api-gateway-architecture-guide/cover__l5wrzauqofe21bnwhcys.jpg",
+    "fileSizeBytes": 2863898,
+    "sha256": "bb89533dced070c142b14853f9b963601de378ab26e5750f593115bd86cf3583",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:55:05.118Z"
+  },
+  {
+    "registryIndex": 98,
+    "collection": "blogs",
+    "documentId": "6a90e965f852f108b0a09b84",
+    "title": "Implementing Rate Limiting and Throttling for Node.js API Gateways",
+    "slug": "nodejs-api-gateway-rate-limiting-throttling",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087707/Muhyo-Tech/blogs/cover__mghw2ne42wcmcgpi736i_umuq5m.jpg",
+    "filename": "mghw2ne42wcmcgpi736i.jpg",
+    "localRelativePath": "blogs/6a90e965f852f108b0a09b84__nodejs-api-gateway-rate-limiting-throttling/cover__mghw2ne42wcmcgpi736i.jpg",
+    "fileSizeBytes": 3326640,
+    "sha256": "b55cf3c60729eca6d39d6ee05edc56859f4c20b6e6e69772637f44b20ad3d176",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:55:10.646Z"
+  },
+  {
+    "registryIndex": 99,
+    "collection": "blogs",
+    "documentId": "6a9128bd56f037cf595be53f",
+    "title": "Centralized Authentication: Securing Node.js Microservices with API Gateways",
+    "slug": "nodejs-api-gateway-authentication",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087713/Muhyo-Tech/blogs/cover__ul2mrzyg1qpweqikwqby_obkxsg.jpg",
+    "filename": "ul2mrzyg1qpweqikwqby.jpg",
+    "localRelativePath": "blogs/6a9128bd56f037cf595be53f__nodejs-api-gateway-authentication/cover__ul2mrzyg1qpweqikwqby.jpg",
+    "fileSizeBytes": 3458023,
+    "sha256": "3af52b8daae69d59ba7acfd07c6be740e863b2ea8d6aa737321d33be7b00503a",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:55:15.153Z"
+  },
+  {
+    "registryIndex": 100,
+    "collection": "blogs",
+    "documentId": "6a91681e186aab568e3a7d8e",
+    "title": "Implementing Performance Budgets in React: An Engineering Guide to Sustainable Web Performance",
+    "slug": "react-performance-budgets-engineering-guide",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087715/Muhyo-Tech/blogs/cover__x3xxlswahjth4ixhc0un_bxnk3i.jpg",
+    "filename": "x3xxlswahjth4ixhc0un.jpg",
+    "localRelativePath": "blogs/6a91681e186aab568e3a7d8e__react-performance-budgets-engineering-guide/cover__x3xxlswahjth4ixhc0un.jpg",
+    "fileSizeBytes": 1133293,
+    "sha256": "bc02e0a5c65f6c7567875dfce78f8d7effa79f6faea0817a007ecf85de06242f",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:55:17.039Z"
+  },
+  {
+    "registryIndex": 101,
+    "collection": "blogs",
+    "documentId": "6a91a2a3191853c43d8c2a75",
+    "title": "Setting and Monitoring JavaScript Bundle Size Budgets in React Applications",
+    "slug": "react-bundle-size-budgets",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087717/Muhyo-Tech/blogs/cover__gewtgop89wcojyymjuik_vy8afr.jpg",
+    "filename": "gewtgop89wcojyymjuik.jpg",
+    "localRelativePath": "blogs/6a91a2a3191853c43d8c2a75__react-bundle-size-budgets/cover__gewtgop89wcojyymjuik.jpg",
+    "fileSizeBytes": 1049451,
+    "sha256": "684c6151a4590ce5e40840618b8aebc08f0d12ce983aab6a372d118d17d48e96",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:55:19.119Z"
+  },
+  {
+    "registryIndex": 102,
+    "collection": "blogs",
+    "documentId": "6a91db3db2bfc3d3424f22a0",
+    "title": "Dynamic Sitemaps for Next.js: Serverless Scale & Real-time Content",
+    "slug": "dynamic-sitemaps-nextjs-serverless",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087719/Muhyo-Tech/blogs/cover__cov2ojrrevu7jb4rttlo_ge2yco.jpg",
+    "filename": "cov2ojrrevu7jb4rttlo.jpg",
+    "localRelativePath": "blogs/6a91db3db2bfc3d3424f22a0__dynamic-sitemaps-nextjs-serverless/cover__cov2ojrrevu7jb4rttlo.jpg",
+    "fileSizeBytes": 1146004,
+    "sha256": "00241e0fa3d0673ac015fd20b03be7750e35a7bd09d9c8efc93650b1e68a40e8",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:55:21.166Z"
+  },
+  {
+    "registryIndex": 103,
+    "collection": "blogs",
+    "documentId": "6a92158945df81253821d489",
+    "title": "Advanced MongoDB Performance Tuning: An Engineering Guide for High-Scale MERN Applications",
+    "slug": "mongodb-performance-tuning-mern",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087721/Muhyo-Tech/blogs/cover__qatpcp8inkr8p2mxvzzk_nli9hh.jpg",
+    "filename": "qatpcp8inkr8p2mxvzzk.jpg",
+    "localRelativePath": "blogs/6a92158945df81253821d489__mongodb-performance-tuning-mern/cover__qatpcp8inkr8p2mxvzzk.jpg",
+    "fileSizeBytes": 1208241,
+    "sha256": "5e5d3663b59c50b81c61224bf02e7f28c1dddcedaa16aa83e91c15b446930f40",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:55:23.389Z"
+  },
+  {
+    "registryIndex": 104,
+    "collection": "blogs",
+    "documentId": "6a9250032ce2ebb4b5e416d5",
+    "title": "Optimizing MongoDB Aggregation Pipelines: Engineering for MERN Stack Performance",
+    "slug": "mongodb-aggregation-pipeline-optimization-mern",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087725/Muhyo-Tech/blogs/cover__c9tkwlgitufi37srioxw_o1mz7p.jpg",
+    "filename": "c9tkwlgitufi37srioxw.jpg",
+    "localRelativePath": "blogs/6a9250032ce2ebb4b5e416d5__mongodb-aggregation-pipeline-optimization-mern/cover__c9tkwlgitufi37srioxw.jpg",
+    "fileSizeBytes": 3249681,
+    "sha256": "fbac77f61486e96681ebe0e934489c86abd7ceef4097fa7e403d644d434d7bee",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:55:27.870Z"
+  },
+  {
+    "registryIndex": 105,
+    "collection": "blogs",
+    "documentId": "6a9f1206a853ac04345e6860",
+    "title": "The Digital Contractor: Building Seamless Home Services for Growth",
+    "slug": "digital-transformation-home-services",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087730/Muhyo-Tech/blogs/cover__s3vgwrzguxbwjimpvorm_ky812u.jpg",
+    "filename": "s3vgwrzguxbwjimpvorm.jpg",
+    "localRelativePath": "blogs/6a9f1206a853ac04345e6860__digital-transformation-home-services/cover__s3vgwrzguxbwjimpvorm.jpg",
+    "fileSizeBytes": 3656451,
+    "sha256": "185afb7edac862ff5bbf1651a4b9d974c6755ab45cafd6154c1cadba12e6ad04",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:55:32.643Z"
+  },
+  {
+    "registryIndex": 106,
+    "collection": "blogs",
+    "documentId": "6a9fc4215a23339a2f065815",
+    "title": "Building Smarter: An Automated Scheduling & Dispatch System for Contractors",
+    "slug": "automated-scheduling-dispatch-contractors",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087734/Muhyo-Tech/blogs/cover__qn3ox2e32xykelyum9pz_eh9b8t.jpg",
+    "filename": "qn3ox2e32xykelyum9pz.jpg",
+    "localRelativePath": "blogs/6a9fc4215a23339a2f065815__automated-scheduling-dispatch-contractors/cover__qn3ox2e32xykelyum9pz.jpg",
+    "fileSizeBytes": 2322371,
+    "sha256": "830fac838402e37850ebdc54ff31818cc7359ad3073a08fb9b3b7a089faecb76",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:55:37.265Z"
+  },
+  {
+    "registryIndex": 107,
+    "collection": "blogs",
+    "documentId": "6a9fef3321c21c13f6b9066b",
+    "title": "Instant Quotes, Real Conversions: Building a Dynamic Pricing Calculator for Home Services",
+    "slug": "dynamic-pricing-calculator-home-services",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087739/Muhyo-Tech/blogs/cover__m0uqodbky433vxdmumt6_qztiyc.jpg",
+    "filename": "m0uqodbky433vxdmumt6.jpg",
+    "localRelativePath": "blogs/6a9fef3321c21c13f6b9066b__dynamic-pricing-calculator-home-services/cover__m0uqodbky433vxdmumt6.jpg",
+    "fileSizeBytes": 3076310,
+    "sha256": "714a3a5498308e62de1382cb37a4da1775c2c5c358a32e95dc9041c3a35fa268",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:55:42.188Z"
+  },
+  {
+    "registryIndex": 108,
+    "collection": "blogs",
+    "documentId": "6aa037c56dfef63a96db1257",
+    "title": "Engineering Explainable AI (XAI) for Production Systems: Trust, Transparency, and Debugging",
+    "slug": "explainable-ai-production-systems",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087744/Muhyo-Tech/blogs/cover__avgeijougr3pg5r013rf_fk0fbx.jpg",
+    "filename": "avgeijougr3pg5r013rf.jpg",
+    "localRelativePath": "blogs/6aa037c56dfef63a96db1257__explainable-ai-production-systems/cover__avgeijougr3pg5r013rf.jpg",
+    "fileSizeBytes": 3093299,
+    "sha256": "adb3627869ac63747e32c8316b4ce833babb6c9443bd4c2919e11418c6cea35e",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:55:46.875Z"
+  },
+  {
+    "registryIndex": 109,
+    "collection": "blogs",
+    "documentId": "6aa039926dfef63a96db14c7",
+    "title": "The Strategic Shift: When to Adopt a Composable Architecture for E-commerce",
+    "slug": "composable-commerce-architecture-strategy",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087747/Muhyo-Tech/blogs/cover__zern2da3ymgdjdlupw6r_mwialv.jpg",
+    "filename": "zern2da3ymgdjdlupw6r.jpg",
+    "localRelativePath": "blogs/6aa039926dfef63a96db14c7__composable-commerce-architecture-strategy/cover__zern2da3ymgdjdlupw6r.jpg",
+    "fileSizeBytes": 1270612,
+    "sha256": "bf6d8fa27f338949e50a44a32a36c54f4b7a20c3ed4f72230b6bbf0d3fba3df0",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:55:49.203Z"
+  },
+  {
+    "registryIndex": 110,
+    "collection": "blogs",
+    "documentId": "6aa03dd1c095ed125d3d71af",
+    "title": "Engineering for Cost-Effective Serverless: Optimizing AWS Lambda & Fargate for Production",
+    "slug": "aws-serverless-cost-optimization-production",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087750/Muhyo-Tech/blogs/cover__q6mrqbmq5kt5oa0povxp_guzm0t.jpg",
+    "filename": "q6mrqbmq5kt5oa0povxp.jpg",
+    "localRelativePath": "blogs/6aa03dd1c095ed125d3d71af__aws-serverless-cost-optimization-production/cover__q6mrqbmq5kt5oa0povxp.jpg",
+    "fileSizeBytes": 2554328,
+    "sha256": "d2335a35ad759e7473bde963ae16a28ee72d49dbde15819d32cc074b2785f636",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:55:52.752Z"
+  },
+  {
+    "registryIndex": 111,
+    "collection": "blogs",
+    "documentId": "6aa03e5bc095ed125d3d72c4",
+    "title": "Optimizing API Gateway Performance: Low-Latency Strategies for SaaS Microservices",
+    "slug": "api-gateway-performance-microservices-saas",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087755/Muhyo-Tech/blogs/cover__vwwywivxyxq6gcdyqaot_bgdcqg.jpg",
+    "filename": "vwwywivxyxq6gcdyqaot.jpg",
+    "localRelativePath": "blogs/6aa03e5bc095ed125d3d72c4__api-gateway-performance-microservices-saas/cover__vwwywivxyxq6gcdyqaot.jpg",
+    "fileSizeBytes": 3417806,
+    "sha256": "4b14170dd75d1556aae6c7e7494103c7c40604f7acba93ee7df5a6f510df950e",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:55:57.119Z"
+  },
+  {
+    "registryIndex": 112,
+    "collection": "blogs",
+    "documentId": "6aa077934e1193422ac58089",
+    "title": "Engineering Multi-Tenant SaaS: Beyond Basic Row-Level Security",
+    "slug": "multi-tenant-saas-data-segregation",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087759/Muhyo-Tech/blogs/cover__fx0nt3uwswg4dsphxgh5_gu5z49.jpg",
+    "filename": "fx0nt3uwswg4dsphxgh5.jpg",
+    "localRelativePath": "blogs/6aa077934e1193422ac58089__multi-tenant-saas-data-segregation/cover__fx0nt3uwswg4dsphxgh5.jpg",
+    "fileSizeBytes": 3969179,
+    "sha256": "1c70a57d6bc76da688160ade14bcbd5e12e51861a2b47c95e0e8df4e8d91d48f",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:56:02.149Z"
+  },
+  {
+    "registryIndex": 113,
+    "collection": "blogs",
+    "documentId": "6aa0b5152a4f30e23414880f",
+    "title": "Beyond Observability: Engineering Predictive Monitoring for Proactive Incident Prevention",
+    "slug": "predictive-monitoring-proactive-incident-prevention",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087764/Muhyo-Tech/blogs/cover__nwdmmbwoukdizxb4p4rs_bnwnv6.jpg",
+    "filename": "nwdmmbwoukdizxb4p4rs.jpg",
+    "localRelativePath": "blogs/6aa0b5152a4f30e23414880f__predictive-monitoring-proactive-incident-prevention/cover__nwdmmbwoukdizxb4p4rs.jpg",
+    "fileSizeBytes": 3492438,
+    "sha256": "6bb67346c5586b0645dbee89f975bb4162fbad4fe74fa88853bcbdc7e2f83fff",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:56:06.765Z"
+  },
+  {
+    "registryIndex": 114,
+    "collection": "blogs",
+    "documentId": "6aa0f27a0a3353466131ee67",
+    "title": "Architecting for Hyper-Personalization: Real-time Recommendation Engines for SaaS",
+    "slug": "real-time-recommendation-engine-saas",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/l4b6rrli/image/upload/v1793087769/Muhyo-Tech/blogs/cover__su8o6geapmanoyrsg9xz_zvdhcd.jpg",
+    "filename": "su8o6geapmanoyrsg9xz.jpg",
+    "localRelativePath": "blogs/6aa0f27a0a3353466131ee67__real-time-recommendation-engine-saas/cover__su8o6geapmanoyrsg9xz.jpg",
+    "fileSizeBytes": 4034542,
+    "sha256": "630365b3fa8149d4ccf5cf6625e9198d72b14d9e7df2ac867e25fc6e4df7b07d",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:56:11.849Z"
+  },
+  {
+    "registryIndex": 115,
+    "collection": "blogs",
+    "documentId": "6aa12e60ec9b64048a5524f8",
+    "title": "Building Accessible EdTech: Engineering Inclusive Learning Platforms for Diverse Students",
+    "slug": "accessible-edtech-platform-development",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087774/Muhyo-Tech/blogs/cover__odddwsiskyg33y0nundv_ixj2b7.jpg",
+    "filename": "odddwsiskyg33y0nundv.jpg",
+    "localRelativePath": "blogs/6aa12e60ec9b64048a5524f8__accessible-edtech-platform-development/cover__odddwsiskyg33y0nundv.jpg",
+    "fileSizeBytes": 3792570,
+    "sha256": "c1d0a99cc497cbf65e495967216d58c74bba48f40ac60f6b34213832d26d1213",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:56:17.110Z"
+  },
+  {
+    "registryIndex": 116,
+    "collection": "blogs",
+    "documentId": "6aa174ab14a37cbe52a0dd96",
+    "title": "Engineering for International SEO: Beyond Hreflang for Global Web Applications",
+    "slug": "international-seo-engineering-hreflang",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087779/Muhyo-Tech/blogs/cover__zjrq9fpsmutb3mrvrrzm_umo3eu.jpg",
+    "filename": "zjrq9fpsmutb3mrvrrzm.jpg",
+    "localRelativePath": "blogs/6aa174ab14a37cbe52a0dd96__international-seo-engineering-hreflang/cover__zjrq9fpsmutb3mrvrrzm.jpg",
+    "fileSizeBytes": 3529986,
+    "sha256": "407e26fe90f429e34626ad99b1ea0cb799a0456ca7f607a2361fd60fbd2572c3",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:56:21.723Z"
+  },
+  {
+    "registryIndex": 117,
+    "collection": "blogs",
+    "documentId": "6aa2015741df10c2c9ad2566",
+    "title": "Engineering High-Engagement, Scalable EdTech Platforms",
+    "slug": "scalable-edtech-platform-architecture",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087784/Muhyo-Tech/blogs/cover__ve8qyygxcxtwhia1obrh_jhuq25.jpg",
+    "filename": "ve8qyygxcxtwhia1obrh.jpg",
+    "localRelativePath": "blogs/6aa2015741df10c2c9ad2566__scalable-edtech-platform-architecture/cover__ve8qyygxcxtwhia1obrh.jpg",
+    "fileSizeBytes": 3865078,
+    "sha256": "684087c4b920de8d800c5d30ad37100c181dac90b29430f37fc7429aac97ac5a",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:56:26.980Z"
+  },
+  {
+    "registryIndex": 118,
+    "collection": "blogs",
+    "documentId": "6aa2408637667b3954e26b82",
+    "title": "Beyond Static Videos: Engineering Interactive Learning for EdTech Engagement",
+    "slug": "interactive-learning-edtech-engagement",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087789/Muhyo-Tech/blogs/cover__rydrj2ibs5jatenkvgt1_qeuvgz.jpg",
+    "filename": "rydrj2ibs5jatenkvgt1.jpg",
+    "localRelativePath": "blogs/6aa2408637667b3954e26b82__interactive-learning-edtech-engagement/cover__rydrj2ibs5jatenkvgt1.jpg",
+    "fileSizeBytes": 3834519,
+    "sha256": "265b640d90b8ffe9e3b7651b9c0a5db3c3925cf204ed835f926eb9d006546394",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:56:31.660Z"
+  },
+  {
+    "registryIndex": 119,
+    "collection": "blogs",
+    "documentId": "6aa27fc2ac4bba3b766280b4",
+    "title": "Personalizing the Learning Path: Engineering Adaptive Content Delivery for EdTech",
+    "slug": "adaptive-learning-edtech-systems",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087794/Muhyo-Tech/blogs/cover__etvw1vxvfvhcue1snsxz_zdvzjf.jpg",
+    "filename": "etvw1vxvfvhcue1snsxz.jpg",
+    "localRelativePath": "blogs/6aa27fc2ac4bba3b766280b4__adaptive-learning-edtech-systems/cover__etvw1vxvfvhcue1snsxz.jpg",
+    "fileSizeBytes": 3962020,
+    "sha256": "77c135b3c3a5da197446f6a9aebde7493ef62eff3804c1dfa4d722bfaae7ac29",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:56:37.080Z"
+  },
+  {
+    "registryIndex": 120,
+    "collection": "blogs",
+    "documentId": "6aa2b2e3f245de9d8cba4810",
+    "title": "Engineering for Observability in Serverless: Beyond Logs & Metrics for Proactive Issue Resolution",
+    "slug": "serverless-observability-proactive-resolution",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087802/Muhyo-Tech/blogs/cover__cw3rdtqipnqqvdyoaoey_y6t1nc.jpg",
+    "filename": "cw3rdtqipnqqvdyoaoey.jpg",
+    "localRelativePath": "blogs/6aa2b2e3f245de9d8cba4810__serverless-observability-proactive-resolution/cover__cw3rdtqipnqqvdyoaoey.jpg",
+    "fileSizeBytes": 3873101,
+    "sha256": "5ac3c74dcfba4c9b91795b6b06a5d08af84decbbf96cc8819f88cb400ab598c9",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:56:44.923Z"
+  },
+  {
+    "registryIndex": 121,
+    "collection": "blogs",
+    "documentId": "6aa2d407b39c073415fc8960",
+    "title": "From Legacy to Lightning: Re-platforming E-commerce for Modern Performance with Next.js and Headless Commerce",
+    "slug": "headless-commerce-nextjs-migration",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087808/Muhyo-Tech/blogs/cover__mvo8hjv9lvmdwn7p0jop_gvls96.jpg",
+    "filename": "mvo8hjv9lvmdwn7p0jop.jpg",
+    "localRelativePath": "blogs/6aa2d407b39c073415fc8960__headless-commerce-nextjs-migration/cover__mvo8hjv9lvmdwn7p0jop.jpg",
+    "fileSizeBytes": 3856039,
+    "sha256": "93d5f3c5c96af2ad2cf751e3a7e897c810237aaf09f338d22305390f786899fe",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:56:50.901Z"
+  },
+  {
+    "registryIndex": 122,
+    "collection": "blogs",
+    "documentId": "6aa2facbb08e8d83fbe03972",
+    "title": "The Hidden Value of Internal Search: Engineering for Discoverability and SEO in Large Web Applications",
+    "slug": "internal-search-optimization-technical-seo",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087814/Muhyo-Tech/blogs/cover__ftrl2ubuhgxqjwzpxigf_oaq9ii.jpg",
+    "filename": "ftrl2ubuhgxqjwzpxigf.jpg",
+    "localRelativePath": "blogs/6aa2facbb08e8d83fbe03972__internal-search-optimization-technical-seo/cover__ftrl2ubuhgxqjwzpxigf.jpg",
+    "fileSizeBytes": 4208935,
+    "sha256": "1062f86aa0a90f9b9a3a28aff5aee0d2b29ef86d12fa68bbac3d4e87b2ce96eb",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:56:56.910Z"
+  },
+  {
+    "registryIndex": 123,
+    "collection": "blogs",
+    "documentId": "6aa3957b6a850846122207f3",
+    "title": "Seamless Scheduling: Integrating Online Booking Systems for Beauty & Wellness",
+    "slug": "integrating-online-booking-beauty-wellness",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087820/Muhyo-Tech/blogs/cover__cjxiv21w7mad2e7lgknn_rb1isv.jpg",
+    "filename": "cjxiv21w7mad2e7lgknn.jpg",
+    "localRelativePath": "blogs/6aa3957b6a850846122207f3__integrating-online-booking-beauty-wellness/cover__cjxiv21w7mad2e7lgknn.jpg",
+    "fileSizeBytes": 3898927,
+    "sha256": "379093aa40333d13e4672ebf6c75a5d7c6a5f7205ed99270f28d49e101902c05",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:57:02.522Z"
+  },
+  {
+    "registryIndex": 124,
+    "collection": "blogs",
+    "documentId": "6aa3e0e6bb7e7b51a0d9ab63",
+    "title": "Local SEO for Salons: Engineering Visibility Where it Counts",
+    "slug": "local-seo-salons-engineering-visibility",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087825/Muhyo-Tech/blogs/cover__ad4ban0rrbp7m12r9fvi_s4tjm8.jpg",
+    "filename": "ad4ban0rrbp7m12r9fvi.jpg",
+    "localRelativePath": "blogs/6aa3e0e6bb7e7b51a0d9ab63__local-seo-salons-engineering-visibility/cover__ad4ban0rrbp7m12r9fvi.jpg",
+    "fileSizeBytes": 3788083,
+    "sha256": "b5c626b66c0955e33106f7ccee41bca2183a3d02b35cb46bdbb482471fda2071",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:57:07.622Z"
+  },
+  {
+    "registryIndex": 125,
+    "collection": "blogs",
+    "documentId": "6aa464ef9689bfa3af015f27",
+    "title": "Modern Dealership: A Digital Blueprint for Automotive Sales & Service",
+    "slug": "modern-dealership-digital-blueprint-automotive-sales-service",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087830/Muhyo-Tech/blogs/cover__tk42q1eetd409vjdf2hm_kat8g9.jpg",
+    "filename": "tk42q1eetd409vjdf2hm.jpg",
+    "localRelativePath": "blogs/6aa464ef9689bfa3af015f27__modern-dealership-digital-blueprint-automotive-sales-service/cover__tk42q1eetd409vjdf2hm.jpg",
+    "fileSizeBytes": 4050837,
+    "sha256": "c83d008bfb6e6487512563ffe7a89fb7ce22e015cdc7aaf5646a4d70ccace1f3",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:57:13.094Z"
+  },
+  {
+    "registryIndex": 126,
+    "collection": "blogs",
+    "documentId": "6aa4a7bbfeddca9926cbc77a",
+    "title": "Real-Time Car Inventory: Engineering for Dealership Sales Accuracy",
+    "slug": "real-time-car-inventory-dealerships",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087836/Muhyo-Tech/blogs/cover__vb6zyh2311itfjn94xrc_hbooj0.jpg",
+    "filename": "vb6zyh2311itfjn94xrc.jpg",
+    "localRelativePath": "blogs/6aa4a7bbfeddca9926cbc77a__real-time-car-inventory-dealerships/cover__vb6zyh2311itfjn94xrc.jpg",
+    "fileSizeBytes": 3855554,
+    "sha256": "8fb7d2d31ca1bd3ea94b4e51fd62ffd2d035b31c02406109652918e0aa1684da",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:57:18.221Z"
+  },
+  {
+    "registryIndex": 127,
+    "collection": "blogs",
+    "documentId": "6aa4e6f9279233b284abedb5",
+    "title": "Designing a High-Converting Dealership Website: From Lead Capture to Conversion",
+    "slug": "high-converting-dealership-website-design",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087841/Muhyo-Tech/blogs/cover__j78u9zaiv6qvf7spprlh_k1w8t3.jpg",
+    "filename": "j78u9zaiv6qvf7spprlh.jpg",
+    "localRelativePath": "blogs/6aa4e6f9279233b284abedb5__high-converting-dealership-website-design/cover__j78u9zaiv6qvf7spprlh.jpg",
+    "fileSizeBytes": 3789766,
+    "sha256": "2d6c906bbd6359651fa5d672238054b638709024ed34adb147c18f4da68c3611",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:57:23.588Z"
+  },
+  {
+    "registryIndex": 128,
+    "collection": "blogs",
+    "documentId": "6aa581ab249c37f0e88eb3bd",
+    "title": "Scaling AI SaaS: Architecting for High-Performance Inference and Data Pipelines",
+    "slug": "scalable-ai-saas-architecture-inference-data-pipelines",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087846/Muhyo-Tech/blogs/cover__nmgrlwbt4ls4m3gq8x1o_yg36cf.jpg",
+    "filename": "nmgrlwbt4ls4m3gq8x1o.jpg",
+    "localRelativePath": "blogs/6aa581ab249c37f0e88eb3bd__scalable-ai-saas-architecture-inference-data-pipelines/cover__nmgrlwbt4ls4m3gq8x1o.jpg",
+    "fileSizeBytes": 3797209,
+    "sha256": "b69c2ce99fe44d9847a3c4e6bdaa3e950b8caa084737169b88daba2bc357b6e1",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:57:28.588Z"
+  },
+  {
+    "registryIndex": 129,
+    "collection": "blogs",
+    "documentId": "6aa5c0fc05a9e9d1d6e93c41",
+    "title": "Optimizing LLM API Integrations: Architecting for Cost & Latency in Micro-SaaS",
+    "slug": "optimizing-llm-api-integrations-micro-saas",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087852/Muhyo-Tech/blogs/cover__qyievwysfzyugniqzyar_lvfq0y.jpg",
+    "filename": "qyievwysfzyugniqzyar.jpg",
+    "localRelativePath": "blogs/6aa5c0fc05a9e9d1d6e93c41__optimizing-llm-api-integrations-micro-saas/cover__qyievwysfzyugniqzyar.jpg",
+    "fileSizeBytes": 4259532,
+    "sha256": "ae8dd484ddb2b83a75284c417ad3fc203d88cf704911b949fa5762abdebba5f1",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:57:34.955Z"
+  },
+  {
+    "registryIndex": 130,
+    "collection": "blogs",
+    "documentId": "6aa5fb050bae8dc6c1c6ee9a",
+    "title": "Building Real-Time AI Feedback Loops: Engineering for Continuous Model Improvement",
+    "slug": "real-time-ai-feedback-loops",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087855/Muhyo-Tech/blogs/cover__kefbaa6uhyqkqbfjsnjd_tmhziz.jpg",
+    "filename": "kefbaa6uhyqkqbfjsnjd.jpg",
+    "localRelativePath": "blogs/6aa5fb050bae8dc6c1c6ee9a__real-time-ai-feedback-loops/cover__kefbaa6uhyqkqbfjsnjd.jpg",
+    "fileSizeBytes": 1247325,
+    "sha256": "b6d1d1bb50ac3cdf828b5c830e39a755846d076574c98dca73e2aa5845cc921e",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:57:37.452Z"
+  },
+  {
+    "registryIndex": 131,
+    "collection": "blogs",
+    "documentId": "6aa66acd23bc40d29af49b5f",
+    "title": "Always-On SaaS: A Blueprint for Resilient Production Systems",
+    "slug": "always-on-saas-resilient-production-systems",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087859/Muhyo-Tech/blogs/cover__dusk9uj9vrdq6ecmexxj_jj0rjg.jpg",
+    "filename": "dusk9uj9vrdq6ecmexxj.jpg",
+    "localRelativePath": "blogs/6aa66acd23bc40d29af49b5f__always-on-saas-resilient-production-systems/cover__dusk9uj9vrdq6ecmexxj.jpg",
+    "fileSizeBytes": 3202804,
+    "sha256": "a794ed443c8b0e65c4d8d843dee58eec6070ee74bba6e97c8639727c1eda8905",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:57:41.726Z"
+  },
+  {
+    "registryIndex": 132,
+    "collection": "blogs",
+    "documentId": "6aa6a8f9cd43b84a246096d7",
+    "title": "Designing for Data Consistency: Eventual Patterns in Distributed SaaS",
+    "slug": "eventual-consistency-patterns-saas",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087864/Muhyo-Tech/blogs/cover__wg4regaxvxl9qtp3pbhy_fs3f6d.jpg",
+    "filename": "wg4regaxvxl9qtp3pbhy.jpg",
+    "localRelativePath": "blogs/6aa6a8f9cd43b84a246096d7__eventual-consistency-patterns-saas/cover__wg4regaxvxl9qtp3pbhy.jpg",
+    "fileSizeBytes": 3801614,
+    "sha256": "3d6fb54f98f7fc6644e06b25c6e9fb7fc899a901bf1f2657633c3a4d7f519022",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:57:47.020Z"
+  },
+  {
+    "registryIndex": 133,
+    "collection": "blogs",
+    "documentId": "6aa6e84dffc4a80869ca0e45",
+    "title": "Implementing Circuit Breakers: Shielding Microservices from Cascading Failures",
+    "slug": "implementing-circuit-breakers-microservices",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087870/Muhyo-Tech/blogs/cover__mvp2mtznl0e0h8bnsd4f_vnp41z.jpg",
+    "filename": "mvp2mtznl0e0h8bnsd4f.jpg",
+    "localRelativePath": "blogs/6aa6e84dffc4a80869ca0e45__implementing-circuit-breakers-microservices/cover__mvp2mtznl0e0h8bnsd4f.jpg",
+    "fileSizeBytes": 3814776,
+    "sha256": "1b1e30d73065753eaa6edcec19881ec898696f7cc44f2fcca705cae8be7b9c0c",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:57:52.398Z"
+  },
+  {
+    "registryIndex": 134,
+    "collection": "blogs",
+    "documentId": "6aa74c9a9832446424d86ab7",
+    "title": "Unleashing Speed: Systems for High-Performance Next.js Applications",
+    "slug": "nextjs-advanced-performance-optimization",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087875/Muhyo-Tech/blogs/cover__vsyp3viaa28evpfxrxey_tj0rqj.jpg",
+    "filename": "vsyp3viaa28evpfxrxey.jpg",
+    "localRelativePath": "blogs/6aa74c9a9832446424d86ab7__nextjs-advanced-performance-optimization/cover__vsyp3viaa28evpfxrxey.jpg",
+    "fileSizeBytes": 3638864,
+    "sha256": "cf6173b114d3f03df1a1d88c5b9d2fd57b57feee54cd0414d0db395388e1370d",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:57:57.711Z"
+  },
+  {
+    "registryIndex": 135,
+    "collection": "blogs",
+    "documentId": "6aa78a04e5f4f92ef676bde2",
+    "title": "Optimizing Next.js Image Delivery: Advanced Strategies for Core Web Vitals",
+    "slug": "nextjs-image-optimization-core-web-vitals",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087880/Muhyo-Tech/blogs/cover__kqni1q8bqerkqz3zhvgp_j25379.jpg",
+    "filename": "kqni1q8bqerkqz3zhvgp.jpg",
+    "localRelativePath": "blogs/6aa78a04e5f4f92ef676bde2__nextjs-image-optimization-core-web-vitals/cover__kqni1q8bqerkqz3zhvgp.jpg",
+    "fileSizeBytes": 3568326,
+    "sha256": "7f429aaedfd5494e854d4a29d0d1105b0b773902cd113842155017618a2f8494",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:58:02.949Z"
+  },
+  {
+    "registryIndex": 136,
+    "collection": "blogs",
+    "documentId": "6aa7ccd75b5417b357576bc5",
+    "title": "Strategic Data Fetching in Next.js: Balancing Performance and Freshness",
+    "slug": "nextjs-data-fetching-strategies",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087885/Muhyo-Tech/blogs/cover__hwhfud0c7rczndkqohsg_ixzahm.jpg",
+    "filename": "hwhfud0c7rczndkqohsg.jpg",
+    "localRelativePath": "blogs/6aa7ccd75b5417b357576bc5__nextjs-data-fetching-strategies/cover__hwhfud0c7rczndkqohsg.jpg",
+    "fileSizeBytes": 3427634,
+    "sha256": "0f24271bcd807b8cd8368bb558367f28e1e4e620597d62cede1f59bc1fe80408",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:58:07.666Z"
+  },
+  {
+    "registryIndex": 137,
+    "collection": "blogs",
+    "documentId": "6aa8055562d162e79c2e3986",
+    "title": "Optimizing Next.js SSR: Achieving Sub-Second Initial Loads for Complex Web Applications",
+    "slug": "nextjs-ssr-optimization-sub-second-loads",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087888/Muhyo-Tech/blogs/cover__ohaj5idjblztbnnrahaj_vq14fd.jpg",
+    "filename": "ohaj5idjblztbnnrahaj.jpg",
+    "localRelativePath": "blogs/6aa8055562d162e79c2e3986__nextjs-ssr-optimization-sub-second-loads/cover__ohaj5idjblztbnnrahaj.jpg",
+    "fileSizeBytes": 1290194,
+    "sha256": "c656205fc7d7fed0850beed40096bcaa8696abeaf30ad333c16a93e37a8398aa",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:58:10.037Z"
+  },
+  {
+    "registryIndex": 138,
+    "collection": "blogs",
+    "documentId": "6aa8a3442067c3d69a311df7",
+    "title": "Hydration Best Practices: Preventing Performance Bottlenecks in Next.js SSR",
+    "slug": "nextjs-hydration-best-practices",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087890/Muhyo-Tech/blogs/cover__kaczfslmlvvn8nofu3d1_uydjmj.jpg",
+    "filename": "kaczfslmlvvn8nofu3d1.jpg",
+    "localRelativePath": "blogs/6aa8a3442067c3d69a311df7__nextjs-hydration-best-practices/cover__kaczfslmlvvn8nofu3d1.jpg",
+    "fileSizeBytes": 1298868,
+    "sha256": "c1e01e134dabb9130b06b4cea4581a2f147e057bd2d029fe2d3442c481aff571",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:58:12.788Z"
+  },
+  {
+    "registryIndex": 139,
+    "collection": "blogs",
+    "documentId": "6aa8dbaf90e2f22dfd7cfadc",
+    "title": "Data Fetching Patterns for Next.js SSR: Balancing Speed and Freshness",
+    "slug": "nextjs-ssr-data-fetching-patterns",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087895/Muhyo-Tech/blogs/cover__fkryoxnnmr26w4ytiicx_goxnbm.jpg",
+    "filename": "fkryoxnnmr26w4ytiicx.jpg",
+    "localRelativePath": "blogs/6aa8dbaf90e2f22dfd7cfadc__nextjs-ssr-data-fetching-patterns/cover__fkryoxnnmr26w4ytiicx.jpg",
+    "fileSizeBytes": 3731821,
+    "sha256": "d4ab880a5455bafab2c3872dc7b0cc796b7601d9472ecdb4a3b2c0f29794bcb8",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:58:17.960Z"
+  },
+  {
+    "registryIndex": 140,
+    "collection": "blogs",
+    "documentId": "6aa929c937cfff6ca1077995",
+    "title": "Fortifying MERN APIs: A Blueprint for Robust Authentication and Authorization",
+    "slug": "mern-stack-api-security-blueprint",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087900/Muhyo-Tech/blogs/cover__xq29i1wdohznkkvyqdfk_aku2uu.jpg",
+    "filename": "xq29i1wdohznkkvyqdfk.jpg",
+    "localRelativePath": "blogs/6aa929c937cfff6ca1077995__mern-stack-api-security-blueprint/cover__xq29i1wdohznkkvyqdfk.jpg",
+    "fileSizeBytes": 3841715,
+    "sha256": "a5374ff12a6eda745c9f4ac937d918658da8653c4ea5589e84c85956a45686df",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:58:22.996Z"
+  },
+  {
+    "registryIndex": 141,
+    "collection": "blogs",
+    "documentId": "6ad31d42f87765490a2326d6",
+    "title": "Streamlining Clinic Operations: A Digital Blueprint for Patient Management",
+    "slug": "patient-management-system-blueprint",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087905/Muhyo-Tech/blogs/cover__yqldegotzwnmpe3cc6sk_jeofyw.jpg",
+    "filename": "yqldegotzwnmpe3cc6sk.jpg",
+    "localRelativePath": "blogs/6ad31d42f87765490a2326d6__patient-management-system-blueprint/cover__yqldegotzwnmpe3cc6sk.jpg",
+    "fileSizeBytes": 3706642,
+    "sha256": "55e6b604eda89af6a46fb57916f76bdb261a9e713e38194f421c3e1036ac61f2",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:58:27.825Z"
+  },
+  {
+    "registryIndex": 142,
+    "collection": "blogs",
+    "documentId": "6ad3ccda4b2f2b7d18805859",
+    "title": "Designing Intuitive Patient Portals: Secure Self-Service for Appointments and Records",
+    "slug": "secure-patient-portal-development",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087910/Muhyo-Tech/blogs/cover__nzayj1gtqa5mz6tunldo_zztkmi.jpg",
+    "filename": "nzayj1gtqa5mz6tunldo.jpg",
+    "localRelativePath": "blogs/6ad3ccda4b2f2b7d18805859__secure-patient-portal-development/cover__nzayj1gtqa5mz6tunldo.jpg",
+    "fileSizeBytes": 3786826,
+    "sha256": "f8cc744247f6571eb9cb4889e6b68ff7153325bd677e27a3f4fd10fe63fff14d",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:58:33.308Z"
+  },
+  {
+    "registryIndex": 143,
+    "collection": "projects",
+    "documentId": "69f5f02bf9b584b0511d1a6c",
+    "title": "Muhyo Tech Portfolio (Elite Edition)",
+    "slug": "muhyo-tech-portfolio-elite-edition",
+    "field": "thumbnail",
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087912/Muhyo-Tech/projects/thumbnail__ygkcar3bcaeygh8hmbfj_ct0dzk.png",
+    "filename": "ygkcar3bcaeygh8hmbfj.png",
+    "localRelativePath": "projects/69f5f02bf9b584b0511d1a6c__muhyo-tech-portfolio-elite-edition/thumbnail__ygkcar3bcaeygh8hmbfj.png",
+    "fileSizeBytes": 657711,
+    "sha256": "40d9966038127d7ca69951f1372cc2bbcf8c58527ca2f8b58a13969756f744b9",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:58:34.941Z"
+  },
+  {
+    "registryIndex": 144,
+    "collection": "projects",
+    "documentId": "69f5f02bf9b584b0511d1a6c",
+    "title": "Muhyo Tech Portfolio (Elite Edition)",
+    "slug": "muhyo-tech-portfolio-elite-edition",
+    "field": "gallery[0]",
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087914/Muhyo-Tech/projects/gallery_01__ygkcar3bcaeygh8hmbfj_lxjep7.png",
+    "filename": "ygkcar3bcaeygh8hmbfj.png",
+    "localRelativePath": "projects/69f5f02bf9b584b0511d1a6c__muhyo-tech-portfolio-elite-edition/gallery_01__ygkcar3bcaeygh8hmbfj.png",
+    "fileSizeBytes": 657711,
+    "sha256": "40d9966038127d7ca69951f1372cc2bbcf8c58527ca2f8b58a13969756f744b9",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:58:36.611Z"
+  },
+  {
+    "registryIndex": 145,
+    "collection": "projects",
+    "documentId": "69f5f02bf9b584b0511d1a6c",
+    "title": "Muhyo Tech Portfolio (Elite Edition)",
+    "slug": "muhyo-tech-portfolio-elite-edition",
+    "field": "gallery[1]",
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087916/Muhyo-Tech/projects/gallery_02__trrlftwcsf1x2zmix0gz_glkpcc.png",
+    "filename": "trrlftwcsf1x2zmix0gz.png",
+    "localRelativePath": "projects/69f5f02bf9b584b0511d1a6c__muhyo-tech-portfolio-elite-edition/gallery_02__trrlftwcsf1x2zmix0gz.png",
+    "fileSizeBytes": 603195,
+    "sha256": "cee0a3e1a89c6deb9c7c52858fa216f11ece71ddddbe2ca6ef2673bc6622a640",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:58:38.502Z"
+  },
+  {
+    "registryIndex": 146,
+    "collection": "projects",
+    "documentId": "69f5f02bf9b584b0511d1a6c",
+    "title": "Muhyo Tech Portfolio (Elite Edition)",
+    "slug": "muhyo-tech-portfolio-elite-edition",
+    "field": "gallery[2]",
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087918/Muhyo-Tech/projects/gallery_03__h7kzcqhbcixqqfjmb2hj_m3hzqy.png",
+    "filename": "h7kzcqhbcixqqfjmb2hj.png",
+    "localRelativePath": "projects/69f5f02bf9b584b0511d1a6c__muhyo-tech-portfolio-elite-edition/gallery_03__h7kzcqhbcixqqfjmb2hj.png",
+    "fileSizeBytes": 487301,
+    "sha256": "d69de820d202b089c05d840cd830cba2c149f92053233d6f937e7c3d9d76244a",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:58:40.522Z"
+  },
+  {
+    "registryIndex": 147,
+    "collection": "projects",
+    "documentId": "69f5f02bf9b584b0511d1a6c",
+    "title": "Muhyo Tech Portfolio (Elite Edition)",
+    "slug": "muhyo-tech-portfolio-elite-edition",
+    "field": "gallery[3]",
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087920/Muhyo-Tech/projects/gallery_04__jvweylxqytxjnxqttvio_dkvgfm.png",
+    "filename": "jvweylxqytxjnxqttvio.png",
+    "localRelativePath": "projects/69f5f02bf9b584b0511d1a6c__muhyo-tech-portfolio-elite-edition/gallery_04__jvweylxqytxjnxqttvio.png",
+    "fileSizeBytes": 551171,
+    "sha256": "9e061747315d6ba2b2a262e8e41ae7b1094455a6673f881e728ad7c5492c64b0",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:58:42.200Z"
+  },
+  {
+    "registryIndex": 148,
+    "collection": "projects",
+    "documentId": "69f5f02bf9b584b0511d1a6c",
+    "title": "Muhyo Tech Portfolio (Elite Edition)",
+    "slug": "muhyo-tech-portfolio-elite-edition",
+    "field": "gallery[4]",
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087921/Muhyo-Tech/projects/gallery_05__r2ftbf3ryahtc5wnz8vz_dmyvp4.png",
+    "filename": "r2ftbf3ryahtc5wnz8vz.png",
+    "localRelativePath": "projects/69f5f02bf9b584b0511d1a6c__muhyo-tech-portfolio-elite-edition/gallery_05__r2ftbf3ryahtc5wnz8vz.png",
+    "fileSizeBytes": 492045,
+    "sha256": "b19acc11853c50a2879b14b0544ddc906ce142d626a03936b4490cbf0e2f03a4",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:58:43.762Z"
+  },
+  {
+    "registryIndex": 149,
+    "collection": "projects",
+    "documentId": "69f5f02bf9b584b0511d1a6c",
+    "title": "Muhyo Tech Portfolio (Elite Edition)",
+    "slug": "muhyo-tech-portfolio-elite-edition",
+    "field": "gallery[5]",
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087923/Muhyo-Tech/projects/gallery_06__hkpv7yivjwk2ykhj5xbs_t8q595.png",
+    "filename": "hkpv7yivjwk2ykhj5xbs.png",
+    "localRelativePath": "projects/69f5f02bf9b584b0511d1a6c__muhyo-tech-portfolio-elite-edition/gallery_06__hkpv7yivjwk2ykhj5xbs.png",
+    "fileSizeBytes": 362502,
+    "sha256": "381266aded46bdc03c4956215efa15dd032e26e6e410f1322ae8d513728f8532",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:58:45.744Z"
+  },
+  {
+    "registryIndex": 150,
+    "collection": "projects",
+    "documentId": "69f5f02bf9b584b0511d1a6c",
+    "title": "Muhyo Tech Portfolio (Elite Edition)",
+    "slug": "muhyo-tech-portfolio-elite-edition",
+    "field": "gallery[6]",
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087925/Muhyo-Tech/projects/gallery_07__i6orvlznjzqvovulxacz_oa9dx9.png",
+    "filename": "i6orvlznjzqvovulxacz.png",
+    "localRelativePath": "projects/69f5f02bf9b584b0511d1a6c__muhyo-tech-portfolio-elite-edition/gallery_07__i6orvlznjzqvovulxacz.png",
+    "fileSizeBytes": 337218,
+    "sha256": "710501683424b7c91ea54b6715fa1d4f2ee761341b7eaac046ce429e253d46b8",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:58:48.713Z"
+  },
+  {
+    "registryIndex": 151,
+    "collection": "projects",
+    "documentId": "69f5f7008843e02e89c3a2ff",
+    "title": "Muhyo Tech Admin Console",
+    "slug": "muhyo-tech-admin-console",
+    "field": "thumbnail",
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087928/Muhyo-Tech/projects/thumbnail__ztziezdljepqfyfdxx33_pchxp5.png",
+    "filename": "ztziezdljepqfyfdxx33.png",
+    "localRelativePath": "projects/69f5f7008843e02e89c3a2ff__muhyo-tech-admin-console/thumbnail__ztziezdljepqfyfdxx33.png",
+    "fileSizeBytes": 502260,
+    "sha256": "4aa4416577c2bfd581bfb174c333f4221384da0039345b7d12ee2084d500db41",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:58:50.213Z"
+  },
+  {
+    "registryIndex": 152,
+    "collection": "projects",
+    "documentId": "69f5f7008843e02e89c3a2ff",
+    "title": "Muhyo Tech Admin Console",
+    "slug": "muhyo-tech-admin-console",
+    "field": "gallery[0]",
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087929/Muhyo-Tech/projects/gallery_01__ztziezdljepqfyfdxx33_nekdrx.png",
+    "filename": "ztziezdljepqfyfdxx33.png",
+    "localRelativePath": "projects/69f5f7008843e02e89c3a2ff__muhyo-tech-admin-console/gallery_01__ztziezdljepqfyfdxx33.png",
+    "fileSizeBytes": 502260,
+    "sha256": "4aa4416577c2bfd581bfb174c333f4221384da0039345b7d12ee2084d500db41",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:58:51.861Z"
+  },
+  {
+    "registryIndex": 153,
+    "collection": "projects",
+    "documentId": "69f5f7008843e02e89c3a2ff",
+    "title": "Muhyo Tech Admin Console",
+    "slug": "muhyo-tech-admin-console",
+    "field": "gallery[1]",
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087930/Muhyo-Tech/projects/gallery_02__q6jkoyfeqc1eopr7j2jl_eivjeh.png",
+    "filename": "q6jkoyfeqc1eopr7j2jl.png",
+    "localRelativePath": "projects/69f5f7008843e02e89c3a2ff__muhyo-tech-admin-console/gallery_02__q6jkoyfeqc1eopr7j2jl.png",
+    "fileSizeBytes": 216250,
+    "sha256": "7390213bc200dbc2c173b8e0713e269f2df859fdc9998ad54c7e12f28d8fc814",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:58:56.892Z"
+  },
+  {
+    "registryIndex": 154,
+    "collection": "projects",
+    "documentId": "69f5f7008843e02e89c3a2ff",
+    "title": "Muhyo Tech Admin Console",
+    "slug": "muhyo-tech-admin-console",
+    "field": "gallery[2]",
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087936/Muhyo-Tech/projects/gallery_03__w3cw6kinu6gxhedgznco_lzpnmq.png",
+    "filename": "w3cw6kinu6gxhedgznco.png",
+    "localRelativePath": "projects/69f5f7008843e02e89c3a2ff__muhyo-tech-admin-console/gallery_03__w3cw6kinu6gxhedgznco.png",
+    "fileSizeBytes": 219831,
+    "sha256": "77719c5a82a8240b12a59201811479b1a680d700ab2f8ac02ad8a80a70ffd21f",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:58:59.695Z"
+  },
+  {
+    "registryIndex": 155,
+    "collection": "projects",
+    "documentId": "69f5f7008843e02e89c3a2ff",
+    "title": "Muhyo Tech Admin Console",
+    "slug": "muhyo-tech-admin-console",
+    "field": "gallery[3]",
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087938/Muhyo-Tech/projects/gallery_04__c0v6hjcu2w3tqna9c02y_ha289n.png",
+    "filename": "c0v6hjcu2w3tqna9c02y.png",
+    "localRelativePath": "projects/69f5f7008843e02e89c3a2ff__muhyo-tech-admin-console/gallery_04__c0v6hjcu2w3tqna9c02y.png",
+    "fileSizeBytes": 183825,
+    "sha256": "88ceb8a479408eb5b731f255b723498106da9fc5324aa5933126f50a7a660d48",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:59:01.078Z"
+  },
+  {
+    "registryIndex": 156,
+    "collection": "projects",
+    "documentId": "69f5f7008843e02e89c3a2ff",
+    "title": "Muhyo Tech Admin Console",
+    "slug": "muhyo-tech-admin-console",
+    "field": "gallery[4]",
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087940/Muhyo-Tech/projects/gallery_05__uxdpvji1rh9qxo3gtnks_w5jfn4.png",
+    "filename": "uxdpvji1rh9qxo3gtnks.png",
+    "localRelativePath": "projects/69f5f7008843e02e89c3a2ff__muhyo-tech-admin-console/gallery_05__uxdpvji1rh9qxo3gtnks.png",
+    "fileSizeBytes": 197448,
+    "sha256": "e1726a0f70467b4e2573635367e50fb0209aad7729a321e1e301dbbc45ef1393",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:59:02.680Z"
+  },
+  {
+    "registryIndex": 157,
+    "collection": "projects",
+    "documentId": "69f5f7008843e02e89c3a2ff",
+    "title": "Muhyo Tech Admin Console",
+    "slug": "muhyo-tech-admin-console",
+    "field": "gallery[5]",
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087942/Muhyo-Tech/projects/gallery_06__sxrosdvwixnfhhfweftg_jq9brm.png",
+    "filename": "sxrosdvwixnfhhfweftg.png",
+    "localRelativePath": "projects/69f5f7008843e02e89c3a2ff__muhyo-tech-admin-console/gallery_06__sxrosdvwixnfhhfweftg.png",
+    "fileSizeBytes": 442626,
+    "sha256": "407d332aab6258b068a0eca433ef9d24feb23b07bcf13a0a5a339a0c533f4c22",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:59:04.394Z"
+  },
+  {
+    "registryIndex": 158,
+    "collection": "projects",
+    "documentId": "69f5f7008843e02e89c3a2ff",
+    "title": "Muhyo Tech Admin Console",
+    "slug": "muhyo-tech-admin-console",
+    "field": "gallery[6]",
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087943/Muhyo-Tech/projects/gallery_07__ewaowpcymstzaf6x22fx_pfzzyq.png",
+    "filename": "ewaowpcymstzaf6x22fx.png",
+    "localRelativePath": "projects/69f5f7008843e02e89c3a2ff__muhyo-tech-admin-console/gallery_07__ewaowpcymstzaf6x22fx.png",
+    "fileSizeBytes": 354322,
+    "sha256": "782da0256922bac3e661147dc666f25f2f1b14975fa3982abcf42d878c2d8546",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:59:06.020Z"
+  },
+  {
+    "registryIndex": 159,
+    "collection": "projects",
+    "documentId": "69f5f7008843e02e89c3a2ff",
+    "title": "Muhyo Tech Admin Console",
+    "slug": "muhyo-tech-admin-console",
+    "field": "gallery[7]",
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087945/Muhyo-Tech/projects/gallery_08__wf2adc9qlotwppt5jlid_swfosb.png",
+    "filename": "wf2adc9qlotwppt5jlid.png",
+    "localRelativePath": "projects/69f5f7008843e02e89c3a2ff__muhyo-tech-admin-console/gallery_08__wf2adc9qlotwppt5jlid.png",
+    "fileSizeBytes": 150727,
+    "sha256": "abdff948b22e410cbf03984eb6d9adf2425f9073f44a58c62dd973324719041e",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:59:07.328Z"
+  },
+  {
+    "registryIndex": 160,
+    "collection": "projects",
+    "documentId": "69f5f7008843e02e89c3a2ff",
+    "title": "Muhyo Tech Admin Console",
+    "slug": "muhyo-tech-admin-console",
+    "field": "gallery[8]",
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087946/Muhyo-Tech/projects/gallery_09__v7en85xiygl2jeiyrlrn_enopvx.png",
+    "filename": "v7en85xiygl2jeiyrlrn.png",
+    "localRelativePath": "projects/69f5f7008843e02e89c3a2ff__muhyo-tech-admin-console/gallery_09__v7en85xiygl2jeiyrlrn.png",
+    "fileSizeBytes": 199123,
+    "sha256": "238abf3fd65818687a9d204261c4a53a4772cbe2d8229e4ddb123e970ec645fc",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:59:08.671Z"
+  },
+  {
+    "registryIndex": 161,
+    "collection": "projects",
+    "documentId": "69f5f7008843e02e89c3a2ff",
+    "title": "Muhyo Tech Admin Console",
+    "slug": "muhyo-tech-admin-console",
+    "field": "gallery[9]",
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087948/Muhyo-Tech/projects/gallery_10__fdifprir4naglvaudrpw_igrsh2.png",
+    "filename": "fdifprir4naglvaudrpw.png",
+    "localRelativePath": "projects/69f5f7008843e02e89c3a2ff__muhyo-tech-admin-console/gallery_10__fdifprir4naglvaudrpw.png",
+    "fileSizeBytes": 384256,
+    "sha256": "434e7f1c1383ca3a158fe99f88686675d0b1078293edf81f3fa995ae2702530d",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:59:10.193Z"
+  },
+  {
+    "registryIndex": 162,
+    "collection": "projects",
+    "documentId": "69f5f7008843e02e89c3a2ff",
+    "title": "Muhyo Tech Admin Console",
+    "slug": "muhyo-tech-admin-console",
+    "field": "gallery[10]",
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087949/Muhyo-Tech/projects/gallery_11__qgo9sxxhssauq1zviint_sekqrv.png",
+    "filename": "qgo9sxxhssauq1zviint.png",
+    "localRelativePath": "projects/69f5f7008843e02e89c3a2ff__muhyo-tech-admin-console/gallery_11__qgo9sxxhssauq1zviint.png",
+    "fileSizeBytes": 350889,
+    "sha256": "8ca6214576e201845d053d6c4ca372da3cb098a53e191f0ee4ed44c9e13e7922",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:59:11.916Z"
+  },
+  {
+    "registryIndex": 163,
+    "collection": "projects",
+    "documentId": "69f5f7008843e02e89c3a2ff",
+    "title": "Muhyo Tech Admin Console",
+    "slug": "muhyo-tech-admin-console",
+    "field": "gallery[11]",
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087951/Muhyo-Tech/projects/gallery_12__ljjv9e3iwyrhvcsbz5b9_nfthor.png",
+    "filename": "ljjv9e3iwyrhvcsbz5b9.png",
+    "localRelativePath": "projects/69f5f7008843e02e89c3a2ff__muhyo-tech-admin-console/gallery_12__ljjv9e3iwyrhvcsbz5b9.png",
+    "fileSizeBytes": 185063,
+    "sha256": "4041f85eb8d2191e3762cc67296bc1c7a7408d7e0b8e4699a81fe4b8ef4319c9",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:59:13.290Z"
+  },
+  {
+    "registryIndex": 164,
+    "collection": "projects",
+    "documentId": "69f5f7008843e02e89c3a2ff",
+    "title": "Muhyo Tech Admin Console",
+    "slug": "muhyo-tech-admin-console",
+    "field": "gallery[12]",
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087952/Muhyo-Tech/projects/gallery_13__g61ymblxmcdus9cbr4zz_fb6h1w.png",
+    "filename": "g61ymblxmcdus9cbr4zz.png",
+    "localRelativePath": "projects/69f5f7008843e02e89c3a2ff__muhyo-tech-admin-console/gallery_13__g61ymblxmcdus9cbr4zz.png",
+    "fileSizeBytes": 234987,
+    "sha256": "8e91d8124b189c6e85aa8556dfcf0d67ccd1f3ff82d98e2275ca6944da02bd56",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:59:14.760Z"
+  },
+  {
+    "registryIndex": 165,
+    "collection": "projects",
+    "documentId": "69f5f7008843e02e89c3a2ff",
+    "title": "Muhyo Tech Admin Console",
+    "slug": "muhyo-tech-admin-console",
+    "field": "gallery[13]",
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087953/Muhyo-Tech/projects/gallery_14__addrvv00sgi63v1kmt2m_snvv5o.png",
+    "filename": "addrvv00sgi63v1kmt2m.png",
+    "localRelativePath": "projects/69f5f7008843e02e89c3a2ff__muhyo-tech-admin-console/gallery_14__addrvv00sgi63v1kmt2m.png",
+    "fileSizeBytes": 151301,
+    "sha256": "fa2082a58db47c9ef2d5c620082226ab0ff45c4d24ec334712e24ca0b125a0be",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:59:15.807Z"
+  },
+  {
+    "registryIndex": 166,
+    "collection": "projects",
+    "documentId": "69f5f7008843e02e89c3a2ff",
+    "title": "Muhyo Tech Admin Console",
+    "slug": "muhyo-tech-admin-console",
+    "field": "gallery[14]",
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087955/Muhyo-Tech/projects/gallery_15__ixzfizyfrdqjjuqkrrfh_hyzpy4.png",
+    "filename": "ixzfizyfrdqjjuqkrrfh.png",
+    "localRelativePath": "projects/69f5f7008843e02e89c3a2ff__muhyo-tech-admin-console/gallery_15__ixzfizyfrdqjjuqkrrfh.png",
+    "fileSizeBytes": 207916,
+    "sha256": "bf174fd50b61e5a8304631dac2e07e8c2b83d89ddafe4e8530a651d0ee3034a9",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:59:17.693Z"
+  },
+  {
+    "registryIndex": 167,
+    "collection": "services",
+    "documentId": "6a48812fcf4c83c2b6f893bd",
+    "title": "MERN Stack Web Development",
+    "slug": "mern-stack-web-development",
+    "field": "heroImage",
+    "extraFields": [
+      "banner"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087958/Muhyo-Tech/services/hero__whhriuzqklrdkhntxgkk_mapjyp.png",
+    "filename": "whhriuzqklrdkhntxgkk.png",
+    "localRelativePath": "services/6a48812fcf4c83c2b6f893bd__mern-stack-web-development/hero__whhriuzqklrdkhntxgkk.png",
+    "fileSizeBytes": 1293721,
+    "sha256": "2d405b6e4251323eac5097a0f8bea18e7f49dc5180fdb963a751151085f927aa",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:59:20.833Z"
+  },
+  {
+    "registryIndex": 168,
+    "collection": "services",
+    "documentId": "6a48812fcf4c83c2b6f893c0",
+    "title": "Next.js Website Development",
+    "slug": "nextjs-website-development",
+    "field": "heroImage",
+    "extraFields": [
+      "banner"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087961/Muhyo-Tech/services/hero__be4p4jpyuoom8sndvoh4_y9bj1j.png",
+    "filename": "be4p4jpyuoom8sndvoh4.png",
+    "localRelativePath": "services/6a48812fcf4c83c2b6f893c0__nextjs-website-development/hero__be4p4jpyuoom8sndvoh4.png",
+    "fileSizeBytes": 1251479,
+    "sha256": "d9e7e465d85345aa5083f2f7afeaf13a5383a049f39fe52b2d8ff36fd077590e",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:59:24.656Z"
+  },
+  {
+    "registryIndex": 169,
+    "collection": "services",
+    "documentId": "6a50017193d3a6295e1aa36c",
+    "title": "Custom Website Development",
+    "slug": "custom-website-development",
+    "field": "heroImage",
+    "extraFields": [
+      "banner"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087965/Muhyo-Tech/services/hero__gdyug9kzzr1imadhbucp_g39cji.png",
+    "filename": "gdyug9kzzr1imadhbucp.png",
+    "localRelativePath": "services/6a50017193d3a6295e1aa36c__custom-website-development/hero__gdyug9kzzr1imadhbucp.png",
+    "fileSizeBytes": 1370937,
+    "sha256": "e66a4a9bf507ec2221bf0297adfe28dfb865b148d3b672beedc47c50173f0776",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:59:27.726Z"
+  },
+  {
+    "registryIndex": 170,
+    "collection": "heros",
+    "documentId": "69e28a9f1001336ba27b8a1b",
+    "title": "Main Hero Visual Banner",
+    "slug": "home-hero",
+    "field": "visualImage",
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087967/Muhyo-Tech/heros/hero_visual__ylsqyo59kxvkrba1znck_kbvduw.png",
+    "filename": "ylsqyo59kxvkrba1znck.png",
+    "localRelativePath": "heros/69e28a9f1001336ba27b8a1b/hero_visual__ylsqyo59kxvkrba1znck.png",
+    "fileSizeBytes": 599618,
+    "sha256": "f5b0aa548f66a10f982764ac9917707b03a0c7e257a65d71b36d1296250bd45f",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:59:29.401Z"
+  },
+  {
+    "registryIndex": 171,
+    "collection": "static_code",
+    "documentId": "src/lib/data.js",
+    "title": "Static asset in src/lib/data.js",
+    "slug": "data-js",
+    "field": "data_js_asset_1",
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1772738795/ChatGPT_Image_Mar_5_2026_12_26_08_PM_hdvfoz.png",
+    "filename": "ChatGPT_Image_Mar_5_2026_12_26_08_PM_hdvfoz.png",
+    "localRelativePath": "static_code_assets/data-js__ChatGPT_Image_Mar_5_2026_12_26_08_PM_hdvfoz.png",
+    "fileSizeBytes": 2430499,
+    "sha256": "bba8893cf003116f46d97f374d30b0e122a10c693a78b978a7a13db550793387",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 172,
+    "collection": "static_code",
+    "documentId": "src/lib/data.js",
+    "title": "Static asset in src/lib/data.js",
+    "slug": "data-js",
+    "field": "data_js_asset_2",
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1772738946/ChatGPT_Image_Mar_5_2026_12_28_47_PM_mrbwr1.png",
+    "filename": "ChatGPT_Image_Mar_5_2026_12_28_47_PM_mrbwr1.png",
+    "localRelativePath": "static_code_assets/data-js__ChatGPT_Image_Mar_5_2026_12_28_47_PM_mrbwr1.png",
+    "fileSizeBytes": 2463366,
+    "sha256": "2e706f990fbc36b5dff32668e4ce8d7b38137b84f118a3e2a7e2935d94bc3b6e",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 173,
+    "collection": "static_code",
+    "documentId": "src/components/BlogPostDetail.jsx",
+    "title": "Static asset in src/components/BlogPostDetail.jsx",
+    "slug": "blogpostdetail-jsx",
+    "field": "blog_post_detail_fallback",
+    "originalUrl": "https://res.cloudinary.com/dg5gwixf1/image/upload/v1772736622/ChatGPT_Image_Mar_5_2026_11_36_42_AM_auw4uw.png",
+    "filename": "ChatGPT_Image_Mar_5_2026_11_36_42_AM_auw4uw.png",
+    "localRelativePath": "static_code_assets/blogpostdetail-jsx__ChatGPT_Image_Mar_5_2026_11_36_42_AM_auw4uw.png",
+    "fileSizeBytes": 1891556,
+    "sha256": "35a4d83170df1104b7b392cac012eadc573d6207f6c75e0f5f3437c6f8333aae",
+    "status": "cloud_active"
+  },
+  {
+    "registryIndex": 174,
+    "collection": "blogs",
+    "documentId": "6ad52feadde9e359a588129e",
+    "title": "When to Decouple Your Frontend: Engineering Strategic Monolith to Micro-Frontend Migrations",
+    "slug": "when-to-decouple-your-frontend-engineering-strategic-monolith-to-micro-frontend-migrations",
+    "field": "image",
+    "extraFields": [
+      "featuredImage.url"
+    ],
+    "originalUrl": "https://res.cloudinary.com/vyb0i84s/image/upload/v1793087973/Muhyo-Tech/blogs/cover__hohlkbn82mfzn3i9mfi3_pi6ifu.jpg",
+    "filename": "hohlkbn82mfzn3i9mfi3.jpg",
+    "localRelativePath": "blogs/6ad52feadde9e359a588129e__when-to-decouple-your-frontend-engineering-strategic-monolith-to-micro-frontend-migrations/cover__hohlkbn82mfzn3i9mfi3.jpg",
+    "fileSizeBytes": 3851120,
+    "sha256": "23ffd5b7e2d7b9c20d8dda5321bc07dde30740e20e6dd3afc191b7547fbbdea6",
+    "status": "cloud_active",
+    "lastMigratedAt": "2026-10-27T07:59:36.080Z"
+  }
+]

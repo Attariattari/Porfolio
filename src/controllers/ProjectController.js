@@ -282,6 +282,35 @@ export const ProjectController = {
 
             if (!updatedProject) return null;
 
+            // Auto-cleanup orphan images on Cloudinary and sync vault
+            if (existingProject) {
+                setImmediate(async () => {
+                    try {
+                        const { cleanupOrphanCloudinaryAsset } = await import("@/lib/server/cloudinary/poolManager");
+                        const { updateVaultAsset, deleteVaultAsset } = await import("@/lib/server/cloudinary/assetVault");
+
+                        if (existingProject.thumbnail && data.thumbnail !== undefined && existingProject.thumbnail !== data.thumbnail) {
+                            await cleanupOrphanCloudinaryAsset(existingProject.thumbnail);
+                            if (data.thumbnail) {
+                                await updateVaultAsset({
+                                    collection: "projects",
+                                    documentId: updatedProject._id.toString(),
+                                    field: "thumbnail",
+                                    newUrl: data.thumbnail,
+                                    oldUrl: existingProject.thumbnail,
+                                    title: updatedProject.title,
+                                    slug: updatedProject.slug,
+                                });
+                            } else {
+                                await deleteVaultAsset({ url: existingProject.thumbnail, collection: "projects", documentId: updatedProject._id.toString() });
+                            }
+                        }
+                    } catch (e) {
+                        console.warn("[ProjectController] Media auto-cleanup notice:", e.message);
+                    }
+                });
+            }
+
             emitSocketEvent(SOCKET_EVENTS.STATS_UPDATED);
             emitSocketEvent("public-data:updated", { type: "project" });
             await cacheManager.invalidateByTag("projects");
@@ -297,6 +326,28 @@ export const ProjectController = {
             await dbConnect();
             const deletedProject = await Project.findByIdAndDelete(id).lean();
             if (deletedProject) {
+                // Auto-cleanup deleted project thumbnail and gallery from Cloudinary & vault
+                if (deletedProject.thumbnail || (Array.isArray(deletedProject.gallery) && deletedProject.gallery.length > 0)) {
+                    setImmediate(async () => {
+                        try {
+                            const { cleanupOrphanCloudinaryAsset } = await import("@/lib/server/cloudinary/poolManager");
+                            const { deleteVaultAsset } = await import("@/lib/server/cloudinary/assetVault");
+                            if (deletedProject.thumbnail) {
+                                await cleanupOrphanCloudinaryAsset(deletedProject.thumbnail);
+                                await deleteVaultAsset({ url: deletedProject.thumbnail, collection: "projects", documentId: deletedProject._id.toString() });
+                            }
+                            if (Array.isArray(deletedProject.gallery)) {
+                                for (const gUrl of deletedProject.gallery) {
+                                    await cleanupOrphanCloudinaryAsset(gUrl);
+                                    await deleteVaultAsset({ url: gUrl, collection: "projects", documentId: deletedProject._id.toString() });
+                                }
+                            }
+                        } catch (e) {
+                            console.warn("[ProjectController.deleteOne] Media cleanup notice:", e.message);
+                        }
+                    });
+                }
+
                 emitSocketEvent(SOCKET_EVENTS.STATS_UPDATED);
                 emitSocketEvent("public-data:updated", { type: "project" });
                 await cacheManager.invalidateByTag("projects");
