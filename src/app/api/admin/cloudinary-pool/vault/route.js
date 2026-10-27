@@ -18,7 +18,9 @@ export const GET = withErrorHandling(async (req) => {
   }
 
   const stats = await getVaultStats();
-  return apiResponse.success(stats, "Vault statistics retrieved successfully.");
+  const res = apiResponse.success(stats, "Vault statistics retrieved successfully.");
+  res.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+  return res;
 });
 
 /**

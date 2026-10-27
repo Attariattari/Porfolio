@@ -69,7 +69,7 @@ export default function NotificationsPage() {
     fetchNotifications().finally(() => active && setLoading(false));
     const interval = window.setInterval(() => {
       if (document.visibilityState === "visible") fetchNotifications();
-    }, 15000);
+    }, 30000);
     return () => {
       active = false;
       window.clearInterval(interval);

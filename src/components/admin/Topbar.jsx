@@ -39,6 +39,7 @@ export default function Topbar() {
     let cancelled = false;
 
     const refreshAdminState = async () => {
+      if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
       try {
         const res = await fetch("/api/admin/me", { cache: "no-store" });
         if (res.status === 401 || res.status === 403) {

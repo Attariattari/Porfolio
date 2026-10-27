@@ -162,7 +162,7 @@ export default function UserManagementPage() {
   useEffect(() => {
     let active = true;
     fetchUsers().finally(() => active && setLoading(false));
-    const interval = window.setInterval(() => { if (document.visibilityState === "visible") fetchUsers(); }, 5000);
+    const interval = window.setInterval(() => { if (document.visibilityState === "visible") fetchUsers(); }, 30000);
     return () => { active = false; window.clearInterval(interval); };
   }, [fetchUsers]);
   useEffect(() => {

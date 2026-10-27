@@ -58,6 +58,7 @@ export function ProductionHealthMonitor() {
   const [lastUpdate, setLastUpdate] = useState(null);
 
   const fetchHealth = async () => {
+    if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
     try {
       setLoading(true);
       const response = await fetch("/api/internal/observability?action=health");

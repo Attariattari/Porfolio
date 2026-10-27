@@ -1,6 +1,7 @@
 import { Activity } from '../models/Activity';
 import dbConnect from '../lib/dbConnect';
 import { serializeDoc } from '../lib/mongooseHelper';
+import { withCache, deleteCache, deleteCachePattern } from '@/lib/cache';
 
 /**
  * ActivityController
@@ -22,7 +23,11 @@ export const ActivityController = {
                 details,
                 targetId
             });
-            return serializeDoc(activity);
+            const serialized = serializeDoc(activity);
+            deleteCache("admin:activity:recent:10").catch(() => {});
+            deleteCache("admin:activity:recent:15").catch(() => {});
+            deleteCachePattern("admin:activity:recent:*").catch(() => {});
+            return serialized;
         } catch (error) {
             // Silently fail to not break main flow
             return null;
@@ -48,12 +53,14 @@ export const ActivityController = {
     // 3. Get recent activities - Optimized with lean()
     async getRecent(limit = 10) {
         try {
-            await dbConnect();
-            const activities = await Activity.find()
-                .sort({ createdAt: -1 })
-                .limit(limit)
-                .lean();
-            return serializeDoc(activities);
+            return await withCache(`admin:activity:recent:${limit}`, async () => {
+                await dbConnect();
+                const activities = await Activity.find()
+                    .sort({ createdAt: -1 })
+                    .limit(limit)
+                    .lean();
+                return serializeDoc(activities);
+            }, 30, ["activity"]);
         } catch (error) {
             return [];
         }

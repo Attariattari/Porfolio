@@ -92,7 +92,7 @@ export default function EditorialPlannerPage() {
     const refreshProgress = () => {
       if (document.visibilityState === "visible") load().catch(() => {});
     };
-    const interval = window.setInterval(refreshProgress, 5000);
+    const interval = window.setInterval(refreshProgress, 20000);
     window.addEventListener("focus", refreshProgress);
     return () => {
       window.clearInterval(interval);

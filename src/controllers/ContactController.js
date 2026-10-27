@@ -10,6 +10,11 @@ import { sendEmail } from "@/lib/mailer";
 import { generateContactReplyEmail } from "@/lib/emailTemplates";
 import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socketCore";
 import eventBus, { ADMIN_EVENTS } from "@/lib/eventBus";
+import { withCache, deleteCache } from "@/lib/cache";
+
+const invalidateMessageStatsCache = () => {
+  deleteCache("messages:stats:summary").catch(() => {});
+};
 
 export const ContactController = {
   /**
@@ -37,6 +42,7 @@ export const ContactController = {
       try {
         emitSocketEvent(SOCKET_EVENTS.NEW_MESSAGE, serializedMessage);
         emitSocketEvent(SOCKET_EVENTS.STATS_UPDATED);
+        invalidateMessageStatsCache();
         
         // Emit universal event via eventBus for SSE
         eventBus.emit(ADMIN_EVENTS.MESSAGE_UPDATE, serializedMessage);
@@ -190,6 +196,7 @@ export const ContactController = {
     // Emit socket event
     emitSocketEvent(SOCKET_EVENTS.MESSAGE_SEEN, serialized);
     emitSocketEvent(SOCKET_EVENTS.STATS_UPDATED);
+    invalidateMessageStatsCache();
 
     // Emit universal events for SSE
     eventBus.emit(ADMIN_EVENTS.MESSAGE_UPDATE, { messageId, status: "seen" });
@@ -250,6 +257,7 @@ export const ContactController = {
           adminReply: serializeDoc(message.adminReply)
         });
         emitSocketEvent(SOCKET_EVENTS.STATS_UPDATED);
+        invalidateMessageStatsCache();
         
         // Emit universal events for SSE
         eventBus.emit(ADMIN_EVENTS.MESSAGE_UPDATE, { messageId, status: "replied" });
@@ -279,6 +287,7 @@ export const ContactController = {
     // Emit socket event
     emitSocketEvent(SOCKET_EVENTS.MESSAGE_DELETED, messageId);
     emitSocketEvent(SOCKET_EVENTS.STATS_UPDATED);
+    invalidateMessageStatsCache();
 
     // Emit universal events for SSE
     eventBus.emit(ADMIN_EVENTS.MESSAGE_UPDATE, { messageId, status: "deleted" });
@@ -304,30 +313,32 @@ export const ContactController = {
    * Get summary stats (dashboard)
    */
   getStats: async () => {
-    await dbConnect();
+    return withCache("messages:stats:summary", async () => {
+      await dbConnect();
 
-    const [totalMessages, newMessages, seenMessages, repliedMessages, services] =
-      await Promise.all([
-        ContactMessage.countDocuments(),
-        ContactMessage.countDocuments({ status: "new" }),
-        ContactMessage.countDocuments({ status: "seen" }),
-        ContactMessage.countDocuments({ status: "replied" }),
-        ContactMessage.distinct("service"),
-      ]);
+      const [totalMessages, newMessages, seenMessages, repliedMessages, services] =
+        await Promise.all([
+          ContactMessage.countDocuments(),
+          ContactMessage.countDocuments({ status: "new" }),
+          ContactMessage.countDocuments({ status: "seen" }),
+          ContactMessage.countDocuments({ status: "replied" }),
+          ContactMessage.distinct("service"),
+        ]);
 
-    // Get latest message timestamp
-    const latestMessage = await ContactMessage.findOne()
-      .sort({ createdAt: -1 })
-      .select("createdAt");
+      // Get latest message timestamp
+      const latestMessage = await ContactMessage.findOne()
+        .sort({ createdAt: -1 })
+        .select("createdAt");
 
-    return {
-      totalMessages,
-      newMessages,
-      seenMessages,
-      repliedMessages,
-      services: services.filter(Boolean),
-      lastMessageTime: latestMessage?.createdAt || null,
-    };
+      return {
+        totalMessages,
+        newMessages,
+        seenMessages,
+        repliedMessages,
+        services: services.filter(Boolean),
+        lastMessageTime: latestMessage?.createdAt || null,
+      };
+    }, 60, ["messages"]);
   },
 
   /**

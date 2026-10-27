@@ -246,16 +246,28 @@ export const useDeleteMessage = () => {
   return { deleteMessage, loading, error };
 };
 
+// Smart Client-Side In-Memory Cache for Message Stats (30s TTL)
+let clientMessageStatsCache = null;
+let clientMessageStatsTimestamp = 0;
+const CLIENT_STATS_CACHE_TTL = 30 * 1000;
+
 /**
  * Hook to fetch dashboard statistics
  */
 export const useMessageStats = (enabled = true) => {
-  const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [stats, setStats] = useState(() => clientMessageStatsCache);
+  const [loading, setLoading] = useState(!clientMessageStatsCache);
   const [error, setError] = useState(null);
 
-  const fetchStats = useCallback(async () => {
+  const fetchStats = useCallback(async (force = false) => {
     if (!enabled) return;
+
+    // Return instant cached data if fresh and not forced
+    if (!force && clientMessageStatsCache && Date.now() - clientMessageStatsTimestamp < CLIENT_STATS_CACHE_TTL) {
+      setStats(clientMessageStatsCache);
+      setLoading(false);
+      return;
+    }
 
     setLoading(true);
     setError(null);
@@ -272,8 +284,6 @@ export const useMessageStats = (enabled = true) => {
         },
       });
 
-      console.log("[useMessageStats] Response status:", response.status);
-
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
@@ -284,6 +294,8 @@ export const useMessageStats = (enabled = true) => {
       const data = await response.json();
 
       if (data.success) {
+        clientMessageStatsCache = data.data;
+        clientMessageStatsTimestamp = Date.now();
         setStats(data.data);
       } else {
         throw new Error(data.message || "Failed to fetch statistics");
@@ -297,11 +309,24 @@ export const useMessageStats = (enabled = true) => {
   }, [enabled]);
 
   useEffect(() => {
-    const timer = window.setTimeout(fetchStats, 0);
-    return () => window.clearTimeout(timer);
+    // Only fetch if cache is stale or missing
+    if (!clientMessageStatsCache || Date.now() - clientMessageStatsTimestamp >= CLIENT_STATS_CACHE_TTL) {
+      const timer = window.setTimeout(() => fetchStats(false), 0);
+      return () => window.clearTimeout(timer);
+    }
   }, [fetchStats]);
 
-  return { stats, setStats, loading, error, refetch: fetchStats };
+  return {
+    stats,
+    setStats: (newStats) => {
+      clientMessageStatsCache = newStats;
+      clientMessageStatsTimestamp = Date.now();
+      setStats(newStats);
+    },
+    loading,
+    error,
+    refetch: () => fetchStats(true),
+  };
 };
 
 /**
@@ -360,9 +385,10 @@ export const useMessageForm = (initialValues = {}) => {
 export const useRealTimeMessageUpdates = ({ onNewMessage }) => {
   useEffect(() => {
     const interval = setInterval(() => {
-      // Consumers use this callback to refetch both the list and counters.
+      // Only refetch when browser tab is currently active/visible
+      if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
       onNewMessage?.(null);
-    }, 15000);
+    }, 30000);
 
     return () => clearInterval(interval);
   }, [onNewMessage]);

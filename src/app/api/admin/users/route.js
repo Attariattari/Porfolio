@@ -3,6 +3,7 @@ import { getAllUsers, approveUser, denyUser, removeUser, updateUserMetadata, get
 import User from "@/models/AdminModels";
 import dbConnect from "@/lib/dbConnect";
 import eventBus, { ADMIN_EVENTS } from "@/lib/eventBus";
+import { deleteCache } from "@/lib/cache";
 
 async function getAuthorizedSession() {
     const session = await getAuthSession();
@@ -42,6 +43,7 @@ export async function POST(request) {
       const updated = await User.findOneAndUpdate({ email: normalizedEmail }, update, { new: true });
       if (!updated) return NextResponse.json({ success: false, message: "User account not found." }, { status: 404 });
       eventBus.emit(ADMIN_EVENTS.USER_UPDATE, { email: normalizedEmail, status: updated.status, forceLogout: action === "restrict" });
+      deleteCache("admin:users:list").catch(() => {});
       return NextResponse.json({ success: true, status: updated.status });
     }
     if (action === "approve") {

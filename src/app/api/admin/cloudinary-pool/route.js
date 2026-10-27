@@ -22,12 +22,13 @@ export const GET = withErrorHandling(async (req) => {
 
   const { searchParams } = new URL(req.url);
   const shouldSync = searchParams.get("sync") === "true";
+  const isLive = searchParams.get("live") === "true";
 
   if (shouldSync) {
     await syncAllPoolAccounts();
   }
 
-  const accounts = await getAllPoolAccounts({ forceSync: shouldSync });
+  const accounts = await getAllPoolAccounts({ forceSync: shouldSync, liveDb: isLive });
   const optimalTarget = await getOptimalAccount();
 
   // Compute aggregate pool telemetry
@@ -48,7 +49,7 @@ export const GET = withErrorHandling(async (req) => {
     Number((totalPoolCredits - usedPoolCredits).toFixed(2))
   );
 
-  return apiResponse.success(
+  const res = apiResponse.success(
     {
       accounts,
       metrics: {
@@ -67,6 +68,8 @@ export const GET = withErrorHandling(async (req) => {
     },
     "Cloudinary pool retrieved successfully"
   );
+  res.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+  return res;
 });
 
 /**

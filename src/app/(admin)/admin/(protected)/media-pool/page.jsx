@@ -105,25 +105,32 @@ export default function MediaPoolPage() {
     setFormState(nextState);
   };
 
-  const fetchPoolData = async (sync = false) => {
+  const [lastLiveUpdated, setLastLiveUpdated] = useState(null);
+
+  const fetchPoolData = async (sync = false, isBackground = false) => {
     try {
       if (sync) setSyncingAll(true);
-      const res = await fetch(`/api/admin/cloudinary-pool${sync ? "?sync=true" : ""}`, {
+      const res = await fetch(`/api/admin/cloudinary-pool?live=true${sync ? "&sync=true" : ""}`, {
         cache: "no-store",
+        headers: { "Pragma": "no-cache", "Cache-Control": "no-cache" },
       });
       const json = await res.json();
       if (!res.ok || !json.success) {
-        throw new Error(json.message || "Failed to load Cloudinary pool data.");
+        if (!isBackground) throw new Error(json.message || "Failed to load Cloudinary pool data.");
+        return;
       }
       setData(json.data);
+      setLastLiveUpdated(new Date());
       if (sync) {
         toast.success("All Cloudinary accounts synchronized with live usage.");
       }
     } catch (err) {
-      toast.error(err.message || "Failed to connect to Media Pool API.");
+      if (!isBackground) {
+        toast.error(err.message || "Failed to connect to Media Pool API.");
+      }
     } finally {
-      setLoading(false);
-      setSyncingAll(false);
+      if (!isBackground) setLoading(false);
+      if (sync) setSyncingAll(false);
     }
   };
 
@@ -143,7 +150,10 @@ export default function MediaPoolPage() {
 
   const fetchVaultStats = async () => {
     try {
-      const res = await fetch("/api/admin/cloudinary-pool/vault");
+      const res = await fetch("/api/admin/cloudinary-pool/vault", {
+        cache: "no-store",
+        headers: { "Pragma": "no-cache", "Cache-Control": "no-cache" },
+      });
       const json = await res.json();
       if (json.success) setVaultStats(json.data);
     } catch {}
@@ -258,8 +268,34 @@ export default function MediaPoolPage() {
   };
 
   useEffect(() => {
-    fetchPoolData();
+    // Initial fetch
+    fetchPoolData(false, false);
     fetchVaultStats();
+
+    // Zero-Delay Live Heartbeat: Auto-revalidates every 3 seconds without needing to refresh page
+    const liveInterval = setInterval(() => {
+      if (typeof document !== "undefined" && document.visibilityState === "visible") {
+        fetchPoolData(false, true);
+        fetchVaultStats();
+      }
+    }, 3000);
+
+    // Instant revalidate when tab or browser window gains focus
+    const handleRevalidate = () => {
+      if (typeof document !== "undefined" && document.visibilityState === "visible") {
+        fetchPoolData(false, true);
+        fetchVaultStats();
+      }
+    };
+
+    window.addEventListener("focus", handleRevalidate);
+    document.addEventListener("visibilitychange", handleRevalidate);
+
+    return () => {
+      clearInterval(liveInterval);
+      window.removeEventListener("focus", handleRevalidate);
+      document.removeEventListener("visibilitychange", handleRevalidate);
+    };
   }, []);
 
 
@@ -512,14 +548,26 @@ export default function MediaPoolPage() {
       {/* Top Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border/70 pb-6">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-accent mb-1">
-            <Cloud className="w-4 h-4" /> Multi-Account Asset Pooling
+          <div className="flex flex-wrap items-center gap-2 mb-1">
+            <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-accent">
+              <Cloud className="w-4 h-4" /> Multi-Account Asset Pooling
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-bold text-emerald-500">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span>LIVE REAL-TIME (3s)</span>
+            </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
             Cloudinary Media Pool Manager
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            View live credit usage, hosted assets per account, and dynamically balance uploads across connected accounts.
+          <p className="text-sm text-muted-foreground mt-1 flex flex-wrap items-center gap-2">
+            <span>View live credit usage, hosted assets per account, and dynamically balance uploads across connected accounts.</span>
+            <span className="text-xs text-emerald-500/90 font-mono font-medium">
+              ● Live Auto-Sync Active (No Page Refresh Needed)
+            </span>
           </p>
         </div>
 

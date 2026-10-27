@@ -16,9 +16,8 @@ export function useSettingsSync() {
       if (active && document.visibilityState === "visible") fetchSettings();
     };
 
-    const interval = window.setInterval(syncSettings, 10000);
-    window.addEventListener("focus", syncSettings);
-    document.addEventListener("visibilitychange", syncSettings);
+    // Heartbeat fallback: every 60s (WebSockets already handle real-time updates instantly)
+    const interval = window.setInterval(syncSettings, 60000);
 
     let socket = null;
     try {

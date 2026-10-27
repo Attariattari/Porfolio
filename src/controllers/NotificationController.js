@@ -3,6 +3,7 @@ import { Notification } from "@/models/AdminModels";
 import { serializeDoc } from "@/lib/mongooseHelper";
 import eventBus, { ADMIN_EVENTS } from "@/lib/eventBus";
 import { emitSocketEvent, SOCKET_EVENTS } from "@/lib/socketCore";
+import { withCache, deleteCache } from "@/lib/cache";
 
 export const NotificationController = {
   /**
@@ -21,6 +22,7 @@ export const NotificationController = {
     const serialized = serializeDoc(notification);
     eventBus.emit(ADMIN_EVENTS.NOTIFICATION, serialized);
     emitSocketEvent(SOCKET_EVENTS.NOTIFICATION_RECEIVED, serialized);
+    deleteCache("notifications:list:latest").catch(() => {});
     return serialized;
   },
 
@@ -28,9 +30,11 @@ export const NotificationController = {
    * Get all notifications
    */
   getAll: async () => {
-    await dbConnect();
-    const notifications = await Notification.find().sort({ createdAt: -1 }).limit(50);
-    return notifications.map(serializeDoc);
+    return withCache("notifications:list:latest", async () => {
+      await dbConnect();
+      const notifications = await Notification.find().sort({ createdAt: -1 }).limit(50);
+      return notifications.map(serializeDoc);
+    }, 60, ["notifications"]);
   },
 
   /**
@@ -50,6 +54,7 @@ export const NotificationController = {
     const serialized = serializeDoc(notification);
     eventBus.emit(ADMIN_EVENTS.NOTIFICATION_UPDATE, serialized);
     emitSocketEvent(SOCKET_EVENTS.NOTIFICATION_UPDATED, serialized);
+    deleteCache("notifications:list:latest").catch(() => {});
     return serialized;
   },
 
@@ -63,6 +68,7 @@ export const NotificationController = {
     await Notification.updateMany({ status: "unread" }, { status: "read" });
     eventBus.emit(ADMIN_EVENTS.NOTIFICATIONS_CLEAR);
     emitSocketEvent(SOCKET_EVENTS.NOTIFICATIONS_CLEARED);
+    deleteCache("notifications:list:latest").catch(() => {});
     return { success: true };
   },
 
@@ -76,6 +82,7 @@ export const NotificationController = {
     
     eventBus.emit(ADMIN_EVENTS.NOTIFICATION_DELETE, id);
     emitSocketEvent(SOCKET_EVENTS.NOTIFICATION_DELETED, id);
+    deleteCache("notifications:list:latest").catch(() => {});
     return { success: true };
   }
 };

@@ -469,9 +469,9 @@ let cachedMasterUsage = null;
  * Returns all pooled accounts with Master account included for Admin Dashboard.
  * Backed by Redis distributed caching for instant sub-millisecond page loads.
  */
-export async function getAllPoolAccounts({ forceSync = false } = {}) {
-  // 1. Instant Cache Return
-  if (!forceSync) {
+export async function getAllPoolAccounts({ forceSync = false, liveDb = false } = {}) {
+  // 1. Instant Cache Return (Bypassed when liveDb or forceSync is true)
+  if (!forceSync && !liveDb) {
     try {
       const cached = await getCache(CACHE_KEY_POOL_ACCOUNTS);
       if (Array.isArray(cached) && cached.length > 0) {
@@ -539,7 +539,7 @@ export async function getAllPoolAccounts({ forceSync = false } = {}) {
   const accountsWithSummaries = await Promise.all(
     allAccounts.map(async (acc) => {
       try {
-        const { summary } = await getAssetsForCloudName(acc.cloudName, acc, { forceSync });
+        const { summary } = await getAssetsForCloudName(acc.cloudName, acc, { forceSync, liveDb });
         return { ...acc, assetSummary: summary };
       } catch {
         return {
@@ -560,7 +560,7 @@ export async function getAllPoolAccounts({ forceSync = false } = {}) {
  * Queries MongoDB for all assets hosted under a specific Cloudinary cloudName.
  * Backed by Redis cache (1 hour TTL) so repeated opens load in ~1ms without DB or external API calls.
  */
-export async function getAssetsForCloudName(cloudName, accountCreds = null, { forceSync = false } = {}) {
+export async function getAssetsForCloudName(cloudName, accountCreds = null, { forceSync = false, liveDb = false } = {}) {
   if (!cloudName) {
     return {
       assets: [],
@@ -571,8 +571,8 @@ export async function getAssetsForCloudName(cloudName, accountCreds = null, { fo
   const targetCloud = String(cloudName).trim().toLowerCase();
   const cacheKey = `${CACHE_KEY_ASSETS_PREFIX}${targetCloud}`;
 
-  // 1. Instant Cache Return
-  if (!forceSync) {
+  // 1. Instant Cache Return (Bypassed if forceSync or liveDb is true)
+  if (!forceSync && !liveDb) {
     try {
       const cached = await getCache(cacheKey);
       if (cached && Array.isArray(cached.assets)) {

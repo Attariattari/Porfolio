@@ -64,8 +64,11 @@ export default function SocialLinks({
     if (!initialSocials) {
       const initialTimer = window.setTimeout(fetchLinks, 0);
 
-      // Polling for "real-time" sync (every 60 seconds)
-      const interval = setInterval(fetchLinks, 60000);
+      // Polling for "real-time" sync (every 60 seconds when tab is active)
+      const interval = setInterval(() => {
+        if (typeof document !== "undefined" && document.visibilityState !== "visible") return;
+        fetchLinks();
+      }, 60000);
       return () => {
         window.clearTimeout(initialTimer);
         clearInterval(interval);

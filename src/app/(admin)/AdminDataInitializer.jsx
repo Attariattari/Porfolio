@@ -83,6 +83,12 @@ export default function AdminDataInitializer({ children }) {
       };
     }
 
+    // ⭐ Performance Optimization: If already authenticated, do not re-verify on every route click!
+    if (isAuthenticated) {
+      setIsChecking(false);
+      return;
+    }
+
     const checkAuthentication = async () => {
       try {
         const response = await fetch("/api/admin/me", {
@@ -116,7 +122,7 @@ export default function AdminDataInitializer({ children }) {
     return () => {
       cancelled = true;
     };
-  }, [isPublicAuthPage, pathname, router]);
+  }, [isPublicAuthPage, isAuthenticated, router]);
 
   // 1. If viewing public auth route (/admin/login or /admin/signup), render directly
   if (isPublicAuthPage) {

@@ -12,8 +12,27 @@ import {
     ADMIN_SESSION_COOKIE_OPTIONS,
     AUTH_SESSION_MAX_AGE,
 } from "@/lib/authSessionConfig";
+import { withCache, deleteCache } from "@/lib/cache";
 
 const SECRET = getAuthSecretKey();
+
+// High-performance In-Memory Session Cache (TTL: 45 seconds)
+// Eliminates repetitive database lookups on every single API request
+const sessionCache = global.adminSessionCache || new Map();
+global.adminSessionCache = sessionCache;
+const SESSION_CACHE_TTL_MS = 45 * 1000;
+
+export function invalidateAuthSessionCache(tokenOrEmail = null) {
+    if (!tokenOrEmail) {
+        sessionCache.clear();
+        return;
+    }
+    for (const [key, val] of sessionCache.entries()) {
+        if (key === tokenOrEmail || val.session?.email?.toLowerCase() === String(tokenOrEmail).toLowerCase()) {
+            sessionCache.delete(key);
+        }
+    }
+}
 
 // Super Admin Configuration - Now dynamically loaded from DB with fallback
 const ROOT_ADMIN_EMAIL = (
@@ -445,6 +464,7 @@ export async function approveUser(email) {
 
     // Broadcast for real-time dashboards
     eventBus.emit(ADMIN_EVENTS.USER_UPDATE, { email: normalizedEmail, status: "approved" });
+    deleteCache("admin:users:list").catch(() => {});
 
     // LOG: Administrative Audit
     await addNotification({
@@ -501,6 +521,7 @@ export async function denyUser(email) {
             status: "denied",
             forceLogout: true,
         });
+        deleteCache("admin:users:list").catch(() => {});
 
         await addNotification({
             type: "USER_DENIED",
@@ -553,6 +574,7 @@ export async function removeUser(email) {
             status: "removed",
             forceLogout: true,
         });
+        deleteCache("admin:users:list").catch(() => {});
 
         await addNotification({
             type: "USER_REMOVED",
@@ -609,17 +631,18 @@ export async function getAuthSession() {
 
     // PATCH: Check token expiration BEFORE verification
     if (isTokenExpired(token)) {
-        // Treat stale or malformed cookies as a signed-out session. Cookie
-        // deletion is handled by the proxy/route layer, where response cookies
-        // can safely be mutated.
+        sessionCache.delete(token);
         return null;
+    }
+
+    // 1. Instant Cache Return: If verified recently, return cached session in 0.01ms
+    const cached = sessionCache.get(token);
+    if (cached && Date.now() - cached.timestamp < SESSION_CACHE_TTL_MS) {
+        return cached.session;
     }
 
     try {
         const { payload } = await jwtVerify(token, SECRET);
-        console.log(
-            `[Auth] Token verified for ${payload.email} (Role: ${payload.role})`,
-        );
         await dbConnect();
 
         // ALWAYS fetch fresh data from DB. Use .lean() to bypass Mongoose's internal state.
@@ -629,7 +652,7 @@ export async function getAuthSession() {
             // SPECIAL CASE: ROOT_ADMIN_EMAIL might not be in DB yet or role might be different
             // But if they have a valid token for that email, we can grant ROOT access
             if (payload.email?.toLowerCase() === ROOT_ADMIN_EMAIL) {
-                return {
+                const rootSession = {
                     userId: user?._id?.toString() || "root-admin-id",
                     email: ROOT_ADMIN_EMAIL,
                     role: "root-super-admin",
@@ -637,6 +660,8 @@ export async function getAuthSession() {
                     avatar: user?.avatar || "",
                     permissions: { all: true },
                 };
+                sessionCache.set(token, { session: rootSession, timestamp: Date.now() });
+                return rootSession;
             }
             console.warn(
                 `[Auth] User rejected. Found: ${!!user}, Status: ${user?.status}`,
@@ -655,7 +680,7 @@ export async function getAuthSession() {
             finalRole = "super-admin";
         }
 
-        return {
+        const session = {
             userId: user._id.toString(),
             email: user.email,
             role: finalRole,
@@ -663,7 +688,12 @@ export async function getAuthSession() {
             avatar: user.avatar || "",
             permissions: user.permissions || {},
         };
+
+        // Cache session for fast subsequent calls
+        sessionCache.set(token, { session, timestamp: Date.now() });
+        return session;
     } catch (e) {
+        sessionCache.delete(token);
         // Invalid signatures and expired JWTs are an expected signed-out state
         // after secret rotation; do not surface them as application errors.
         if (!isJwtVerificationError(e)) {
@@ -783,6 +813,8 @@ export async function updateUserMetadata(
                 role,
                 permissions,
             });
+            deleteCache("admin:users:list").catch(() => {});
+            invalidateAuthSessionCache(normalizedEmail);
             console.log(
                 `[AUTH] Authority recalibrated: ${normalizedEmail} -> Role: ${role}.`,
             );
@@ -800,8 +832,10 @@ export async function updateUserMetadata(
 }
 
 export async function getAllUsers() {
-    await dbConnect();
-    return await User.find({}).sort({ createdAt: -1 }).lean();
+    return withCache("admin:users:list", async () => {
+        await dbConnect();
+        return await User.find({}).sort({ createdAt: -1 }).lean();
+    }, 60, ["admin-users"]);
 }
 
 export async function getAllNotifications() {

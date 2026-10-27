@@ -11,6 +11,7 @@ export function SecurityAuditDashboard() {
   const [lastUpdate, setLastUpdate] = useState(null);
 
   const fetchSecurityData = async () => {
+    if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
     try {
       setLoading(true);
       const [auditRes, complianceRes] = await Promise.all([

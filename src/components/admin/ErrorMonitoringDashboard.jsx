@@ -11,6 +11,7 @@ export function ErrorMonitoringDashboard() {
   const [lastUpdate, setLastUpdate] = useState(null);
 
   const fetchErrorData = async () => {
+    if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
     try {
       setLoading(true);
       const endpoint =

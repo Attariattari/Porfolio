@@ -13,6 +13,7 @@ export function SEOValidationDashboard() {
   const [lastUpdate, setLastUpdate] = useState(null);
 
   const fetchSeoData = async () => {
+    if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
     try {
       setLoading(true);
       const [healthRes, scoreRes, issuesRes] = await Promise.all([

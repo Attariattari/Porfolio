@@ -74,12 +74,14 @@ const ICON_MAP = {
   Cloud,
 };
 
+let cachedAdminSidebarSession = null;
+
 export default function AdminSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const [allowTransitions, setAllowTransitions] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [session, setSession] = useState(null);
+  const [session, setSession] = useState(() => cachedAdminSidebarSession);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const profileMenuRef = useRef(null);
 
@@ -131,9 +133,15 @@ export default function AdminSidebar() {
   }, []);
 
   useEffect(() => {
-    fetch("/api/admin/me")
-      .then((res) => res.json())
-      .then((data) => setSession(data));
+    if (!cachedAdminSidebarSession) {
+      fetch("/api/admin/me")
+        .then((res) => res.json())
+        .then((data) => {
+          cachedAdminSidebarSession = data;
+          setSession(data);
+        })
+        .catch(() => {});
+    }
   }, []);
 
   useEffect(() => {
@@ -161,6 +169,7 @@ export default function AdminSidebar() {
 
   const handleLogout = async () => {
     try {
+      cachedAdminSidebarSession = null;
       const res = await fetch("/api/admin/logout", { method: "POST" });
       if (res.ok) {
         toast.success("Secure Logout successful.");

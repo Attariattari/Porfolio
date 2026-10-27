@@ -16,6 +16,7 @@ export function SystemHealthDashboard() {
   useEffect(() => {
     let cancelled = false;
     const fetchHealthSummary = async () => {
+      if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
       try {
         setLoading(true);
         const [cache, production, security, seo] = await Promise.all([

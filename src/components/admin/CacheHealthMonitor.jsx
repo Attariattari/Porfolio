@@ -10,6 +10,7 @@ export function CacheHealthMonitor() {
   const [lastUpdate, setLastUpdate] = useState(null);
 
   const fetchCacheHealth = async () => {
+    if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
     try {
       setLoading(true);
       const response = await fetch("/api/internal/cache-health");

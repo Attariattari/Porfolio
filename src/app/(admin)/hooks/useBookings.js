@@ -68,7 +68,7 @@ export const useBookingDetail = (id) => {
       return data.data;
     },
     enabled: !!id,
-    staleTime: 0,
+    staleTime: 30 * 1000,
   });
 };
 
@@ -76,8 +76,8 @@ export const useBookingStats = () => {
   return useQuery({
     queryKey: ["booking-stats"],
     queryFn: fetchStats,
-    staleTime: 0,
-    refetchOnWindowFocus: true,
+    staleTime: 60 * 1000, // 60s cache; auto-invalidated on mutations
+    refetchOnWindowFocus: false,
   });
 };
 

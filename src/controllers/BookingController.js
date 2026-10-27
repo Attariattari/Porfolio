@@ -10,6 +10,7 @@ import {
   generateBookingActionEmail 
 } from "@/lib/emailTemplates";
 import { findPublicServiceOption } from "@/lib/services/getPublicServiceOptions";
+import { withCache, deleteCache } from "@/lib/cache";
 
 const cleanText = (value = "") =>
   String(value)
@@ -63,6 +64,7 @@ export const BookingController = {
       emitSocketEvent(SOCKET_EVENTS.BOOKING_STATS_UPDATED); 
       eventBus.emit(ADMIN_EVENTS.BOOKING_UPDATE, serialized);
       eventBus.emit(ADMIN_EVENTS.STATS_UPDATE);
+      deleteCache("bookings:stats:summary").catch(() => {});
 
       // Create internal notification
       try {
@@ -271,6 +273,7 @@ export const BookingController = {
     emitSocketEvent(SOCKET_EVENTS.BOOKING_STATS_UPDATED);
     eventBus.emit(ADMIN_EVENTS.BOOKING_UPDATE, serialized);
     eventBus.emit(ADMIN_EVENTS.STATS_UPDATE);
+    deleteCache("bookings:stats:summary").catch(() => {});
 
     // Handle Email Triggers
     try {
@@ -324,6 +327,7 @@ export const BookingController = {
     emitSocketEvent(SOCKET_EVENTS.BOOKING_STATS_UPDATED);
     eventBus.emit(ADMIN_EVENTS.BOOKING_UPDATE, { id, status: 'deleted' });
     eventBus.emit(ADMIN_EVENTS.STATS_UPDATE);
+    deleteCache("bookings:stats:summary").catch(() => {});
     return { success: true };
   },
 
@@ -331,19 +335,21 @@ export const BookingController = {
    * Get operational statistics
    */
   getStats: async () => {
-    await dbConnect();
-    const [total, newCount, confirmed, completed] = await Promise.all([
-      Booking.countDocuments(),
-      Booking.countDocuments({ status: 'new' }),
-      Booking.countDocuments({ status: 'confirmed' }),
-      Booking.countDocuments({ status: 'completed' })
-    ]);
+    return withCache("bookings:stats:summary", async () => {
+      await dbConnect();
+      const [total, newCount, confirmed, completed] = await Promise.all([
+        Booking.countDocuments(),
+        Booking.countDocuments({ status: 'new' }),
+        Booking.countDocuments({ status: 'confirmed' }),
+        Booking.countDocuments({ status: 'completed' })
+      ]);
 
-    return { 
-      total, 
-      new: newCount,
-      confirmed, 
-      completed 
-    };
+      return { 
+        total, 
+        new: newCount,
+        confirmed, 
+        completed 
+      };
+    }, 60, ["bookings"]);
   }
 };

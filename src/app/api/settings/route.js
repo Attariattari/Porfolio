@@ -91,30 +91,26 @@ export async function GET(request) {
         }
 
         const session = await getAuthSession().catch(() => null);
-        await dbConnect();
+        const isSuper = isSuperAdminSession(session);
+        const cacheKey = isSuper ? "settings:admin-full" : "settings:public-full";
 
-        // Get the site config (should be only one document)
-        let config = await SiteConfig.findOne();
+        const responseData = await withCache(
+            cacheKey,
+            async () => {
+                await dbConnect();
+                let config = await SiteConfig.findOne().lean();
 
-        // If no config exists, create default one
-        if (!config) {
-            config = new SiteConfig({
-                siteTitle: "Muhyo Tech",
-                siteAccent: "Tech",
-                siteTheme: "dark",
-                adminName: "Pir Ghulam Muhyo Din",
-                email: "attariattari549@gmail.com",
-                location: "Lahore, Pakistan",
-                seo: {
-                    title: HOME_SEO_TITLE,
-                    description: HOME_SEO_DESCRIPTION,
-                },
-            });
-            await config.save();
-        }
+                if (!config) {
+                    const createdConfig = await SiteConfig.create(defaultSettings);
+                    config = createdConfig.toObject ? createdConfig.toObject() : createdConfig;
+                }
 
-        const publicSettings = sanitizePublicSettings(config);
-        const responseData = isSuperAdminSession(session) ? config : publicSettings;
+                const publicSettings = sanitizePublicSettings(config);
+                return isSuper ? config : publicSettings;
+            },
+            60,
+            ["settings"]
+        );
 
         return noStore(apiResponse.success(
             responseData,
