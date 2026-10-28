@@ -113,62 +113,73 @@ export const BlogController = {
     async getPublicPage({ offset = 0, limit = 15, category = "", search = "" } = {}) {
         const safeOffset = Math.max(0, Math.trunc(Number(offset) || 0));
         const safeLimit = Math.min(30, Math.max(1, Math.trunc(Number(limit) || 12)));
+        const cleanCat = String(category || "").trim().toLowerCase();
+        const cleanSearch = String(search || "").trim().toLowerCase();
+        const cacheKey = `blogs:page:${cleanCat || "all"}:${cleanSearch || "all"}:${safeOffset}:${safeLimit}`;
+
         try {
-            await dbConnect();
-            const statusCondition = {
-                $or: [
-                    { publishStatus: "published" },
-                    { status: "published" },
-                    { publishStatus: { $exists: false }, status: { $exists: false } },
-                ],
-            };
-            const query = { $and: [statusCondition] };
+            return await withCache(
+                cacheKey,
+                async () => {
+                    await dbConnect();
+                    const statusCondition = {
+                        $or: [
+                            { publishStatus: "published" },
+                            { status: "published" },
+                            { publishStatus: { $exists: false }, status: { $exists: false } },
+                        ],
+                    };
+                    const query = { $and: [statusCondition] };
 
-            if (category && category !== "All") {
-                const escapedCat = String(category).trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-                const catRegex = new RegExp(`(^|[|,/\\s])${escapedCat}([|,/\\s]|$)`, "i");
-                query.$and.push({
-                    $or: [
-                        { category: category },
-                        { category: { $regex: catRegex } },
-                        { tags: { $regex: new RegExp(`^${escapedCat}$`, "i") } },
-                    ],
-                });
-            }
+                    if (category && category !== "All") {
+                        const escapedCat = String(category).trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+                        const catRegex = new RegExp(`(^|[|,/\\s])${escapedCat}([|,/\\s]|$)`, "i");
+                        query.$and.push({
+                            $or: [
+                                { category: category },
+                                { category: { $regex: catRegex } },
+                                { tags: { $regex: new RegExp(`^${escapedCat}$`, "i") } },
+                            ],
+                        });
+                    }
 
-            if (search) {
-                const escaped = String(search).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-                query.$and.push({
-                    $or: [
-                        { title: { $regex: escaped, $options: "i" } },
-                        { summary: { $regex: escaped, $options: "i" } },
-                    ],
-                });
-            }
+                    if (search) {
+                        const escaped = String(search).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+                        query.$and.push({
+                            $or: [
+                                { title: { $regex: escaped, $options: "i" } },
+                                { summary: { $regex: escaped, $options: "i" } },
+                            ],
+                        });
+                    }
 
-            const projection = "title slug summary image featuredImage category tags date createdAt updatedAt generatedAt featured featuredOrder featuredScore qualityScore order publishStatus author readTime views";
-            const [rows, total, rawCategories, latestDoc] = await Promise.all([
-                Blog.find(query).select(projection).sort({ featured: -1, featuredOrder: 1, createdAt: -1, order: 1 }).skip(safeOffset).limit(safeLimit + 1).lean(),
-                Blog.countDocuments(query),
-                Blog.distinct("category", statusCondition),
-                Blog.findOne(statusCondition).sort({ createdAt: -1, generatedAt: -1, date: -1 }).select("date createdAt generatedAt").lean(),
-            ]);
-            const serialized = serializeDoc(rows).filter((blog) => !isLegacyBlogSlug(blog.slug));
-            const cleanCategories = [
-                ...new Set(
-                    (rawCategories || [])
-                        .filter(Boolean)
-                        .flatMap((c) => String(c).split(/[|,/]/).map((s) => s.trim()).filter(Boolean))
-                ),
-            ].sort();
-            const latestPublishedDate = latestDoc?.date || (latestDoc?.createdAt ? new Date(latestDoc.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : null);
-            return {
-                items: serialized.slice(0, safeLimit),
-                hasMore: safeOffset + safeLimit < total && serialized.length > safeLimit,
-                total,
-                categories: cleanCategories,
-                latestPublishedDate,
-            };
+                    const projection = "title slug summary image featuredImage category tags date createdAt updatedAt generatedAt featured featuredOrder featuredScore qualityScore order publishStatus author readTime views";
+                    const [rows, total, rawCategories, latestDoc] = await Promise.all([
+                        Blog.find(query).select(projection).sort({ featured: -1, featuredOrder: 1, createdAt: -1, order: 1 }).skip(safeOffset).limit(safeLimit + 1).lean(),
+                        Blog.countDocuments(query),
+                        Blog.distinct("category", statusCondition),
+                        Blog.findOne(statusCondition).sort({ createdAt: -1, generatedAt: -1, date: -1 }).select("date createdAt generatedAt").lean(),
+                    ]);
+                    const serialized = serializeDoc(rows).filter((blog) => !isLegacyBlogSlug(blog.slug));
+                    const cleanCategories = [
+                        ...new Set(
+                            (rawCategories || [])
+                                .filter(Boolean)
+                                .flatMap((c) => String(c).split(/[|,/]/).map((s) => s.trim()).filter(Boolean))
+                        ),
+                    ].sort();
+                    const latestPublishedDate = latestDoc?.date || (latestDoc?.createdAt ? new Date(latestDoc.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : null);
+                    return {
+                        items: serialized.slice(0, safeLimit),
+                        hasMore: safeOffset + safeLimit < total && serialized.length > safeLimit,
+                        total,
+                        categories: cleanCategories,
+                        latestPublishedDate,
+                    };
+                },
+                300,
+                ["blogs"]
+            );
         } catch (error) {
             const fallback = portfolioData.blogs.filter((blog) => isPublicBlog(blog) && !isLegacyBlogSlug(blog.slug));
             const filtered = fallback.filter((blog) =>

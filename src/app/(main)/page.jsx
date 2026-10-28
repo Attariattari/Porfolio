@@ -25,6 +25,7 @@ import { resolveHomeSeo } from "@/lib/homeSeo";
 import { SITE_URL } from "@/lib/config";
 import { getAboutPageData } from "@/lib/content/getAboutPageData";
 import { withTimeoutFallback } from "@/lib/withTimeoutFallback";
+import { withCache } from "@/lib/cache";
 
 const compactHomeService = (service = {}) => ({
   _id: service._id,
@@ -101,12 +102,14 @@ const compactHomeAbout = (about = {}) => ({
 export const revalidate = 3600;
 
 export async function generateMetadata() {
-  const configuredSeo = await withTimeoutFallback(
-    dbConnect().then(() =>
-      SiteConfig.findOne({}).select("seo siteTitle").lean(),
-    ),
-    null,
-    1200,
+  const configuredSeo = await withCache(
+    "site:seo:home",
+    async () => {
+      await dbConnect();
+      return SiteConfig.findOne({}).select("seo siteTitle").lean();
+    },
+    600,
+    ["settings"]
   );
 
   const { title, description } = resolveHomeSeo(configuredSeo?.seo);
