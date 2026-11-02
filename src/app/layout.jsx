@@ -62,6 +62,11 @@ export default function RootLayout({ children }) {
     <html lang="en" className="dark scroll-smooth" data-theme="dark" style={{ colorScheme: "dark" }} suppressHydrationWarning>
       <head>
         <OrganizationSchema />
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8977670430114296"
+          crossOrigin="anonymous"
+        />
         <link rel="dns-prefetch" href="//res.cloudinary.com" />
         <script
           dangerouslySetInnerHTML={{
