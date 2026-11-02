@@ -21,33 +21,13 @@ function isVercelDeploymentUrl(value = "") {
 }
 
 function getAppUrl(baseUrl = "") {
-  // If an active baseUrl was supplied by the caller (e.g. localhost during development or custom domain in staging/prod),
-  // honor it directly so that email links preserve the originating environment and login cookies.
-  if (baseUrl && !isVercelDeploymentUrl(baseUrl)) {
-    return baseUrl;
-  }
-
   // During local development, allow localhost baseUrl or dev APP_URL so the developer can access the upload page immediately
-  if (process.env.NODE_ENV === "development") {
+  if (process.env.NODE_ENV === "development" && (isLocalUrl(baseUrl) || isLocalUrl(process.env.APP_URL))) {
     return baseUrl || process.env.APP_URL || "http://localhost:3000";
   }
 
-  const explicitUrl =
-    process.env.APP_URL ||
-    process.env.NEXT_PUBLIC_BASE_URL ||
-    process.env.NEXT_PUBLIC_SITE_URL;
-
-  if (
-    explicitUrl &&
-    !isLocalUrl(explicitUrl) &&
-    !isVercelDeploymentUrl(explicitUrl)
-  ) {
-    return explicitUrl;
-  }
-
-  return isLocalUrl(SITE_URL) || isVercelDeploymentUrl(SITE_URL)
-    ? PUBLIC_SITE_URL
-    : SITE_URL || PUBLIC_SITE_URL;
+  // Enforce official production domain: NEVER leak netlify or vercel preview URLs into outbound emails
+  return PUBLIC_SITE_URL;
 }
 
 function escapeHtml(value = "") {
