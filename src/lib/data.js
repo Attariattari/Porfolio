@@ -2284,6 +2284,7 @@ export const privacyDocument = {
             ],
             items: [
                 "Google Analytics may load when a measurement ID is configured and may process device, page, and interaction information under Google's own policies.",
+                "Google AdSense & Advertising Cookies: Third-party vendors, including Google, use cookies to serve ads based on a user's prior visits to our website or other websites. Google's use of advertising cookies enables it and its partners to serve ads to visitors based on their visit to this website and/or other websites on the Internet. Visitors may opt out of personalized advertising by visiting Google Ads Settings (https://adssettings.google.com) or www.aboutads.info.",
                 "Vercel Analytics and Speed Insights may collect performance and usage measurements to help us improve reliability and speed.",
                 "Authentication cookies and browser storage support authorised admin sessions and security controls.",
                 "You can limit cookies or clear browser storage through browser settings, but some protected or preference-based features may stop working correctly.",
@@ -2303,6 +2304,7 @@ export const privacyDocument = {
                 "Cloudinary for uploaded and website media storage and delivery.",
                 "Email delivery providers and Nodemailer-compatible infrastructure for inquiries, confirmations, security messages, and newsletters.",
                 "Google Analytics when configured for website measurement.",
+                "Google AdSense and authorized advertising networks when ad services are enabled, subject to Google's Advertising Privacy and Policy guidelines.",
                 "Professional advisers, authorities, or counterparties when reasonably required by law, security, a dispute, or a business transaction.",
             ],
         },
