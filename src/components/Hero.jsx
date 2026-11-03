@@ -3,10 +3,16 @@ import {
   Terminal,
   Layers,
   Code,
+  Code2,
   Zap,
   Shield,
+  ShieldCheck,
   Monitor,
   Cpu,
+  Server,
+  Database,
+  TrendingUp,
+  Sparkles,
   CheckCircle2,
 } from "lucide-react";
 import Link from "next/link";
@@ -38,24 +44,68 @@ export default function Hero({ initialData = null }) {
     Terminal,
     Layers,
     Code,
+    Code2,
     Zap,
     Shield,
+    ShieldCheck,
     Monitor,
     Cpu,
+    Server,
+    Database,
+    TrendingUp,
+    Sparkles,
   };
 
-  const features = (Array.isArray(data.features) ? data.features : []).map((feature) => ({
+  const defaultFeatures = [
+    {
+      icon: "Layers",
+      label: "Next.js & MERN Stack",
+      description: "Full-stack architectures engineered for scale & speed.",
+    },
+    {
+      icon: "Zap",
+      label: "High Performance",
+      description: "Sub-second load times & 95+ Core Web Vitals score.",
+    },
+    {
+      icon: "Server",
+      label: "Scalable APIs & Cloud",
+      description: "Clean RESTful/GraphQL APIs & seamless serverless logic.",
+    },
+    {
+      icon: "Database",
+      label: "Robust Database",
+      description: "Optimized MongoDB schema indexing & secure data flow.",
+    },
+    {
+      icon: "ShieldCheck",
+      label: "Enterprise Security",
+      description: "Hardened authentication, RBAC & secure data encryption.",
+    },
+    {
+      icon: "TrendingUp",
+      label: "SEO & Conversion UX",
+      description: "Engineered for maximum search visibility & engagement.",
+    },
+  ];
+
+  const rawFeatures =
+    Array.isArray(data.features) && data.features.length >= 6
+      ? data.features
+      : defaultFeatures;
+
+  const features = rawFeatures.map((feature) => ({
     ...feature,
     icon: iconMap[feature.icon] || Zap,
   }));
 
   return (
     <section
-      className="relative min-h-[500px] flex flex-col justify-center px-6 py-12 overflow-hidden"
+      className="relative min-h-[500px] flex flex-col justify-center px-6 sm:px-12 pt-12 pb-24 overflow-hidden"
     >
       <EditorialBackground text="Home" />
-      <div className="container mx-auto max-w-7xl relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+      <div className="w-full relative z-10">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">
           {/* Left Content Column */}
           <div className="hero-critical-content flex flex-col items-start text-left">
             {/* Elite Status Badge */}
@@ -88,13 +138,12 @@ export default function Hero({ initialData = null }) {
             </div>
 
             {/* Value Proposition */}
-            <p className="text-muted-foreground text-base md:text-lg max-w-xl mb-10 leading-relaxed font-medium opacity-80">
+            <p className="text-muted-foreground text-base md:text-lg w-full mb-5 leading-relaxed font-normal opacity-90">
               {data.description}
             </p>
 
-            <p className="mb-8 max-w-xl text-sm font-semibold text-foreground/80">
-              Building modern websites, dashboards, and full-stack applications
-              for businesses, startups, and personal brands.
+            <p className="mb-8 max-w-2xl text-sm md:text-base font-medium text-foreground/85 leading-relaxed">
+              Specializing in scalable full-stack architecture, intuitive UI/UX design, and production-grade web systems—transforming complex business requirements into fast, secure, and conversion-optimized digital products.
             </p>
 
             <div className="mb-8 flex flex-wrap gap-3">
@@ -179,34 +228,40 @@ export default function Hero({ initialData = null }) {
         </div>
 
         {/* Engineering Principles Grid */}
-        <div className="grid max-w-6xl grid-cols-2 gap-8 border-t border-border/10 pt-6 mt-6 mr-auto lg:mt-12 lg:grid-cols-4 lg:pt-12">
-          {features.map((feature, index) => (
-            <div
-              key={index}
-              className="group flex items-center gap-4 transition-transform duration-300 hover:-translate-y-1"
-            >
-              <div className="w-12 h-12 shrink-0 rounded-xl bg-accent/5 border border-accent/10 flex items-center justify-center text-accent group-hover:bg-accent group-hover:text-accent-foreground transition-all duration-300 shadow-xl shadow-accent/5">
-                <feature.icon className="w-5 h-5" />
-              </div>
-              <div className="text-left">
-                <p className="text-sm font-bold text-foreground tracking-tight">
-                  {feature.label}
-                </p>
-                <p className="text-xs text-muted-foreground mt-1 font-medium">
+        <div className="w-full border-t border-border/15 pt-8 mt-8 lg:mt-14 lg:pt-10">
+          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3.5 sm:gap-4">
+            {features.map((feature, index) => (
+              <div
+                key={index}
+                className="group relative flex flex-col justify-between p-4 rounded-xl border border-border/50 bg-card/40 hover:bg-card/80 backdrop-blur-md transition-all duration-300 hover:border-accent/40 hover:shadow-lg hover:shadow-accent/5 hover:-translate-y-1"
+              >
+                <div className="flex items-center gap-3 mb-2.5">
+                  <div className="w-9 h-9 shrink-0 rounded-lg bg-accent/10 border border-accent/20 flex items-center justify-center text-accent group-hover:scale-110 group-hover:bg-accent group-hover:text-accent-foreground transition-all duration-300 shadow-sm">
+                    <feature.icon className="w-4 h-4" />
+                  </div>
+                  <h3 className="text-xs sm:text-sm font-bold text-foreground group-hover:text-accent transition-colors duration-200 tracking-tight leading-snug">
+                    {feature.label}
+                  </h3>
+                </div>
+                <p className="text-[11px] sm:text-xs text-muted-foreground leading-relaxed font-medium">
                   {feature.description}
                 </p>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Elegant Scroll Indicator */}
       <div
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-3"
+        className="absolute bottom-4 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2 pointer-events-none z-20"
+        aria-hidden="true"
       >
-        <div className="w-[1px] h-20 bg-gradient-to-b from-accent/50 to-transparent relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-[20%] bg-accent opacity-80" />
+        <span className="text-[9px] uppercase tracking-[0.25em] text-muted-foreground/60 font-mono">
+          Scroll
+        </span>
+        <div className="w-[1.5px] h-12 bg-gradient-to-b from-accent/30 via-accent/15 to-transparent relative overflow-hidden rounded-full">
+          <div className="absolute top-0 left-0 w-full h-[40%] bg-gradient-to-b from-accent via-accent to-accent/40 rounded-full animate-scroll-drop shadow-[0_0_8px_rgba(var(--accent),0.7)]" />
         </div>
       </div>
     </section>

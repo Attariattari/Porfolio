@@ -89,7 +89,7 @@ export const homeData = {
         badge: "Available for selected projects",
         title: "Building modern websites, dashboards, and full-stack applications",
         highlightedWord: "applications",
-        description: "Muhyo Tech builds modern websites, dashboards, and full-stack applications for businesses, startups, and personal brands using Next.js, MERN Stack, and clean conversion-focused UI.",
+        description: "Muhyo Tech engineers scalable full-stack web applications, interactive dashboards, and high-performance digital platforms using Next.js and the MERN stack—built for performance, security, and measurable business growth.",
         heroImage: "/hero-visual.webp",
         ctas: [
             { label: "Book a Call", href: "/book-a-call", variant: "primary" },
@@ -368,16 +368,14 @@ export const portfolioData = {
                 "UX Architect",
                 "Full Stack Developer",
             ],
-            description: "I specialize in building high-quality, modern websites that look amazing and work perfectly on every device. By using the latest technology, I ensure your site is fast, secure, and easy for your visitors to use. My goal is to help your business grow with a powerful online presence that makes a great first impression.",
+            description: "I specialize in architecting high-performance, scalable web applications and conversion-driven digital platforms. Leveraging Next.js, the MERN stack, and modern software engineering practices, I deliver resilient backend systems, intuitive user interfaces, and lightning-fast web experiences tailored to accelerate business growth.",
             features: [
-                { icon: "Layers", label: "Great Design", description: "Built to grow" },
-                {
-                    icon: "Terminal",
-                    label: "Clean Code",
-                    description: "Easy to manage",
-                },
-                { icon: "Shield", label: "Safe & Secure", description: "Stable setup" },
-                { icon: "Zap", label: "Fast Load", description: "Smooth experience" },
+                { icon: "Layers", label: "Next.js & MERN Stack", description: "Full-stack architectures engineered for scale & speed." },
+                { icon: "Zap", label: "High Performance", description: "Sub-second load times & 95+ Core Web Vitals score." },
+                { icon: "Server", label: "Scalable APIs & Cloud", description: "Clean RESTful/GraphQL APIs & seamless serverless logic." },
+                { icon: "Database", label: "Robust Database", description: "Optimized MongoDB schema indexing & secure data flow." },
+                { icon: "ShieldCheck", label: "Enterprise Security", description: "Hardened authentication, RBAC & secure data encryption." },
+                { icon: "TrendingUp", label: "SEO & Conversion UX", description: "Engineered for maximum search visibility & engagement." },
             ],
         },
         sidebar: {
